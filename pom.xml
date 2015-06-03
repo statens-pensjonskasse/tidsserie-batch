@@ -3,9 +3,20 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>no.spk.pensjon</groupId>
+    <parent>
+        <groupId>no.spk.felles</groupId>
+        <artifactId>felles-pom</artifactId>
+        <version>100.0.2</version>
+    </parent>
+
+    <groupId>no.spk.pensjon.faktura</groupId>
     <artifactId>faktura-tidsserie-batch</artifactId>
     <version>1.0.0-SNAPSHOT</version>
+
+    <properties>
+        <project.build.sourceEncoding>CP1252</project.build.sourceEncoding>
+        <faktura.prognose.tidsserie.version>1.0.1-SNAPSHOT</faktura.prognose.tidsserie.version>
+    </properties>
 
     <build>
         <plugins>
@@ -54,4 +65,53 @@
         </plugins>
     </build>
 
-</project>
+    <dependencies>
+        <dependency>
+            <groupId>no.spk.pensjon.faktura</groupId>
+            <artifactId>faktura-prognose-tidsserie</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>no.spk.pensjon.faktura</groupId>
+                <artifactId>faktura-prognose-tidsserie</artifactId>
+                <version>${faktura.prognose.tidsserie.version}</version>
+            </dependency>
+            <!-- test-->
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>1.10.8</version>
+            </dependency>
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>1.7.0</version>
+            </dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.11</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+
+    </project>
