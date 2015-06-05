@@ -48,7 +48,6 @@ public final class ProgramArgumentsFactory {
         try {
             jCommander.parse(args);
             if (postValider) {
-                new PostParseValidation(arguments).validate();
             }
         } catch (final ParameterException exception) {
             throw new InvalidParameterException(jCommander, exception);
