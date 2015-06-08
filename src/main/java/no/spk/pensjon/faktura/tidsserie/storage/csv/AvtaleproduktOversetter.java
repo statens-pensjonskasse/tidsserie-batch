@@ -16,7 +16,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Prosent;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Satser;
 
-public class AvtaleproduktOversetter {
+public class AvtaleproduktOversetter implements CsvOversetter<Avtaleprodukt> {
     public static final String TYPEINDIKATOR = "AVTALEPRODUKT";
 
     public static final int INDEX_AVTALE = 1;

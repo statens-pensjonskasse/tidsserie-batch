@@ -71,7 +71,7 @@ import static no.spk.pensjon.faktura.tidsserie.storage.csv.Feilmeldingar.ugyldig
  *
  * @author Tarjei Skorgenes
  */
-public class ApotekLoennstrinnperiodeOversetter {
+public class ApotekLoennstrinnperiodeOversetter implements CsvOversetter<ApotekLoennstrinnperiode> {
     /**
      * Typeindikator for rader som inneheld informasjon som kan oversettast til lønnstrinnperioder for Apotekordninga.
      */

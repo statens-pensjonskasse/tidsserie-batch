@@ -56,7 +56,7 @@ import static no.spk.pensjon.faktura.tidsserie.storage.csv.Feilmeldingar.ugyldig
  * @author Tarjei Skorgenes
  */
 
-public class OmregningsperiodeOversetter {
+public class OmregningsperiodeOversetter implements CsvOversetter<Omregningsperiode> {
     /**
      * Typeindikator for rader som inneheld informasjon som kan oversettast til omregningsperioder.
      */
@@ -86,6 +86,7 @@ public class OmregningsperiodeOversetter {
      * @return <code>true</code> dersom typeindikatoren i første kolonne indikerer at det er ei omregningsperiode
      * <code>false</code> ellers
      */
+    @Override
     public boolean supports(final List<String> rad) {
         return TYPEINDIKATOR.equals(rad.get(0));
     }
@@ -96,6 +97,7 @@ public class OmregningsperiodeOversetter {
      * @param rad ei omregningsperiode, sjå klassedefinisjonen for informasjon om forventa kolonner og format
      * @return ei ny omregningsperiode
      */
+    @Override
     public Omregningsperiode oversett(final List<String> rad) {
         if (rad.size() < ANTALL_KOLONNER) {
             throw new IllegalArgumentException(

@@ -62,7 +62,7 @@ import static no.spk.pensjon.faktura.tidsserie.storage.csv.Feilmeldingar.ugyldig
  *
  * @author Tarjei Skorgenes
  */
-public class StatligLoennstrinnperiodeOversetter {
+public class StatligLoennstrinnperiodeOversetter implements CsvOversetter<StatligLoennstrinnperiode> {
     /**
      * Typeindikator for rader som inneheld informasjon som kan oversettast til statlige lønnstrinnperioder.
      */
