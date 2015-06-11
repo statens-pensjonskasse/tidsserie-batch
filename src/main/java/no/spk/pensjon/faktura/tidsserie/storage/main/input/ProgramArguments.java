@@ -18,10 +18,10 @@ public class ProgramArguments {
             required = true)
     String beskrivelse;
 
-
     @Parameter(names = { "-id" },
-            description = "Batch-id som identifiserer en resultat-katalog produsert av grunnlagsdata-batch i inn-katalogen. Dersom -id ser denne batchen etter nyeste resulatkatalog.")
-    String batchId;
+            validateWith = BatchIdValidator.class,
+            description = "Batch-id som identifiserer en resultat-katalog produsert av grunnlagsdata-batch i inn-katalogen. Dersom -id mangler ser denne batchen etter nyeste resulatkatalog.")
+    String grunnlagsdataBatchId;
 
     @Parameter(names = {"-fraAar"},
             description="Medlemsdata hentes fra og med 01.01 i angitt år.",
@@ -35,18 +35,6 @@ public class ProgramArguments {
             validateValueWith = YearValidator.class)
     int tilAar = 2015;
 
-    @Parameter(names = { "-fraAvtale" },
-            description="Medlemsdata hentes kun i intervallet [fraAvtale, tilAvtale].",
-            validateWith = IntegerValidator.class,
-            validateValueWith = GreaterThanZeroValidator.class)
-    long fraAvtale = 100000;
-
-    @Parameter(names = { "-tilAvtale" },
-            description="Medlemsdata hentes kun i intervallet [fraAvtale, tilAvtale].",
-            validateWith = IntegerValidator.class,
-            validateValueWith = GreaterThanZeroValidator.class)
-    long tilAvtale = 999999;
-
     @Parameter(names = { "-ut", "-o" },
             description="Batchen vil lage en ny katalog i arbeidskatalogen hvor resultatet av kjøringen vil bli lagret.",
             validateValueWith = WritablePathValidator.class
@@ -57,7 +45,7 @@ public class ProgramArguments {
             description="En katalog som inneholder resultatkatalog fra grunnlagsdata-batch.",
             validateValueWith = WritablePathValidator.class
     )
-    Path innkatalog = Paths.get("target/");
+    Path innkatalog = Paths.get("../faktura-grunnlagsdata-batch/target/");
 
     @Parameter(names = "-kjoeretid",
             description = "Maks kjøretid på formatet HHmm.",
@@ -69,4 +57,49 @@ public class ProgramArguments {
             validateWith = LocalTimeValidator.class,
             converter = LocalTimeConverter.class)
     LocalTime sluttidspunkt = LocalTime.parse("23:59");
+
+
+    public boolean isHjelp() {
+        return hjelp;
+    }
+
+    public String getBeskrivelse() {
+        return beskrivelse;
+    }
+
+    public String getGrunnlagsdataBatchId() {
+        return grunnlagsdataBatchId;
+    }
+
+    public void setGrunnlagsdataBatchId(String grunnlagsdataBatchId) {
+        this.grunnlagsdataBatchId = grunnlagsdataBatchId;
+    }
+
+    public int getFraAar() {
+        return fraAar;
+    }
+
+    public int getTilAar() {
+        return tilAar;
+    }
+    public Path getUtkatalog() {
+        return utkatalog;
+    }
+
+    public Path getInnkatalog() {
+        return innkatalog;
+    }
+
+    public String getKjoeretid() {
+        return kjoeretid;
+    }
+
+    public LocalTime getSluttidspunkt() {
+        return sluttidspunkt;
+    }
+
+    public Path getGrunnlagsdataBatchKatalog() {
+        return innkatalog.resolve(grunnlagsdataBatchId);
+    }
+
 }

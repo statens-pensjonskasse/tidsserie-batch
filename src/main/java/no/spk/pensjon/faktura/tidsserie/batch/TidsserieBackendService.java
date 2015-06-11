@@ -3,6 +3,7 @@ package no.spk.pensjon.faktura.tidsserie.batch;
 import java.io.File;
 import java.util.Map;
 
+import no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast.FileTemplate;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieObservasjon;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
@@ -61,7 +62,7 @@ public interface TidsserieBackendService {
      * @see Observasjonsperiode
      */
     Map<String, Integer> lagTidsseriePaaStillingsforholdNivaa(
-            File outputFiles,
+            FileTemplate outputFiles,
             Aarstall fraOgMed,
             Aarstall tilOgMed
     );

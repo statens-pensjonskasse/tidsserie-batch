@@ -39,7 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 class GenererTidsseriePrStillingsforholdOgAar implements LifecycleMapper<String, List<List<String>>, String, Integer>, HazelcastInstanceAware {
-    private final File file;
+    private final FileTemplate fileTemplate;
     private final LocalDate foerstedato;
     private final LocalDate sistedato;
 
@@ -48,8 +48,8 @@ class GenererTidsseriePrStillingsforholdOgAar implements LifecycleMapper<String,
     private transient Tidsserieobservasjonsgenerator generator;
     private transient NumberFormat format;
 
-    GenererTidsseriePrStillingsforholdOgAar(final File destination, final LocalDate foerstedato, LocalDate sistedato) {
-        this.file = destination;
+    GenererTidsseriePrStillingsforholdOgAar(final FileTemplate destination, final LocalDate foerstedato, LocalDate sistedato) {
+        this.fileTemplate = destination;
         this.foerstedato = foerstedato;
         this.sistedato = sistedato;
     }
@@ -83,7 +83,7 @@ class GenererTidsseriePrStillingsforholdOgAar implements LifecycleMapper<String,
         // TODO: Uøndvendig gitt at ein kan sende inn ein lmax disruptor pr hazelcast-node/instans via user contexten
         // Alternativt bruk kun ein disruptor pr JVM og la den sjølv skrive til ei stor fil, eller splitte i mindre
         // filer basert på maksimalt ønska antall medlemmar pr fil or something like that
-        publisher = new LmaxDisruptorPublisher(executor, file);
+        publisher = new LmaxDisruptorPublisher(executor, fileTemplate);
         publisher.start();
         publisher.publiser(builder -> {
             builder.append("avtaleId;stillingsforholdId;observasjonsdato;maskinelt_grunnlag;premiestatus;årsverk;personnummer\n");

@@ -2,7 +2,6 @@ package no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast;
 
 import static java.util.Optional.of;
 
-import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -61,7 +60,7 @@ public class HazelcastBackend implements TidsserieBackendService {
 
     @Override
     public Map<String, Integer> lagTidsseriePaaStillingsforholdNivaa(
-            final File outputFiles, final Aarstall fraOgMed, final Aarstall tilOgMed) {
+            final FileTemplate outputFiles, final Aarstall fraOgMed, final Aarstall tilOgMed) {
         return submit(
                 new GenererTidsseriePrStillingsforholdOgAar(
                         outputFiles,

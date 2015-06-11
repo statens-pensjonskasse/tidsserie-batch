@@ -9,17 +9,19 @@ import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
+import no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast.FileTemplate;
+
 public class LmaxDisruptorPublisher {
     private final ExecutorService executor;
-    private final File file;
+    private final FileTemplate fileTemplate;
 
     private Disruptor<ObservasjonsEvent> disruptor;
     private RingBuffer<ObservasjonsEvent> ringBuffer;
     private ObservasjonsConsumer consumer;
 
-    public LmaxDisruptorPublisher(final ExecutorService executor, final File file) {
+    public LmaxDisruptorPublisher(final ExecutorService executor, final FileTemplate fileTemplate) {
         this.executor = executor;
-        this.file = file;
+        this.fileTemplate = fileTemplate;
     }
 
     public void start() {
@@ -32,7 +34,7 @@ public class LmaxDisruptorPublisher {
         disruptor = new Disruptor<>(factory, bufferSize, this.executor);
 
         try {
-            consumer = new FileWriterObservasjonsConsumer(this.file);
+            consumer = new FileWriterObservasjonsConsumer(this.fileTemplate);
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }

@@ -1,15 +1,15 @@
 package no.spk.pensjon.faktura.tidsserie.storage.disruptor;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.UUID;
+
+import no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast.FileTemplate;
 
 class FileWriterObservasjonsConsumer implements ObservasjonsConsumer {
     private final FileWriter writer;
 
-    public FileWriterObservasjonsConsumer(File file) throws IOException {
-        writer = new FileWriter(new File(file.getParentFile(), file.getName().replace("XXX", UUID.randomUUID().toString())), true);
+    public FileWriterObservasjonsConsumer(FileTemplate fileTemplate) throws IOException {
+        writer = new FileWriter(fileTemplate.createUniqueFile(), true);
     }
 
     public void close() throws IOException {

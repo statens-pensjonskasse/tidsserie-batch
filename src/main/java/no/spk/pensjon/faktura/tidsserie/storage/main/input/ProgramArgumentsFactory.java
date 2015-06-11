@@ -1,6 +1,15 @@
 package no.spk.pensjon.faktura.tidsserie.storage.main.input;
 
+import static java.util.Collections.reverseOrder;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.Optional;
+import java.util.regex.Pattern;
+
+import no.spk.pensjon.faktura.tidsserie.storage.main.BatchIdMatcher;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
@@ -47,7 +56,13 @@ public final class ProgramArgumentsFactory {
         final JCommander jCommander = new JCommander(arguments);
         try {
             jCommander.parse(args);
+
+            if (arguments.getGrunnlagsdataBatchId() == null) {
+                setDefaultBatchId(arguments);
+            }
+
             if (postValider) {
+                new PostParseValidation(arguments).validate();
             }
         } catch (final ParameterException exception) {
             throw new InvalidParameterException(jCommander, exception);
@@ -57,6 +72,24 @@ public final class ProgramArgumentsFactory {
             throw new UsageRequestedException(jCommander);
         }
         return arguments;
+    }
+
+    private static void setDefaultBatchId(ProgramArguments arguments) {
+        Pattern pattern = BatchIdMatcher.createBatchIdPattern("grunnlagsdata_");
+        try {
+            Path innkatalog = arguments.getInnkatalog();
+            Optional<String> newestBatchFolder = Files.list(innkatalog)
+                    .map(f -> f.toFile().getName())
+                    .filter(n -> pattern.matcher(n).matches())
+                    .sorted(reverseOrder())
+                    .findFirst();
+            if (!newestBatchFolder.isPresent()) {
+                throw new ParameterException("Det finnes ingen batch-kataloger i " + innkatalog.toAbsolutePath() + ".");
+            }
+            arguments.setGrunnlagsdataBatchId(newestBatchFolder.get());
+        } catch (IOException e) {
+            throw new ParameterException(e);
+        }
     }
 
     public static class UsageRequestedException extends RuntimeException {

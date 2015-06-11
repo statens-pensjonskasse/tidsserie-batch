@@ -5,7 +5,7 @@
 
     <parent>
         <groupId>no.spk.felles</groupId>
-        <artifactId>felles-pom</artifactId>
+        <artifactId>felles-super-pom</artifactId>
         <version>100.0.2</version>
     </parent>
 
