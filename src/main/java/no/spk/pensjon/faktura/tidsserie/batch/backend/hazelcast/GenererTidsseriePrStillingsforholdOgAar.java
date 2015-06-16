@@ -1,6 +1,5 @@
 package no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast;
 
-import java.io.File;
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -12,7 +11,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
-import no.spk.pensjon.faktura.tidsserie.batch.GrunnlagsdataService;
 import no.spk.pensjon.faktura.tidsserie.batch.ReferansedataService;
 import no.spk.pensjon.faktura.tidsserie.batch.Tidsserieobservasjonsgenerator;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Aarsverk;
@@ -23,6 +21,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medlemsdata;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.MedlemsdataOversetter;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medregningsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Stillingsendring;
+import no.spk.pensjon.faktura.tidsserie.domain.reglar.PrognoseRegelsett;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Feilhandtering;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieObservasjon;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
@@ -133,11 +132,11 @@ class GenererTidsseriePrStillingsforholdOgAar implements LifecycleMapper<String,
                             .append('\n');
                 });
             };
-            generator.observerForVekstmodell(
+            generator.generer(
                     medlem,
                     observasjonsperiode,
                     generator.lagObservasjonsaggregatorPrStillingsforholdOgAvtale(publikator),
-                    lagFeilhandteringForMedlem(key, context, log)
+                    lagFeilhandteringForMedlem(key, context, log), new PrognoseRegelsett()
             );
         } catch (final RuntimeException | Error e) {
             log.warn("Periodisering av medlem {} feila: {} (endringar = {})", key, e.getMessage(), value);

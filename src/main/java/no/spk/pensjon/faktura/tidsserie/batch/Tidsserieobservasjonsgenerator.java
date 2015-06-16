@@ -1,8 +1,6 @@
 package no.spk.pensjon.faktura.tidsserie.batch;
 
 import static java.util.Objects.requireNonNull;
-import static java.util.Optional.empty;
-import static no.spk.pensjon.faktura.tidsserie.Datoar.dato;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,19 +8,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medlemsdata;
-import no.spk.pensjon.faktura.tidsserie.domain.reglar.AarsLengdeRegel;
-import no.spk.pensjon.faktura.tidsserie.domain.reglar.AarsfaktorRegel;
-import no.spk.pensjon.faktura.tidsserie.domain.reglar.AarsverkRegel;
-import no.spk.pensjon.faktura.tidsserie.domain.reglar.AntallDagarRegel;
-import no.spk.pensjon.faktura.tidsserie.domain.reglar.DeltidsjustertLoennRegel;
-import no.spk.pensjon.faktura.tidsserie.domain.reglar.GruppelivsfaktureringRegel;
-import no.spk.pensjon.faktura.tidsserie.domain.reglar.LoennstilleggRegel;
-import no.spk.pensjon.faktura.tidsserie.domain.reglar.MaskineltGrunnlagRegel;
-import no.spk.pensjon.faktura.tidsserie.domain.reglar.MedregningsRegel;
-import no.spk.pensjon.faktura.tidsserie.domain.reglar.MinstegrenseRegel;
-import no.spk.pensjon.faktura.tidsserie.domain.reglar.OevreLoennsgrenseRegel;
-import no.spk.pensjon.faktura.tidsserie.domain.reglar.Regelperiode;
-import no.spk.pensjon.faktura.tidsserie.domain.reglar.YrkesskadefaktureringRegel;
+import no.spk.pensjon.faktura.tidsserie.domain.reglar.Regelsett;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Tidsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.AvtaleinformasjonRepository;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Feilhandtering;
@@ -56,13 +42,16 @@ public class Tidsserieobservasjonsgenerator {
     }
 
     /**
-     * Genererer eitt nytt datasett for bruk til å forklare vekst i pensjonsgivande årslønn pr dags dato.
-     * <p>
-     * Tidsserien strekker seg frå første til siste dag i den angitte observasjonsperioda og vil inneholde ein
-     * observasjon pr siste dag i kvar måned innanfor denne perioda.
-     * <p>
+     * Genererer ein ny tidsserie basert på medlemmet sine medlemsdata, relaterte avtaledata og referansedata.
+     * <br>
+     * Tidsserien strekker seg frå første til siste dag i den angitte observasjonsperioda og vil bli danna basert på
+     * eit observasjonsunderlag generert pr siste dag i kvar måned innanfor denne perioda.
+     * <br>
      * Kvart observasjonsunderlag blir sendt vidare til <code>publikator</code> for vidare behandling eller lagring.
-     * <p>
+     * <br>
+     * Dersom publikatoren har behov for å gjere beregningar på periodene i observasjonsunderlaget må det skje
+     * ved hjelp av beregningsreglane sendt inn via <code>reglar</code>.
+     * <br>
      * Dersom det oppstår ein feil i forbindelse med prosesseringa av medlemmet eller eit av medlemmets
      * stillingsforhold, blir feilen sendt vidare til <code>feilhandtering</code> for vidare handtering.
      *
@@ -71,50 +60,22 @@ public class Tidsserieobservasjonsgenerator {
      * @param publikator          mottakar av alle tidsserieobservasjonar som blir generert for medlemmet
      * @param feilhandtering      feilhandteringsstrategi som alle fatale feil underveis i tidsseriegenereringa vil bli
      *                            delegert til
+     * @param reglar              regelsettet som tidsseriens beregna verdiar skal bli generert via
      */
-    public void observerForVekstmodell(final Medlemsdata medlem, final Observasjonsperiode observasjonsperiode,
-                                       final Observasjonspublikator publikator,
-                                       final Feilhandtering feilhandtering) {
+    public void generer(final Medlemsdata medlem,
+                        final Observasjonsperiode observasjonsperiode,
+                        final Observasjonspublikator publikator,
+                        final Feilhandtering feilhandtering,
+                        final Regelsett reglar) {
         tidsserie.overstyr(feilhandtering);
-        observer(medlem, observasjonsperiode, publikator, tidsserie);
-    }
-
-    private void observer(Medlemsdata medlem, Observasjonsperiode observasjonsperiode, Observasjonspublikator publikator, TidsserieFacade tidsserie) {
         tidsserie.generer(
                 medlem,
                 observasjonsperiode,
                 publikator,
                 Stream.concat(
-                        regelset(),
+                        reglar.reglar(),
                         referanseperioder.stream()
                 )
-        );
-    }
-
-    /**
-     * Genererer regelsettet som blir benytta når ein skal gjere beregningar i forbindelse med kvar
-     * tidsserieobservasjon.
-     * <p>
-     * Regelsettet blir generert på ein slik måte at ein skal kunne bruke gjeldande reglar i dag (2015) bakover
-     * i til og med år 2000.
-     * <p>
-     * År 2000 er tilfeldig valgt basert på ein antagelse om at prognosene som tidsserien blir brukt på, ikkje
-     * kjem til å ha behov for tidsseriar lenger enn dette.
-     */
-    private Stream<Tidsperiode<?>> regelset() {
-        return Stream.<Tidsperiode<?>>of(
-                new Regelperiode<>(dato("2000.01.01"), empty(), new MaskineltGrunnlagRegel()),
-                new Regelperiode<>(dato("2000.01.01"), empty(), new AarsfaktorRegel()),
-                new Regelperiode<>(dato("2000.01.01"), empty(), new DeltidsjustertLoennRegel()),
-                new Regelperiode<>(dato("2000.01.01"), empty(), new AntallDagarRegel()),
-                new Regelperiode<>(dato("2000.01.01"), empty(), new AarsLengdeRegel()),
-                new Regelperiode<>(dato("2000.01.01"), empty(), new LoennstilleggRegel()),
-                new Regelperiode<>(dato("2000.01.01"), empty(), new OevreLoennsgrenseRegel()),
-                new Regelperiode<>(dato("2000.01.01"), empty(), new MedregningsRegel()),
-                new Regelperiode<>(dato("2000.01.01"), empty(), new MinstegrenseRegel()),
-                new Regelperiode<>(dato("2000.01.01"), empty(), new AarsverkRegel()),
-                new Regelperiode<>(dato("2000.01.01"), empty(), new GruppelivsfaktureringRegel()),
-                new Regelperiode<>(dato("2000.01.01"), empty(), new YrkesskadefaktureringRegel())
         );
     }
 
