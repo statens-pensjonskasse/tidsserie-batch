@@ -8,14 +8,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast.FileTemplate;
+import no.spk.pensjon.faktura.tidsserie.batch.main.input.ArgumentSummary;
+import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
+import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArgumentsFactory;
+import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArgumentsFactory.UsageRequestedException;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
-import no.spk.pensjon.faktura.tidsserie.storage.main.CleanBatchError;
-import no.spk.pensjon.faktura.tidsserie.storage.main.GrunnlagsdataException;
-import no.spk.pensjon.faktura.tidsserie.storage.main.Oppryddingsstatus;
-import no.spk.pensjon.faktura.tidsserie.storage.main.input.ArgumentSummary;
-import no.spk.pensjon.faktura.tidsserie.storage.main.input.ProgramArguments;
-import no.spk.pensjon.faktura.tidsserie.storage.main.input.ProgramArgumentsFactory;
-import no.spk.pensjon.faktura.tidsserie.storage.main.input.ProgramArgumentsFactory.UsageRequestedException;
 
 /**
  * TODO: Kva og korleis ønskjer vi å vise status for batchkøyringa når vi køyrer den for vår egen bruk?
@@ -100,6 +97,16 @@ public class ConsoleView implements View{
     @Override
     public void tidsseriegenereringFullfoert(Map<String, Integer> meldingar) {
         println("Tidsseriegenerering fullført.");
+    }
+
+    @Override
+    public void informerOmGrunnlagsdataValidering() {
+        println("Validerer grunnlagsdata.");
+    }
+
+    @Override
+    public void informerOmMetadataOppretting() {
+        println("Oppretter metadata og sjekksumfil.");
     }
 
     private void println(final String melding) {

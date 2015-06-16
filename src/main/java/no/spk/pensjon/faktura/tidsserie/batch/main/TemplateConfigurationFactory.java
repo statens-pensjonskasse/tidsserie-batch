@@ -1,0 +1,18 @@
+package no.spk.pensjon.faktura.tidsserie.batch.main;
+
+import freemarker.template.Configuration;
+import freemarker.template.TemplateExceptionHandler;
+
+/**
+ * @author Snorre E. Brekke - Computas
+ */
+public class TemplateConfigurationFactory {
+
+    public static Configuration create() {
+        Configuration config = new Configuration(Configuration.VERSION_2_3_22);
+        config.setClassLoaderForTemplateLoading(Thread.currentThread().getContextClassLoader(), "templates");
+        config.setDefaultEncoding("cp1252");
+        config.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
+        return config;
+    }
+}

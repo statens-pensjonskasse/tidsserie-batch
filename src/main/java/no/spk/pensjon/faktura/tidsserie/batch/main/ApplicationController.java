@@ -3,19 +3,18 @@ package no.spk.pensjon.faktura.tidsserie.batch.main;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.of;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.Optional;
 
+import no.spk.pensjon.faktura.tidsserie.batch.GrunnlagsdataService;
+import no.spk.pensjon.faktura.tidsserie.batch.TidsserieBackendService;
 import no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast.FileTemplate;
+import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
+import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArgumentsFactory.InvalidParameterException;
+import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArgumentsFactory.UsageRequestedException;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
-import no.spk.pensjon.faktura.tidsserie.storage.main.BatchId;
-import no.spk.pensjon.faktura.tidsserie.storage.main.GrunnlagsdataException;
-import no.spk.pensjon.faktura.tidsserie.storage.main.Main;
-import no.spk.pensjon.faktura.tidsserie.storage.main.Oppryddingsstatus;
-import no.spk.pensjon.faktura.tidsserie.storage.main.input.ProgramArguments;
-import no.spk.pensjon.faktura.tidsserie.storage.main.input.ProgramArgumentsFactory.InvalidParameterException;
-import no.spk.pensjon.faktura.tidsserie.storage.main.input.ProgramArgumentsFactory.UsageRequestedException;
 
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -32,9 +31,9 @@ import org.slf4j.MDC;
  * @author Tarjei Skorgenes
  */
 public class ApplicationController {
-    private static final int EXIT_SUCCESS = 0;
-    private static final int EXIT_ERROR = 1;
-    private static final int EXIT_WARNING = 2;
+    static final int EXIT_SUCCESS = 0;
+    static final int EXIT_ERROR = 1;
+    static final int EXIT_WARNING = 2;
 
     private Optional<Oppryddingsstatus> opprydding = Optional.empty();
 
@@ -45,7 +44,11 @@ public class ApplicationController {
      *
      * @see System#out
      */
-    private final View view = new ConsoleView();
+    private final View view;
+
+    public ApplicationController(View view) {
+        this.view = view;
+    }
 
     public void initialiserLogging(final BatchId id, final Path utKatalog) {
         System.setProperty("batchKatalog", id.tilArbeidskatalog(utKatalog).toString());
@@ -56,11 +59,18 @@ public class ApplicationController {
         view.informerOmOppstart(argumenter);
     }
 
-    public void informerOmOppryddingStartet() {
-        view.informerOmOppryddingStartet();
+    public void validerGrunnlagsdata(GrunnlagsdataDirectoryValidator validator){
+        view.informerOmGrunnlagsdataValidering();
+        validator.validate();
     }
 
-    public void informerOmOpprydding(final Oppryddingsstatus status) {
+    public void ryddOpp(BatchDirectoryCleaner directoryCleaner) {
+        view.informerOmOppryddingStartet();
+        Oppryddingsstatus oppryddingsstatus = directoryCleaner.deleteAllPreviousBatches();
+        informerOmOpprydding(oppryddingsstatus);
+    }
+
+    private void informerOmOpprydding(final Oppryddingsstatus status) {
         this.opprydding = of(requireNonNull(status));
         if (!status.isSuccessful()) {
             view.informerOmUslettbareArbeidskatalogar(status);
@@ -84,7 +94,6 @@ public class ApplicationController {
 
     public void informerOmUkjentFeil(final Exception e) {
         view.informerOmUkjentFeil();
-        e.printStackTrace();
         LoggerFactory.getLogger(Main.class).error("Exeption i main", e);
         markerSomFeilet();
     }
@@ -97,7 +106,7 @@ public class ApplicationController {
     public int exitCode() {
         switch (exitCode) {
             case EXIT_SUCCESS:
-                return !opprydding().isSuccessful() ? EXIT_WARNING : EXIT_SUCCESS;
+                return !opprydding.orElseGet(Oppryddingsstatus::new).isSuccessful() ? EXIT_WARNING : EXIT_SUCCESS;
             case EXIT_WARNING:
             case EXIT_ERROR:
                 return exitCode;
@@ -114,28 +123,31 @@ public class ApplicationController {
         exitCode = EXIT_ERROR;
     }
 
-    private Oppryddingsstatus opprydding() {
-        return opprydding
-                .orElseThrow(() -> new IllegalStateException("Programmeringsfeil, opprydding av gamle kjøringer mangler"));
-    }
-
-    public void startarBackend() {
+    public void startBackend(TidsserieBackendService backend) {
         view.startarBackend();
+        backend.start();
     }
 
-    public void startarOpplasting() {
+    public void lastOpp(GrunnlagsdataService overfoering) throws IOException{
         view.startarOpplasting();
-    }
-
-    public void opplastingFullfoert() {
+        overfoering.lastOpp();
         view.opplastingFullfoert();
     }
 
-    public void startarTidsseriegenerering(FileTemplate malFilnavn, Aarstall fraOgMed, Aarstall tilOgMed) {
-        view.startarTidsseriegenerering(malFilnavn, fraOgMed, tilOgMed);
-    }
-
-    public void tidsseriegenereringFullfoert(Map<String, Integer> meldingar) {
+    public void lagTidsserie(TidsserieBackendService backend, FileTemplate malFilnavn, Aarstall fraOgMed, Aarstall tilOgMed) {
+        view.startarTidsseriegenerering(malFilnavn, fraOgMed, tilOgMed);;
+        Map<String, Integer> meldingar = backend.lagTidsseriePaaStillingsforholdNivaa(
+                malFilnavn,
+                fraOgMed,
+                tilOgMed
+        );
         view.tidsseriegenereringFullfoert(meldingar);
     }
+
+    public void opprettMetadata(MetaDataWriter metaDataWriter, ProgramArguments arguments, BatchId batchId) {
+        view.informerOmMetadataOppretting();
+        metaDataWriter.createMetadataFile(arguments, batchId);
+        metaDataWriter.createChecksumFile();
+    }
+
 }
