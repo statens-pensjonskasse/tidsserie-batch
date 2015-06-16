@@ -50,43 +50,45 @@ public class CSVInput implements GrunnlagsdataRepository {
         oversettere.add(new AvtaleproduktOversetter());
     }
 
-    @Override
-    public Stream<String> medlemsdata() throws IOException {
-        return openReader(medlemsdataFil())
-                .lines()
-                .filter(this::erGrunnlagsdatalinje)
-                ;
+    /**
+     * Legger til <code>oversetter</code> som en av oversettarane som blir forsøkt brukt ved konvertering av linjer
+     * frå referansedata-filer til tidsperioder.
+     *
+     * @param oversetter ein ny oversetter
+     * @return <code>this</code>
+     */
+    CSVInput addOversettere(final CsvOversetter<?> oversetter) {
+        this.oversettere.add(oversetter);
+        return this;
     }
 
     @Override
-    public Stream<Tidsperiode<?>> referansedata() throws IOException {
-        return referansedataFiler()
-                .flatMap(path -> {
-                    try {
-                        // TODO: Verifisere at/om readerane her faktisk blir lukka automatisk når streamen blir closa
-                        // TODO: Når blir streamen egentli closa, skjer det når kvar terminal-operation blir fullført?
-                        final BufferedReader reader = openReader(path);
-                        return reader.lines();
-                    } catch (final IOException e) {
-                        throw new UncheckedIOException(e);
-                    }
-                })
-                .filter(this::erGrunnlagsdatalinje)
-                .map(line -> line.split(";"))
-                .map(Arrays::asList)
-                .flatMap(this::oversettLinje);
+    public Stream<String> medlemsdata() {
+        return readLinesFrom(medlemsdataFil());
+    }
+
+    @Override
+    public Stream<Tidsperiode<?>> referansedata() {
+        try {
+            return referansedataFiler()
+                    .flatMap(this::readLinesFrom)
+                    .map(line -> line.split(";"))
+                    .map(Arrays::asList)
+                    .flatMap(this::oversettLinje);
+        } catch (final IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    Stream<Path> referansedataFiler() throws IOException {
+        return Files
+                .list(directory)
+                .filter(path -> path.toString().endsWith("csv.gz"))
+                .filter(path -> !path.toString().endsWith("medlemsdata.csv.gz"));
     }
 
     private Path medlemsdataFil() {
         return Paths.get(directory.toString(), "medlemsdata.csv.gz");
-    }
-
-    private Stream<Path> referansedataFiler() throws IOException {
-        return Files
-                .list(directory)
-                .filter(path -> path.toString().endsWith("csv.gz"))
-                .filter(path -> !path.toString().startsWith("medlemsdata"))
-                .filter(path -> !path.toString().startsWith("underlagsperiode"));
     }
 
     private Stream<? extends Tidsperiode<?>> oversettLinje(final List<String> linje) {
@@ -98,6 +100,18 @@ public class CSVInput implements GrunnlagsdataRepository {
                 .filter(oversetter -> oversetter.supports(linje))
                         // TODO: Burde vi ha en reduce som verifiserer at det kun er ein oversetter som støttar linja?
                 .map(mapper);
+    }
+
+    private Stream<String> readLinesFrom(final Path fil) {
+        try {
+            final BufferedReader reader = openReader(fil);
+            return reader
+                    .lines()
+                    .onClose(closeOnCompletion(reader))
+                    .filter(this::erGrunnlagsdatalinje);
+        } catch (final IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
     private boolean erGrunnlagsdatalinje(String line) {
@@ -121,5 +135,15 @@ public class CSVInput implements GrunnlagsdataRepository {
                         dataencoding
                 )
         );
+    }
+
+    private Runnable closeOnCompletion(final BufferedReader reader) {
+        return () -> {
+            try {
+                reader.close();
+            } catch (final IOException e) {
+                throw new UncheckedIOException(e);
+            }
+        };
     }
 }
