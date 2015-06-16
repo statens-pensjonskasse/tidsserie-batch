@@ -13,6 +13,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 
@@ -88,11 +90,14 @@ public class CSVInput implements GrunnlagsdataRepository {
     }
 
     private Stream<? extends Tidsperiode<?>> oversettLinje(final List<String> linje) {
+        // Kan ikkje inlinast i 1.8.0_11 på grunn av type-inference feil ved kompilering
+        final Function<CsvOversetter<? extends Tidsperiode<?>>, ? extends Tidsperiode<?>> mapper =
+                oversetter -> oversetter.oversett(linje);
         return oversettere
                 .stream()
                 .filter(oversetter -> oversetter.supports(linje))
                         // TODO: Burde vi ha en reduce som verifiserer at det kun er ein oversetter som støttar linja?
-                .map(oversetter -> oversetter.oversett(linje));
+                .map(mapper);
     }
 
     private boolean erGrunnlagsdatalinje(String line) {
