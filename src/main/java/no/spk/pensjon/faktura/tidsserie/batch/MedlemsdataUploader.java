@@ -35,5 +35,5 @@ public interface MedlemsdataUploader {
      *
      * @param service tjenesta som gir backenden tilgang til referansedatane
      */
-    void registrer(ReferansedataService service);
+    void registrer(TidsserieFactory service);
 }

@@ -1,5 +1,7 @@
 package no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast;
 
+import static java.util.stream.Stream.concat;
+
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.util.List;
@@ -9,14 +11,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
-import no.spk.pensjon.faktura.tidsserie.batch.ReferansedataService;
-import no.spk.pensjon.faktura.tidsserie.batch.Tidsserieobservasjonsgenerator;
+import no.spk.pensjon.faktura.tidsserie.batch.TidsserieFactory;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Aarsverk;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Premiestatus;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Prosent;
-import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medlemsdata;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.PrognoseRegelsett;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Feilhandtering;
+import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieObservasjon;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 import no.spk.pensjon.faktura.tidsserie.storage.disruptor.LmaxDisruptorPublisher;
@@ -35,9 +36,8 @@ class GenererTidsseriePrStillingsforholdOgAar implements LifecycleMapper<String,
 
     private transient LmaxDisruptorPublisher publisher;
     private transient ExecutorService executor;
-    private transient Tidsserieobservasjonsgenerator generator;
     private transient NumberFormat format;
-    private ReferansedataService grunnlagsdata;
+    private transient TidsserieFactory grunnlagsdata;
 
     GenererTidsseriePrStillingsforholdOgAar(final FileTemplate destination, final LocalDate foerstedato, LocalDate sistedato) {
         this.fileTemplate = destination;
@@ -47,14 +47,8 @@ class GenererTidsseriePrStillingsforholdOgAar implements LifecycleMapper<String,
 
     @Override
     public void setHazelcastInstance(final HazelcastInstance hazelcast) {
-        grunnlagsdata = (ReferansedataService) hazelcast.getUserContext().get(ReferansedataService.class.getSimpleName());
-        if (generator == null) {
-            // TODO: Horribel sjite i den her, alle eksterne datasett og tjenester bør trulig gjerast tilgjengelig
-            // via user contexten til hazelcastinstansen.
-            generator = new Tidsserieobservasjonsgenerator();
-            generator.registrer(grunnlagsdata.loennsdata());
-            generator.overstyr(grunnlagsdata::finn);
-
+        grunnlagsdata = (TidsserieFactory) hazelcast.getUserContext().get(TidsserieFactory.class.getSimpleName());
+        if (format == null) {
             format = NumberFormat.getNumberInstance(Locale.ENGLISH);
             format.setMaximumFractionDigits(3);
             format.setMinimumFractionDigits(1);
@@ -89,7 +83,12 @@ class GenererTidsseriePrStillingsforholdOgAar implements LifecycleMapper<String,
     @Override
     public void map(final String key, final List<List<String>> value, final Context<String, Integer> context) {
         final Logger log = LoggerFactory.getLogger(getClass());
+
+        final TidsserieFacade tidsserie = grunnlagsdata.create(
+                lagFeilhandteringForMedlem(key, context, log)
+        );
         context.emit("medlem", 1);
+
         try {
             final Consumer<TidsserieObservasjon> publikator = o -> {
                 context.emit("observasjon", 1);
@@ -116,12 +115,14 @@ class GenererTidsseriePrStillingsforholdOgAar implements LifecycleMapper<String,
                             .append('\n');
                 });
             };
-            generator.generer(
-                    new Medlemsdata(value, grunnlagsdata.medlemsdataOversettere()),
+            tidsserie.generer(
+                    grunnlagsdata.create(key, value),
                     new Observasjonsperiode(foerstedato, sistedato),
-                    generator.lagObservasjonsaggregatorPrStillingsforholdOgAvtale(publikator),
-                    lagFeilhandteringForMedlem(key, context, log),
-                    new PrognoseRegelsett()
+                    tidsserie.lagObservasjonsaggregatorPrStillingsforholdOgAvtale(publikator),
+                    concat(
+                            new PrognoseRegelsett().reglar(),
+                            grunnlagsdata.loennsdata()
+                    )
             );
         } catch (final RuntimeException | Error e) {
             log.warn("Periodisering av medlem {} feila: {} (endringar = {})", key, e.getMessage(), value);

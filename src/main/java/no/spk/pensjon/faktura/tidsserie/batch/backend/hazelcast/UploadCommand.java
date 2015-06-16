@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 import no.spk.pensjon.faktura.tidsserie.batch.Foedselsnummer;
 import no.spk.pensjon.faktura.tidsserie.batch.Medlemslinje;
 import no.spk.pensjon.faktura.tidsserie.batch.MedlemsdataUploader;
-import no.spk.pensjon.faktura.tidsserie.batch.ReferansedataService;
+import no.spk.pensjon.faktura.tidsserie.batch.TidsserieFactory;
 
 import com.hazelcast.core.IMap;
 
@@ -45,7 +45,7 @@ class UploadCommand implements MedlemsdataUploader {
     }
 
     @Override
-    public void registrer(final ReferansedataService service) {
+    public void registrer(final TidsserieFactory service) {
         server.registrer(service);
     }
 }

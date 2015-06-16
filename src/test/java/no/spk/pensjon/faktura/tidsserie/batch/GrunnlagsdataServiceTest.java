@@ -14,12 +14,14 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.TemporaryFolderWithDeleteVerification;
-import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleversjon;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Avtalekoblingsperiode;
+import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medlemsdata;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medregningsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Stillingsendring;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.GenerellTidsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Tidsperiode;
+import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Feilhandtering;
+import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade;
 
 import org.junit.Before;
 import org.junit.Rule;

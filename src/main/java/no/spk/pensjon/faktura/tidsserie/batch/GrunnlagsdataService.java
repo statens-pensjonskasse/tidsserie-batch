@@ -22,21 +22,29 @@ import no.spk.pensjon.faktura.tidsserie.domain.loennsdata.Loennstrinnperioder;
 import no.spk.pensjon.faktura.tidsserie.domain.loennsdata.Omregningsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.loennsdata.StatligLoennstrinnperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Avtalekoblingsperiode;
+import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medlemsdata;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.MedlemsdataOversetter;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medregningsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Stillingsendring;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Tidsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.AvtaleinformasjonRepository;
+import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Feilhandtering;
+import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.AvtalekoblingOversetter;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.MedregningsOversetter;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.StillingsendringOversetter;
 
 /**
- * Grunnlagsdata
+ * {@link no.spk.pensjon.faktura.tidsserie.batch.GrunnlagsdataService} opptrer som bindeledd mellom
+ * beregningsbackenden og grunnlagsdatane frå flate filer på disk.
+ * <br>
+ * Via denne tenesta kan CSV-formaterte grunnlagsdata generert av faktura-grunnlagsdata-batch bli lest inn frå disk
+ * og lastast opp til beregningsbackenden. I tillegg kan beregningsbackenden hente ut avtale- og medlemsuavhengige
+ * lønnsdata ved oppstart av tidsseriegenereringa.
  *
  * @author Tarjei Skorgenes
  */
-public class GrunnlagsdataService implements ReferansedataService {
+public class GrunnlagsdataService implements TidsserieFactory {
     private final Map<Class<?>, List<Tidsperiode<?>>> perioder = new HashMap<>();
 
     private final Map<AvtaleId, List<Avtalerelatertperiode<?>>> avtalar = new HashMap<>();
@@ -58,45 +66,28 @@ public class GrunnlagsdataService implements ReferansedataService {
         this.input = requireNonNull(repository, "inputfiler er påkrevd, men var null");
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public Map<Class<?>, MedlemsdataOversetter<?>> medlemsdataOversettere() {
-        final Map<Class<?>, MedlemsdataOversetter<?>> oversettere = new HashMap<>();
-        oversettere.put(Stillingsendring.class, new StillingsendringOversetter());
-        oversettere.put(Avtalekoblingsperiode.class, new AvtalekoblingOversetter());
-        oversettere.put(Medregningsperiode.class, new MedregningsOversetter());
-        return oversettere;
+    public TidsserieFacade create(final Feilhandtering feilhandtering) {
+        final TidsserieFacade fasade = new TidsserieFacade();
+        fasade.overstyr(this::finn);
+        fasade.overstyr(requireNonNull(feilhandtering, "feilhandteringsstrategi er påkrevd, men var null"));
+        return fasade;
     }
 
-    /**
-     * Hentar ut alle tidsperiodiserte lønnsdata som ikkje er medlemsspesifikke.
-     *
-     * @return alle lønnsdata
-     * @see Omregningsperiode
-     * @see Loennstrinnperioder
-     */
+    @Override
+    public Medlemsdata create(final String foedselsnummer, final List<List<String>> data) {
+        return new Medlemsdata(
+                requireNonNull(data, "medlemsdata er påkrevd, men var null"),
+                medlemsdataOversettere()
+        );
+    }
+
     @Override
     public Stream<Tidsperiode<?>> loennsdata() {
         return Stream.concat(
                 perioderAvType(Loennstrinnperioder.class),
                 perioderAvType(Omregningsperiode.class)
         );
-    }
-
-    /**
-     * Hent ut alle avtaledata for avtalen.
-     *
-     * @param avtale avtalen som avtaledata skal hentast ut for
-     * @return alle tidsperiodiserte avtaledata som er tilknytta avtalen i grunnlagsdatane
-     * @see AvtaleinformasjonRepository
-     * @see Avtaleversjon
-     * @see Avtaleprodukt
-     */
-    @Override
-    public Stream<Tidsperiode<?>> finn(final AvtaleId avtale) {
-        return avtalar.getOrDefault(avtale, emptyList()).stream().map((Tidsperiode<?> p) -> p);
     }
 
     /**
@@ -136,6 +127,26 @@ public class GrunnlagsdataService implements ReferansedataService {
         avtalar.putAll(grupperAvtaleperioder());
     }
 
+    Map<Class<?>, MedlemsdataOversetter<?>> medlemsdataOversettere() {
+        final Map<Class<?>, MedlemsdataOversetter<?>> oversettere = new HashMap<>();
+        oversettere.put(Stillingsendring.class, new StillingsendringOversetter());
+        oversettere.put(Avtalekoblingsperiode.class, new AvtalekoblingOversetter());
+        oversettere.put(Medregningsperiode.class, new MedregningsOversetter());
+        return oversettere;
+    }
+
+    /**
+     * Hent ut alle avtaledata for avtalen.
+     *
+     * @param avtale avtalen som avtaledata skal hentast ut for
+     * @return alle tidsperiodiserte avtaledata som er tilknytta avtalen i grunnlagsdatane
+     * @see AvtaleinformasjonRepository
+     * @see Avtaleversjon
+     * @see Avtaleprodukt
+     */
+    private Stream<Tidsperiode<?>> finn(final AvtaleId avtale) {
+        return avtalar.getOrDefault(avtale, emptyList()).stream().map((Tidsperiode<?> p) -> p);
+    }
 
     private Map<AvtaleId, List<Avtalerelatertperiode<?>>> grupperAvtaleperioder() {
         final Stream<Avtaleversjon> versjoner = perioderAvType(Avtaleversjon.class);

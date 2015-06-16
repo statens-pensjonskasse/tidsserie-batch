@@ -8,7 +8,7 @@ import static java.util.stream.Collectors.toSet;
 import java.util.Set;
 import java.util.stream.IntStream;
 
-import no.spk.pensjon.faktura.tidsserie.batch.ReferansedataService;
+import no.spk.pensjon.faktura.tidsserie.batch.TidsserieFactory;
 
 import com.hazelcast.config.Config;
 import com.hazelcast.config.EvictionPolicy;
@@ -70,8 +70,8 @@ class Server {
         );
     }
 
-    public void registrer(final ReferansedataService service) {
-        String key = ReferansedataService.class.getSimpleName();
+    public void registrer(final TidsserieFactory service) {
+        String key = TidsserieFactory.class.getSimpleName();
         master.getUserContext().put(key, service);
         slavar.forEach(slave -> slave.getUserContext().put(key, service));
     }
