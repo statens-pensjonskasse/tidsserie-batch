@@ -4,9 +4,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>no.spk.felles</groupId>
-        <artifactId>felles-super-pom</artifactId>
-        <version>100.0.2</version>
+        <artifactId>spk-root-pom</artifactId>
+        <groupId>no.spk</groupId>
+        <version>105</version>
     </parent>
 
     <groupId>no.spk.pensjon.faktura</groupId>
