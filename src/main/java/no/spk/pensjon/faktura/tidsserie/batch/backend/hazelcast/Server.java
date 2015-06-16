@@ -63,11 +63,6 @@ class Server {
     }
 
     private static HazelcastInstance startInstance(final Config config, final int instanceNr) {
-        try {
-            Thread.sleep(250);
-        } catch (InterruptedException e) {
-        }
-
         return newHazelcastInstance(
                 config,
                 "faktura-prognose-tidsserie-" + instanceNr,
