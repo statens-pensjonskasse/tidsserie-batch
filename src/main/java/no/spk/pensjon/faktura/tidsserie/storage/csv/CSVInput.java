@@ -78,6 +78,19 @@ public class CSVInput implements GrunnlagsdataRepository {
         }
     }
 
+    /**
+     * Returnerer stien til alle CSV-filer som inneheld referansedata som ikkje er
+     * medlemsspesifikke.
+     * <br>
+     * Referansedatafiler blir plukka basert på at dei har filending <code>csv.gz</code> og ikkje
+     * har filnavn medlemsdata.csv.gz.
+     * <br>
+     * NB: Straumen må lukkast etter bruk for å unngå ressurslekkasjar via {@link java.nio.file.DirectoryStream}en
+     * som blir brukt for å liste ut filene.
+     *
+     * @return ein straum med stien til alle referansedatafiler generert av faktura-grunnlagsdata-batch
+     * @throws IOException dersom ein uvent I/O-feil oppstår under utlisting av filene
+     */
     Stream<Path> referansedataFiler() throws IOException {
         return Files
                 .list(directory)
