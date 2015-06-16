@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
 import java.util.zip.GZIPOutputStream;
@@ -94,11 +95,13 @@ public class CSVInputTest {
      */
     @Test
     public void skalEkskludereMedlemsdataFraReferansedataFilListe() throws IOException {
-        assertThat(
-                fixture.referansedataFiler()
-                        .map(path -> path.getFileName().toString())
-                        .collect(toList())
-        ).doesNotContain("medlemsdata.csv.gz");
+        try (final Stream<Path> referansedatafiler = fixture.referansedataFiler()) {
+            assertThat(
+                    referansedatafiler
+                            .map(path -> path.getFileName().toString())
+                            .collect(toList())
+            ).doesNotContain("medlemsdata.csv.gz");
+        }
     }
 
     private File newTemporaryFile(final String filename) throws IOException {

@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
@@ -40,8 +41,8 @@ public class GrunnlagsdataDirectoryValidator {
     }
 
     private Map<String, String> mapFilenamesToChecksums(Path checksumsFile) {
-        try {
-            return Files.lines(checksumsFile, Charset.forName("cp1252"))
+        try (final Stream<String> lines = Files.lines(checksumsFile, Charset.forName("cp1252"))) {
+            return lines
                     .map(s -> s.split(" \\*"))
                     .map(s -> require(s, v -> v.length == 2, v -> new GrunnlagsdataException(MD5_CHECKSUMS_FILENAME + " er korrupt.")))
                     .collect(Collectors.toMap(s -> s[1], s -> s[0]));

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.TemporaryFolderWithDeleteVerification;
 
@@ -31,12 +32,17 @@ public class BatchDirectoryCleanerTest {
         path.resolve("tidsserie_2015-01-01_01-00-00-01").toFile().mkdir();
         path.resolve(doNotDeleteFilename).toFile().createNewFile();
 
-        assertThat(Files.list(path).count()).isEqualTo(3);
+        try (final Stream<Path> list = Files.list(path)) {
+            assertThat(list.count()).isEqualTo(3);
+        }
 
         new BatchDirectoryCleaner(path).deleteAllPreviousBatches();
 
-        assertThat(Files.list(path).count()).isEqualTo(1);
-        assertThat(Files.list(path).findFirst().get().toFile().getName()).isEqualTo(doNotDeleteFilename);
-
+        try (final Stream<Path> list = Files.list(path)) {
+            assertThat(list.count()).isEqualTo(1);
+        }
+        try (final Stream<Path> list = Files.list(path)) {
+            assertThat(list.findFirst().get().toFile().getName()).isEqualTo(doNotDeleteFilename);
+        }
     }
 }

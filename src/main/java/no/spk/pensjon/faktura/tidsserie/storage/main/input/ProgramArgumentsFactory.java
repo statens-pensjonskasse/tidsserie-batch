@@ -5,9 +5,9 @@ import static java.util.Collections.reverseOrder;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Comparator;
 import java.util.Optional;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.storage.main.BatchIdMatcher;
 
@@ -75,10 +75,10 @@ public final class ProgramArgumentsFactory {
     }
 
     private static void setDefaultBatchId(ProgramArguments arguments) {
-        Pattern pattern = BatchIdMatcher.createBatchIdPattern("grunnlagsdata_");
-        try {
-            Path innkatalog = arguments.getInnkatalog();
-            Optional<String> newestBatchFolder = Files.list(innkatalog)
+        final Pattern pattern = BatchIdMatcher.createBatchIdPattern("grunnlagsdata_");
+        final Path innkatalog = arguments.getInnkatalog();
+        try (final Stream<Path> list = Files.list(innkatalog)) {
+            Optional<String> newestBatchFolder = list
                     .map(f -> f.toFile().getName())
                     .filter(n -> pattern.matcher(n).matches())
                     .sorted(reverseOrder())
