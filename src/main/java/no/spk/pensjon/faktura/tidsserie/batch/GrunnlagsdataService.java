@@ -21,8 +21,15 @@ import no.spk.pensjon.faktura.tidsserie.domain.loennsdata.Loennstrinnperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.loennsdata.Loennstrinnperioder;
 import no.spk.pensjon.faktura.tidsserie.domain.loennsdata.Omregningsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.loennsdata.StatligLoennstrinnperiode;
+import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Avtalekoblingsperiode;
+import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.MedlemsdataOversetter;
+import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medregningsperiode;
+import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Stillingsendring;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Tidsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.AvtaleinformasjonRepository;
+import no.spk.pensjon.faktura.tidsserie.storage.csv.AvtalekoblingOversetter;
+import no.spk.pensjon.faktura.tidsserie.storage.csv.MedregningsOversetter;
+import no.spk.pensjon.faktura.tidsserie.storage.csv.StillingsendringOversetter;
 
 /**
  * Grunnlagsdata
@@ -49,6 +56,18 @@ public class GrunnlagsdataService implements ReferansedataService {
     public GrunnlagsdataService(final TidsserieBackendService backend, final GrunnlagsdataRepository repository) {
         this.backend = requireNonNull(backend, "backend er påkrevd, men var null");
         this.input = requireNonNull(repository, "inputfiler er påkrevd, men var null");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<Class<?>, MedlemsdataOversetter<?>> medlemsdataOversettere() {
+        final Map<Class<?>, MedlemsdataOversetter<?>> oversettere = new HashMap<>();
+        oversettere.put(Stillingsendring.class, new StillingsendringOversetter());
+        oversettere.put(Avtalekoblingsperiode.class, new AvtalekoblingOversetter());
+        oversettere.put(Medregningsperiode.class, new MedregningsOversetter());
+        return oversettere;
     }
 
     /**

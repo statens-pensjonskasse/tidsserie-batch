@@ -14,6 +14,10 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.TemporaryFolderWithDeleteVerification;
+import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleversjon;
+import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Avtalekoblingsperiode;
+import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medregningsperiode;
+import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Stillingsendring;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.GenerellTidsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Tidsperiode;
 
@@ -52,6 +56,12 @@ public class GrunnlagsdataServiceTest {
         when(repository.medlemsdata()).thenReturn(Stream.<List<String>>empty());
         when(repository.referansedata()).thenReturn(Stream.empty());
         when(backend.uploader()).thenReturn(uploader);
+    }
+
+    @Test
+    public void skalHaMedlemsdataOversetterForAlleStoettaMedlemsdatatyper() {
+        assertThat(service.medlemsdataOversettere())
+                .containsKeys(Stillingsendring.class, Avtalekoblingsperiode.class, Medregningsperiode.class);
     }
 
     /**
