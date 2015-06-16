@@ -6,9 +6,7 @@ import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 import no.spk.pensjon.faktura.tidsserie.batch.TidsserieFactory;
@@ -25,59 +23,39 @@ import no.spk.pensjon.faktura.tidsserie.storage.disruptor.LmaxDisruptorPublisher
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.HazelcastInstanceAware;
 import com.hazelcast.mapreduce.Context;
-import com.hazelcast.mapreduce.LifecycleMapper;
+import com.hazelcast.mapreduce.LifecycleMapperAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class GenererTidsseriePrStillingsforholdOgAar implements LifecycleMapper<String, List<List<String>>, String, Integer>, HazelcastInstanceAware {
-    private final FileTemplate fileTemplate;
+class GenererTidsseriePrStillingsforholdOgAar
+        extends LifecycleMapperAdapter<String, List<List<String>>, String, Integer> implements HazelcastInstanceAware {
     private final LocalDate foerstedato;
     private final LocalDate sistedato;
 
     private transient LmaxDisruptorPublisher publisher;
-    private transient ExecutorService executor;
-    private transient NumberFormat format;
     private transient TidsserieFactory grunnlagsdata;
+    private transient NumberFormat format;
 
-    GenererTidsseriePrStillingsforholdOgAar(final FileTemplate destination, final LocalDate foerstedato, LocalDate sistedato) {
-        this.fileTemplate = destination;
+    GenererTidsseriePrStillingsforholdOgAar(final LocalDate foerstedato, final LocalDate sistedato) {
         this.foerstedato = foerstedato;
         this.sistedato = sistedato;
     }
 
     @Override
     public void setHazelcastInstance(final HazelcastInstance hazelcast) {
-        grunnlagsdata = (TidsserieFactory) hazelcast.getUserContext().get(TidsserieFactory.class.getSimpleName());
+        this.grunnlagsdata = (TidsserieFactory) hazelcast.getUserContext().get(TidsserieFactory.class.getSimpleName());
+        this.publisher = (LmaxDisruptorPublisher) hazelcast.getUserContext().get(LmaxDisruptorPublisher.class.getSimpleName());
         if (format == null) {
             format = NumberFormat.getNumberInstance(Locale.ENGLISH);
             format.setMaximumFractionDigits(3);
             format.setMinimumFractionDigits(1);
         }
-        executor = (ExecutorService) hazelcast
-                .getUserContext()
-                .computeIfAbsent(
-                        Executor.class.getSimpleName(),
-                        c -> Executors.newCachedThreadPool(
-                                r -> new Thread(r, "lmax-disruptor-" + System.currentTimeMillis())
-                        )
-                );
     }
 
-    @Override
-    public void initialize(final Context<String, Integer> context) {
-        // TODO: Uøndvendig gitt at ein kan sende inn ein lmax disruptor pr hazelcast-node/instans via user contexten
-        // Alternativt bruk kun ein disruptor pr JVM og la den sjølv skrive til ei stor fil, eller splitte i mindre
-        // filer basert på maksimalt ønska antall medlemmar pr fil or something like that
-        publisher = new LmaxDisruptorPublisher(executor, fileTemplate);
-        publisher.start();
-        publisher.publiser(builder -> {
+    public void publishHeader(final LmaxDisruptorPublisher lager) {
+        lager.publiser(builder -> {
             builder.append("avtaleId;stillingsforholdId;observasjonsdato;maskinelt_grunnlag;premiestatus;årsverk;personnummer\n");
         });
-    }
-
-    @Override
-    public void finalized(final Context<String, Integer> context) {
-        publisher.stop();
     }
 
     @Override

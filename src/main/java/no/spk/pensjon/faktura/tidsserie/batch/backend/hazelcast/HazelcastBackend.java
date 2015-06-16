@@ -3,15 +3,18 @@ package no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
+import static java.util.concurrent.Executors.newCachedThreadPool;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 
 import no.spk.pensjon.faktura.tidsserie.batch.MedlemsdataUploader;
 import no.spk.pensjon.faktura.tidsserie.batch.TidsserieBackendService;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
+import no.spk.pensjon.faktura.tidsserie.storage.disruptor.LmaxDisruptorPublisher;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IMap;
@@ -71,18 +74,31 @@ public class HazelcastBackend implements TidsserieBackendService {
     @Override
     public Map<String, Integer> lagTidsseriePaaStillingsforholdNivaa(
             final FileTemplate outputFiles, final Aarstall fraOgMed, final Aarstall tilOgMed) {
-        return submit(
-                new GenererTidsseriePrStillingsforholdOgAar(
-                        outputFiles,
-                        fraOgMed.atStartOfYear(),
-                        tilOgMed.atEndOfYear()
-                )
+        final ExecutorService executors = newCachedThreadPool(
+                r -> new Thread(r, "lmax-disruptor-" + System.currentTimeMillis())
         );
+        try (final LmaxDisruptorPublisher lager = openDisruptor(executors, outputFiles)) {
+            final GenererTidsseriePrStillingsforholdOgAar mapper = new GenererTidsseriePrStillingsforholdOgAar(
+                    fraOgMed.atStartOfYear(),
+                    tilOgMed.atEndOfYear()
+            );
+            mapper.publishHeader(lager);
+            return submit(mapper);
+        } finally {
+            executors.shutdown();
+        }
     }
 
     @Override
     public <T> void registrer(final Class<T> serviceType, final T service) {
         server.registrer(serviceType, service);
+    }
+
+    private LmaxDisruptorPublisher openDisruptor(final ExecutorService executors, final FileTemplate fileTemplate) {
+        final LmaxDisruptorPublisher publisher = new LmaxDisruptorPublisher(executors, fileTemplate);
+        publisher.start();
+        registrer(LmaxDisruptorPublisher.class, publisher);
+        return publisher;
     }
 
     private Map<String, Integer> submit(

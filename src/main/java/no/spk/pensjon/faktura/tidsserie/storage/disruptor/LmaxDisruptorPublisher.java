@@ -4,6 +4,7 @@ import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
 import org.slf4j.LoggerFactory;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
@@ -11,7 +12,7 @@ import java.util.function.Consumer;
 
 import no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast.FileTemplate;
 
-public class LmaxDisruptorPublisher {
+public class LmaxDisruptorPublisher implements Closeable {
     private final ExecutorService executor;
     private final FileTemplate fileTemplate;
 
@@ -44,6 +45,11 @@ public class LmaxDisruptorPublisher {
         disruptor.start();
 
         ringBuffer = disruptor.getRingBuffer();
+    }
+
+    @Override
+    public void close() {
+        stop();
     }
 
     public void stop() {
