@@ -12,7 +12,7 @@ import no.spk.pensjon.faktura.tidsserie.batch.MetaDataWriter;
 import no.spk.pensjon.faktura.tidsserie.batch.TidsserieBackendService;
 import no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast.FileTemplate;
 import no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast.HazelcastBackend;
-import no.spk.pensjon.faktura.tidsserie.batch.main.View;
+import no.spk.pensjon.faktura.tidsserie.batch.main.ApplicationController;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.CSVInput;
 import no.spk.pensjon.faktura.tidsserie.storage.main.input.ProgramArguments;
@@ -39,77 +39,80 @@ public class Main {
 
     private final GrunnlagsdataService overfoering;
 
-    private int exitCode = 0;
-
     Main(final TidsserieBackendService backend, final GrunnlagsdataService overfoering) {
         this.backend = backend;
         this.overfoering = overfoering;
     }
 
     public static void main(String[] args) throws IOException {
-        final View view = new View();
+        final ApplicationController controller = new ApplicationController();
 
         try {
-            ProgramArguments programArguments = ProgramArgumentsFactory.create(args);
-            view.informerOmOppstart(programArguments);
+            ProgramArguments arguments = ProgramArgumentsFactory.create(args);
+
+            final BatchId batchId = new BatchId(LocalDateTime.now());
+            controller.initialiserLogging(batchId, arguments.getUtkatalog());
+            controller.informerOmOppstart(arguments);
+
+            new GrunnlagsdataDirectoryValidator(arguments.getGrunnlagsdataBatchKatalog()).validate();
+
+            controller.informerOmOppryddingStartet();
+            Oppryddingsstatus oppryddingsstatus = new BatchDirectoryCleaner(arguments.getUtkatalog(), batchId).deleteAllPreviousBatches();
+            controller.informerOmOpprydding(oppryddingsstatus);
 
             final TidsserieBackendService backend = new HazelcastBackend();
-            final GrunnlagsdataRepository input = new CSVInput(programArguments.getInnkatalog().resolve(programArguments.getGrunnlagsdataBatchId()));
+            final GrunnlagsdataRepository input = new CSVInput(arguments.getInnkatalog().resolve(arguments.getGrunnlagsdataBatchId()));
             final GrunnlagsdataService overfoering = new GrunnlagsdataService(backend, input);
             final Configuration freemarkerConfiguration = createTemplatingConfiguration();
 
-            final BatchId batchId = new BatchId(LocalDateTime.now());
-
-            view.ryddarOppFilerFraaTidligereKjoeringer();
-            new BatchDirectoryCleaner(programArguments.getUtkatalog()).deleteAllPreviousBatches();
-
-            view.verifisererInput();
-            new GrunnlagsdataDirectoryValidator(programArguments.getGrunnlagsdataBatchKatalog()).validate();
-
-            Path batchKatalog = batchId.tilArbeidskatalog(programArguments.getUtkatalog());
+            Path batchKatalog = batchId.tilArbeidskatalog(arguments.getUtkatalog());
             Files.createDirectories(batchKatalog);
 
             final Main main = new Main(backend, overfoering);
 
-            main.run(view,
+            main.run(controller,
                     new FileTemplate(batchKatalog, "output-", ".csv"),
-                    new Aarstall(programArguments.getFraAar()),
-                    new Aarstall(programArguments.getTilAar()));
+                    new Aarstall(arguments.getFraAar()),
+                    new Aarstall(arguments.getTilAar()));
 
             MetaDataWriter metaDataWriter = new MetaDataWriter(freemarkerConfiguration, batchKatalog);
-            metaDataWriter.createMetadataFile(programArguments, batchId);
+            metaDataWriter.createMetadataFile(arguments, batchId);
             metaDataWriter.createChecksumFile();
 
-            System.exit(main.exitCode);
+            controller.informerOmSuksess(batchKatalog);
         } catch (InvalidParameterException e) {
-            view.informerOmUgyldigKommandolinjeArgument(e);
+            controller.informerOmUgyldigeArgumenter(e);
         } catch (UsageRequestedException e) {
-            view.visHjelp(e);
+            controller.informerOmBruk(e);
+        } catch (GrunnlagsdataException e) {
+            controller.informerOmKorrupteGrunnlagsdata(e);
+        }catch (IOException e){
+            controller.informerOmUkjentFeil(e);
+        } catch (final Exception e) {
+            controller.informerOmUkjentFeil(e);
         }
-        System.exit(1);
+
+        System.exit(controller.exitCode());
     }
 
-    private void run(final View view, final FileTemplate malFilnavn, final Aarstall fraOgMed, final Aarstall tilOgMed) {
-        try {
-            view.startarBackend();
-            backend.start();
+    private void run(final ApplicationController controller, final FileTemplate malFilnavn, final Aarstall fraOgMed, final Aarstall tilOgMed) throws IOException {
+        //TODO start timeout timer - refaktorere så vi kan kjøre en timeout-tråd og terminere hele programmet men samtidig logge/rydde opp?
 
-            view.startarOpplasting();
-            overfoering.lastOpp();
-            view.opplastingFullfoert();
+        controller.startarBackend();
+        backend.start();
 
-            view.startarTidsseriegenerering(malFilnavn, fraOgMed, tilOgMed);
-            Map<String, Integer> meldingar = backend.lagTidsseriePaaStillingsforholdNivaa(
-                    malFilnavn,
-                    fraOgMed,
-                    tilOgMed
-            );
+        controller.startarOpplasting();
+        overfoering.lastOpp();
+        controller.opplastingFullfoert();
 
-            view.tidsseriegenereringFullfoert(meldingar);
-        } catch (final Exception e) {
-            view.fatalFeil(e);
-            exitCode = 1;
-        }
+        controller.startarTidsseriegenerering(malFilnavn, fraOgMed, tilOgMed);
+        Map<String, Integer> meldingar = backend.lagTidsseriePaaStillingsforholdNivaa(
+                malFilnavn,
+                fraOgMed,
+                tilOgMed
+        );
+
+        controller.tidsseriegenereringFullfoert(meldingar);
     }
 
     private static Configuration createTemplatingConfiguration() {

@@ -65,6 +65,7 @@ public final class ProgramArgumentsFactory {
                 new PostParseValidation(arguments).validate();
             }
         } catch (final ParameterException exception) {
+            System.out.println(exception.getMessage());
             throw new InvalidParameterException(jCommander, exception);
         }
 

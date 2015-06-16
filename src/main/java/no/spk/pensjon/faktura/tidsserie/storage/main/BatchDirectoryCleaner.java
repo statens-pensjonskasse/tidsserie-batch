@@ -11,6 +11,8 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,14 +35,17 @@ public class BatchDirectoryCleaner {
     private static final Pattern FILENAME_PATTERN = BatchIdMatcher.createBatchIdPattern(BatchId.ID_PREFIX);
 
     private final Path workDirectory;
+    private final BatchId batchId;
 
     /**
      * Oppretter en BatchDirectoryCleaner som skal slette innhold i {@code utKatalog }
      *
      * @param utKatalog rot-katalogen som innholder batchkataloger som skal slettes
+     * @param batchId id for batchen - skal ikke slette arbeidskatalogen for gjeldende kjøring
      */
-    public BatchDirectoryCleaner(Path utKatalog) {
+    public BatchDirectoryCleaner(Path utKatalog, BatchId batchId) {
         this.workDirectory = requireNonNull(utKatalog);
+        this.batchId = batchId;
     }
 
     /**
@@ -54,7 +59,7 @@ public class BatchDirectoryCleaner {
         Path directory = workDirectory;
         logger.info("Sletter alle tidligere batch-kataloger.");
         try {
-            Files.walkFileTree(directory, new BatchDirectoryDeleteVisitor(directory, oppryddingsstatus));
+            Files.walkFileTree(directory, new BatchDirectoryDeleteVisitor(directory, batchId, oppryddingsstatus));
         } catch (IOException e) {
             oppryddingsstatus.addError("walkFileTree feilet", e);
         }
@@ -65,10 +70,12 @@ public class BatchDirectoryCleaner {
     private static class BatchDirectoryDeleteVisitor extends SimpleFileVisitor<Path> {
         private final Path startDirectory;
         private final Oppryddingsstatus oppryddingsstatus;
+        private final List<Path> doNotdelete;
 
-        public BatchDirectoryDeleteVisitor(Path startDirectory, Oppryddingsstatus oppryddingsstatus) {
+        public BatchDirectoryDeleteVisitor(Path startDirectory, BatchId batchId, Oppryddingsstatus oppryddingsstatus) {
             this.startDirectory = startDirectory;
             this.oppryddingsstatus = oppryddingsstatus;
+            doNotdelete = Arrays.asList(startDirectory, batchId.tilArbeidskatalog(startDirectory));
         }
 
         @Override
@@ -107,7 +114,7 @@ public class BatchDirectoryCleaner {
         }
 
         private boolean isDirectoryDeletable(Path dir) {
-            return FILENAME_PATTERN.matcher(dir.toFile().getName()).matches();
+            return !doNotdelete.contains(dir) && FILENAME_PATTERN.matcher(dir.toFile().getName()).matches();
         }
     }
 }

@@ -8,11 +8,26 @@
         </encoder>
     </appender>
 
+    <appender name="batch.file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>debug</level>
+        </filter>
+        <file>${batchKatalog}/batch.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${batchKatalog}/file.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <fieldNames class="net.logstash.logback.fieldnames.ShortenedFieldNames"/>
+        </encoder>
+    </appender>
+
+
     <logger name="com.hazelcast" level="INFO"/>
     <logger name="com.hazelcast.cluster.ClusterService" level="WARN" />
     <logger name="com.hazelcast.nio.tcp" level="WARN" />
 
     <root level="INFO">
-        <appender-ref ref="STDOUT" />
+        <appender-ref ref="batch.file" />
     </root>
 </configuration>
