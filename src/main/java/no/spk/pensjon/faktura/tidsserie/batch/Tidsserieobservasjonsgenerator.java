@@ -45,6 +45,7 @@ public class Tidsserieobservasjonsgenerator {
     private final List<Tidsperiode<?>> referanseperioder = new ArrayList<>();
 
     private final TidsserieFacade tidsserie = new TidsserieFacade();
+
     {
         tidsserie.overstyr(a -> Stream.empty());
     }
@@ -64,6 +65,12 @@ public class Tidsserieobservasjonsgenerator {
      * <p>
      * Dersom det oppstår ein feil i forbindelse med prosesseringa av medlemmet eller eit av medlemmets
      * stillingsforhold, blir feilen sendt vidare til <code>feilhandtering</code> for vidare handtering.
+     *
+     * @param medlem              medlemsdata som det skal genererast ein tidsserie frå
+     * @param observasjonsperiode perioda tidsserien maksimalt skal strekke seg over
+     * @param publikator          mottakar av alle tidsserieobservasjonar som blir generert for medlemmet
+     * @param feilhandtering      feilhandteringsstrategi som alle fatale feil underveis i tidsseriegenereringa vil bli
+     *                            delegert til
      */
     public void observerForVekstmodell(final Medlemsdata medlem, final Observasjonsperiode observasjonsperiode,
                                        final Observasjonspublikator publikator,

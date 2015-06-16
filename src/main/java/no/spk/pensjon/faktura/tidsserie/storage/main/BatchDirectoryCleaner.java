@@ -44,11 +44,8 @@ public class BatchDirectoryCleaner {
     }
 
     /**
-     * Sletter alle kataloger som har navn på samme format som {@link BatchId} og som basert på id'en har kjørt tidligere enn
-     * [{@code midnatt for &lt;i morgen&gt; - olderThanDays}]
+     * Sletter alle batch-kataloger generert av tidligere kjøringer av faktura-tidsserie-batch.
      *
-     * @param olderThanDays alle batch-kataloger som er eldre enn [{@code midnatt for &lt;i morgen&gt; - olderThanDays}] i {@code workdirectory} vil bli
-     * slettet
      * @return {@link Oppryddingsstatus} inneholder eventuelle feilmeldinger som skjedde under slettingen
      */
     public Oppryddingsstatus deleteAllPreviousBatches() {
