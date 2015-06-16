@@ -16,11 +16,9 @@ import com.hazelcast.core.IMap;
 class UploadCommand implements MedlemsdataUploader {
     private final List<Medlemslinje> data = new ArrayList<>();
 
-    private final Server server;
     private final IMap<String, List<List<String>>> medlemsdata;
 
-    UploadCommand(final Server server, final IMap<String, List<List<String>>> medlemsdata) {
-        this.server = server;
+    UploadCommand(final IMap<String, List<List<String>>> medlemsdata) {
         this.medlemsdata = medlemsdata;
     }
 
@@ -42,10 +40,5 @@ class UploadCommand implements MedlemsdataUploader {
                 0,
                 TimeUnit.MILLISECONDS
         );
-    }
-
-    @Override
-    public void registrer(final TidsserieFactory service) {
-        server.registrer(service);
     }
 }

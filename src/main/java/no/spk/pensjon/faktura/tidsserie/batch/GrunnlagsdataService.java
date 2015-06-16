@@ -116,7 +116,7 @@ public class GrunnlagsdataService implements TidsserieFactory {
 
         lesInnReferansedata();
 
-        upload.registrer(this);
+        backend.registrer(TidsserieFactory.class, this);
     }
 
     void lesInnReferansedata() {

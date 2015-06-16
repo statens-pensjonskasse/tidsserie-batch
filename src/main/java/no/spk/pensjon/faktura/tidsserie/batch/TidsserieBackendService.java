@@ -1,6 +1,5 @@
 package no.spk.pensjon.faktura.tidsserie.batch;
 
-import java.io.File;
 import java.util.Map;
 
 import no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast.FileTemplate;
@@ -66,4 +65,16 @@ public interface TidsserieBackendService {
             Aarstall fraOgMed,
             Aarstall tilOgMed
     );
+
+    /**
+     * Registrerer tenesta i backendens tenesteregister slik at dei blir tilgjengelig for backendens beregningsagentar.
+     * <br>
+     * Tenesta <code>service</code> blir registrert under tenestenavnet angitt av <code>serviceType</code>, det
+     * forventast at tenesta kan castast til den angitte typen av klientane som slår opp og benyttar seg av tenesta.
+     *
+     * @param <T>         tenestetypen som blir registrert
+     * @param serviceType kva tenestetype tenesta skal registrerast under
+     * @param service     tenesta som skal registrerast under den angitte tenestetypen i backenden sitt tjenesteregister
+     */
+    <T> void registrer(Class<T> serviceType, T service);
 }

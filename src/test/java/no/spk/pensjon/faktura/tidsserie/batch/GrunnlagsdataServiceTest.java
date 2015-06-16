@@ -73,7 +73,7 @@ public class GrunnlagsdataServiceTest {
     @Test
     public void skalNotifisereBackendenOmAtLastingaErFullfoert() {
         service.lastOpp();
-        verify(uploader).registrer(service);
+        verify(backend).registrer(TidsserieFactory.class, service);
     }
 
     /**
@@ -178,6 +178,6 @@ public class GrunnlagsdataServiceTest {
 
         service.lastOpp();
 
-        verify(uploader).registrer(service);
+        verify(backend).registrer(TidsserieFactory.class, service);
     }
 }

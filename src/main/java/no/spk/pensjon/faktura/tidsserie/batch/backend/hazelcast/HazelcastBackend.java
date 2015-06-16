@@ -1,5 +1,7 @@
 package no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast;
 
+import static java.util.Objects.requireNonNull;
+import static java.util.Optional.empty;
 import static java.util.Optional.of;
 
 import java.util.List;
@@ -41,11 +43,19 @@ import org.slf4j.LoggerFactory;
 public class HazelcastBackend implements TidsserieBackendService {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    private final Server server = new Server();
+    private final Server server;
 
-    private Optional<IMap<String, List<List<String>>>> map;
+    private Optional<IMap<String, List<List<String>>>> map = empty();
 
-    private Optional<HazelcastInstance> instance;
+    private Optional<HazelcastInstance> instance = empty();
+
+    public HazelcastBackend() {
+        this(new MultiNodeSingleJVMBackend());
+    }
+
+    HazelcastBackend(final Server server) {
+        this.server = requireNonNull(server, "server er påkrevd, men var null");
+    }
 
     @Override
     public void start() {
@@ -55,7 +65,7 @@ public class HazelcastBackend implements TidsserieBackendService {
 
     @Override
     public MedlemsdataUploader uploader() {
-        return new UploadCommand(server, this.map.get());
+        return new UploadCommand(this.map.get());
     }
 
     @Override
@@ -68,6 +78,11 @@ public class HazelcastBackend implements TidsserieBackendService {
                         tilOgMed.atEndOfYear()
                 )
         );
+    }
+
+    @Override
+    public <T> void registrer(final Class<T> serviceType, final T service) {
+        server.registrer(serviceType, service);
     }
 
     private Map<String, Integer> submit(
