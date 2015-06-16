@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
+import java.util.List;
 import java.util.stream.Stream;
 import java.util.zip.GZIPOutputStream;
 
@@ -57,7 +58,7 @@ public class CSVInputTest {
     public void skalLukkeMedlemsdatafilVedLukkingAvStream() throws IOException {
         write(medlemsdata, of(DUMMYDATA));
 
-        try (final Stream<String> medlemsdata = fixture.medlemsdata()) {
+        try (final Stream<List<String>> medlemsdata = fixture.medlemsdata()) {
             assertThat(medlemsdata.count()).isEqualTo(1);
         }
 

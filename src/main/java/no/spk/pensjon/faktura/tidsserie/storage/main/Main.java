@@ -109,13 +109,13 @@ public class Main {
             );
 
             view.tidsseriegenereringFullfoert(meldingar);
-        } catch (final IOException e) {
+        } catch (final Exception e) {
             view.fatalFeil(e);
             exitCode = 1;
         }
     }
 
-    private static Configuration createTemplatingConfiguration(){
+    private static Configuration createTemplatingConfiguration() {
         Configuration config = new Configuration(Configuration.VERSION_2_3_22);
         config.setClassLoaderForTemplateLoading(Thread.currentThread().getContextClassLoader(), "templates");
         config.setDefaultEncoding("cp1252");

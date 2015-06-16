@@ -1,6 +1,7 @@
 package no.spk.pensjon.faktura.tidsserie.batch;
 
 import java.io.UncheckedIOException;
+import java.util.List;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Tidsperiode;
@@ -24,7 +25,7 @@ public interface GrunnlagsdataRepository {
      * @return ein straum av linjer som inneheld medlemsdata
      * @throws UncheckedIOException viss ein I/O-relatert feil oppstår
      */
-    Stream<String> medlemsdata();
+    Stream<List<String>> medlemsdata();
 
     /**
      * Åpnar ein straum som leser inn linje for linje frå alle referansedatafiler og konverterer linjas innhold til

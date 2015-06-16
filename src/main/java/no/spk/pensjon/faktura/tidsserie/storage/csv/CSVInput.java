@@ -63,7 +63,7 @@ public class CSVInput implements GrunnlagsdataRepository {
     }
 
     @Override
-    public Stream<String> medlemsdata() {
+    public Stream<List<String>> medlemsdata() {
         return readLinesFrom(medlemsdataFil());
     }
 
@@ -72,8 +72,6 @@ public class CSVInput implements GrunnlagsdataRepository {
         try {
             return referansedataFiler()
                     .flatMap(this::readLinesFrom)
-                    .map(line -> line.split(";"))
-                    .map(Arrays::asList)
                     .flatMap(this::oversettLinje);
         } catch (final IOException e) {
             throw new UncheckedIOException(e);
@@ -102,13 +100,15 @@ public class CSVInput implements GrunnlagsdataRepository {
                 .map(mapper);
     }
 
-    private Stream<String> readLinesFrom(final Path fil) {
+    private Stream<List<String>> readLinesFrom(final Path fil) {
         try {
             final BufferedReader reader = openReader(fil);
             return reader
                     .lines()
                     .onClose(closeOnCompletion(reader))
-                    .filter(this::erGrunnlagsdatalinje);
+                    .filter(this::erGrunnlagsdatalinje)
+                    .map(line -> line.split(";"))
+                    .map(Arrays::asList);
         } catch (final IOException e) {
             throw new UncheckedIOException(e);
         }

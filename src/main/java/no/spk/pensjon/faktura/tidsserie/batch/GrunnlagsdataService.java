@@ -5,8 +5,7 @@ import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
-import java.io.IOException;
-import java.util.Arrays;
+import java.io.UncheckedIOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,9 +39,10 @@ public class GrunnlagsdataService implements ReferansedataService {
     private final GrunnlagsdataRepository input;
 
     /**
-     * Konstruerer ei ny teneste som hentar grunnlagsdata via <code>repository</code> og gjer dei tilgjengelig for backenden.
+     * Konstruerer ei ny teneste som hentar grunnlagsdata via <code>repository</code> og gjer dei tilgjengelig via
+     * <code>backend</code>.
      *
-     * @param backend    backenden som alle grunnlagsdatane blir lasta opp til eller gjort tilgjengelig for
+     * @param backend    backenden som alle grunnlagsdatane blir lasta opp til eller gjort tilgjengelig via
      * @param repository datalageret som gir oss tilgang til grunnlagsdatane generert av faktura-grunnlagsdata-batch
      * @throws NullPointerException viss nokon argument er <code>null</code>
      */
@@ -61,8 +61,8 @@ public class GrunnlagsdataService implements ReferansedataService {
     @Override
     public Stream<Tidsperiode<?>> loennsdata() {
         return Stream.concat(
-                perioder.getOrDefault(Loennstrinnperioder.class, emptyList()).stream(),
-                perioder.getOrDefault(Omregningsperiode.class, emptyList()).stream()
+                perioderAvType(Loennstrinnperioder.class),
+                perioderAvType(Omregningsperiode.class)
         );
     }
 
@@ -83,16 +83,12 @@ public class GrunnlagsdataService implements ReferansedataService {
     /**
      * Leser inn alle medlems-, avtale- og lønnsdata frå inputfilene og overfører dei til backenden.
      *
-     * @throws IOException dersom innlesinga av grunnlagsdata feilar på grunn av I/O-relaterte issues
+     * @throws UncheckedIOException dersom innlesinga av grunnlagsdata feilar på grunn av I/O-relaterte issues
      */
-    public void lastOpp() throws IOException {
+    public void lastOpp() {
         final MedlemsdataUploader upload = backend.uploader();
-
-        // TODO: Finne ut at/om readeren blir lukka korrekt her
-        try (final Stream<String> lines = input.medlemsdata()) {
+        try (final Stream<List<String>> lines = input.medlemsdata()) {
             lines
-                    .map(line -> line.split(";"))
-                    .map(Arrays::asList)
                     .map(Medlemslinje::new)
                     .reduce((first, second) -> {
                         upload.append(first);
@@ -108,11 +104,17 @@ public class GrunnlagsdataService implements ReferansedataService {
                     });
         }
 
-        perioder.putAll(input.referansedata().collect(groupingBy(Object::getClass)));
-        perioder.put(Loennstrinnperioder.class, grupperLoennstrinnperioder());
-        avtalar.putAll(grupperAvtaleperioder());
+        lesInnReferansedata();
 
         upload.registrer(this);
+    }
+
+    void lesInnReferansedata() {
+        try (final Stream<Tidsperiode<?>> referansedata = input.referansedata()) {
+            perioder.putAll(referansedata.collect(groupingBy(Object::getClass)));
+        }
+        perioder.put(Loennstrinnperioder.class, grupperLoennstrinnperioder());
+        avtalar.putAll(grupperAvtaleperioder());
     }
 
 
@@ -141,8 +143,8 @@ public class GrunnlagsdataService implements ReferansedataService {
                 .collect(toList());
     }
 
-    private <T> Stream<T> perioderAvType(final Class<T> type) {
-        return perioder.get(type).stream().map(type::cast);
+    <T> Stream<T> perioderAvType(final Class<T> type) {
+        return perioder.getOrDefault(type, emptyList()).stream().map(type::cast);
     }
 
     private Stream<Loennstrinnperiode<?>> statligeloennstrinn() {
