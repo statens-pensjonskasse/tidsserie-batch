@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import no.spk.pensjon.faktura.tidsserie.TemporaryFolderWithDeleteVerification;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -15,7 +17,7 @@ import org.junit.rules.TestName;
  */
 public class BatchDirectoryCleanerTest {
     @Rule
-    public TemporaryFolder testFolder = new TemporaryFolder();
+    public TemporaryFolder testFolder = new TemporaryFolderWithDeleteVerification();
 
     @Rule
     public final TestName name = new TestName();

@@ -10,6 +10,8 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import no.spk.pensjon.faktura.tidsserie.TemporaryFolderWithDeleteVerification;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Rule;
 import org.junit.Test;
@@ -26,7 +28,7 @@ public class GrunnlagsdataDirectoryValidatorTest {
     public ExpectedException exception = ExpectedException.none();
 
     @Rule
-    public TemporaryFolder testFolder = new TemporaryFolder();
+    public TemporaryFolder testFolder = new TemporaryFolderWithDeleteVerification();
 
     @Rule
     public final TestName name = new TestName();

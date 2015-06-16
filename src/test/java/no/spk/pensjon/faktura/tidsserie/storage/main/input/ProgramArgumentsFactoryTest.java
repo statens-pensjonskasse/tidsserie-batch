@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.File;
 import java.nio.file.Path;
 
+import no.spk.pensjon.faktura.tidsserie.TemporaryFolderWithDeleteVerification;
 import no.spk.pensjon.faktura.tidsserie.storage.main.input.ProgramArgumentsFactory.InvalidParameterException;
 
 import org.junit.Rule;
@@ -23,7 +24,7 @@ public class ProgramArgumentsFactoryTest {
     public ExpectedException exception = ExpectedException.none();
 
     @Rule
-    public TemporaryFolder testFolder = new TemporaryFolder();
+    public TemporaryFolder testFolder = new TemporaryFolderWithDeleteVerification();
 
     @Rule
     public final TestName name = new TestName();

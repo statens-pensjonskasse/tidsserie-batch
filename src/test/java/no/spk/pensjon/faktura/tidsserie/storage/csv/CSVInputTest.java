@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.stream.Stream;
 import java.util.zip.GZIPOutputStream;
 
+import no.spk.pensjon.faktura.tidsserie.TemporaryFolderWithDeleteVerification;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Tidsperiode;
 
 import org.assertj.core.api.AbstractBooleanAssert;
@@ -31,7 +32,7 @@ public class CSVInputTest {
     public final TestName name = new TestName();
 
     @Rule
-    public final TemporaryFolder folder = new TemporaryFolder();
+    public final TemporaryFolder folder = new TemporaryFolderWithDeleteVerification();
 
     @Rule
     public final MockitoRule mockito = MockitoJUnit.rule();

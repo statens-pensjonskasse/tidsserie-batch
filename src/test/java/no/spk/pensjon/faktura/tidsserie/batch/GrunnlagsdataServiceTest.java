@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Stream;
 
+import no.spk.pensjon.faktura.tidsserie.TemporaryFolderWithDeleteVerification;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.GenerellTidsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Tidsperiode;
 
@@ -29,7 +30,7 @@ public class GrunnlagsdataServiceTest {
     public static final List<String> MEDLEMSDATA = asList("1970010112345", "0", "19700101", "12345", "1122334455");
 
     @Rule
-    public final TemporaryFolder folder = new TemporaryFolder();
+    public final TemporaryFolder folder = new TemporaryFolderWithDeleteVerification();
 
     @Rule
     public final MockitoRule mockito = MockitoJUnit.rule();
