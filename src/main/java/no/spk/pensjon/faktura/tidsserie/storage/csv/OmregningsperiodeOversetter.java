@@ -1,14 +1,14 @@
 package no.spk.pensjon.faktura.tidsserie.storage.csv;
 
-import no.spk.pensjon.faktura.tidsserie.Datoar;
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Kroner;
-import no.spk.pensjon.faktura.tidsserie.domain.loennsdata.Omregningsperiode;
+import static java.util.Optional.ofNullable;
+import static no.spk.pensjon.faktura.tidsserie.storage.csv.Feilmeldingar.ugyldigAntallKolonnerForOmregningsperiode;
 
 import java.util.List;
 import java.util.Optional;
 
-import static java.util.Optional.ofNullable;
-import static no.spk.pensjon.faktura.tidsserie.storage.csv.Feilmeldingar.ugyldigAntallKolonnerForOmregningsperiode;
+import no.spk.pensjon.faktura.tidsserie.Datoar;
+import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Kroner;
+import no.spk.pensjon.faktura.tidsserie.domain.loennsdata.Omregningsperiode;
 
 /**
  * {@link OmregningsperiodeOversetter} representerer algoritma

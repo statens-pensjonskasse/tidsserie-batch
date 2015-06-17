@@ -1,12 +1,12 @@
 package no.spk.pensjon.faktura.tidsserie.storage.csv;
 
-import no.spk.pensjon.faktura.tidsserie.Datoar;
+import static java.util.Optional.ofNullable;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import static java.util.Optional.ofNullable;
+import no.spk.pensjon.faktura.tidsserie.Datoar;
 
 /**
  * Støttemetoder for innlesing av og konvertering av tekstfelt brukt i oversettinga frå medlemsdata til

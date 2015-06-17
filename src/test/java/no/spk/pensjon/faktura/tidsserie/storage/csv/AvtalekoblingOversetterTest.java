@@ -1,11 +1,11 @@
 package no.spk.pensjon.faktura.tidsserie.storage.csv;
 
-import org.junit.Test;
-
 import static java.util.Arrays.asList;
 import static java.util.Optional.of;
 import static no.spk.pensjon.faktura.tidsserie.Datoar.dato;
 import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.Test;
 
 public class AvtalekoblingOversetterTest {
     private final AvtalekoblingOversetter oversetter = new AvtalekoblingOversetter();
