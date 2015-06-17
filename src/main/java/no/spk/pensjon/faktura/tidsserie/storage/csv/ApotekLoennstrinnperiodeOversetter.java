@@ -1,17 +1,17 @@
 package no.spk.pensjon.faktura.tidsserie.storage.csv;
 
+import static java.util.Optional.ofNullable;
+import static no.spk.pensjon.faktura.tidsserie.storage.csv.Feilmeldingar.ugyldigAntallKolonnerForApotekLoennstrinn;
+
+import java.util.List;
+import java.util.Optional;
+
 import no.spk.pensjon.faktura.tidsserie.Datoar;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Kroner;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Loennstrinn;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.LoennstrinnBeloep;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Stillingskode;
 import no.spk.pensjon.faktura.tidsserie.domain.loennsdata.ApotekLoennstrinnperiode;
-
-import java.util.List;
-import java.util.Optional;
-
-import static java.util.Optional.ofNullable;
-import static no.spk.pensjon.faktura.tidsserie.storage.csv.Feilmeldingar.ugyldigAntallKolonnerForApotekLoennstrinn;
 
 /**
  * {@link ApotekLoennstrinnperiodeOversetter} representerer algoritma

@@ -1,15 +1,15 @@
 package no.spk.pensjon.faktura.tidsserie.storage.csv;
 
-import no.spk.pensjon.faktura.tidsserie.Datoar;
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Kroner;
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Loennstrinn;
-import no.spk.pensjon.faktura.tidsserie.domain.loennsdata.StatligLoennstrinnperiode;
+import static java.util.Optional.ofNullable;
+import static no.spk.pensjon.faktura.tidsserie.storage.csv.Feilmeldingar.ugyldigAntallKolonnerForStatligLoennstrinn;
 
 import java.util.List;
 import java.util.Optional;
 
-import static java.util.Optional.ofNullable;
-import static no.spk.pensjon.faktura.tidsserie.storage.csv.Feilmeldingar.ugyldigAntallKolonnerForStatligLoennstrinn;
+import no.spk.pensjon.faktura.tidsserie.Datoar;
+import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Kroner;
+import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Loennstrinn;
+import no.spk.pensjon.faktura.tidsserie.domain.loennsdata.StatligLoennstrinnperiode;
 
 /**
  * {@link StatligLoennstrinnperiodeOversetter} representerer algoritma

@@ -9,18 +9,16 @@ import java.util.concurrent.TimeUnit;
 import no.spk.pensjon.faktura.tidsserie.batch.Foedselsnummer;
 import no.spk.pensjon.faktura.tidsserie.batch.Medlemslinje;
 import no.spk.pensjon.faktura.tidsserie.batch.MedlemsdataUploader;
-import no.spk.pensjon.faktura.tidsserie.batch.ReferansedataService;
+import no.spk.pensjon.faktura.tidsserie.batch.TidsserieFactory;
 
 import com.hazelcast.core.IMap;
 
 class UploadCommand implements MedlemsdataUploader {
     private final List<Medlemslinje> data = new ArrayList<>();
 
-    private final Server server;
     private final IMap<String, List<List<String>>> medlemsdata;
 
-    UploadCommand(final Server server, final IMap<String, List<List<String>>> medlemsdata) {
-        this.server = server;
+    UploadCommand(final IMap<String, List<List<String>>> medlemsdata) {
         this.medlemsdata = medlemsdata;
     }
 
@@ -42,10 +40,5 @@ class UploadCommand implements MedlemsdataUploader {
                 0,
                 TimeUnit.MILLISECONDS
         );
-    }
-
-    @Override
-    public void registrer(final ReferansedataService service) {
-        server.registrer(service);
     }
 }

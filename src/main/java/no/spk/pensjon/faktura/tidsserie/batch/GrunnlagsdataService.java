@@ -5,8 +5,7 @@ import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
-import java.io.IOException;
-import java.util.Arrays;
+import java.io.UncheckedIOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,15 +21,30 @@ import no.spk.pensjon.faktura.tidsserie.domain.loennsdata.Loennstrinnperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.loennsdata.Loennstrinnperioder;
 import no.spk.pensjon.faktura.tidsserie.domain.loennsdata.Omregningsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.loennsdata.StatligLoennstrinnperiode;
+import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Avtalekoblingsperiode;
+import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medlemsdata;
+import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.MedlemsdataOversetter;
+import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medregningsperiode;
+import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Stillingsendring;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Tidsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.AvtaleinformasjonRepository;
+import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Feilhandtering;
+import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade;
+import no.spk.pensjon.faktura.tidsserie.storage.csv.AvtalekoblingOversetter;
+import no.spk.pensjon.faktura.tidsserie.storage.csv.MedregningsOversetter;
+import no.spk.pensjon.faktura.tidsserie.storage.csv.StillingsendringOversetter;
 
 /**
- * Grunnlagsdata
+ * {@link no.spk.pensjon.faktura.tidsserie.batch.GrunnlagsdataService} opptrer som bindeledd mellom
+ * beregningsbackenden og grunnlagsdatane frå flate filer på disk.
+ * <br>
+ * Via denne tenesta kan CSV-formaterte grunnlagsdata generert av faktura-grunnlagsdata-batch bli lest inn frå disk
+ * og lastast opp til beregningsbackenden. I tillegg kan beregningsbackenden hente ut avtale- og medlemsuavhengige
+ * lønnsdata ved oppstart av tidsseriegenereringa.
  *
  * @author Tarjei Skorgenes
  */
-public class GrunnlagsdataService implements ReferansedataService {
+public class GrunnlagsdataService implements TidsserieFactory {
     private final Map<Class<?>, List<Tidsperiode<?>>> perioder = new HashMap<>();
 
     private final Map<AvtaleId, List<Avtalerelatertperiode<?>>> avtalar = new HashMap<>();
@@ -40,9 +54,10 @@ public class GrunnlagsdataService implements ReferansedataService {
     private final GrunnlagsdataRepository input;
 
     /**
-     * Konstruerer ei ny teneste som hentar grunnlagsdata via <code>repository</code> og gjer dei tilgjengelig for backenden.
+     * Konstruerer ei ny teneste som hentar grunnlagsdata via <code>repository</code> og gjer dei tilgjengelig via
+     * <code>backend</code>.
      *
-     * @param backend    backenden som alle grunnlagsdatane blir lasta opp til eller gjort tilgjengelig for
+     * @param backend    backenden som alle grunnlagsdatane blir lasta opp til eller gjort tilgjengelig via
      * @param repository datalageret som gir oss tilgang til grunnlagsdatane generert av faktura-grunnlagsdata-batch
      * @throws NullPointerException viss nokon argument er <code>null</code>
      */
@@ -51,48 +66,39 @@ public class GrunnlagsdataService implements ReferansedataService {
         this.input = requireNonNull(repository, "inputfiler er påkrevd, men var null");
     }
 
-    /**
-     * Hentar ut alle tidsperiodiserte lønnsdata som ikkje er medlemsspesifikke.
-     *
-     * @return alle lønnsdata
-     * @see Omregningsperiode
-     * @see Loennstrinnperioder
-     */
     @Override
-    public Stream<Tidsperiode<?>> loennsdata() {
-        return Stream.concat(
-                perioder.getOrDefault(Loennstrinnperioder.class, emptyList()).stream(),
-                perioder.getOrDefault(Omregningsperiode.class, emptyList()).stream()
+    public TidsserieFacade create(final Feilhandtering feilhandtering) {
+        final TidsserieFacade fasade = new TidsserieFacade();
+        fasade.overstyr(this::finn);
+        fasade.overstyr(requireNonNull(feilhandtering, "feilhandteringsstrategi er påkrevd, men var null"));
+        return fasade;
+    }
+
+    @Override
+    public Medlemsdata create(final String foedselsnummer, final List<List<String>> data) {
+        return new Medlemsdata(
+                requireNonNull(data, "medlemsdata er påkrevd, men var null"),
+                medlemsdataOversettere()
         );
     }
 
-    /**
-     * Hent ut alle avtaledata for avtalen.
-     *
-     * @param avtale avtalen som avtaledata skal hentast ut for
-     * @return alle tidsperiodiserte avtaledata som er tilknytta avtalen i grunnlagsdatane
-     * @see AvtaleinformasjonRepository
-     * @see Avtaleversjon
-     * @see Avtaleprodukt
-     */
     @Override
-    public Stream<Tidsperiode<?>> finn(final AvtaleId avtale) {
-        return avtalar.getOrDefault(avtale, emptyList()).stream().map((Tidsperiode<?> p) -> p);
+    public Stream<Tidsperiode<?>> loennsdata() {
+        return Stream.concat(
+                perioderAvType(Loennstrinnperioder.class),
+                perioderAvType(Omregningsperiode.class)
+        );
     }
 
     /**
      * Leser inn alle medlems-, avtale- og lønnsdata frå inputfilene og overfører dei til backenden.
      *
-     * @throws IOException dersom innlesinga av grunnlagsdata feilar på grunn av I/O-relaterte issues
+     * @throws UncheckedIOException dersom innlesinga av grunnlagsdata feilar på grunn av I/O-relaterte issues
      */
-    public void lastOpp() throws IOException {
+    public void lastOpp() {
         final MedlemsdataUploader upload = backend.uploader();
-
-        // TODO: Finne ut at/om readeren blir lukka korrekt her
-        try (final Stream<String> lines = input.medlemsdata()) {
+        try (final Stream<List<String>> lines = input.medlemsdata()) {
             lines
-                    .map(line -> line.split(";"))
-                    .map(Arrays::asList)
                     .map(Medlemslinje::new)
                     .reduce((first, second) -> {
                         upload.append(first);
@@ -108,13 +114,39 @@ public class GrunnlagsdataService implements ReferansedataService {
                     });
         }
 
-        perioder.putAll(input.referansedata().collect(groupingBy(Object::getClass)));
-        perioder.put(Loennstrinnperioder.class, grupperLoennstrinnperioder());
-        avtalar.putAll(grupperAvtaleperioder());
+        lesInnReferansedata();
 
-        upload.registrer(this);
+        backend.registrer(TidsserieFactory.class, this);
     }
 
+    void lesInnReferansedata() {
+        try (final Stream<Tidsperiode<?>> referansedata = input.referansedata()) {
+            perioder.putAll(referansedata.collect(groupingBy(Object::getClass)));
+        }
+        perioder.put(Loennstrinnperioder.class, grupperLoennstrinnperioder());
+        avtalar.putAll(grupperAvtaleperioder());
+    }
+
+    Map<Class<?>, MedlemsdataOversetter<?>> medlemsdataOversettere() {
+        final Map<Class<?>, MedlemsdataOversetter<?>> oversettere = new HashMap<>();
+        oversettere.put(Stillingsendring.class, new StillingsendringOversetter());
+        oversettere.put(Avtalekoblingsperiode.class, new AvtalekoblingOversetter());
+        oversettere.put(Medregningsperiode.class, new MedregningsOversetter());
+        return oversettere;
+    }
+
+    /**
+     * Hent ut alle avtaledata for avtalen.
+     *
+     * @param avtale avtalen som avtaledata skal hentast ut for
+     * @return alle tidsperiodiserte avtaledata som er tilknytta avtalen i grunnlagsdatane
+     * @see AvtaleinformasjonRepository
+     * @see Avtaleversjon
+     * @see Avtaleprodukt
+     */
+    private Stream<Tidsperiode<?>> finn(final AvtaleId avtale) {
+        return avtalar.getOrDefault(avtale, emptyList()).stream().map((Tidsperiode<?> p) -> p);
+    }
 
     private Map<AvtaleId, List<Avtalerelatertperiode<?>>> grupperAvtaleperioder() {
         final Stream<Avtaleversjon> versjoner = perioderAvType(Avtaleversjon.class);
@@ -141,8 +173,8 @@ public class GrunnlagsdataService implements ReferansedataService {
                 .collect(toList());
     }
 
-    private <T> Stream<T> perioderAvType(final Class<T> type) {
-        return perioder.get(type).stream().map(type::cast);
+    <T> Stream<T> perioderAvType(final Class<T> type) {
+        return perioder.getOrDefault(type, emptyList()).stream().map(type::cast);
     }
 
     private Stream<Loennstrinnperiode<?>> statligeloennstrinn() {

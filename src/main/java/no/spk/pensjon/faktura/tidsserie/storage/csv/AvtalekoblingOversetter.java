@@ -1,16 +1,16 @@
 package no.spk.pensjon.faktura.tidsserie.storage.csv;
 
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId;
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Ordning;
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.StillingsforholdId;
-import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Avtalekoblingsperiode;
-import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.MedlemsdataOversetter;
+import static no.spk.pensjon.faktura.tidsserie.storage.csv.Feilmeldingar.ugyldigAntallKolonnerForAvtalekobling;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import static no.spk.pensjon.faktura.tidsserie.storage.csv.Feilmeldingar.ugyldigAntallKolonnerForAvtalekobling;
+import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId;
+import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Ordning;
+import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.StillingsforholdId;
+import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Avtalekoblingsperiode;
+import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.MedlemsdataOversetter;
 
 /**
  * {@link AvtalekoblingOversetter} representerer algoritma

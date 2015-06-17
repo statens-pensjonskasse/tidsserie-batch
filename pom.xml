@@ -4,9 +4,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>no.spk.felles</groupId>
-        <artifactId>felles-super-pom</artifactId>
-        <version>100.0.2</version>
+        <artifactId>spk-root-pom</artifactId>
+        <groupId>no.spk</groupId>
+        <version>105</version>
     </parent>
 
     <groupId>no.spk.pensjon.faktura</groupId>
@@ -53,6 +53,26 @@
                 <configuration>
                     <encoding>CP1252</encoding>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.3</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>no.spk.pensjon.faktura.tidsserie.batch.main.Main</mainClass>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>external.atlassian.jgitflow</groupId>
@@ -104,6 +124,10 @@
             <artifactId>logback-classic</artifactId>
             <version>1.1.2</version>
         </dependency>
+        <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+        </dependency>
         <!-- test-->
         <dependency>
             <groupId>org.mockito</groupId>
@@ -139,6 +163,11 @@
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
                 <version>1.1.3</version>
+            </dependency>
+            <dependency>
+                <groupId>net.logstash.logback</groupId>
+                <artifactId>logstash-logback-encoder</artifactId>
+                <version>4.3</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -179,7 +208,7 @@
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
-                <version>1.10.8</version>
+                <version>1.10.19</version>
             </dependency>
             <dependency>
                 <groupId>org.assertj</groupId>

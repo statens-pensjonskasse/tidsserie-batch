@@ -28,12 +28,4 @@ public interface MedlemsdataUploader {
      * Overfører alle medlemslinjer frå akkumulatoren til tidsseriebackenden.
      */
     void run();
-
-    /**
-     * Lastar opp / registrerer referansedatane slik at alle data påkrevd
-     * for å bygge ein tidsserie er tilgjengelige i alle delar av backenden.
-     *
-     * @param service tjenesta som gir backenden tilgang til referansedatane
-     */
-    void registrer(ReferansedataService service);
 }

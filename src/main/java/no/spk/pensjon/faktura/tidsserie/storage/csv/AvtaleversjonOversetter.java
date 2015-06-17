@@ -9,7 +9,6 @@ import no.spk.pensjon.faktura.tidsserie.Datoar;
 import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleversjon;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Premiestatus;
-import no.spk.pensjon.faktura.tidsserie.storage.csv.CsvOversetter;
 
 public class AvtaleversjonOversetter implements CsvOversetter<Avtaleversjon> {
     @Override
