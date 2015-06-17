@@ -91,9 +91,6 @@ public class Main {
 
     private void run(final View view, final FileTemplate malFilnavn, final Aarstall fraOgMed, final Aarstall tilOgMed) {
         try {
-
-            //TODO start timeout timer - refaktorere så vi kan kjøre en timeout-tråd og terminere hele programmet men samtidig logge/rydde opp?
-
             view.startarBackend();
             backend.start();
 

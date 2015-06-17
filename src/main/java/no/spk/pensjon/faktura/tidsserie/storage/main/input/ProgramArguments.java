@@ -47,18 +47,6 @@ public class ProgramArguments {
     )
     Path innkatalog = Paths.get("../faktura-grunnlagsdata-batch/target/");
 
-    @Parameter(names = "-kjoeretid",
-            description = "Maks kjøretid på formatet HHmm.",
-            validateWith = DurationValidator.class)
-    String kjoeretid = "0200";
-
-    @Parameter(names = { "-sluttid" },
-            description = "Klokkeslett på formen HH:mm eller HH:mm:ss for når kjøringen senest avsluttes.",
-            validateWith = LocalTimeValidator.class,
-            converter = LocalTimeConverter.class)
-    LocalTime sluttidspunkt = LocalTime.parse("23:59");
-
-
     public boolean isHjelp() {
         return hjelp;
     }
@@ -88,14 +76,6 @@ public class ProgramArguments {
 
     public Path getInnkatalog() {
         return innkatalog;
-    }
-
-    public String getKjoeretid() {
-        return kjoeretid;
-    }
-
-    public LocalTime getSluttidspunkt() {
-        return sluttidspunkt;
     }
 
     public Path getGrunnlagsdataBatchKatalog() {
