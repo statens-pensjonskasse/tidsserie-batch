@@ -26,10 +26,6 @@ import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Tidsperiode;
  * <br>
  * Det følest også naturlig å plassere kunnskapen om kva oversetter-implementasjonar som skal benyttast for å behandle
  * datafilene her.
- * <br>
- * TODO: Testing/integrasjonstesting av den her
- * TODO: Robustifisere, skal vi/kor mange linjer feil skal vi tolerere ved innlesing og konvertering her?
- * Skal ei linje feil la heile batchkøyringa feile? Skal 1000 linjer gjere det? 1 million linjer? Somewhere in between?
  *
  * @author Tarjei Skorgenes
  */
@@ -109,7 +105,6 @@ public class CSVInput implements GrunnlagsdataRepository {
         return oversettere
                 .stream()
                 .filter(oversetter -> oversetter.supports(linje))
-                        // TODO: Burde vi ha en reduce som verifiserer at det kun er ein oversetter som støttar linja?
                 .map(mapper);
     }
 
