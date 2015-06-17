@@ -14,8 +14,6 @@ public class ArgumentSummaryTest {
         String parameterSummary = ArgumentSummary.createParameterSummary(programArguments);
         assertThat(parameterSummary).contains("-fraAar: " + programArguments.fraAar);
         assertThat(parameterSummary).contains("-tilAar: " + programArguments.tilAar);
-        assertThat(parameterSummary).contains("-kjoeretid: " + programArguments.getKjoeretid());
-        assertThat(parameterSummary).contains("-sluttid: " + programArguments.getSluttidspunkt());
         assertThat(parameterSummary).doesNotContain("-help");
     }
 }
