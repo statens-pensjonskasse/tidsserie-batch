@@ -1,5 +1,7 @@
 package no.spk.pensjon.faktura.tidsserie.batch.main.input;
 
+import static org.junit.Assume.assumeTrue;
+
 import com.beust.jcommander.ParameterException;
 import org.junit.Before;
 import org.junit.Rule;
@@ -25,6 +27,7 @@ public class PathStringValidatorTest {
 
     @Test
     public void testIncorrectPathThrowsException() throws Exception {
+        assumeTrue( isWindows() );
         exception.expect(ParameterException.class);
         exception.expectMessage(SOME_PARAM + " er ikke en gyldig filbane");
         validator.validate(SOME_PARAM, "H\"");
@@ -33,5 +36,9 @@ public class PathStringValidatorTest {
     @Test
     public void testCorrectPathValidatesWithoutException() throws Exception {
         validator.validate(SOME_PARAM, "H:");
+    }
+
+    private boolean isWindows() {
+        return System.getProperty("os.name").startsWith("Windows");
     }
 }
