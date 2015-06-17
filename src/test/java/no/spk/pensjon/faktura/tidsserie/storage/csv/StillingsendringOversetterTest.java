@@ -90,7 +90,7 @@ public class StillingsendringOversetterTest {
 
     /**
      * Verifiserer at oversetteren ikkje feilar dersom sybase datoar på formata
-     * YYYY-MM-DD HH:mm:ss.S blir brukt som verdi på startBackend- eller
+     * YYYY-MM-DD HH:mm:ss.S blir brukt som verdi på start- eller
      * sluttdatoane til avtalekoblingane.
      */
     @Test
@@ -111,7 +111,7 @@ public class StillingsendringOversetterTest {
 
     /**
      * Verifiserer at oversetteren ikkje feilar dersom sybase datoar på formata
-     * YYYY-MM-DD blir brukt som verdi på startBackend- eller
+     * YYYY-MM-DD blir brukt som verdi på start- eller
      * sluttdatoane til avtalekoblingane.
      */
     @Test

@@ -21,6 +21,7 @@ public class ProgramArguments {
 
     @Parameter(names = { "-i" },
             description="En katalog som inneholder resultatkatalog fra grunnlagsdata-batch.",
+            validateWith = PathStringValidator.class,
             validateValueWith = ReadablePathValidator.class,
             required = true
     )
@@ -33,6 +34,7 @@ public class ProgramArguments {
 
     @Parameter(names = { "-o" },
             description="Batchen vil lage en ny katalog i arbeidskatalogen hvor resultatet av kjøringen vil bli lagret.",
+            validateWith = PathStringValidator.class,
             validateValueWith = WritablePathValidator.class,
             required = true
     )

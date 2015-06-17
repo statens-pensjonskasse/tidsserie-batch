@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Optional;
@@ -39,12 +40,13 @@ public class MetaDataWriter {
         this.batchKatalog = batchKatalog;
     }
 
-    public Optional<File> createMetadataFile(ProgramArguments programArguments, BatchId batchId) {
+    public Optional<File> createMetadataFile(ProgramArguments programArguments, BatchId batchId, Duration duration) {
         File fileToWrite = batchKatalog.resolve("metadata.txt").toFile();
         try (Writer writer = new FileWriter(fileToWrite)) {
             HashMap<String, Object> dataModel = new HashMap<>();
             dataModel.put("params", programArguments);
             dataModel.put("batchId", batchId);
+            dataModel.put("jobDuration", getDurationString(duration));
             dataModel.put("outputDirectory", batchKatalog.toString());
             Template template = config.getTemplate("metadata.ftl");
             template.process(dataModel, writer);
@@ -82,5 +84,12 @@ public class MetaDataWriter {
     private File[] getFiles(Path directoryName) {
         File directory = directoryName.toFile();
         return directory.listFiles((file) -> !Arrays.asList(LOG_FILENAME, MD5_CHECKSUMS_FILENAME).contains(file.getName()) && file.isFile());
+    }
+
+    private String getDurationString(Duration duration) {
+        long hours = duration.toHours();
+        long minutes = duration.minusHours(hours).toMinutes();
+        long seconds = duration.minusHours(hours).minusMinutes(minutes).getSeconds();
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
     }
 }

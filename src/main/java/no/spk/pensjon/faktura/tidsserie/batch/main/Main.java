@@ -2,7 +2,9 @@ package no.spk.pensjon.faktura.tidsserie.batch.main;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 import no.spk.pensjon.faktura.tidsserie.batch.GrunnlagsdataRepository;
 import no.spk.pensjon.faktura.tidsserie.batch.GrunnlagsdataService;
@@ -53,6 +55,8 @@ public class Main {
             final GrunnlagsdataService overfoering = new GrunnlagsdataService(backend, input);
             final Configuration freemarkerConfiguration = TemplateConfigurationFactory.create();
 
+
+            long started = System.currentTimeMillis();
             controller.startBackend(backend);
             controller.lastOpp(overfoering);
             controller.lagTidsserie(backend,
@@ -60,8 +64,10 @@ public class Main {
                     new Aarstall(arguments.getFraAar()),
                     new Aarstall(arguments.getTilAar()));
 
+            Duration duration = Duration.of(System.currentTimeMillis() - started, ChronoUnit.MILLIS);
+
             MetaDataWriter metaDataWriter = new MetaDataWriter(freemarkerConfiguration, batchKatalog);
-            controller.opprettMetadata(metaDataWriter, arguments, batchId);
+            controller.opprettMetadata(metaDataWriter, arguments, batchId, duration);
 
             controller.informerOmSuksess(batchKatalog);
         } catch (InvalidParameterException e) {

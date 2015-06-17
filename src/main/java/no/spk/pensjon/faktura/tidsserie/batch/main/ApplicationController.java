@@ -5,6 +5,7 @@ import static java.util.Optional.of;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.Map;
 import java.util.Optional;
 
@@ -28,7 +29,7 @@ import org.slf4j.MDC;
  * eller etter at {@link #informerOmOppstart(ProgramArguments)} har blitt kalla. Om så blir forsøkt
  * vil ikkje batchens loggfil inneholde meldinga.
  *
- * @author Tarjei Skorgenes
+ * @author Snorre E. Brekke - computas
  */
 public class ApplicationController {
     static final int EXIT_SUCCESS = 0;
@@ -144,10 +145,9 @@ public class ApplicationController {
         view.tidsseriegenereringFullfoert(meldingar);
     }
 
-    public void opprettMetadata(MetaDataWriter metaDataWriter, ProgramArguments arguments, BatchId batchId) {
+    public void opprettMetadata(MetaDataWriter metaDataWriter, ProgramArguments arguments, BatchId batchId, Duration duration) {
         view.informerOmMetadataOppretting();
-        metaDataWriter.createMetadataFile(arguments, batchId);
+        metaDataWriter.createMetadataFile(arguments, batchId, duration);
         metaDataWriter.createChecksumFile();
     }
-
 }

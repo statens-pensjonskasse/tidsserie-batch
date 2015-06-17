@@ -8,8 +8,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import no.spk.pensjon.faktura.tidsserie.TemporaryFolderWithDeleteVerification;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArgumentsFactory.InvalidParameterException;
+import no.spk.pensjon.faktura.tidsserie.util.TemporaryFolderWithDeleteVerification;
 
 import org.junit.Rule;
 import org.junit.Test;

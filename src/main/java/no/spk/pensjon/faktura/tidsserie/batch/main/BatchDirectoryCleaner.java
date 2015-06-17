@@ -90,6 +90,13 @@ public class BatchDirectoryCleaner {
         }
 
         @Override
+        public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+            logger.warn("Visit file failed for " + file, exc);
+            oppryddingsstatus.addError(file.toString(), exc);
+            return FileVisitResult.SKIP_SUBTREE;
+        }
+
+        @Override
         public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
             if (!dir.equals(startDirectory)) {
                 logger.info("Sletter " + dir);

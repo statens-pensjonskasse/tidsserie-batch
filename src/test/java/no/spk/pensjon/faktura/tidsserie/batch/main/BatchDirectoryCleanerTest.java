@@ -4,10 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.stream.Stream;
 import java.time.LocalDateTime;
+import java.util.stream.Stream;
 
-import no.spk.pensjon.faktura.tidsserie.TemporaryFolderWithDeleteVerification;
+import no.spk.pensjon.faktura.tidsserie.batch.main.input.StandardOutputAndError;
+import no.spk.pensjon.faktura.tidsserie.util.TemporaryFolderWithDeleteVerification;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -23,6 +24,9 @@ public class BatchDirectoryCleanerTest {
 
     @Rule
     public final TestName name = new TestName();
+
+    @Rule
+    public final StandardOutputAndError console = new StandardOutputAndError();
 
     @Test
     public void testDeletePreviousBatches() throws Exception {

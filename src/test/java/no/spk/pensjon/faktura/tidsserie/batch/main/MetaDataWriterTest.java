@@ -8,7 +8,9 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
@@ -41,7 +43,7 @@ public class MetaDataWriterTest {
         BatchId batchId = new BatchId(LocalDateTime.now());
 
         ProgramArguments programArguments = getProgramArguments(writeFolder);
-        Optional<File> metadataFile = metaDataWriter.createMetadataFile(programArguments, batchId);
+        Optional<File> metadataFile = metaDataWriter.createMetadataFile(programArguments, batchId, Duration.of(10, ChronoUnit.MILLIS));
         assertThat(metadataFile.isPresent()).isTrue();
         assertThat(metadataFile.get()).exists();
 
