@@ -10,7 +10,7 @@
 
     <groupId>no.spk.pensjon.faktura</groupId>
     <artifactId>faktura-tidsserie-batch</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <properties>
         <project.build.sourceEncoding>CP1252</project.build.sourceEncoding>
