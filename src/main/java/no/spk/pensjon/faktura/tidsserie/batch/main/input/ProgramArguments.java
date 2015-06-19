@@ -52,6 +52,13 @@ public class ProgramArguments {
             validateValueWith = YearValidator.class)
     int tilAar = 2015;
 
+
+    @Parameter(names = { "-n" },
+            description = "Antall noder som skal brukes for å utgjøre grid for tidsserie-prossesering. Default er lik antall prosessorer i kjøremiljøet.",
+            validateWith = IntegerValidator.class,
+            validateValueWith = GreaterThanZeroValidator.class)
+    int nodes = Runtime.getRuntime().availableProcessors();
+
     public boolean isHjelp() {
         return hjelp;
     }
@@ -87,4 +94,7 @@ public class ProgramArguments {
         return innkatalog.resolve(grunnlagsdataBatchId);
     }
 
+    public int getNodes() {
+        return nodes;
+    }
 }

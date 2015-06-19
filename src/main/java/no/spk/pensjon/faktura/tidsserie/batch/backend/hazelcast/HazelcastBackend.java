@@ -52,8 +52,8 @@ public class HazelcastBackend implements TidsserieBackendService {
 
     private Optional<HazelcastInstance> instance = empty();
 
-    public HazelcastBackend() {
-        this(new MultiNodeSingleJVMBackend());
+    public HazelcastBackend(int antallNoder) {
+        this(new MultiNodeSingleJVMBackend(antallNoder));
     }
 
     HazelcastBackend(final Server server) {
