@@ -52,7 +52,13 @@ class MultiNodeSingleJVMBackend implements Server {
 
     private final Set<HazelcastInstance> slavar = new HashSet<>();
 
+    private final int antallNoder;
+
     private Optional<HazelcastInstance> master = empty();
+
+    public MultiNodeSingleJVMBackend(int antallNoder) {
+        this.antallNoder = antallNoder;
+    }
 
     /**
      * Startar opp master- og slavenodene.
@@ -64,8 +70,6 @@ class MultiNodeSingleJVMBackend implements Server {
      */
     @Override
     public HazelcastInstance start() {
-        final int antallNoder = Runtime.getRuntime().availableProcessors();
-
         setProperty("hazelcast.logging.type", "slf4j");
 
         final Config config = new XmlConfigBuilder().build();

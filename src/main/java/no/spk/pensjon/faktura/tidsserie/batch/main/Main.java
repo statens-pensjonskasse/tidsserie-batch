@@ -50,11 +50,10 @@ public class Main {
             BatchDirectoryCleaner directoryCleaner = new BatchDirectoryCleaner(arguments.getUtkatalog(), batchId);
             controller.ryddOpp(directoryCleaner);
 
-            final TidsserieBackendService backend = new HazelcastBackend();
+            final TidsserieBackendService backend = new HazelcastBackend(arguments.getNodes());
             final GrunnlagsdataRepository input = new CSVInput(arguments.getInnkatalog().resolve(arguments.getGrunnlagsdataBatchId()));
             final GrunnlagsdataService overfoering = new GrunnlagsdataService(backend, input);
             final Configuration freemarkerConfiguration = TemplateConfigurationFactory.create();
-
 
             long started = System.currentTimeMillis();
             controller.startBackend(backend);
