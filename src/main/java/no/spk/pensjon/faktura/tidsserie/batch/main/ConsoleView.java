@@ -61,6 +61,7 @@ public class ConsoleView implements View{
         println("Grunnlagsdata-batch startet " + now().format(DATE_TIME_FORMATTER));
         println("Følgende programargumenter blir brukt: ");
         println(ArgumentSummary.createParameterSummary(arguments));
+        arguments.postMessage().ifPresent(this::println);
     }
 
     @Override

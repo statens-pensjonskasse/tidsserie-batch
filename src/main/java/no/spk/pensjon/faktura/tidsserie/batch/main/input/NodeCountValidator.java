@@ -9,11 +9,13 @@ import com.beust.jcommander.ParameterException;
  * @see ProgramArguments
  * @see com.beust.jcommander.JCommander
  */
-public class GreaterThanZeroValidator implements IValueValidator<Number> {
+public class NodeCountValidator implements IValueValidator<Number> {
     @Override
     public void validate(String name, Number value) throws ParameterException {
-        if (value.intValue() <= 0) {
-            throw new ParameterException("'" + name + "': må være større enn 0 (fant " + value +").");
+        int cpus = Runtime.getRuntime().availableProcessors();
+        if (value.intValue() <= 0 || value.intValue() > cpus) {
+            throw new ParameterException("'" + name + "': må være større enn 0 og kan ikke være større enn antall " +
+                    "CPU'er på serveren (" + cpus  + ") - (fant " + value +").");
         }
     }
 }

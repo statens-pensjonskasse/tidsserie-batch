@@ -1,8 +1,7 @@
 package no.spk.pensjon.faktura.tidsserie.batch.main.input;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalTime;
+import java.util.Optional;
 
 import com.beust.jcommander.Parameter;
 
@@ -54,10 +53,10 @@ public class ProgramArguments {
 
 
     @Parameter(names = { "-n" },
-            description = "Antall noder som skal brukes for å utgjøre grid for tidsserie-prossesering. Default er lik antall prosessorer i kjøremiljøet.",
+            description = "Antall noder som skal brukes for å utgjøre grid for tidsserie-prossesering. Default er lik antall prosessorer på serveren minus 1.",
             validateWith = IntegerValidator.class,
-            validateValueWith = GreaterThanZeroValidator.class)
-    int nodes = Runtime.getRuntime().availableProcessors();
+            validateValueWith = NodeCountValidator.class)
+    int nodes = Runtime.getRuntime().availableProcessors() - 1;
 
     public boolean isHjelp() {
         return hjelp;
@@ -96,5 +95,12 @@ public class ProgramArguments {
 
     public int getNodes() {
         return nodes;
+    }
+
+    public Optional<String> postMessage() {
+        if (nodes == Runtime.getRuntime().availableProcessors()) {
+            return Optional.of("ADVARSEL: Antall noder angitt er lik antall prosessorer på serveren.");
+        }
+        return Optional.empty();
     }
 }
