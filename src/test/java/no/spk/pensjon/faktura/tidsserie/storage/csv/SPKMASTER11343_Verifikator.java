@@ -36,6 +36,12 @@ import org.junit.Test;
  * <li>Forskyver nedgangen i årsverk til neste observasjon
  * <li>Forskyver nedgangen i grunnlag til neste observasjon
  * </ul>
+ * <br>
+ * For å køyre testen må du manuelt generere to datasett, ein med versjonen du ønskjer å samanlikne mot
+ * og ein med versjonen som inneheld endringane du ønskjer å teste.
+ * <br>
+ * Plasser tidsserien på aggregert stillingsforholdnivå i fila gammal-versjon.csv og ny-versjon.csv i modulens
+ * rotkatalog og køyr testen.
  *
  * @author Tarjei Skorgenes
  */
