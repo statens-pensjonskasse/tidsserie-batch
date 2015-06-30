@@ -1,6 +1,7 @@
 package no.spk.pensjon.faktura.tidsserie.batch.storage.csv.underlagsperioder;
 
 import static java.util.Optional.empty;
+import static java.util.Optional.of;
 import static java.util.stream.IntStream.range;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Aksjonskode.PERMISJON_UTAN_LOENN;
 
@@ -14,11 +15,9 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.CSVFormat;
-import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Produktinfo;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Aksjonskode;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.DeltidsjustertLoenn;
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Fakturerbareprodukt;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Fastetillegg;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Foedselsnummer;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Funksjonstillegg;
@@ -32,7 +31,6 @@ import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Ordning;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Premiestatus;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Prosent;
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Satser;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.StillingsforholdId;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Stillingskode;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Stillingsprosent;
@@ -178,7 +176,7 @@ public class Datavarehusformat implements CSVFormat {
         detector.utfoer(builder, p, up -> premiesatserFor(up, Produkt.TIP), 4);
         detector.utfoer(builder, p, up -> premiesatserFor(up, Produkt.GRU), 4);
         detector.utfoer(builder, p, up -> premiesatserFor(up, Produkt.YSK), 4);
-        detector.utfoer(builder, p, up -> flagg(up.valgfriAnnotasjonFor(Fakturerbareprodukt.class).flatMap(f -> f.risikoklasse(Produkt.YSK)).isPresent()));
+        detector.utfoer(builder, p, up -> kode(of("2,5")));
 
         detector.utfoer(builder, p, up -> up.id().toString());
 
@@ -212,34 +210,13 @@ public class Datavarehusformat implements CSVFormat {
     }
 
     private Stream<String> premiesatserFor(final Underlagsperiode up, final Produkt produkt) {
-        return up
-                .valgfriAnnotasjonFor(Fakturerbareprodukt.class)
-                .map(a -> {
-                            final boolean erProsentbasert = a.erProsentbasert(produkt);
-                            return Stream.of(
-                                    flagg(a.erFakturerbart(produkt)),
-                                    erProsentbasert ?
-                                            prosent(a.prosentsatser(produkt).map(Satser::arbeidsgiverpremie), 2) :
-                                            beloep(a.beloepsatser(produkt).map(Satser::arbeidsgiverpremie)),
-                                    erProsentbasert ?
-                                            prosent(a.prosentsatser(produkt).map(Satser::medlemspremie), 2) :
-                                            beloep(a.beloepsatser(produkt).map(Satser::medlemspremie)),
-                                    erProsentbasert ?
-                                            prosent(a.prosentsatser(produkt).map(Satser::administrasjonsgebyr), 2) :
-                                            beloep(a.beloepsatser(produkt).map(Satser::administrasjonsgebyr)),
-                                    kode(a.produktinfo(produkt).map(Produktinfo::kode))
-                            );
-                        }
-                )
-                .orElseGet(() ->
-                                Stream.of(
-                                        flagg(false),
-                                        beloep(Optional.<Kroner>empty()),
-                                        beloep(Optional.<Kroner>empty()),
-                                        beloep(Optional.<Kroner>empty()),
-                                        kode(Optional.<String>empty())
-                                )
-                );
+        return Stream.of(
+                flagg(false),
+                beloep(Optional.<Kroner>empty()),
+                beloep(Optional.<Kroner>empty()),
+                beloep(Optional.<Kroner>empty()),
+                kode(Optional.<String>empty())
+        );
     }
 
     private NumberFormat desimalFormat(final int antallDesimaler) {

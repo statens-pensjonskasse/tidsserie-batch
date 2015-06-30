@@ -6,10 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import no.spk.pensjon.faktura.tidsserie.batch.Foedselsnummer;
+import no.spk.pensjon.faktura.tidsserie.batch.MedlemsId;
 import no.spk.pensjon.faktura.tidsserie.batch.Medlemslinje;
 import no.spk.pensjon.faktura.tidsserie.batch.MedlemsdataUploader;
-import no.spk.pensjon.faktura.tidsserie.batch.TidsserieFactory;
 
 import com.hazelcast.core.IMap;
 
@@ -29,7 +28,7 @@ class UploadCommand implements MedlemsdataUploader {
 
     @Override
     public void run() {
-        final Foedselsnummer medlem = data.get(0).medlem();
+        final MedlemsId medlem = data.get(0).medlem();
 
         final Endringer e = new Endringer(data.stream().map(Medlemslinje::data).collect(toList()));
         data.clear();

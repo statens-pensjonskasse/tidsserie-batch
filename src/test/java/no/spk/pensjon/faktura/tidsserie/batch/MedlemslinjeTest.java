@@ -39,7 +39,7 @@ public class MedlemslinjeTest {
                 ).medlem()
         ).as("medlemsidentifikator")
                 .isEqualTo(
-                        new Foedselsnummer("19790101", "12345")
+                        new MedlemsId("19790101", "12345")
                 );
     }
 
@@ -83,7 +83,7 @@ public class MedlemslinjeTest {
     }
 
     private BooleanAssert softlyAssertThat(final Medlemslinje linje, final String foedselsdato, final String personnummer) {
-        final Foedselsnummer medlem = Foedselsnummer.foedselsnummer(foedselsdato, personnummer);
+        final MedlemsId medlem = MedlemsId.medlemsId(foedselsdato, personnummer);
         return softly.assertThat(linje.tilhoeyrer(medlem)).as("tilhøyrer {" + linje + "} medlem " + medlem + "?");
     }
 
