@@ -127,6 +127,10 @@
             <groupId>net.logstash.logback</groupId>
             <artifactId>logstash-logback-encoder</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.lmax</groupId>
+            <artifactId>disruptor</artifactId>
+        </dependency>
         <!-- test-->
         <dependency>
             <groupId>org.mockito</groupId>
@@ -147,6 +151,11 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.lmax</groupId>
+                <artifactId>disruptor</artifactId>
+                <version>3.3.0</version>
+            </dependency>
             <dependency>
                 <groupId>no.spk.pensjon.faktura</groupId>
                 <artifactId>faktura-prognose-tidsserie</artifactId>
