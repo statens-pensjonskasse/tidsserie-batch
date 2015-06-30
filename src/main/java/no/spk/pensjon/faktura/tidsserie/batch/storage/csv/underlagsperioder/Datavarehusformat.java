@@ -140,49 +140,53 @@ public class Datavarehusformat implements CSVFormat {
                 .add(stilling.id())
                 .add(p.annotasjonFor(AvtaleId.class).id());
 
-        detector.utfoer(builder, p, up -> kode(empty()));
-        detector.utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Ordning.class).map(Ordning::kode).map(Object::toString)));
-        detector.utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Premiestatus.class).map(Premiestatus::kode)));
-        detector.utfoer(builder, p, up -> kode(empty()));
-        detector.utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Aksjonskode.class).map(Aksjonskode::kode)));
-        detector.utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Stillingskode.class).map(Stillingskode::getKode)));
-        detector.utfoer(builder, p, up -> prosent(deltid.map(Stillingsprosent::prosent), 3));
-        detector.utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Loennstrinn.class).map(Loennstrinn::trinn).map(Object::toString)));
-        detector.utfoer(builder, p, up -> beloep(up.valgfriAnnotasjonFor(LoennstrinnBeloep.class).map(LoennstrinnBeloep::beloep)));
-        detector.utfoer(builder, p, up -> beloep(up.valgfriAnnotasjonFor(DeltidsjustertLoenn.class).map(DeltidsjustertLoenn::beloep)));
-        detector.utfoer(builder, p, up -> beloep(up.valgfriAnnotasjonFor(Fastetillegg.class).map(Fastetillegg::beloep)));
-        detector.utfoer(builder, p, up -> beloep(up.valgfriAnnotasjonFor(Variabletillegg.class).map(Variabletillegg::beloep)));
-        detector.utfoer(builder, p, up -> beloep(up.valgfriAnnotasjonFor(Funksjonstillegg.class).map(Funksjonstillegg::beloep)));
-        detector.utfoer(builder, p, up -> beloep(up.valgfriAnnotasjonFor(Medregning.class).map(Medregning::beloep)));
-        detector.utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Medregningskode.class).map(Medregningskode::kode)));
-        detector.utfoer(builder, p, up -> beloep(up.valgfriAnnotasjonFor(Grunnbeloep.class).map(Grunnbeloep::beloep)));
-        detector.utfoer(builder, p, up -> prosent(up.beregn(AarsfaktorRegel.class).tilProsent(), 2));
-        detector.utfoer(builder, p, up -> up.beregn(AarsLengdeRegel.class).verdi());
-        detector.utfoer(builder, p, up -> prosent(up.beregn(AarsverkRegel.class).tilProsent(), 2));
-        detector.utfoer(builder, p, up -> up.beregn(AntallDagarRegel.class).verdi());
-        detector.utfoer(builder, p, up -> beloep(up.beregn(DeltidsjustertLoennRegel.class)));
-        detector.utfoer(builder, p, up -> beloep(up.beregn(LoennstilleggRegel.class)));
-        detector.utfoer(builder, p, up -> beloep(up.beregn(MaskineltGrunnlagRegel.class)));
-        detector.utfoer(builder, p, up -> beloep(up.beregn(MedregningsRegel.class)));
-        detector.utfoer(builder, p, up -> prosent(up.beregn(MinstegrenseRegel.class).grense(), 2));
-        detector.utfoer(builder, p, up -> beloep(up.beregn(OevreLoennsgrenseRegel.class)));
-        detector.utfoer(builder, p, up -> prosent(up.beregn(GruppelivsfaktureringRegel.class).andel(), 4));
-        detector.utfoer(builder, p, up -> prosent(up.beregn(YrkesskadefaktureringRegel.class).andel(), 4));
-        detector.utfoer(builder, p, up -> flagg(up.valgfriAnnotasjonFor(Medregning.class).isPresent()));
-        detector.utfoer(builder, p, up -> flagg(up.valgfriAnnotasjonFor(Aksjonskode.class).filter(kode -> kode.equals(PERMISJON_UTAN_LOENN)).isPresent()));
-        detector.utfoer(builder, p, up -> flagg(deltid.map(d -> up.beregn(MinstegrenseRegel.class).erUnderMinstegrensa(d)).orElse(false)));
-        detector.utfoer(builder, p, up -> premiesatserFor(up, Produkt.PEN), 4);
-        detector.utfoer(builder, p, up -> premiesatserFor(up, Produkt.AFP), 4);
-        detector.utfoer(builder, p, up -> premiesatserFor(up, Produkt.TIP), 4);
-        detector.utfoer(builder, p, up -> premiesatserFor(up, Produkt.GRU), 4);
-        detector.utfoer(builder, p, up -> premiesatserFor(up, Produkt.YSK), 4);
-        detector.utfoer(builder, p, up -> kode(of("2,5")));
-
-        detector.utfoer(builder, p, up -> up.id().toString());
+        detector.utfoer(builder, p, up -> kode(empty()))
+                .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Ordning.class).map(Ordning::kode).map(Object::toString)))
+                .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Premiestatus.class).map(Premiestatus::kode)))
+                .utfoer(builder, p, up -> kode(empty()))
+                .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Aksjonskode.class).map(Aksjonskode::kode)))
+                .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Stillingskode.class).map(Stillingskode::getKode)))
+                .utfoer(builder, p, up -> prosent(deltid.map(Stillingsprosent::prosent), 3))
+                .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Loennstrinn.class).map(Loennstrinn::trinn).map(Object::toString)))
+                .utfoer(builder, p, up -> beloep(up.valgfriAnnotasjonFor(LoennstrinnBeloep.class).map(LoennstrinnBeloep::beloep)))
+                .utfoer(builder, p, up -> beloep(up.valgfriAnnotasjonFor(DeltidsjustertLoenn.class).map(DeltidsjustertLoenn::beloep)))
+                .utfoer(builder, p, up -> beloep(up.valgfriAnnotasjonFor(Fastetillegg.class).map(Fastetillegg::beloep)))
+                .utfoer(builder, p, up -> beloep(up.valgfriAnnotasjonFor(Variabletillegg.class).map(Variabletillegg::beloep)))
+                .utfoer(builder, p, up -> beloep(up.valgfriAnnotasjonFor(Funksjonstillegg.class).map(Funksjonstillegg::beloep)))
+                .utfoer(builder, p, up -> beloep(up.valgfriAnnotasjonFor(Medregning.class).map(Medregning::beloep)))
+                .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Medregningskode.class).map(Medregningskode::kode)))
+                .utfoer(builder, p, up -> beloep(up.valgfriAnnotasjonFor(Grunnbeloep.class).map(Grunnbeloep::beloep)))
+                .utfoer(builder, p, up -> prosent(up.beregn(AarsfaktorRegel.class).tilProsent(), 2))
+                .utfoer(builder, p, up -> heiltall(up.beregn(AarsLengdeRegel.class).verdi()))
+                .utfoer(builder, p, up -> prosent(up.beregn(AarsverkRegel.class).tilProsent(), 2))
+                .utfoer(builder, p, up -> heiltall(up.beregn(AntallDagarRegel.class).verdi()))
+                .utfoer(builder, p, up -> beloep(up.beregn(DeltidsjustertLoennRegel.class)))
+                .utfoer(builder, p, up -> beloep(up.beregn(LoennstilleggRegel.class)))
+                .utfoer(builder, p, up -> beloep(up.beregn(MaskineltGrunnlagRegel.class)))
+                .utfoer(builder, p, up -> beloep(up.beregn(MedregningsRegel.class)))
+                .utfoer(builder, p, up -> prosent(up.beregn(MinstegrenseRegel.class).grense(), 2))
+                .utfoer(builder, p, up -> beloep(up.beregn(OevreLoennsgrenseRegel.class)))
+                .utfoer(builder, p, up -> prosent(up.beregn(GruppelivsfaktureringRegel.class).andel(), 4))
+                .utfoer(builder, p, up -> prosent(up.beregn(YrkesskadefaktureringRegel.class).andel(), 4))
+                .utfoer(builder, p, up -> flagg(up.valgfriAnnotasjonFor(Medregning.class).isPresent()))
+                .utfoer(builder, p, up -> flagg(up.valgfriAnnotasjonFor(Aksjonskode.class).filter(kode -> kode.equals(PERMISJON_UTAN_LOENN)).isPresent()))
+                .utfoer(builder, p, up -> flagg(deltid.map(d -> up.beregn(MinstegrenseRegel.class).erUnderMinstegrensa(d)).orElse(false)))
+                .utfoer(builder, p, up -> premiesatserFor(up, Produkt.PEN), 4)
+                .utfoer(builder, p, up -> premiesatserFor(up, Produkt.AFP), 4)
+                .utfoer(builder, p, up -> premiesatserFor(up, Produkt.TIP), 4)
+                .utfoer(builder, p, up -> premiesatserFor(up, Produkt.GRU), 4)
+                .utfoer(builder, p, up -> premiesatserFor(up, Produkt.YSK), 4)
+                .utfoer(builder, p, up -> kode(of("2,5")))
+                .utfoer(builder, p, up -> up.id().toString())
+        ;
 
         return builder
                 .add(detector.antallFeil)
                 .build();
+    }
+
+    private String heiltall(final int verdi) {
+        return Integer.toString(verdi);
     }
 
     private String flagg(final boolean value) {
@@ -228,19 +232,20 @@ public class Datavarehusformat implements CSVFormat {
         });
     }
 
-    static class ErrorDetector {
+    private static class ErrorDetector {
         int antallFeil;
 
-        void utfoer(final Consumer<Object> builder, final Underlagsperiode p, final Function<Underlagsperiode, Object> function) {
+        ErrorDetector utfoer(final Consumer<Object> builder, final Underlagsperiode p, final Function<Underlagsperiode, String> function) {
             try {
                 builder.accept(function.apply(p));
             } catch (final Exception e) {
                 antallFeil++;
                 builder.accept("");
             }
+            return this;
         }
 
-        void utfoer(final Consumer<Object> builder, final Underlagsperiode p, final Function<Underlagsperiode, Stream<String>> function, final int fieldCount) {
+        ErrorDetector utfoer(final Consumer<Object> builder, final Underlagsperiode p, final Function<Underlagsperiode, Stream<String>> function, final int fieldCount) {
             try {
                 function.apply(p)
                         .forEach(builder);
@@ -251,6 +256,7 @@ public class Datavarehusformat implements CSVFormat {
                         .mapToObj(i -> "")
                         .forEach(builder);
             }
+            return this;
         }
     }
 }
