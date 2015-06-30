@@ -129,7 +129,6 @@ public class Datavarehusformat implements CSVFormat {
     public Stream<Object> serialiser(final Underlag observasjonsunderlag, final Underlagsperiode p) {
         final ErrorDetector detector = new ErrorDetector();
         final Optional<Stillingsprosent> deltid = p.valgfriAnnotasjonFor(Stillingsprosent.class);
-        final StillingsforholdId stilling = observasjonsunderlag.annotasjonFor(StillingsforholdId.class);
 
         final Stream.Builder<Object> builder = Stream
                 .builder()
@@ -137,7 +136,7 @@ public class Datavarehusformat implements CSVFormat {
                 .add(p.fraOgMed())
                 .add(p.tilOgMed().get())
                 .add(p.annotasjonFor(Foedselsnummer.class))
-                .add(stilling.id())
+                .add(p.annotasjonFor(StillingsforholdId.class).id())
                 .add(p.annotasjonFor(AvtaleId.class).id());
 
         detector.utfoer(builder, p, up -> kode(empty()))
