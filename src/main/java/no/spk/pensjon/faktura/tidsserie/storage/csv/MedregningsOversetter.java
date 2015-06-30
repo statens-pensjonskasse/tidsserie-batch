@@ -1,14 +1,17 @@
 package no.spk.pensjon.faktura.tidsserie.storage.csv;
 
+import static no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medregningsperiode.medregning;
 import static no.spk.pensjon.faktura.tidsserie.storage.csv.Feilmeldingar.ugyldigAntallKolonnerForMedregningsperiode;
 
 import java.util.List;
 import java.util.Optional;
 
 import no.spk.pensjon.faktura.tidsserie.Datoar;
+import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Foedselsdato;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Kroner;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Medregning;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Medregningskode;
+import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Personnummer;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.StillingsforholdId;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.MedlemsdataOversetter;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medregningsperiode;
@@ -89,6 +92,16 @@ public class MedregningsOversetter implements MedlemsdataOversetter<Medregningsp
     public static final String TYPEINDIKATOR = "2";
 
     /**
+     * Kolonneindeksen fødselsdatoen blir henta frå.
+     */
+    public static int INDEX_FOEDSELSDATO = 1;
+
+    /**
+     * Kolonneindeksen personnummeret blir henta frå.
+     */
+    public static int INDEX_PERSONNUMMER = 2;
+
+    /**
      * Kolonneindeksen stillingsforholdnummer blir henta frå.
      */
     public static final int INDEX_STILLINGSFORHOLD = 3;
@@ -132,13 +145,15 @@ public class MedregningsOversetter implements MedlemsdataOversetter<Medregningsp
                     ugyldigAntallKolonnerForMedregningsperiode(rad)
             );
         }
-        return new Medregningsperiode(
-                read(rad, INDEX_FRA_OG_MED_DATO).map(Datoar::dato).get(),
-                read(rad, INDEX_TIL_OG_MED_DATO).map(Datoar::dato),
-                read(rad, INDEX_LOENN).map(Integer::valueOf).map(Kroner::new).map(Medregning::new).get(),
-                read(rad, INDEX_KODE).map(Integer::valueOf).map(Medregningskode::valueOf).get(),
-                read(rad, INDEX_STILLINGSFORHOLD).map(Long::valueOf).map(StillingsforholdId::valueOf).get()
-        );
+        return medregning()
+                .fraOgMed(read(rad, INDEX_FRA_OG_MED_DATO).map(Datoar::dato).get())
+                .tilOgMed(read(rad, INDEX_TIL_OG_MED_DATO).map(Datoar::dato))
+                .beloep(read(rad, INDEX_LOENN).map(Integer::valueOf).map(Kroner::new).map(Medregning::new).get())
+                .kode(read(rad, INDEX_KODE).map(Integer::valueOf).map(Medregningskode::valueOf).get())
+                .stillingsforhold(read(rad, INDEX_STILLINGSFORHOLD).map(Long::valueOf).map(StillingsforholdId::valueOf).get())
+                .foedselsdato(read(rad, INDEX_FOEDSELSDATO).map(Datoar::dato).map(Foedselsdato::new).get())
+                .personnummer(read(rad, INDEX_PERSONNUMMER).map(Integer::valueOf).map(Personnummer::new).get())
+                .bygg();
     }
 
     /**

@@ -6,12 +6,15 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import no.spk.pensjon.faktura.tidsserie.Datoar;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Aksjonskode;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.DeltidsjustertLoenn;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Fastetillegg;
+import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Foedselsdato;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Funksjonstillegg;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Kroner;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Loennstrinn;
+import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Personnummer;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Prosent;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.StillingsforholdId;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Stillingskode;
@@ -144,6 +147,16 @@ public class StillingsendringOversetter implements MedlemsdataOversetter<Stillin
     public static final String TYPEINDIKATOR = "0";
 
     /**
+     * Kolonneindeksen fødselsdatoen blir henta frå.
+     */
+    public static int INDEX_FOEDSELSDATO = 1;
+
+    /**
+     * Kolonneindeksen personnummeret blir henta frå.
+     */
+    public static int INDEX_PERSONNUMMER = 2;
+
+    /**
      * Kolonneindeksen stillingsforholdnummer blir henta frå.
      */
     public static final int INDEX_STILLINGSFORHOLD = 3;
@@ -216,6 +229,8 @@ public class StillingsendringOversetter implements MedlemsdataOversetter<Stillin
         }
         final int index = INDEX_AKSJONSDATO;
         return new Stillingsendring()
+                .foedselsdato(read(rad, INDEX_FOEDSELSDATO).map(Datoar::dato).map(Foedselsdato::new).get())
+                .personnummer(read(rad, INDEX_PERSONNUMMER).map(Integer::valueOf).map(Personnummer::new).get())
                 .stillingsforhold(read(rad, INDEX_STILLINGSFORHOLD).map(StillingsforholdId::valueOf).get())
                 .aksjonskode(read(rad, INDEX_AKSJONSKODE).map(Aksjonskode::valueOf).orElse(Aksjonskode.UKJENT))
                 .aksjonsdato(readDato(rad, index).get())
