@@ -9,12 +9,14 @@ import java.time.temporal.ChronoUnit;
 import no.spk.pensjon.faktura.tidsserie.batch.GrunnlagsdataRepository;
 import no.spk.pensjon.faktura.tidsserie.batch.GrunnlagsdataService;
 import no.spk.pensjon.faktura.tidsserie.batch.TidsserieBackendService;
+import no.spk.pensjon.faktura.tidsserie.batch.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast.FileTemplate;
 import no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast.HazelcastBackend;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArgumentsFactory;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArgumentsFactory.InvalidParameterException;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArgumentsFactory.UsageRequestedException;
+import no.spk.pensjon.faktura.tidsserie.batch.storage.csv.prognoseobservasjonar.Stillingsforholdprognosemodus;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.CSVInput;
 
@@ -50,13 +52,15 @@ public class Main {
             BatchDirectoryCleaner directoryCleaner = new BatchDirectoryCleaner(arguments.getUtkatalog(), batchId);
             controller.ryddOpp(directoryCleaner);
 
-            final TidsserieBackendService backend = new HazelcastBackend(arguments.getNodes());
+            final Tidsseriemodus parameter = new Stillingsforholdprognosemodus();
+            final TidsserieBackendService backend = new HazelcastBackend(arguments.getNodes(), parameter);
             final GrunnlagsdataRepository input = new CSVInput(arguments.getInnkatalog().resolve(arguments.getGrunnlagsdataBatchId()));
             final GrunnlagsdataService overfoering = new GrunnlagsdataService(backend, input);
             final Configuration freemarkerConfiguration = TemplateConfigurationFactory.create();
 
             long started = System.currentTimeMillis();
             controller.startBackend(backend);
+
             controller.lastOpp(overfoering);
             controller.lagTidsserie(backend,
                     new FileTemplate(batchKatalog, "output-", ".csv"),
