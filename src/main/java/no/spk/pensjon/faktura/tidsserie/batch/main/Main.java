@@ -17,6 +17,7 @@ import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArgumentsFactory
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArgumentsFactory.InvalidParameterException;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArgumentsFactory.UsageRequestedException;
 import no.spk.pensjon.faktura.tidsserie.batch.storage.csv.prognoseobservasjonar.Stillingsforholdprognosemodus;
+import no.spk.pensjon.faktura.tidsserie.batch.storage.csv.underlagsperioder.LiveTidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.CSVInput;
 
@@ -52,7 +53,7 @@ public class Main {
             BatchDirectoryCleaner directoryCleaner = new BatchDirectoryCleaner(arguments.getUtkatalog(), batchId);
             controller.ryddOpp(directoryCleaner);
 
-            final Tidsseriemodus parameter = new Stillingsforholdprognosemodus();
+            final Tidsseriemodus parameter = new LiveTidsseriemodus();
             final TidsserieBackendService backend = new HazelcastBackend(arguments.getNodes(), parameter);
             final GrunnlagsdataRepository input = new CSVInput(arguments.getInnkatalog().resolve(arguments.getGrunnlagsdataBatchId()));
             final GrunnlagsdataService overfoering = new GrunnlagsdataService(backend, input);
