@@ -26,7 +26,11 @@ class OversetterSupport {
      * inneheld whitespace
      */
     Optional<LocalDate> readDato(final List<String> rad, final int index) {
-        return read(rad, index)
+        return tilDato(read(rad, index));
+    }
+
+    public Optional<LocalDate> tilDato(Optional<String> read) {
+        return read
                 .map(OversetterSupport::fjernTidFraDato)
                 .map(OversetterSupport::tilpassTilDatoFormat)
                 .map(Datoar::dato);
