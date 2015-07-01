@@ -87,7 +87,7 @@ public class HazelcastBackend implements TidsserieBackendService {
             publishHeader(lager);
 
             return submit(
-                    new GenererTidsseriePrStillingsforholdOgAar(
+                    new Tidsserieagent(
                             fraOgMed.atStartOfYear(),
                             tilOgMed.atEndOfYear()
                     )

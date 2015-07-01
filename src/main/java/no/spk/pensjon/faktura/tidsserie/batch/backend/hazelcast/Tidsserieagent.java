@@ -1,5 +1,8 @@
 package no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast;
 
+import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.joining;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +13,6 @@ import no.spk.pensjon.faktura.tidsserie.batch.TidsserieFactory;
 import no.spk.pensjon.faktura.tidsserie.batch.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Feilhandtering;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
-import no.spk.pensjon.faktura.tidsserie.storage.disruptor.LmaxDisruptorPublisher;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.HazelcastInstanceAware;
@@ -19,14 +21,20 @@ import com.hazelcast.mapreduce.LifecycleMapperAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class GenererTidsseriePrStillingsforholdOgAar
+/**
+ * {@link Tidsserieagent} er limet som binder saman data lasta opp til in-memory gridet i Hazelcast og
+ * domenemodellen som bygger opp tidsseriar.
+ *
+ * @author Tarjei Skorgenes
+ */
+class Tidsserieagent
         extends LifecycleMapperAdapter<String, List<List<String>>, String, Integer> implements HazelcastInstanceAware {
     private final LocalDate foerstedato;
     private final LocalDate sistedato;
 
     private transient GenererTidsserieCommand kommando;
 
-    GenererTidsseriePrStillingsforholdOgAar(final LocalDate foerstedato, final LocalDate sistedato) {
+    Tidsserieagent(final LocalDate foerstedato, final LocalDate sistedato) {
         this.foerstedato = foerstedato;
         this.sistedato = sistedato;
     }
@@ -79,9 +87,26 @@ class GenererTidsseriePrStillingsforholdOgAar
         context.emit("errors_message_" + (t.getMessage() != null ? t.getMessage() : "null"), 1);
     }
 
-    private <T> T lookup(final Map<String, Object> userContext, final Class<T> serviceType) {
-        return serviceType.cast(
+    static <T> T lookup(final Map<String, Object> userContext, final Class<T> serviceType) {
+        return ofNullable(
                 userContext.get(serviceType.getSimpleName())
-        );
+        )
+                .filter(service -> serviceType.isAssignableFrom(service.getClass()))
+                .map(serviceType::cast)
+                .orElseThrow(() -> new IllegalStateException(
+                                "Ingen teneste av type "
+                                        + serviceType.getSimpleName()
+                                        + " er registrert i tenesteregisteret.\n"
+                                        + "Tilgjengelig tenester:\n"
+                                        + userContext
+                                        .values()
+                                        .stream()
+                                        .map(Object::getClass)
+                                        .map(Class::getSimpleName)
+                                        .map(type -> "- " + type)
+                                        .collect(joining("\n"))
+                        )
+                )
+                ;
     }
 }
