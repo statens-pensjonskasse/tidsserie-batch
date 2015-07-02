@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static java.util.concurrent.Executors.newCachedThreadPool;
+import static java.util.stream.Collectors.joining;
 
 import java.util.List;
 import java.util.Map;
@@ -12,7 +13,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 
 import no.spk.pensjon.faktura.tidsserie.batch.MedlemsdataUploader;
+import no.spk.pensjon.faktura.tidsserie.batch.StorageBackend;
 import no.spk.pensjon.faktura.tidsserie.batch.TidsserieBackendService;
+import no.spk.pensjon.faktura.tidsserie.batch.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
 import no.spk.pensjon.faktura.tidsserie.storage.disruptor.LmaxDisruptorPublisher;
 
@@ -47,23 +50,26 @@ public class HazelcastBackend implements TidsserieBackendService {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private final Server server;
+    private final Tidsseriemodus parameter;
 
     private Optional<IMap<String, List<List<String>>>> map = empty();
 
     private Optional<HazelcastInstance> instance = empty();
 
-    public HazelcastBackend() {
-        this(new MultiNodeSingleJVMBackend());
+    public HazelcastBackend(final int antallNoder, final Tidsseriemodus parameter) {
+        this(new MultiNodeSingleJVMBackend(antallNoder), parameter);
     }
 
-    HazelcastBackend(final Server server) {
+    HazelcastBackend(final Server server, final Tidsseriemodus parameter) {
         this.server = requireNonNull(server, "server er påkrevd, men var null");
+        this.parameter = requireNonNull(parameter, "tidsserieparameter er påkrevd, men var null");
     }
 
     @Override
     public void start() {
         this.instance = of(server.start());
         this.map = instance.map(i -> i.getMap("medlemsdata"));
+        registrer(Tidsseriemodus.class, parameter);
     }
 
     @Override
@@ -78,12 +84,14 @@ public class HazelcastBackend implements TidsserieBackendService {
                 r -> new Thread(r, "lmax-disruptor-" + System.currentTimeMillis())
         );
         try (final LmaxDisruptorPublisher lager = openDisruptor(executors, outputFiles)) {
-            final GenererTidsseriePrStillingsforholdOgAar mapper = new GenererTidsseriePrStillingsforholdOgAar(
-                    fraOgMed.atStartOfYear(),
-                    tilOgMed.atEndOfYear()
+            publishHeader(lager);
+
+            return submit(
+                    new Tidsserieagent(
+                            fraOgMed.atStartOfYear(),
+                            tilOgMed.atEndOfYear()
+                    )
             );
-            mapper.publishHeader(lager);
-            return submit(mapper);
         } finally {
             executors.shutdown();
         }
@@ -97,8 +105,17 @@ public class HazelcastBackend implements TidsserieBackendService {
     private LmaxDisruptorPublisher openDisruptor(final ExecutorService executors, final FileTemplate fileTemplate) {
         final LmaxDisruptorPublisher publisher = new LmaxDisruptorPublisher(executors, fileTemplate);
         publisher.start();
-        registrer(LmaxDisruptorPublisher.class, publisher);
+        registrer(StorageBackend.class, publisher);
         return publisher;
+    }
+
+    private void publishHeader(final LmaxDisruptorPublisher lager) {
+        lager.lagre(builder -> {
+            builder
+                    .append(parameter.kolonnenavn().collect(joining(";")))
+                    .append('\n')
+            ;
+        });
     }
 
     private Map<String, Integer> submit(

@@ -52,9 +52,8 @@ public interface TidsserieFactory {
      * Medlemsdatane blir populert med oversettarar som konverterer <code>data</code> (gitt at det er data som er generert av
      * faktura-grunnlagsdata-batch) til domeneobjekt for alle påkrevde/støtta medlemsdata-typer.
      *
-     * @param foedselsnummer fødselsnummeret som unikt identifiserer medlemmet
-     * @param data           medlemsdata på CSV-format
+     * @param data medlemsdata på CSV-format
      * @return eit nytt sett med medlemsdata, preopulert med data og oversettarar som støttar konvertering av desse til domeneobjekt
      */
-    Medlemsdata create(final String foedselsnummer, final List<List<String>> data);
+    Medlemsdata create(final List<List<String>> data);
 }

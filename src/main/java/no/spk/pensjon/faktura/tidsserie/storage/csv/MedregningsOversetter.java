@@ -1,14 +1,13 @@
 package no.spk.pensjon.faktura.tidsserie.storage.csv;
 
-import static no.spk.pensjon.faktura.tidsserie.storage.csv.Feilmeldingar.ugyldigAntallKolonnerForMedregningsperiode;
-
-import java.util.List;
-import java.util.Optional;
+import static no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medregningsperiode.medregning;
 
 import no.spk.pensjon.faktura.tidsserie.Datoar;
+import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Foedselsdato;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Kroner;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Medregning;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Medregningskode;
+import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Personnummer;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.StillingsforholdId;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.MedlemsdataOversetter;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medregningsperiode;
@@ -31,7 +30,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medregningsperiode;
  * <tbody>
  * <tr>
  * <td>0</td>
- * <td>{@linkplain #TYPEINDIKATOR}</td>
+ * <td>2</td>
  * <td>Typeindikator som identifiserer rada som ei stillingsendring</td>
  * <td>Hardkoda, tallet 2</td>
  * </tr>
@@ -82,84 +81,21 @@ import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medregningsperiode;
  *
  * @author Tarjei Skorgenes
  */
-public class MedregningsOversetter implements MedlemsdataOversetter<Medregningsperiode> {
-    /**
-     * Type indikator for stillingshistorikk.
-     */
-    public static final String TYPEINDIKATOR = "2";
+public class MedregningsOversetter extends ReflectiveCsvOversetter<MedregningCsv, Medregningsperiode> implements MedlemsdataOversetter<Medregningsperiode> {
+    public MedregningsOversetter() {
+        super("2", MedregningCsv.class);
+    }
 
-    /**
-     * Kolonneindeksen stillingsforholdnummer blir henta frå.
-     */
-    public static final int INDEX_STILLINGSFORHOLD = 3;
-
-    /**
-     * Kolonneindeksen fra og med-dato blir henta frå.
-     */
-    public static final int INDEX_FRA_OG_MED_DATO = 4;
-
-    /**
-     * Kolonneindeksen til og med-dato blir henta frå.
-     */
-    public static final int INDEX_TIL_OG_MED_DATO = 5;
-
-    /**
-     * Kolonneindeksen medregningskoda blir henta frå.
-     */
-    public static final int INDEX_KODE = 6;
-
-    /**
-     * Kolonneindeksen lønna blir henta frå.
-     */
-    public static final int INDEX_LOENN = 7;
-    /**
-     * Forventa antall kolonner i ei medregningsrad.
-     */
-    public static final int ANTALL_KOLONNER = INDEX_LOENN + 1;
-
-    private final OversetterSupport support = new OversetterSupport();
-
-    /**
-     * Konverterer rada om til ei ny medregningsperiode.
-     *
-     * @param rad ei rad som inneheld informasjon om ei medregningsperiode
-     * @return ei ny medregningsperiode populert med verdiar frå <code>rad</code>
-     */
     @Override
-    public Medregningsperiode oversett(final List<String> rad) {
-        if (rad.size() < ANTALL_KOLONNER) {
-            throw new IllegalArgumentException(
-                    ugyldigAntallKolonnerForMedregningsperiode(rad)
-            );
-        }
-        return new Medregningsperiode(
-                read(rad, INDEX_FRA_OG_MED_DATO).map(Datoar::dato).get(),
-                read(rad, INDEX_TIL_OG_MED_DATO).map(Datoar::dato),
-                read(rad, INDEX_LOENN).map(Integer::valueOf).map(Kroner::new).map(Medregning::new).get(),
-                read(rad, INDEX_KODE).map(Integer::valueOf).map(Medregningskode::valueOf).get(),
-                read(rad, INDEX_STILLINGSFORHOLD).map(Long::valueOf).map(StillingsforholdId::valueOf).get()
-        );
+    protected Medregningsperiode transformer(MedregningCsv csvRad) {
+        return medregning()
+                .fraOgMed(csvRad.fraOgMedDato.map(Datoar::dato).get())
+                .tilOgMed(csvRad.tilOgMedDato.map(Datoar::dato))
+                .beloep(csvRad.loenn.map(Integer::valueOf).map(Kroner::new).map(Medregning::new).get())
+                .kode(csvRad.kode.map(Integer::valueOf).map(Medregningskode::valueOf).get())
+                .stillingsforhold(csvRad.stillingsforhold.map(Long::valueOf).map(StillingsforholdId::valueOf).get())
+                .foedselsdato(csvRad.foedselsdato.map(Datoar::dato).map(Foedselsdato::new).get())
+                .personnummer(csvRad.personnummer.map(Integer::valueOf).map(Personnummer::new).get())
+                .bygg();
     }
-
-    /**
-     * Inneheld rada informasjon om ei medregningsperiode?
-     * <p>
-     * Kva rader som inneheld medregningsperioder blir bestemt av verdien i kolonne 1, viss den er lik
-     * {@link #TYPEINDIKATOR} blir rada forventa å inneholde informasjon om ei medregningsperiode.
-     *
-     * @param rad ei rad som inneheld medlemsspesifikk informasjon
-     * @return <code>true</code> dersom verdien av kolonne 1 er lik {@link #TYPEINDIKATOR}, <code>false</code> ellers
-     */
-    @Override
-    public boolean supports(final List<String> rad) {
-        return TYPEINDIKATOR.equals(rad.get(0));
-    }
-
-    /**
-     * @see OversetterSupport#read(List, int)
-     */
-    private Optional<String> read(final List<String> rad, final int index) {
-        return support.read(rad, index);
-    }
-
 }

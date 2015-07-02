@@ -2,6 +2,8 @@ package no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast;
 
 import static org.mockito.Mockito.verify;
 
+import no.spk.pensjon.faktura.tidsserie.batch.Tidsseriemodus;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -16,11 +18,14 @@ public class HazelcastBackendTest {
     @Mock
     private Server server;
 
+    @Mock
+    private Tidsseriemodus parameter;
+
     private HazelcastBackend backend;
 
     @Before
     public void _before() {
-        backend = new HazelcastBackend(server);
+        backend = new HazelcastBackend(server, parameter);
     }
 
     @Test

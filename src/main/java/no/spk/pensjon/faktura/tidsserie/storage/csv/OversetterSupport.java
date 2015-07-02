@@ -14,19 +14,18 @@ import no.spk.pensjon.faktura.tidsserie.Datoar;
  */
 class OversetterSupport {
     /**
-     * Hentar ut og konverterer ein datoverdi frå den angitte indeksen i rada.
+     * Konverterer ein valgfri datoverdi representert som ei String.
      * <p>
      * Det foretrukne dato-formatet er på format yyyy.MM.dd, men formatet yyyy-MM-dd er også støtta. Dersom
      * datoverdien er lengre enn 10 tegn blir kun dei 10 første forsøkt innlest, eventuelle tidsverdiar blir
      * dermed ignorert.
      *
-     * @param rad   ei rad som inneheld feltet som datoverdien skal hentast frå
-     * @param index kolonneindeksen til feltet som inneheld datoverdien
-     * @return ein datoverdi henta frå det aktuelle feltet, eventuelt ingenting dersom feltet er tomt eller kun
+     * @param datoVerdi valgfri String som skal konverteres til ei dato
+     * @return ein datoverdi henta frå den valgfrie strengen, eventuelt ingenting dersom verdien mangler eller kun
      * inneheld whitespace
      */
-    Optional<LocalDate> readDato(final List<String> rad, final int index) {
-        return read(rad, index)
+    public Optional<LocalDate> tilDato(Optional<String> datoVerdi) {
+        return datoVerdi
                 .map(OversetterSupport::fjernTidFraDato)
                 .map(OversetterSupport::tilpassTilDatoFormat)
                 .map(Datoar::dato);

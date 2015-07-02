@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 
@@ -30,6 +29,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Tidsperiode;
  * @author Tarjei Skorgenes
  */
 public class CSVInput implements GrunnlagsdataRepository {
+    private static final int DO_NOT_STRIP_TRAILING_SEPARATORS = -1;
     private final List<CsvOversetter<? extends Tidsperiode<?>>> oversettere = new ArrayList<>();
 
     private final Charset dataencoding = Charset.forName("CP1252");
@@ -44,6 +44,9 @@ public class CSVInput implements GrunnlagsdataRepository {
         oversettere.add(new OmregningsperiodeOversetter());
         oversettere.add(new AvtaleversjonOversetter());
         oversettere.add(new AvtaleproduktOversetter());
+        oversettere.add(new AvtaleperiodeOversetter());
+        oversettere.add(new ArbeidsgiverOversetter());
+        oversettere.add(new ArbeidsgiverdataperiodeOversetter());
     }
 
     /**
@@ -115,7 +118,7 @@ public class CSVInput implements GrunnlagsdataRepository {
                     .lines()
                     .onClose(closeOnCompletion(reader))
                     .filter(this::erGrunnlagsdatalinje)
-                    .map(line -> line.split(";"))
+                    .map(line -> line.split(";", DO_NOT_STRIP_TRAILING_SEPARATORS))
                     .map(Arrays::asList);
         } catch (final IOException e) {
             throw new UncheckedIOException(e);
