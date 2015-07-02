@@ -177,7 +177,7 @@ public class Datavarehusformat implements CSVFormat {
                 .utfoer(builder, p, up -> beloep(up.valgfriAnnotasjonFor(Medregning.class).map(Medregning::beloep)))
                 .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Medregningskode.class).map(Medregningskode::kode)))
                 .utfoer(builder, p, up -> beloep(up.valgfriAnnotasjonFor(Grunnbeloep.class).map(Grunnbeloep::beloep)))
-                .utfoer(builder, p, up -> prosent(up.beregn(AarsfaktorRegel.class).tilProsent(), 2))
+                .utfoer(builder, p, up -> prosent(up.beregn(AarsfaktorRegel.class).tilProsent(), 8))
                 .utfoer(builder, p, up -> heiltall(up.beregn(AarsLengdeRegel.class).verdi()))
                 .utfoer(builder, p, up -> prosent(up.beregn(AarsverkRegel.class).tilProsent(), 2))
                 .utfoer(builder, p, up -> heiltall(up.beregn(AntallDagarRegel.class).verdi()))
