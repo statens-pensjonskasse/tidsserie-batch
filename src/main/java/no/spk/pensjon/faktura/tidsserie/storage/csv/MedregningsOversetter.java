@@ -3,7 +3,6 @@ package no.spk.pensjon.faktura.tidsserie.storage.csv;
 import static no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medregningsperiode.medregning;
 
 import no.spk.pensjon.faktura.tidsserie.Datoar;
-import no.spk.pensjon.faktura.tidsserie.batch.Foedselsnummer;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Foedselsdato;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Kroner;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Medregning;

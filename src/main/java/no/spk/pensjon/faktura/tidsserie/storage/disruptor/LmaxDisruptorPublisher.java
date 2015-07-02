@@ -5,14 +5,14 @@ import com.lmax.disruptor.dsl.Disruptor;
 import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
-import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
+import no.spk.pensjon.faktura.tidsserie.batch.StorageBackend;
 import no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast.FileTemplate;
 
-public class LmaxDisruptorPublisher implements Closeable {
+public class LmaxDisruptorPublisher implements Closeable, StorageBackend {
     private final ExecutorService executor;
     private final FileTemplate fileTemplate;
 
@@ -74,7 +74,8 @@ public class LmaxDisruptorPublisher implements Closeable {
         }
     }
 
-    public void publiser(final Consumer<StringBuilder> consumer) {
+    @Override
+    public void lagre(final Consumer<StringBuilder> consumer) {
         final long sequence = ringBuffer.next();
         try {
             final ObservasjonsEvent event = ringBuffer.get(sequence);

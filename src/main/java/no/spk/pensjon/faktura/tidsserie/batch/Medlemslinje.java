@@ -12,7 +12,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medlemsdata;
 /**
  * {@link Medlemslinje} representerer ei rad som inneheld medlemsdata for eit medlem.
  * <br>
- * Kvar medlemslinje startar med ei kolonne som inneheld ein {@link Foedselsnummer identifikator} som unikt identifiserer
+ * Kvar medlemslinje startar med ei kolonne som inneheld ein {@link MedlemsId identifikator} som unikt identifiserer
  * medlemmet linja tilhøyrer. Resterande kolonner er reservert til ein av dei medlemsspesifikke datatypene
  * som tidsseriegenereringa benyttar seg av.
  * <br>
@@ -38,7 +38,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medlemsdata;
 public class Medlemslinje {
     private final List<String> medlemsdata;
 
-    private final Foedselsnummer medlem;
+    private final MedlemsId medlem;
 
     /**
      * Konstruerer ei ny medlemslinje basert på verdiane i <code>values</code>.
@@ -65,7 +65,7 @@ public class Medlemslinje {
                                 .collect(joining("\n"))
                 )
         );
-        this.medlem = Foedselsnummer.foedselsnummer(
+        this.medlem = MedlemsId.medlemsId(
                 values.get(2), // Fødselsdato
                 values.get(3)  // Personnummer
         );
@@ -76,7 +76,7 @@ public class Medlemslinje {
      *
      * @return fødselsnummeret til medlemmet
      */
-    public Foedselsnummer medlem() {
+    public MedlemsId medlem() {
         return medlem;
     }
 
@@ -87,7 +87,7 @@ public class Medlemslinje {
      * @return <code>true</code> dersom linja tilhøyrer samme medlem som <code>other</code>,
      * <code>false</code> ellers
      */
-    public boolean tilhoeyrer(final Foedselsnummer other) {
+    public boolean tilhoeyrer(final MedlemsId other) {
         return medlem.equals(other);
     }
 

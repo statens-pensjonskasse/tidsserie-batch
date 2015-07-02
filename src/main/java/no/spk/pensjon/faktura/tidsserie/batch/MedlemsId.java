@@ -4,7 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static no.spk.pensjon.faktura.tidsserie.batch.Validators.require;
 
 /**
- * Fødselsnummer blir brukt for å unikt identifisere medlemmet eit sett med medlemsdata tilhøyrer.
+ * {@link MedlemsId} blir brukt for å unikt identifisere medlemmet eit sett med medlemsdata tilhøyrer.
  * <br>
  * Fødselsnummer er bygd opp som ei 13-sifra kode som består av to delar:
  * <ol>
@@ -18,7 +18,7 @@ import static no.spk.pensjon.faktura.tidsserie.batch.Validators.require;
  *
  * @author Tarjei Skorgenes
  */
-public class Foedselsnummer {
+public class MedlemsId {
     public static final int PERSONNUMMER_LENGDE = 5;
     private final String text;
 
@@ -37,7 +37,7 @@ public class Foedselsnummer {
      * @throws IllegalArgumentException dersom fødselsdato ikkje er eit 8-sifra tall eller dersom personnummer ikkje
      *                                  er eit 1- til 5-sifra tall
      */
-    public Foedselsnummer(final String foedselsdato, final String personnummer) {
+    public MedlemsId(final String foedselsdato, final String personnummer) {
         final String korrigertFoedselsdato = require(
                 requireNonNull(foedselsdato, "Fødselsdato er påkrevd, men var null")
                         .trim(),
@@ -74,7 +74,7 @@ public class Foedselsnummer {
             return false;
         }
         if (obj.getClass() == getClass()) {
-            final Foedselsnummer other = (Foedselsnummer) obj;
+            final MedlemsId other = (MedlemsId) obj;
             return text.equals(other.text);
         }
         return false;
@@ -91,10 +91,10 @@ public class Foedselsnummer {
      * @param foedselsdato fødselsdato, kun eit 8-sifra tall blir godtatt
      * @param personnummer personnummeret, 1-5 siffer blir godtatt
      * @return det nye fødselsnummeret
-     * @see #Foedselsnummer(String, String)
+     * @see #MedlemsId(String, String)
      */
-    public static Foedselsnummer foedselsnummer(final String foedselsdato, String personnummer) {
-        return new Foedselsnummer(foedselsdato, personnummer);
+    public static MedlemsId medlemsId(final String foedselsdato, String personnummer) {
+        return new MedlemsId(foedselsdato, personnummer);
     }
 
     private String padWithLeadingZeroes(final String input) {

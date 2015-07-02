@@ -22,6 +22,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medlemsdata;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.MedlemsdataOversetter;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medregningsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Stillingsendring;
+import no.spk.pensjon.faktura.tidsserie.domain.reglar.Regelperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Tidsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.AvtaleinformasjonRepository;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Feilhandtering;
@@ -72,7 +73,7 @@ public class GrunnlagsdataService implements TidsserieFactory {
     }
 
     @Override
-    public Medlemsdata create(final String foedselsnummer, final List<List<String>> data) {
+    public Medlemsdata create(final List<List<String>> data) {
         return new Medlemsdata(
                 requireNonNull(data, "medlemsdata er påkrevd, men var null"),
                 medlemsdataOversettere()

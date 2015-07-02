@@ -1,7 +1,11 @@
 package no.spk.pensjon.faktura.tidsserie.batch.main.input;
 
+import static java.util.Arrays.asList;
+
 import java.nio.file.Path;
 import java.util.Optional;
+
+import no.spk.pensjon.faktura.tidsserie.batch.Tidsseriemodus;
 
 import com.beust.jcommander.Parameter;
 
@@ -58,6 +62,12 @@ public class ProgramArguments {
             validateValueWith = NodeCountValidator.class)
     int nodes = Runtime.getRuntime().availableProcessors() - 1;
 
+    @Parameter(names = { "-m" },
+            description = "Modusen batchen skal bruke for oppbygging av og lagring av tidsserien.",
+            validateWith = ModusValidator.class
+    )
+    Modus modus = Modus.STILLINGSFORHOLD_OBSERVASJONAR;
+
     public boolean isHjelp() {
         return hjelp;
     }
@@ -102,5 +112,9 @@ public class ProgramArguments {
             return Optional.of("ADVARSEL: Antall noder angitt er lik antall prosessorer på serveren.");
         }
         return Optional.empty();
+    }
+
+    public Tidsseriemodus modus() {
+        return modus.modus();
     }
 }
