@@ -84,9 +84,9 @@ public class AvtaleproduktOversetterTest {
     @Test
     public void testForFaaAntallKolonnerGirFeilmelding() throws Exception {
         e.expect(IllegalArgumentException.class);
-        e.expectMessage("typeindikator, avtaleid, produkt, fra og med-dato, til og med-dato, produktinfo, " +
-                "arbeidsgiverpremie prosent, medlemspremie prosent, administrasjongebyr prosent, " +
-                "arbeidsgiverpremie beløp, medlemspremie beløp, administrasjongebyr beløp");
+        e.expectMessage("Rader av typen <AVTALEPRODUKT> må inneholde minimum <12> kolonner, med følgende verdier på angitt index:");
+        e.expectMessage("typeindikator(0), avtaleId(1), produkt(2), fraOgMedDato(3), tilOgMedDato(4), produktInfo(5), arbeidsgiverpremieProsent(6), medlemspremieProsent(7), " +
+                "administrasjonsgebyrProsent(8), arbeidsgiverpremieBeloep(9), medlemspremieBeloep(10), administrasjonsgebyrBeloep(11)");
         oversetter.oversett(new ArrayList<>());
         e.expectMessage("Både prosentsatser og kronesatser kan ikke være i bruk for et avtaleprodukt.");
     }

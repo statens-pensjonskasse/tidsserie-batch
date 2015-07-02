@@ -11,10 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleprodukt;
-import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtalerelatertperiode;
-import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleversjon;
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Ordning;
 import no.spk.pensjon.faktura.tidsserie.domain.loennsdata.ApotekLoennstrinnperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.loennsdata.Loennstrinnperiode;
@@ -29,6 +25,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Stillingsendring;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Tidsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.AvtaleinformasjonRepository;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Feilhandtering;
+import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.StandardAvtaleInformasjonRepository;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.AvtalekoblingOversetter;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.MedregningsOversetter;
@@ -47,7 +44,7 @@ import no.spk.pensjon.faktura.tidsserie.storage.csv.StillingsendringOversetter;
 public class GrunnlagsdataService implements TidsserieFactory {
     private final Map<Class<?>, List<Tidsperiode<?>>> perioder = new HashMap<>();
 
-    private final Map<AvtaleId, List<Avtalerelatertperiode<?>>> avtalar = new HashMap<>();
+    private AvtaleinformasjonRepository avtaleinformasjonRepository = (a) -> Stream.empty();
 
     private final TidsserieBackendService backend;
 
@@ -69,7 +66,7 @@ public class GrunnlagsdataService implements TidsserieFactory {
     @Override
     public TidsserieFacade create(final Feilhandtering feilhandtering) {
         final TidsserieFacade fasade = new TidsserieFacade();
-        fasade.overstyr(this::finn);
+        fasade.overstyr(avtaleinformasjonRepository);
         fasade.overstyr(requireNonNull(feilhandtering, "feilhandteringsstrategi er påkrevd, men var null"));
         return fasade;
     }
@@ -124,7 +121,7 @@ public class GrunnlagsdataService implements TidsserieFactory {
             perioder.putAll(referansedata.collect(groupingBy(Object::getClass)));
         }
         perioder.put(Loennstrinnperioder.class, grupperLoennstrinnperioder());
-        avtalar.putAll(grupperAvtaleperioder());
+        avtaleinformasjonRepository = new StandardAvtaleInformasjonRepository(perioder);
     }
 
     Map<Class<?>, MedlemsdataOversetter<?>> medlemsdataOversettere() {
@@ -133,29 +130,6 @@ public class GrunnlagsdataService implements TidsserieFactory {
         oversettere.put(Avtalekoblingsperiode.class, new AvtalekoblingOversetter());
         oversettere.put(Medregningsperiode.class, new MedregningsOversetter());
         return oversettere;
-    }
-
-    /**
-     * Hent ut alle avtaledata for avtalen.
-     *
-     * @param avtale avtalen som avtaledata skal hentast ut for
-     * @return alle tidsperiodiserte avtaledata som er tilknytta avtalen i grunnlagsdatane
-     * @see AvtaleinformasjonRepository
-     * @see Avtaleversjon
-     * @see Avtaleprodukt
-     */
-    private Stream<Tidsperiode<?>> finn(final AvtaleId avtale) {
-        return avtalar.getOrDefault(avtale, emptyList()).stream().map((Tidsperiode<?> p) -> p);
-    }
-
-    private Map<AvtaleId, List<Avtalerelatertperiode<?>>> grupperAvtaleperioder() {
-        final Stream<Avtaleversjon> versjoner = perioderAvType(Avtaleversjon.class);
-        final Stream<Avtaleprodukt> produkter = perioderAvType(Avtaleprodukt.class);
-        return Stream.concat(versjoner, produkter)
-                .map((Avtalerelatertperiode<?> p) -> p)
-                .collect(
-                        groupingBy(Avtalerelatertperiode::avtale)
-                );
     }
 
     private List<Tidsperiode<?>> grupperLoennstrinnperioder() {
