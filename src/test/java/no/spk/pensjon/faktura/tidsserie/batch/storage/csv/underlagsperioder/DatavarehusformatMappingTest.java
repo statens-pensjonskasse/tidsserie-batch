@@ -24,6 +24,7 @@ import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Aksjonskode;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AktiveStillingar;
+import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.ArbeidsgiverId;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Avtale;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.DeltidsjustertLoenn;
@@ -37,6 +38,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Medlemsavtalar;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Medregning;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Medregningskode;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Ordning;
+import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Orgnummer;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Premiestatus;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.StillingsforholdId;
@@ -75,7 +77,7 @@ public class DatavarehusformatMappingTest {
                 instance(kolonne(4), Foedselsnummer.class, new Foedselsnummer(foedselsdato(dato("1979.08.06")), personnummer(32817)), forventa("1979080632817")),
                 instance(kolonne(5), StillingsforholdId.class, stillingsforhold(287278692), forventa("287278692")),
                 instance(kolonne(6), AvtaleId.class, avtaleId(282762), forventa("282762")),
-                instance(kolonne(7), String.class, "", forventa("")), // Organisasjonsnummer, foreløpig ikkje ein del av tidsserien
+                instance(kolonne(7), Orgnummer.class, new Orgnummer(123456789L), forventa("123456789")),
                 instance(kolonne(8), Ordning.class, Ordning.OPERA, forventa("3035")),
                 instance(kolonne(9), Premiestatus.class, Premiestatus.UKJENT, forventa("UKJENT")),
                 instance(kolonne(10), String.class, "", forventa("")), // Premiekategori, foreløpig ikkje en del av tidsserien
@@ -94,6 +96,7 @@ public class DatavarehusformatMappingTest {
                 instance(kolonne(63), String.class, "", forventa("2,5")),
                 instance(kolonne(64), UUID.class, null, matches("^\\w{8}-\\w+{4}-\\w+{4}-\\w{4}-\\w{12}$")),
                 instance(kolonne(65), Feilantall.class, null, forventa("0")),
+                instance(kolonne(66), ArbeidsgiverId.class, new ArbeidsgiverId(100_000L), forventa("100000")),
 
                 // Premiesatsar, foreløpig hardkoda i formatet i påvente av implementasjon av oppslag
 

@@ -17,6 +17,7 @@ import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.CSVFormat;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Aksjonskode;
+import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.ArbeidsgiverId;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.DeltidsjustertLoenn;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Fastetillegg;
@@ -29,6 +30,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.LoennstrinnBeloep;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Medregning;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Medregningskode;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Ordning;
+import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Orgnummer;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Premiestatus;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Prosent;
@@ -161,7 +163,7 @@ public class Datavarehusformat implements CSVFormat {
                 .add(heiltall(p.annotasjonFor(StillingsforholdId.class).id()))
                 .add(heiltall(p.annotasjonFor(AvtaleId.class).id()));
 
-        detector.utfoer(builder, p, up -> kode(organisasjonsnummer()))
+        detector.utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Orgnummer.class).map(Orgnummer::id).map(Object::toString)))
                 .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Ordning.class).map(Ordning::kode).map(Object::toString)))
                 .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Premiestatus.class).map(Premiestatus::kode)))
                 .utfoer(builder, p, up -> kode(premiekategori()))
@@ -207,7 +209,7 @@ public class Datavarehusformat implements CSVFormat {
         final Object placeholder = new Object();
         builder.add(placeholder);
 
-        detector.utfoer(builder, p, up -> arbeidsgivernummer())
+        detector.utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(ArbeidsgiverId.class).map(ArbeidsgiverId::id).map(Object::toString)))
                 .utfoer(builder, p, up -> tidsserienummer())
                 .utfoer(builder, p, up -> termintype())
         ;
@@ -223,14 +225,6 @@ public class Datavarehusformat implements CSVFormat {
 
     private String tidsserienummer() {
         return kode("");
-    }
-
-    private String arbeidsgivernummer() {
-        return kode("");
-    }
-
-    private Optional<String> organisasjonsnummer() {
-        return empty();
     }
 
     private Optional<String> premiekategori() {
