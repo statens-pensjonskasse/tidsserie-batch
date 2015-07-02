@@ -14,9 +14,7 @@ public class ArbeidsgiverOversetterTest {
     private final ArbeidsgiverOversetter oversetter = new ArbeidsgiverOversetter();
 
     /**
-     * Verifiserer at oversetteren ikkje feilar dersom sybase datoar på formata
-     * YYYY-MM-DD HH:mm:ss.S blir brukt som verdi på start- eller
-     * sluttdatoane til avtalekoblingane.
+     * Verifiserer at oversetteren fungerer for et forventet riktig csv-format
      */
     @Test
     public void skalParseCsvPaaRettFormat() {

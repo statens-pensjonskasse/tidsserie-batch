@@ -84,7 +84,7 @@ public class AvtalekoblingOversetter extends ReflectiveCsvOversetter<Avtalekobli
     @Override
     protected Avtalekoblingsperiode transformer(AvtalekoblingCsv csvRad) {
         return new Avtalekoblingsperiode(
-                tilDato(csvRad.startDatp).get(),
+                tilDato(csvRad.startDato).get(),
                 tilDato(csvRad.sluttDato),
                 csvRad.stillingsforhold.map(StillingsforholdId::valueOf).get(),
                 csvRad.avtale.map(AvtaleId::valueOf).get(),

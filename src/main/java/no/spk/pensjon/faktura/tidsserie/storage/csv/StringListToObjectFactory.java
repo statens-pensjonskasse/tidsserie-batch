@@ -26,13 +26,13 @@ import java.util.stream.Collectors;
  * @see CsvIndex
  */
 public final class StringListToObjectFactory<T> {
-    private Class<T> csvClass;
+    private final Class<T> csvClass;
 
-    private List<Field> csvFields = new ArrayList<>();
-    private int columns;
-    private String type;
+    private final List<Field> csvFields;
+    private final int columns;
+    private final String type;
 
-    private OversetterSupport oversetterSupport = new OversetterSupport();
+    private final OversetterSupport oversetterSupport = new OversetterSupport();
 
     /**
      * Lager en ny StringListToObjectFactory som kan transformere lister med strenger som har {@code type} angitt på index 0,

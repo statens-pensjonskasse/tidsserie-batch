@@ -23,6 +23,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.MedlemsdataOversetter
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medregningsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Stillingsendring;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Tidsperiode;
+import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.AvtaleinformasjonRepository;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Feilhandtering;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.StandardAvtaleInformasjonRepository;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade;
@@ -43,7 +44,7 @@ import no.spk.pensjon.faktura.tidsserie.storage.csv.StillingsendringOversetter;
 public class GrunnlagsdataService implements TidsserieFactory {
     private final Map<Class<?>, List<Tidsperiode<?>>> perioder = new HashMap<>();
 
-    private StandardAvtaleInformasjonRepository avtaleinformasjonRepository = new StandardAvtaleInformasjonRepository();
+    private AvtaleinformasjonRepository avtaleinformasjonRepository = (a) -> Stream.empty();
 
     private final TidsserieBackendService backend;
 
@@ -120,7 +121,7 @@ public class GrunnlagsdataService implements TidsserieFactory {
             perioder.putAll(referansedata.collect(groupingBy(Object::getClass)));
         }
         perioder.put(Loennstrinnperioder.class, grupperLoennstrinnperioder());
-        avtaleinformasjonRepository.periodeGrupper(perioder);
+        avtaleinformasjonRepository = new StandardAvtaleInformasjonRepository(perioder);
     }
 
     Map<Class<?>, MedlemsdataOversetter<?>> medlemsdataOversettere() {

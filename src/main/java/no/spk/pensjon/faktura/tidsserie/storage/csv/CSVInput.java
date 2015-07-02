@@ -46,7 +46,7 @@ public class CSVInput implements GrunnlagsdataRepository {
         oversettere.add(new AvtaleproduktOversetter());
         oversettere.add(new AvtaleperiodeOversetter());
         oversettere.add(new ArbeidsgiverOversetter());
-        oversettere.add(new KundedataOversetter());
+        oversettere.add(new ArbeidsgiverdataperiodeOversetter());
     }
 
     /**
