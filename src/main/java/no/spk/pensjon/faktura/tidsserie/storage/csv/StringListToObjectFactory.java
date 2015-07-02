@@ -1,8 +1,12 @@
 package no.spk.pensjon.faktura.tidsserie.storage.csv;
 
 import static java.util.stream.Collectors.toList;
+import static no.spk.pensjon.faktura.tidsserie.storage.csv.ReflectionUtils.newInstance;
+import static no.spk.pensjon.faktura.tidsserie.storage.csv.ReflectionUtils.setValue;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -73,24 +77,12 @@ public final class StringListToObjectFactory<T> {
      * @throws IllegalStateException dersom raden har for få kolonner eller et annotert felt ikke er av typen {@code Optional<String>}
      */
     public T transform(final List<String> rad) {
-        try {
             if (rad.size() < columns) {
                 throw new IllegalArgumentException(getErrorMessage(rad));
             }
-            T newCsvInstance = csvClass.newInstance();
-            csvFields.stream().forEach(f -> setValue(f, rad, newCsvInstance));
+            T newCsvInstance = newInstance(csvClass);
+            csvFields.stream().forEach(f -> setValue(f, read(rad, getIndex(f)), newCsvInstance));
             return newCsvInstance;
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void setValue(Field field, List<String> rad, T avtaleCsv) {
-        try {
-            field.set(avtaleCsv, read(rad, getIndex(field)));
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private Optional<String> read(final List<String> rad, final int index) {
@@ -128,5 +120,4 @@ public final class StringListToObjectFactory<T> {
                                 "med følgende verdier på angitt index:\n typeindikator(0), ",
                         "\nRaden som feilet: " + rad));
     }
-
 }
