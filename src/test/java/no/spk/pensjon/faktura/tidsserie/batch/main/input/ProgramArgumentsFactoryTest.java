@@ -47,7 +47,7 @@ public class ProgramArgumentsFactoryTest {
     @Test
     public void skalAvviseUgyldigeTidsseriemodusar() throws IOException {
         exception.expect(InvalidParameterException.class);
-        exception.expectMessage("Msodus");
+        exception.expectMessage("Modus");
 
         final String path = createTestFolders();
         ProgramArgumentsFactory.create(
