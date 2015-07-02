@@ -23,7 +23,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.loennsdata.StatligLoennstrinnperi
  * <tbody>
  * <tr>
  * <td>0</td>
- * <td>{@linkplain #TYPEINDIKATOR}</td>
+ * <td>SPK_LTR</td>
  * <td>Typeindikator som identifiserer rada som ei statlig lønnstrinnperiode</td>
  * <td>Hardkoda</td>
  * </tr>

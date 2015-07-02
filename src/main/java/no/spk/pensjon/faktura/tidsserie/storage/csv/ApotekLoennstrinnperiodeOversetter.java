@@ -26,7 +26,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.loennsdata.ApotekLoennstrinnperio
  * <tbody>
  * <tr>
  * <td>0</td>
- * <td>{@linkplain #TYPEINDIKATOR}</td>
+ * <td>POA_LTR</td>
  * <td>Typeindikator som identifiserer rada som ei statlig lønnstrinnperiode</td>
  * <td>Hardkoda</td>
  * </tr>

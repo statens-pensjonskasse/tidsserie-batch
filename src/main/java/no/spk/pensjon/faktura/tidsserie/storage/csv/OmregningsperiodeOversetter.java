@@ -22,7 +22,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.loennsdata.Omregningsperiode;
  * <tbody>
  * <tr>
  * <td>0</td>
- * <td>{@linkplain #TYPEINDIKATOR}</td>
+ * <td>OMREGNING</td>
  * <td>Typeindikator som identifiserer rada som ei omregningsperiode</td>
  * <td>Hardkoda</td>
  * </tr>

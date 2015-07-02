@@ -38,7 +38,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Stillingsendring;
  * <tbody>
  * <tr>
  * <td>0</td>
- * <td>{@linkplain #TYPEINDIKATOR}</td>
+ * <td>0</td>
  * <td>Typeindikator som identifiserer rada som ei stillingsendring</td>
  * <td>Hardkoda</td>
  * </tr>

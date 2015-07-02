@@ -9,7 +9,7 @@ class AvtalekoblingCsv {
     @CsvIndex(3)
     Optional<String> stillingsforhold;
     @CsvIndex(4)
-    Optional<String> startDatp;
+    Optional<String> startDato;
     @CsvIndex(5)
     Optional<String> sluttDato;
     @CsvIndex(6)

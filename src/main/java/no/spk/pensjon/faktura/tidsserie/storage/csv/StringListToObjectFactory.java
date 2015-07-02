@@ -18,15 +18,14 @@ import java.util.stream.Collectors;
  *     Nb: P.t. støtter denne klassen kun felt av typen {@code Optional<String>}
  * </p>
  * <p>
- * <p>
  * Det er en forutsenting at lister med strenger har typeindikator angitt på index 0, og at metoden {@link #transform(List)} bare
  * brukes dersom {@link #supports(List)} returnerer {@code true}.
- * </p
+ * </p>
  * @param <T> Typen som skal strenglister skal transformeres til.
  * @author Snorre E. Brekke - Computas
  * @see CsvIndex
  */
-public class StringListToObjectFactory<T> {
+public final class StringListToObjectFactory<T> {
     private Class<T> csvClass;
 
     private List<Field> csvFields = new ArrayList<>();

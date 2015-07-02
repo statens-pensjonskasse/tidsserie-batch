@@ -28,7 +28,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.MedlemsdataOversetter
  * <tbody>
  * <tr>
  * <td>0</td>
- * <td>{@linkplain #TYPEINDIKATOR}</td>
+ * <td>1</td>
  * <td>Typeindikator som identifiserer rada som ei avtalekobling</td>
  * <td>Hardkoda</td>
  * </tr>
@@ -94,7 +94,7 @@ public class AvtalekoblingOversetter extends ReflectiveCsvOversetter<Avtalekobli
 
 
     /**
-     * @see OversetterSupport#readDato(List, int)
+     * @see OversetterSupport#tilDato(Optional)
      */
     Optional<LocalDate> tilDato(Optional<String> string) {
         return support.tilDato(string);
