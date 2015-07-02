@@ -45,10 +45,17 @@ public class ProgramArgumentsFactoryTest {
     }
 
     @Test
-    public void skalAvviseUgyldigeTidsseriemodusar() {
+    public void skalAvviseUgyldigeTidsseriemodusar() throws IOException {
         exception.expect(InvalidParameterException.class);
+        exception.expectMessage("Msodus");
 
-        ProgramArgumentsFactory.create("-m", "lol");
+        final String path = createTestFolders();
+        ProgramArgumentsFactory.create(
+                "-m", "lol",
+                "-i", path,
+                "-o", path,
+                "-b", name.getMethodName()
+        );
     }
 
     @Test
