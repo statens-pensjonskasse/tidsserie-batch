@@ -1,12 +1,15 @@
 package no.spk.pensjon.faktura.tidsserie.batch.storage.csv.underlagsperioder;
 
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Stream.of;
 import static no.spk.pensjon.faktura.tidsserie.Datoar.dato;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId.avtaleId;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Foedselsdato.foedselsdato;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Personnummer.personnummer;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.StillingsforholdId.stillingsforhold;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
@@ -33,6 +36,17 @@ public class DatavarehusformatTest {
     public final ExpectedException e = ExpectedException.none();
 
     private final Datavarehusformat format = new Datavarehusformat();
+
+    @Test
+    public void skalHaLikeAntallKolonneISerialiseringaSomIKolonnenavna() {
+        final List<String> expected = format.kolonnenavn()
+                .collect(toList());
+        final List<Object> actual = serialiser(observasjonsdato(), eiPeriodeMedKunObligatoriskeVerdiar())
+                .collect(toList());
+        assertThat(actual)
+                .as("kolonner generert av serialiseringa vs kolonnenavna serialiseringa seier den støttar")
+                .hasSameSizeAs(expected);
+    }
 
     @Test
     public void skalFeileVissObservasjonsdatoManglar() {

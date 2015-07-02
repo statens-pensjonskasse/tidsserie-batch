@@ -52,7 +52,25 @@ import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonsdato;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
 
+/**
+ * {@link Datavarehusformat} representerer kontrakta og mapping-strategien for konvertering av {@link Underlagsperiode}r til
+ * CSV-formaterte rader for innmating i DVH og Qlikview for live-tidsserien til FFF.
+ * <br>
+ * Merk at ei kvar utad-synlig endring på formatet må avklarast mot Team Polaris for å verifisere om eller korleis det
+ * påvirkar EDW og DVH-modelleringa + ETL-jobbane i DVH og Qlikview.
+ * <br>
+ * Nye kolonner skal alltid leggast til etter siste eksisterande kolonne og dokumenterast i kontrakta på wiki.
+ * <br>
+ * Formatendringar på eksisterande kolonner bør ein unngå i så stor grad som mulig. Fortrinnsvis bør ein vurdere
+ * å beholde gamal kolonne på gamalt format og legge til ny kolonne for nytt format.
+ * <br>
+ * Merk at foreløpig handhevar ikkje formatet kontrakta fullt ut med tanke på lengdeavgrensing av felt som potensielt
+ * sett kan ha verdiar som blir lenger enn det kontrakta tillater.
+ *
+ * @author Tarjei Skorgenes
+ */
 public class Datavarehusformat implements CSVFormat {
+    //
     private final ThreadLocal<Map<Integer, NumberFormat>> desimalformat = ThreadLocal.withInitial(HashMap::new);
 
     @Override
@@ -122,7 +140,10 @@ public class Datavarehusformat implements CSVFormat {
                 "produkt_YSK_produktinfo",
                 "produkt_YSK_risikoklasse",
                 "uuid",
-                "antallFeil"
+                "antallFeil",
+                "arbeidsgivernummer",
+                "tidsserienummer",
+                "termintype"
         );
     }
 
@@ -140,10 +161,10 @@ public class Datavarehusformat implements CSVFormat {
                 .add(heiltall(p.annotasjonFor(StillingsforholdId.class).id()))
                 .add(heiltall(p.annotasjonFor(AvtaleId.class).id()));
 
-        detector.utfoer(builder, p, up -> kode(empty()))
+        detector.utfoer(builder, p, up -> kode(organisasjonsnummer()))
                 .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Ordning.class).map(Ordning::kode).map(Object::toString)))
                 .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Premiestatus.class).map(Premiestatus::kode)))
-                .utfoer(builder, p, up -> kode(empty()))
+                .utfoer(builder, p, up -> kode(premiekategori()))
                 .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Aksjonskode.class).map(Aksjonskode::kode)))
                 .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Stillingskode.class).map(Stillingskode::getKode)))
                 .utfoer(builder, p, up -> prosent(deltid.map(Stillingsprosent::prosent), 3))
@@ -176,13 +197,48 @@ public class Datavarehusformat implements CSVFormat {
                 .utfoer(builder, p, up -> premiesatserFor(up, Produkt.TIP), 4)
                 .utfoer(builder, p, up -> premiesatserFor(up, Produkt.GRU), 4)
                 .utfoer(builder, p, up -> premiesatserFor(up, Produkt.YSK), 4)
-                .utfoer(builder, p, up -> kode(of("2,5")))
+                .utfoer(builder, p, up -> kode(risikoklasse()))
                 .utfoer(builder, p, up -> up.id().toString())
         ;
 
-        return builder
-                .add(heiltall(detector.antallFeil))
-                .build();
+        // Sidan kolonna for antall feil ikkje er siste kolonne i formatet, må det leggast inn ein
+        // midlertidig verdi her for å reservere kolonneposisjonen og sikre at seinare kolonner ikkje blir forskyvd
+        // ei kolonne fram
+        final Object placeholder = new Object();
+        builder.add(placeholder);
+
+        detector.utfoer(builder, p, up -> arbeidsgivernummer())
+                .utfoer(builder, p, up -> tidsserienummer())
+                .utfoer(builder, p, up -> termintype())
+        ;
+
+        // Må populere inn antall feil til slutt for å sikre at eventuelle feil som inntreffe etter at denne kolonna
+        // blir lagt til builderen, blir med i tellinga
+        return builder.build().map(o -> o == placeholder ? heiltall(detector.antallFeil) : o);
+    }
+
+    private String termintype() {
+        return kode("");
+    }
+
+    private String tidsserienummer() {
+        return kode("");
+    }
+
+    private String arbeidsgivernummer() {
+        return kode("");
+    }
+
+    private Optional<String> organisasjonsnummer() {
+        return empty();
+    }
+
+    private Optional<String> premiekategori() {
+        return empty();
+    }
+
+    private Optional<String> risikoklasse() {
+        return of("2,5");
     }
 
     private String dato(final LocalDate verdi) {
