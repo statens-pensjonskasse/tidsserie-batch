@@ -53,7 +53,7 @@ public class Main {
             BatchDirectoryCleaner directoryCleaner = new BatchDirectoryCleaner(arguments.getUtkatalog(), batchId);
             controller.ryddOpp(directoryCleaner);
 
-            final Tidsseriemodus parameter = new LiveTidsseriemodus();
+            final Tidsseriemodus parameter = arguments.modus();
             final TidsserieBackendService backend = new HazelcastBackend(arguments.getNodes(), parameter);
             final GrunnlagsdataRepository input = new CSVInput(arguments.getInnkatalog().resolve(arguments.getGrunnlagsdataBatchId()));
             final GrunnlagsdataService overfoering = new GrunnlagsdataService(backend, input);

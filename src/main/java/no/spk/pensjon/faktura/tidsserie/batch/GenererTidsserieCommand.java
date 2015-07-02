@@ -11,12 +11,12 @@ import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 
 /**
- * {@line GenererTidsserieCommand} er eit backend-uavhengig kommandobjekt som genererer ein tidsserie
+ * {@link GenererTidsserieCommand} er eit backend-uavhengig kommandobjekt som genererer ein tidsserie
  * for eit enkelt medlem.
  * <br>
  * Kommandoen er primært ein koordinator mellom følgjande tenester/fasader i og utanfor domenemodellen:
  * <ul>
- * <li>{@Link TidsserieFactory}</li>
+ * <li>{@link TidsserieFactory}</li>
  * <li>{@link Tidsseriemodus}</li>
  * <li>{@link StorageBackend}</li>
  * <li>{@link TidsserieFacade}</li>

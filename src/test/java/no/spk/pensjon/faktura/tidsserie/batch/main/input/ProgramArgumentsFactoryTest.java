@@ -31,6 +31,25 @@ public class ProgramArgumentsFactoryTest {
     @Rule
     public final TestName name = new TestName();
 
+    @Test
+    public void skalGodtaTidsserieModusParameter() throws IOException {
+        final String path = createTestFolders();
+
+        final ProgramArguments args = ProgramArgumentsFactory.create(
+                "-m", Modus.LIVE_TIDSSERIE.kode(),
+                "-i", path,
+                "-o", path,
+                "-b", name.getMethodName()
+        );
+        assertThat(args.modus()).isEqualTo(Modus.LIVE_TIDSSERIE.modus());
+    }
+
+    @Test
+    public void skalAvviseUgyldigeTidsseriemodusar() {
+        exception.expect(InvalidParameterException.class);
+
+        ProgramArgumentsFactory.create("-m", "lol");
+    }
 
     @Test
     public void testBeskrivelseInputOutputRequired() throws Exception {

@@ -29,11 +29,13 @@ public interface Tidsseriemodus {
     /**
      * Genererer ein ny observasjonspublikator for observasjonsunderlaga som <code>tidsserie</code> vil generere.
      * <br>
-     * Lagring av sluttresultatet skal skje via <code>publikator</code>.
+     * Lagring av sluttresultatet skal skje via <code>backend</code>.
      *
+     * @param tidsserie tidsseriefasada som publikatoren skal anvendast av
+     * @param backend   backendtenesta for lagring av resultata publikatoren genererer
      * @return observasjonspublikatoren som skal benyttast av tidsseriegenereringa.
      */
-    Observasjonspublikator create(final TidsserieFacade tidsserie, final StorageBackend publikator);
+    Observasjonspublikator create(final TidsserieFacade tidsserie, final StorageBackend backend);
 
     /**
      * Beregningsreglane som tidsserien skal anvende seg av.
