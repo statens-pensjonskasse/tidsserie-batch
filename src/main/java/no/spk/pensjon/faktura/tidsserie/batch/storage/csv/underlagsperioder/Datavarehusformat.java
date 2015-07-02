@@ -6,6 +6,7 @@ import static java.util.stream.IntStream.range;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Aksjonskode.PERMISJON_UTAN_LOENN;
 
 import java.text.NumberFormat;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -52,7 +53,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
 
 public class Datavarehusformat implements CSVFormat {
-    private final Map<Integer, NumberFormat> desimalformat = new HashMap<>();
+    private final ThreadLocal<Map<Integer, NumberFormat>> desimalformat = ThreadLocal.withInitial(HashMap::new);
 
     @Override
     public Stream<String> kolonnenavn() {
@@ -132,12 +133,12 @@ public class Datavarehusformat implements CSVFormat {
 
         final Stream.Builder<Object> builder = Stream
                 .builder()
-                .add(observasjonsunderlag.annotasjonFor(Observasjonsdato.class).dato())
-                .add(p.fraOgMed())
-                .add(p.tilOgMed().get())
-                .add(p.annotasjonFor(Foedselsnummer.class))
-                .add(p.annotasjonFor(StillingsforholdId.class).id())
-                .add(p.annotasjonFor(AvtaleId.class).id());
+                .add(dato(observasjonsunderlag.annotasjonFor(Observasjonsdato.class).dato()))
+                .add(dato(p.fraOgMed()))
+                .add(dato(p.tilOgMed().get()))
+                .add(kode(p.annotasjonFor(Foedselsnummer.class).toString()))
+                .add(heiltall(p.annotasjonFor(StillingsforholdId.class).id()))
+                .add(heiltall(p.annotasjonFor(AvtaleId.class).id()));
 
         detector.utfoer(builder, p, up -> kode(empty()))
                 .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Ordning.class).map(Ordning::kode).map(Object::toString)))
@@ -180,12 +181,20 @@ public class Datavarehusformat implements CSVFormat {
         ;
 
         return builder
-                .add(detector.antallFeil)
+                .add(heiltall(detector.antallFeil))
                 .build();
+    }
+
+    private String dato(final LocalDate verdi) {
+        return verdi.toString();
     }
 
     private String heiltall(final int verdi) {
         return Integer.toString(verdi);
+    }
+
+    private String heiltall(final long verdi) {
+        return Long.toString(verdi);
     }
 
     private String flagg(final boolean value) {
@@ -198,6 +207,10 @@ public class Datavarehusformat implements CSVFormat {
 
     private String prosent(final Prosent verdi, final int antallDesimaler) {
         return desimalFormat(antallDesimaler).format(verdi.toDouble() * 100d);
+    }
+
+    private String kode(final String verdi) {
+        return verdi;
     }
 
     private String kode(final Optional<String> verdi) {
@@ -223,7 +236,7 @@ public class Datavarehusformat implements CSVFormat {
     }
 
     private NumberFormat desimalFormat(final int antallDesimaler) {
-        return desimalformat.computeIfAbsent(antallDesimaler, antall -> {
+        return desimalformat.get().computeIfAbsent(antallDesimaler, antall -> {
             NumberFormat format = NumberFormat.getNumberInstance(Locale.ENGLISH);
             format.setMaximumFractionDigits(antall);
             format.setMinimumFractionDigits(antall);
