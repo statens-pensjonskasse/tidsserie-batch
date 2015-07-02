@@ -163,14 +163,14 @@ public class Datavarehusformat implements CSVFormat {
                 .add(heiltall(p.annotasjonFor(StillingsforholdId.class).id()))
                 .add(heiltall(p.annotasjonFor(AvtaleId.class).id()));
 
-        detector.utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Orgnummer.class).map(Orgnummer::id).map(Object::toString)))
-                .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Ordning.class).map(Ordning::kode).map(Object::toString)))
+        detector.utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Orgnummer.class).map(Orgnummer::id)))
+                .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Ordning.class).map(Ordning::kode)))
                 .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Premiestatus.class).map(Premiestatus::kode)))
                 .utfoer(builder, p, up -> kode(premiekategori()))
                 .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Aksjonskode.class).map(Aksjonskode::kode)))
                 .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Stillingskode.class).map(Stillingskode::getKode)))
                 .utfoer(builder, p, up -> prosent(deltid.map(Stillingsprosent::prosent), 3))
-                .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Loennstrinn.class).map(Loennstrinn::trinn).map(Object::toString)))
+                .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Loennstrinn.class).map(Loennstrinn::trinn)))
                 .utfoer(builder, p, up -> beloep(up.valgfriAnnotasjonFor(LoennstrinnBeloep.class).map(LoennstrinnBeloep::beloep)))
                 .utfoer(builder, p, up -> beloep(up.valgfriAnnotasjonFor(DeltidsjustertLoenn.class).map(DeltidsjustertLoenn::beloep)))
                 .utfoer(builder, p, up -> beloep(up.valgfriAnnotasjonFor(Fastetillegg.class).map(Fastetillegg::beloep)))
@@ -209,7 +209,7 @@ public class Datavarehusformat implements CSVFormat {
         final Object placeholder = new Object();
         builder.add(placeholder);
 
-        detector.utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(ArbeidsgiverId.class).map(ArbeidsgiverId::id).map(Object::toString)))
+        detector.utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(ArbeidsgiverId.class).map(ArbeidsgiverId::id)))
                 .utfoer(builder, p, up -> tidsserienummer())
                 .utfoer(builder, p, up -> termintype())
         ;
@@ -263,8 +263,8 @@ public class Datavarehusformat implements CSVFormat {
         return verdi;
     }
 
-    private String kode(final Optional<String> verdi) {
-        return verdi.orElse("");
+    private String kode(final Optional<?> verdi) {
+        return verdi.map(Object::toString).orElse("");
     }
 
     private String beloep(final Optional<Kroner> verdi) {
