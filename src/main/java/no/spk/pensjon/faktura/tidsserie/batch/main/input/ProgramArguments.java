@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import no.spk.pensjon.faktura.tidsserie.batch.Tidsseriemodus;
 
+import com.beust.jcommander.IStringConverter;
 import com.beust.jcommander.Parameter;
 
 /**
@@ -64,7 +65,8 @@ public class ProgramArguments {
 
     @Parameter(names = { "-m" },
             description = "Modusen batchen skal bruke for oppbygging av og lagring av tidsserien.",
-            validateWith = ModusValidator.class
+            validateWith = ModusValidator.class,
+            converter = ModusConverter.class
     )
     Modus modus = Modus.STILLINGSFORHOLD_OBSERVASJONAR;
 
