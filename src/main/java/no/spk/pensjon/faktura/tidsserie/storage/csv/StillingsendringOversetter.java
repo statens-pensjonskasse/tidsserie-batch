@@ -150,7 +150,7 @@ public class StillingsendringOversetter extends ReflectiveCsvOversetter<Stilling
     @Override
     protected Stillingsendring transformer(StillingsendringCsv csvRad) {
         return new Stillingsendring()
-                .foedselsdato(csvRad.foedselsdato.map(Datoar::dato).map(Foedselsdato::new).get())
+                .foedselsdato(csvRad.foedselsdato.map(Integer::valueOf).map(Foedselsdato::foedselsdato).get())
                 .personnummer(csvRad.personnummer.map(Integer::valueOf).map(Personnummer::new).get())
                 .stillingsforhold(csvRad.stillingsforhold.map(StillingsforholdId::valueOf).get())
                 .aksjonskode(csvRad.aksjonskode.map(Aksjonskode::valueOf).orElse(Aksjonskode.UKJENT))

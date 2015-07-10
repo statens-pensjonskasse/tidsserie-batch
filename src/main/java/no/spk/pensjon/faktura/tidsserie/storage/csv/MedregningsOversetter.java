@@ -94,7 +94,7 @@ public class MedregningsOversetter extends ReflectiveCsvOversetter<MedregningCsv
                 .beloep(csvRad.loenn.map(Integer::valueOf).map(Kroner::new).map(Medregning::new).get())
                 .kode(csvRad.kode.map(Integer::valueOf).map(Medregningskode::valueOf).get())
                 .stillingsforhold(csvRad.stillingsforhold.map(Long::valueOf).map(StillingsforholdId::valueOf).get())
-                .foedselsdato(csvRad.foedselsdato.map(Datoar::dato).map(Foedselsdato::new).get())
+                .foedselsdato(csvRad.foedselsdato.map(Integer::valueOf).map(Foedselsdato::foedselsdato).get())
                 .personnummer(csvRad.personnummer.map(Integer::valueOf).map(Personnummer::new).get())
                 .bygg();
     }
