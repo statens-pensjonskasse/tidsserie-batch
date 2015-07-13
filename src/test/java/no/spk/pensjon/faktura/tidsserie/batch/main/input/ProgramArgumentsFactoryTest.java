@@ -35,13 +35,15 @@ public class ProgramArgumentsFactoryTest {
     public void skalGodtaTidsserieModusParameter() throws IOException {
         final String path = createTestFolders();
 
-        final ProgramArguments args = ProgramArgumentsFactory.create(
-                "-m", Modus.LIVE_TIDSSERIE.kode(),
-                "-i", path,
-                "-o", path,
-                "-b", name.getMethodName()
-        );
-        assertThat(args.modus()).isEqualTo(Modus.LIVE_TIDSSERIE.modus());
+        Modus.stream().forEach(modus -> {
+            final ProgramArguments args = ProgramArgumentsFactory.create(
+                    "-m", modus.kode(),
+                    "-i", path,
+                    "-o", path,
+                    "-b", name.getMethodName()
+            );
+            assertThat(args.modus()).isEqualTo(modus.modus());
+        });
     }
 
     @Test
