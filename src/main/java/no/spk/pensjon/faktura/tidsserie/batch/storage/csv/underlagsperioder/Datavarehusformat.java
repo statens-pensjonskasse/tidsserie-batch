@@ -1,6 +1,5 @@
 package no.spk.pensjon.faktura.tidsserie.batch.storage.csv.underlagsperioder;
 
-import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static java.util.stream.IntStream.range;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Aksjonskode.PERMISJON_UTAN_LOENN;
@@ -16,6 +15,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.CSVFormat;
+import no.spk.pensjon.faktura.tidsserie.batch.Tidsserienummer;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Aksjonskode;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.ArbeidsgiverId;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId;
@@ -87,7 +87,6 @@ public class Datavarehusformat implements CSVFormat {
                 "organisasjonsnummer",
                 "ordning",
                 "premiestatus",
-                "premiekategori",
                 "aksjonskode",
                 "stillingskode",
                 "stillingsprosent",
@@ -145,7 +144,9 @@ public class Datavarehusformat implements CSVFormat {
                 "antallFeil",
                 "arbeidsgivernummer",
                 "tidsserienummer",
-                "termintype"
+                "termintype",
+                "linjenummer_historikk",
+                "premiekategori"
         );
     }
 
@@ -166,7 +167,6 @@ public class Datavarehusformat implements CSVFormat {
         detector.utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Orgnummer.class).map(Orgnummer::id)))
                 .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Ordning.class).map(Ordning::kode)))
                 .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Premiestatus.class).map(Premiestatus::kode)))
-                .utfoer(builder, p, up -> kode(premiekategori()))
                 .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Aksjonskode.class).map(Aksjonskode::kode)))
                 .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Stillingskode.class).map(Stillingskode::getKode)))
                 .utfoer(builder, p, up -> prosent(deltid.map(Stillingsprosent::prosent), 3))
@@ -210,8 +210,10 @@ public class Datavarehusformat implements CSVFormat {
         builder.add(placeholder);
 
         detector.utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(ArbeidsgiverId.class).map(ArbeidsgiverId::id)))
-                .utfoer(builder, p, up -> tidsserienummer())
+                .utfoer(builder, p, up -> kode(observasjonsunderlag.valgfriAnnotasjonFor(Tidsserienummer.class)))
                 .utfoer(builder, p, up -> termintype())
+                .utfoer(builder, p, up -> linjenummerHistorikk())
+                .utfoer(builder, p, up -> premiekategori())
         ;
 
         // Må populere inn antall feil til slutt for å sikre at eventuelle feil som inntreffe etter at denne kolonna
@@ -219,16 +221,16 @@ public class Datavarehusformat implements CSVFormat {
         return builder.build().map(o -> o == placeholder ? heiltall(detector.antallFeil) : o);
     }
 
+    private String premiekategori() {
+        return kode("");
+    }
+
+    private String linjenummerHistorikk() {
+        return kode("");
+    }
+
     private String termintype() {
         return kode("");
-    }
-
-    private String tidsserienummer() {
-        return kode("");
-    }
-
-    private Optional<String> premiekategori() {
-        return empty();
     }
 
     private Optional<String> risikoklasse() {

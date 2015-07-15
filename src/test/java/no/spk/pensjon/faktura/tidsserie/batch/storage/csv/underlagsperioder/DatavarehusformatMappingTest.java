@@ -2,6 +2,7 @@ package no.spk.pensjon.faktura.tidsserie.batch.storage.csv.underlagsperioder;
 
 import static java.util.Arrays.asList;
 import static no.spk.pensjon.faktura.tidsserie.Datoar.dato;
+import static no.spk.pensjon.faktura.tidsserie.batch.Tidsserienummer.*;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId.avtaleId;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Foedselsdato.foedselsdato;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Kroner.kroner;
@@ -22,6 +23,7 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import no.spk.pensjon.faktura.tidsserie.batch.Tidsserienummer;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Aksjonskode;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AktiveStillingar;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.ArbeidsgiverId;
@@ -74,62 +76,65 @@ public class DatavarehusformatMappingTest {
                 instance(kolonne(1), Observasjonsdato.class, new Observasjonsdato(dato("2015.04.30")), forventa("2015-04-30")),
                 instance(kolonne(2), FraOgMedDato.class, dato("2012.02.01"), forventa("2012-02-01")),
                 instance(kolonne(3), TilOgMedDato.class, dato("2012.02.29"), forventa("2012-02-29")),
-                instance(kolonne(4), Foedselsnummer.class, new Foedselsnummer(foedselsdato(dato("1979.08.06")), personnummer(32817)), forventa("1979080632817")),
+                instance(kolonne(4), Foedselsnummer.class, new Foedselsnummer(foedselsdato(19790806), personnummer(32817)), forventa("1979080632817")),
                 instance(kolonne(5), StillingsforholdId.class, stillingsforhold(287278692), forventa("287278692")),
                 instance(kolonne(6), AvtaleId.class, avtaleId(282762), forventa("282762")),
                 instance(kolonne(7), Orgnummer.class, new Orgnummer(123456789L), forventa("123456789")),
                 instance(kolonne(8), Ordning.class, Ordning.OPERA, forventa("3035")),
                 instance(kolonne(9), Premiestatus.class, Premiestatus.UKJENT, forventa("UKJENT")),
-                instance(kolonne(10), String.class, "", forventa("")), // Premiekategori, foreløpig ikkje en del av tidsserien
-                instance(kolonne(11), Aksjonskode.class, Aksjonskode.ENDRINGSMELDING, forventa("021")),
-                instance(kolonne(12), Stillingskode.class, Stillingskode.K_STIL_APO_GENERALSEKRETER, forventa("14")),
-                instance(kolonne(13), Stillingsprosent.class, fulltid(), forventa("100.000")),
-                instance(kolonne(14), Loennstrinn.class, loennstrinn(100), forventa("100")),
-                instance(kolonne(15), LoennstrinnBeloep.class, new LoennstrinnBeloep(kroner(1_050_123)), forventa("1050123")),
-                instance(kolonne(16), DeltidsjustertLoenn.class, new DeltidsjustertLoenn(kroner(45_000_200)), forventa("45000200")),
-                instance(kolonne(17), Fastetillegg.class, new Fastetillegg(kroner(45_000_200)), forventa("45000200")),
-                instance(kolonne(18), Variabletillegg.class, new Variabletillegg(kroner(45_000_200)), forventa("45000200")),
-                instance(kolonne(19), Funksjonstillegg.class, new Funksjonstillegg(kroner(45_000_200)), forventa("45000200")),
-                instance(kolonne(20), Medregning.class, new Medregning(kroner(45_000_200)), forventa("45000200")),
-                instance(kolonne(21), Medregningskode.class, Medregningskode.TILLEGG_ANNEN_ARBGIV, forventa("14")),
-                instance(kolonne(22), Grunnbeloep.class, new Grunnbeloep(kroner(120_987)), forventa("120987")),
-                instance(kolonne(63), String.class, "", forventa("2,5")),
-                instance(kolonne(64), UUID.class, null, matches("^\\w{8}-\\w+{4}-\\w+{4}-\\w{4}-\\w{12}$")),
-                instance(kolonne(65), Feilantall.class, null, forventa("0")),
-                instance(kolonne(66), ArbeidsgiverId.class, new ArbeidsgiverId(100_000L), forventa("100000")),
+                instance(kolonne(10), Aksjonskode.class, Aksjonskode.ENDRINGSMELDING, forventa("021")),
+                instance(kolonne(11), Stillingskode.class, Stillingskode.K_STIL_APO_GENERALSEKRETER, forventa("14")),
+                instance(kolonne(12), Stillingsprosent.class, fulltid(), forventa("100.000")),
+                instance(kolonne(13), Loennstrinn.class, loennstrinn(100), forventa("100")),
+                instance(kolonne(14), LoennstrinnBeloep.class, new LoennstrinnBeloep(kroner(1_050_123)), forventa("1050123")),
+                instance(kolonne(15), DeltidsjustertLoenn.class, new DeltidsjustertLoenn(kroner(45_000_200)), forventa("45000200")),
+                instance(kolonne(16), Fastetillegg.class, new Fastetillegg(kroner(45_000_200)), forventa("45000200")),
+                instance(kolonne(17), Variabletillegg.class, new Variabletillegg(kroner(45_000_200)), forventa("45000200")),
+                instance(kolonne(18), Funksjonstillegg.class, new Funksjonstillegg(kroner(45_000_200)), forventa("45000200")),
+                instance(kolonne(19), Medregning.class, new Medregning(kroner(45_000_200)), forventa("45000200")),
+                instance(kolonne(20), Medregningskode.class, Medregningskode.TILLEGG_ANNEN_ARBGIV, forventa("14")),
+                instance(kolonne(21), Grunnbeloep.class, new Grunnbeloep(kroner(120_987)), forventa("120987")),
+                instance(kolonne(62), String.class, "", forventa("2,5")), // Risikoklasse, foreløpig uimplementert
+                instance(kolonne(63), UUID.class, null, matches("^\\w{8}-\\w+{4}-\\w+{4}-\\w{4}-\\w{12}$")),
+                instance(kolonne(64), Feilantall.class, null, forventa("0")),
+                instance(kolonne(65), ArbeidsgiverId.class, new ArbeidsgiverId(100_000L), forventa("100000")),
+                instance(kolonne(66), Tidsserienummer.class, genererForDato(dato("2016.01.07")), forventa("20160107")),
+                instance(kolonne(67), String.class, "", forventa("")), // Termintype, foreløpig uimplementert
+                instance(kolonne(68), String.class, "", forventa("")), // Linjenummer historikk, foreløpig uimplementert
+                instance(kolonne(69), String.class, "", forventa("")), // Premiekategori, foreløpig ikkje en del av tidsserien
 
                 // Premiesatsar, foreløpig hardkoda i formatet i påvente av implementasjon av oppslag
 
                 // PEN
-                instance(kolonne(38), String.class, "", forventa("0")),
+                instance(kolonne(37), String.class, "", forventa("0")),
+                instance(kolonne(38), String.class, "", forventa("")),
                 instance(kolonne(39), String.class, "", forventa("")),
                 instance(kolonne(40), String.class, "", forventa("")),
                 instance(kolonne(41), String.class, "", forventa("")),
-                instance(kolonne(42), String.class, "", forventa("")),
                 // AFP
-                instance(kolonne(43), String.class, "", forventa("0")),
+                instance(kolonne(42), String.class, "", forventa("0")),
+                instance(kolonne(43), String.class, "", forventa("")),
                 instance(kolonne(44), String.class, "", forventa("")),
                 instance(kolonne(45), String.class, "", forventa("")),
                 instance(kolonne(46), String.class, "", forventa("")),
-                instance(kolonne(47), String.class, "", forventa("")),
                 // TIP
-                instance(kolonne(48), String.class, "", forventa("0")),
+                instance(kolonne(47), String.class, "", forventa("0")),
+                instance(kolonne(48), String.class, "", forventa("")),
                 instance(kolonne(49), String.class, "", forventa("")),
                 instance(kolonne(50), String.class, "", forventa("")),
                 instance(kolonne(51), String.class, "", forventa("")),
-                instance(kolonne(52), String.class, "", forventa("")),
-                // YSK
-                instance(kolonne(53), String.class, "", forventa("0")),
+                // GRU
+                instance(kolonne(52), String.class, "", forventa("0")),
+                instance(kolonne(53), String.class, "", forventa("")),
                 instance(kolonne(54), String.class, "", forventa("")),
                 instance(kolonne(55), String.class, "", forventa("")),
                 instance(kolonne(56), String.class, "", forventa("")),
-                instance(kolonne(57), String.class, "", forventa("")),
-                // GRU
-                instance(kolonne(58), String.class, "", forventa("0")),
+                // YSK
+                instance(kolonne(57), String.class, "", forventa("0")),
+                instance(kolonne(58), String.class, "", forventa("")),
                 instance(kolonne(59), String.class, "", forventa("")),
                 instance(kolonne(60), String.class, "", forventa("")),
-                instance(kolonne(61), String.class, "", forventa("")),
-                instance(kolonne(62), String.class, "", forventa(""))
+                instance(kolonne(61), String.class, "", forventa(""))
 
                 // TODO: Reglar, dei blir meir komplekse oppsettsmessig sidan dei treng langt meir tilstand pr regel
         );
@@ -201,7 +206,7 @@ public class DatavarehusformatMappingTest {
         return new UnderlagsperiodeBuilder()
                 .fraOgMed(dato("2012.01.01"))
                 .tilOgMed(dato("2012.12.31"))
-                .med(new Foedselsnummer(foedselsdato(dato("1980.01.01")), personnummer(1)))
+                .med(new Foedselsnummer(foedselsdato(19800101), personnummer(1)))
                 .med(stillingsforhold(1L))
                 .med(avtaleId(223344L))
                 .med(Ordning.POA)
@@ -264,6 +269,7 @@ public class DatavarehusformatMappingTest {
             put(FraOgMedDato.class, fraPeriode((LocalDate value, UnderlagsperiodeBuilder b) -> b.fraOgMed(value)));
             put(TilOgMedDato.class, fraPeriode((LocalDate value, UnderlagsperiodeBuilder b) -> b.tilOgMed(value)));
             put(Feilantall.class, ignorer());
+            put(Tidsserienummer.class, fraUnderlag((Tidsserienummer value, Underlag underlag) -> underlag.annoter(Tidsserienummer.class, value)));
         }
 
         private <T> UnderlagConsumer<T> fraUnderlag(final UnderlagConsumer<T> value) {
@@ -308,7 +314,6 @@ public class DatavarehusformatMappingTest {
     }
 
     private static class TilOgMedDato {
-
     }
 
     private static class Feilantall {
