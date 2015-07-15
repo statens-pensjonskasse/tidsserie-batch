@@ -2,6 +2,7 @@ package no.spk.pensjon.faktura.tidsserie.batch.storage.csv.underlagsperioder;
 
 import static java.util.Arrays.asList;
 import static no.spk.pensjon.faktura.tidsserie.Datoar.dato;
+import static no.spk.pensjon.faktura.tidsserie.batch.Tidsserienummer.*;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId.avtaleId;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Foedselsdato.foedselsdato;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Kroner.kroner;
@@ -22,6 +23,7 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import no.spk.pensjon.faktura.tidsserie.batch.Tidsserienummer;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Aksjonskode;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AktiveStillingar;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.ArbeidsgiverId;
@@ -96,7 +98,7 @@ public class DatavarehusformatMappingTest {
                 instance(kolonne(63), UUID.class, null, matches("^\\w{8}-\\w+{4}-\\w+{4}-\\w{4}-\\w{12}$")),
                 instance(kolonne(64), Feilantall.class, null, forventa("0")),
                 instance(kolonne(65), ArbeidsgiverId.class, new ArbeidsgiverId(100_000L), forventa("100000")),
-                instance(kolonne(66), String.class, "", forventa("")), // Tidsserienummer, foreløpig uimplementert
+                instance(kolonne(66), Tidsserienummer.class, genererForDato(dato("2016.01.07")), forventa("20160107")),
                 instance(kolonne(67), String.class, "", forventa("")), // Termintype, foreløpig uimplementert
                 instance(kolonne(68), String.class, "", forventa("")), // Linjenummer historikk, foreløpig uimplementert
                 instance(kolonne(69), String.class, "", forventa("")), // Premiekategori, foreløpig ikkje en del av tidsserien
@@ -267,6 +269,7 @@ public class DatavarehusformatMappingTest {
             put(FraOgMedDato.class, fraPeriode((LocalDate value, UnderlagsperiodeBuilder b) -> b.fraOgMed(value)));
             put(TilOgMedDato.class, fraPeriode((LocalDate value, UnderlagsperiodeBuilder b) -> b.tilOgMed(value)));
             put(Feilantall.class, ignorer());
+            put(Tidsserienummer.class, fraUnderlag((Tidsserienummer value, Underlag underlag) -> underlag.annoter(Tidsserienummer.class, value)));
         }
 
         private <T> UnderlagConsumer<T> fraUnderlag(final UnderlagConsumer<T> value) {
@@ -311,7 +314,6 @@ public class DatavarehusformatMappingTest {
     }
 
     private static class TilOgMedDato {
-
     }
 
     private static class Feilantall {

@@ -1,6 +1,5 @@
 package no.spk.pensjon.faktura.tidsserie.batch.storage.csv.underlagsperioder;
 
-import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static java.util.stream.IntStream.range;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Aksjonskode.PERMISJON_UTAN_LOENN;
@@ -16,6 +15,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.CSVFormat;
+import no.spk.pensjon.faktura.tidsserie.batch.Tidsserienummer;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Aksjonskode;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.ArbeidsgiverId;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId;
@@ -210,7 +210,7 @@ public class Datavarehusformat implements CSVFormat {
         builder.add(placeholder);
 
         detector.utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(ArbeidsgiverId.class).map(ArbeidsgiverId::id)))
-                .utfoer(builder, p, up -> tidsserienummer())
+                .utfoer(builder, p, up -> kode(observasjonsunderlag.valgfriAnnotasjonFor(Tidsserienummer.class)))
                 .utfoer(builder, p, up -> termintype())
                 .utfoer(builder, p, up -> linjenummerHistorikk())
                 .utfoer(builder, p, up -> premiekategori())
@@ -230,10 +230,6 @@ public class Datavarehusformat implements CSVFormat {
     }
 
     private String termintype() {
-        return kode("");
-    }
-
-    private String tidsserienummer() {
         return kode("");
     }
 
