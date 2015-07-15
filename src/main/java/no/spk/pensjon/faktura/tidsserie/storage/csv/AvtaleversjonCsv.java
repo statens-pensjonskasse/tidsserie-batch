@@ -14,4 +14,6 @@ class AvtaleversjonCsv {
     Optional<String> tilOgMedDato;
     @CsvIndex(5)
     Optional<String> premiestatus;
+    @CsvIndex(6)
+    Optional<String> premiekategori;
 }
