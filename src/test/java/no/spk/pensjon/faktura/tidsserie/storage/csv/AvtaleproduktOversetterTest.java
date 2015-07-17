@@ -15,6 +15,7 @@ import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId.avt
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleprodukt;
 import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Produktinfo;
@@ -22,8 +23,11 @@ import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Avtale;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Premiesats;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt;
+import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Risikoklasse;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Satser;
 
+import javafx.beans.binding.BooleanExpression;
+import org.assertj.core.api.OptionalAssert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -36,6 +40,35 @@ public class AvtaleproduktOversetterTest {
     public final ExpectedException e = ExpectedException.none();
 
     private final AvtaleproduktOversetter oversetter = new AvtaleproduktOversetter();
+
+    @Test
+    public void skalIkkjePopulereRisikoklasseForAndreProduktEnnYsk() {
+        assertRisikoklasse(oversett("AVTALEPRODUKT;100001;PEN;2007.01.01;2010.08.31;10;0.10;0.01;10.00;0;0;0;1"))
+                .isEqualTo(empty());
+        assertRisikoklasse(oversett("AVTALEPRODUKT;100001;AFP;2007.01.01;2010.08.31;42;0.10;0.01;10.00;0;0;0;2"))
+                .isEqualTo(empty());
+        assertRisikoklasse(oversett("AVTALEPRODUKT;100001;TIP;2007.01.01;2010.08.31;94;0.10;0.01;10.00;0;0;0;3"))
+                .isEqualTo(empty());
+        assertRisikoklasse(oversett("AVTALEPRODUKT;100001;GRU;2007.01.01;2010.08.31;35;0;0;0;535;0;35;3,5"))
+                .isEqualTo(empty());
+    }
+
+    @Test
+    public void skalPopulereRisikoklasseForYsk() {
+        assertRisikoklasse(oversett("AVTALEPRODUKT;100001;YSK;2007.01.01;2010.08.31;35;0;0;0;535;0;35;3"))
+                .isEqualTo(of(new Risikoklasse("3")));
+    }
+
+    @Test
+    public void skalIkkjeFeileOmRisikoklasseManglar() {
+        assertRisikoklasse(oversett("AVTALEPRODUKT;100001;YSK;2007.01.01;2010.08.31;35;0;0;0;535;0;35;"))
+                .isEqualTo(empty());
+    }
+
+    private OptionalAssert<Risikoklasse> assertRisikoklasse(final Avtaleprodukt produkt) {
+        return assertThat(produkt.populer(avtale(produkt.avtale())).bygg().risikoklasse())
+                .as("risikoklasse for " + produkt);
+    }
 
     @Test
     public void testSolskinnslinjeProsent() throws Exception {
@@ -100,7 +133,7 @@ public class AvtaleproduktOversetterTest {
 
     private Avtaleprodukt oversett(final String text) {
         return oversetter.oversett(
-                asList(text.split(";")
+                asList(text.split(";", -1)
                 )
         );
     }

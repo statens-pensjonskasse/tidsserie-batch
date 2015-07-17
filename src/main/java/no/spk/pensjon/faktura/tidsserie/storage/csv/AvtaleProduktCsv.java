@@ -30,4 +30,6 @@ class AvtaleproduktCsv {
     Optional<String> medlemspremieBeloep;
     @CsvIndex(11)
     Optional<String> administrasjonsgebyrBeloep;
+    @CsvIndex(value = 12, obligatorisk = false)
+    Optional<String> risikoklasse;
 }
