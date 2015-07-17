@@ -2,12 +2,19 @@ package no.spk.pensjon.faktura.tidsserie.batch.storage.csv.underlagsperioder;
 
 import static java.util.Arrays.asList;
 import static no.spk.pensjon.faktura.tidsserie.Datoar.dato;
-import static no.spk.pensjon.faktura.tidsserie.batch.Tidsserienummer.*;
+import static no.spk.pensjon.faktura.tidsserie.batch.Tidsserienummer.genererForDato;
+import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Avtale.avtale;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId.avtaleId;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Foedselsdato.foedselsdato;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Kroner.kroner;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Loennstrinn.loennstrinn;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Personnummer.personnummer;
+import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Premiesats.premiesats;
+import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt.AFP;
+import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt.GRU;
+import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt.PEN;
+import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt.TIP;
+import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt.YSK;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Prosent.prosent;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.StillingsforholdId.stillingsforhold;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Stillingsprosent.fulltid;
@@ -24,6 +31,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.Tidsserienummer;
+import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Produktinfo;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Aksjonskode;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AktiveStillingar;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.ArbeidsgiverId;
@@ -34,6 +42,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Fastetillegg;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Foedselsnummer;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Funksjonstillegg;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Grunnbeloep;
+import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Kroner;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Loennstrinn;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.LoennstrinnBeloep;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Medlemsavtalar;
@@ -43,8 +52,11 @@ import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Medregningskode;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Ordning;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Orgnummer;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Premiekategori;
+import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Premiesats;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Premiestatus;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt;
+import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Prosent;
+import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Satser;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.StillingsforholdId;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Stillingskode;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Stillingsprosent;
@@ -71,6 +83,11 @@ import org.junit.runners.Parameterized.Parameter;
 @SuppressWarnings({"unchecked", "rawtypes"})
 @RunWith(Parameterized.class)
 public class DatavarehusformatMappingTest {
+    private static final Premiesats.Builder fakturerbartPensjonsprodukt = premiesats(PEN).produktinfo(new Produktinfo(10)).satser(new Satser<>(prosent("10%"), prosent("2%"), prosent("0.35%")));
+    private static final Premiesats.Builder fakturerbartAFPprodukt = premiesats(AFP).produktinfo(new Produktinfo(40)).satser(new Satser<>(prosent("2%"), prosent("0%"), prosent("0%")));
+    private static final Premiesats.Builder fakturerbartTIPprodukt = premiesats(TIP).produktinfo(new Produktinfo(94)).satser(new Satser<>(prosent("-20%"), prosent("0%"), prosent("0%")));
+    private static final Premiesats.Builder fakturerbartGRUprodukt = premiesats(GRU).produktinfo(new Produktinfo(35)).satser(new Satser<>(kroner(535), kroner(0), kroner(35)));
+    private static final Premiesats.Builder fakturerbartYSKprodukt = premiesats(YSK).produktinfo(new Produktinfo(71)).satser(new Satser<>(kroner(2535), kroner(0), kroner(35)));
 
     @Parameterized.Parameters(name = "kolonne={0},type={1}")
     public static List<Object[]> parameters() {
@@ -96,6 +113,34 @@ public class DatavarehusformatMappingTest {
                 instance(kolonne(19), Medregning.class, new Medregning(kroner(45_000_200)), forventa("45000200")),
                 instance(kolonne(20), Medregningskode.class, Medregningskode.TILLEGG_ANNEN_ARBGIV, forventa("14")),
                 instance(kolonne(21), Grunnbeloep.class, new Grunnbeloep(kroner(120_987)), forventa("120987")),
+                // TODO: Reglar, dei blir meir komplekse oppsettsmessig sidan dei treng langt meir tilstand pr regel
+                instance(kolonne(37), Avtale.class, einPremiesats(eitPensjonsprodukt()), forventa("1")),
+                instance(kolonne(38), Avtale.class, einPremiesats(eitPensjonsprodukt().satser(new Satser(prosent("999.0051%"), Prosent.ZERO, Prosent.ZERO))), forventa("999.01")),
+                instance(kolonne(39), Avtale.class, einPremiesats(eitPensjonsprodukt().satser(new Satser(Prosent.ZERO, prosent("999.5551%"), Prosent.ZERO))), forventa("999.56")),
+                instance(kolonne(40), Avtale.class, einPremiesats(eitPensjonsprodukt().satser(new Satser(Prosent.ZERO, Prosent.ZERO, prosent("0.354%")))), forventa("0.35")),
+                instance(kolonne(41), Avtale.class, einPremiesats(eitPensjonsprodukt().produktinfo(new Produktinfo(10))), forventa("10")),
+                instance(kolonne(42), Avtale.class, einPremiesats(eitAFPprodukt()), forventa("1")),
+                instance(kolonne(43), Avtale.class, einPremiesats(eitAFPprodukt().satser(new Satser(prosent("2%"), Prosent.ZERO, Prosent.ZERO))), forventa("2.00")),
+                instance(kolonne(44), Avtale.class, einPremiesats(eitAFPprodukt().satser(new Satser(Prosent.ZERO, prosent("200%"), Prosent.ZERO))), forventa("200.00")),
+                instance(kolonne(45), Avtale.class, einPremiesats(eitAFPprodukt().satser(new Satser(Prosent.ZERO, Prosent.ZERO, prosent("0%")))), forventa("0.00")),
+                instance(kolonne(46), Avtale.class, einPremiesats(eitAFPprodukt().produktinfo(new Produktinfo(42))), forventa("42")),
+                instance(kolonne(47), Avtale.class, einPremiesats(eitTIPprodukt()), forventa("1")),
+                instance(kolonne(48), Avtale.class, einPremiesats(eitTIPprodukt().satser(new Satser<>(prosent("108.234%"), Prosent.ZERO, Prosent.ZERO))), forventa("108.23")),
+                instance(kolonne(49), Avtale.class, einPremiesats(eitTIPprodukt().satser(new Satser<>(Prosent.ZERO, prosent("-744.499%"), Prosent.ZERO))), forventa("-744.50")),
+                instance(kolonne(50), Avtale.class, einPremiesats(eitTIPprodukt().satser(new Satser<>(Prosent.ZERO, Prosent.ZERO, prosent("0.999%")))), forventa("1.00")),
+                instance(kolonne(51), Avtale.class, einPremiesats(eitTIPprodukt().produktinfo(new Produktinfo(95))), forventa("95")),
+                instance(kolonne(52), Avtale.class, einPremiesats(eitGRUprodukt().produktinfo(new Produktinfo(31))), forventa("0")),
+                instance(kolonne(52), Avtale.class, einPremiesats(eitGRUprodukt().produktinfo(Produktinfo.GRU_36)), forventa("1")),
+                instance(kolonne(53), Avtale.class, einPremiesats(eitGRUprodukt().satser(new Satser<>(kroner(99999), Kroner.ZERO, Kroner.ZERO))), forventa("99999")),
+                instance(kolonne(54), Avtale.class, einPremiesats(eitGRUprodukt().satser(new Satser<>(Kroner.ZERO, kroner(923), Kroner.ZERO))), forventa("923")),
+                instance(kolonne(55), Avtale.class, einPremiesats(eitGRUprodukt().satser(new Satser<>(Kroner.ZERO, Kroner.ZERO, kroner(17)))), forventa("17")),
+                instance(kolonne(56), Avtale.class, einPremiesats(eitGRUprodukt().produktinfo(new Produktinfo(39))), forventa("39")),
+                instance(kolonne(57), Avtale.class, einPremiesats(eitYSKprodukt().produktinfo(Produktinfo.YSK_79)), forventa("0")),
+                instance(kolonne(57), Avtale.class, einPremiesats(eitYSKprodukt().produktinfo(new Produktinfo(71))), forventa("1")),
+                instance(kolonne(58), Avtale.class, einPremiesats(eitYSKprodukt().satser(new Satser<>(kroner(4500), Kroner.ZERO, Kroner.ZERO))), forventa("4500")),
+                instance(kolonne(59), Avtale.class, einPremiesats(eitYSKprodukt().satser(new Satser<>(Kroner.ZERO, kroner(450), Kroner.ZERO))), forventa("450")),
+                instance(kolonne(60), Avtale.class, einPremiesats(eitYSKprodukt().satser(new Satser<>(Kroner.ZERO, Kroner.ZERO, kroner(-45)))), forventa("-45")),
+                instance(kolonne(61), Avtale.class, einPremiesats(eitYSKprodukt().produktinfo(new Produktinfo(70))), forventa("70")),
                 instance(kolonne(62), String.class, "", forventa("2,5")), // Risikoklasse, foreløpig uimplementert
                 instance(kolonne(63), UUID.class, null, matches("^\\w{8}-\\w+{4}-\\w+{4}-\\w{4}-\\w{12}$")),
                 instance(kolonne(64), Feilantall.class, null, forventa("0")),
@@ -103,43 +148,36 @@ public class DatavarehusformatMappingTest {
                 instance(kolonne(66), Tidsserienummer.class, genererForDato(dato("2016.01.07")), forventa("20160107")),
                 instance(kolonne(67), String.class, "", forventa("")), // Termintype, foreløpig uimplementert
                 instance(kolonne(68), Medlemslinjenummer.class, Medlemslinjenummer.linjenummer(18), forventa("18")),
-                instance(kolonne(69), Premiekategori.class, Premiekategori.HENDELSESBASERT, forventa("LOP")),
-
-                // Premiesatsar, foreløpig hardkoda i formatet i påvente av implementasjon av oppslag
-
-                // PEN
-                instance(kolonne(37), String.class, "", forventa("0")),
-                instance(kolonne(38), String.class, "", forventa("")),
-                instance(kolonne(39), String.class, "", forventa("")),
-                instance(kolonne(40), String.class, "", forventa("")),
-                instance(kolonne(41), String.class, "", forventa("")),
-                // AFP
-                instance(kolonne(42), String.class, "", forventa("0")),
-                instance(kolonne(43), String.class, "", forventa("")),
-                instance(kolonne(44), String.class, "", forventa("")),
-                instance(kolonne(45), String.class, "", forventa("")),
-                instance(kolonne(46), String.class, "", forventa("")),
-                // TIP
-                instance(kolonne(47), String.class, "", forventa("0")),
-                instance(kolonne(48), String.class, "", forventa("")),
-                instance(kolonne(49), String.class, "", forventa("")),
-                instance(kolonne(50), String.class, "", forventa("")),
-                instance(kolonne(51), String.class, "", forventa("")),
-                // GRU
-                instance(kolonne(52), String.class, "", forventa("0")),
-                instance(kolonne(53), String.class, "", forventa("")),
-                instance(kolonne(54), String.class, "", forventa("")),
-                instance(kolonne(55), String.class, "", forventa("")),
-                instance(kolonne(56), String.class, "", forventa("")),
-                // YSK
-                instance(kolonne(57), String.class, "", forventa("0")),
-                instance(kolonne(58), String.class, "", forventa("")),
-                instance(kolonne(59), String.class, "", forventa("")),
-                instance(kolonne(60), String.class, "", forventa("")),
-                instance(kolonne(61), String.class, "", forventa(""))
-
-                // TODO: Reglar, dei blir meir komplekse oppsettsmessig sidan dei treng langt meir tilstand pr regel
+                instance(kolonne(69), Premiekategori.class, Premiekategori.HENDELSESBASERT, forventa("LOP"))
         );
+    }
+
+    private static Premiesats.Builder eitPensjonsprodukt() {
+        return fakturerbartPensjonsprodukt.kopi();
+    }
+
+    private static Premiesats.Builder eitAFPprodukt() {
+        return fakturerbartAFPprodukt.kopi();
+    }
+
+    private static Premiesats.Builder eitTIPprodukt() {
+        return fakturerbartTIPprodukt.kopi();
+    }
+
+    private static Premiesats.Builder eitGRUprodukt() {
+        return fakturerbartGRUprodukt.kopi();
+    }
+
+    private static Premiesats.Builder eitYSKprodukt() {
+        return fakturerbartYSKprodukt.kopi();
+    }
+
+    private static Avtale einPremiesats(Premiesats.Builder premiesats) {
+        return avtale(avtaleId(123456L))
+                .addPremiesats(
+                        premiesats.bygg()
+                )
+                .bygg();
     }
 
     @Parameter(0)

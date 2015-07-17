@@ -1,18 +1,26 @@
 package no.spk.pensjon.faktura.tidsserie.storage.csv;
 
 import static java.util.Arrays.asList;
+import static java.util.Optional.empty;
 import static java.util.Optional.of;
+import static no.spk.pensjon.faktura.tidsserie.Datoar.dato;
 import static no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Assertions.assertAdministrasjonsgebyrbeloep;
+import static no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Assertions.assertAdministrasjonsgebyrprosent;
 import static no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Assertions.assertArbeidsgiverbeloep;
+import static no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Assertions.assertArbeidsgiverprosent;
 import static no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Assertions.assertMedlemsbeloep;
-import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId.valueOf;
+import static no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Assertions.assertMedlemsprosent;
+import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Avtale.avtale;
+import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId.avtaleId;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 
 import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleprodukt;
 import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Produktinfo;
+import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Avtale;
+import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId;
+import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Premiesats;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Satser;
 
@@ -32,11 +40,11 @@ public class AvtaleproduktOversetterTest {
     @Test
     public void testSolskinnslinjeProsent() throws Exception {
         final Avtaleprodukt resultat =
-                oversett("AVTALEPRODUKT;100001;PEN;2007.01.01;2010.08.31;11;0.00;0.00;10.00;0;0.0;0.00");
+                oversett("AVTALEPRODUKT;100001;PEN;2007.01.01;2010.08.31;11;0.10;0.01;10.00;0;0.0;0.00");
 
-        assertArbeidsgiverbeloep(resultat).isEqualTo(of("0%"));
-        assertMedlemsbeloep(resultat).isEqualTo(of("0%"));
-        assertAdministrasjonsgebyrbeloep(resultat).isEqualTo(of("10%"));
+        assertArbeidsgiverprosent(resultat).isEqualTo(of("0,1%"));
+        assertMedlemsprosent(resultat).isEqualTo(of("0,01%"));
+        assertAdministrasjonsgebyrprosent(resultat).isEqualTo(of("10%"));
     }
 
     @Test
@@ -51,8 +59,19 @@ public class AvtaleproduktOversetterTest {
 
     @Test
     public void testSolskinnslinjeIngenSatser() throws Exception {
-        assertSolskinnslinje("AVTALEPRODUKT;100001;PEN;2007.01.01;2010.08.31;11;0.00;0.00;00.00;0;0.0;0.00",
-                Satser.ingenSatser());
+        final Avtaleprodukt actual = oversett("AVTALEPRODUKT;100001;PEN;2007.01.01;2010.08.31;11;0.00;0.00;00.00;0;0.0;0.00");
+
+        final AvtaleId avtaleId = avtaleId(100001);
+        assertThat(actual.fraOgMed()).as("fra og med-dato fra " + actual).isEqualTo(dato("2007.01.01"));
+        assertThat(actual.tilOgMed()).as("til og med-dato fra " + actual).isEqualTo(of(dato("2010.08.31")));
+        assertThat(actual.avtale()).as("avtale fra " + actual).isEqualTo(avtaleId);
+        assertThat(actual.produkt()).as("produkt fra " + actual).isEqualTo(Produkt.PEN);
+
+        final Avtale avtale = actual.populer(avtale(avtaleId)).bygg();
+        assertThat(avtale.premiesatsFor(Produkt.PEN)).isNotEqualTo(empty());
+        Premiesats premiesats = avtale.premiesatsFor(Produkt.PEN).get();
+        assertThat(premiesats.produktinfo).as("produktinfo fra " + actual).isEqualTo(new Produktinfo(11));
+        assertThat(premiesats.satser).as("satser fra " + actual).isEqualTo(Satser.ingenSatser());
     }
 
     @Test
@@ -60,18 +79,6 @@ public class AvtaleproduktOversetterTest {
         assertThat(
                 oversett("AVTALEPRODUKT;100001;XXX;2007.01.01;2010.08.31;11;0.00;0.00;10.00;0;0;0").produkt()
         ).isEqualTo(Produkt.UKJ);
-    }
-
-    public void assertSolskinnslinje(String csvStreng, Satser<?> satser) throws Exception {
-        assertThat(
-                oversett(csvStreng)
-        ).isEqualToComparingFieldByField(new Avtaleprodukt(
-                LocalDate.of(2007, 1, 1),
-                of(LocalDate.of(2010, 8, 31)),
-                valueOf("100001"),
-                Produkt.PEN,
-                new Produktinfo(11),
-                satser));
     }
 
     @Test
