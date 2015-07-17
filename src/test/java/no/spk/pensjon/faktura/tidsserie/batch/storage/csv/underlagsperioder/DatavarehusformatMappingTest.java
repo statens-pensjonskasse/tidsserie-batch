@@ -37,6 +37,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Grunnbeloep;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Loennstrinn;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.LoennstrinnBeloep;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Medlemsavtalar;
+import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Medlemslinjenummer;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Medregning;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Medregningskode;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Ordning;
@@ -100,7 +101,7 @@ public class DatavarehusformatMappingTest {
                 instance(kolonne(65), ArbeidsgiverId.class, new ArbeidsgiverId(100_000L), forventa("100000")),
                 instance(kolonne(66), Tidsserienummer.class, genererForDato(dato("2016.01.07")), forventa("20160107")),
                 instance(kolonne(67), String.class, "", forventa("")), // Termintype, foreløpig uimplementert
-                instance(kolonne(68), String.class, "", forventa("")), // Linjenummer historikk, foreløpig uimplementert
+                instance(kolonne(68), Medlemslinjenummer.class, Medlemslinjenummer.linjenummer(18), forventa("18")),
                 instance(kolonne(69), String.class, "", forventa("")), // Premiekategori, foreløpig ikkje en del av tidsserien
 
                 // Premiesatsar, foreløpig hardkoda i formatet i påvente av implementasjon av oppslag

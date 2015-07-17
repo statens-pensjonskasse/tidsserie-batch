@@ -30,5 +30,6 @@ class StillingsendringCsv {
     Optional<String> aksjonsdato;
     @CsvIndex(15)
     Optional<String> stillingskode;
-
+    @CsvIndex(value = 16,obligatorisk = false)
+    Optional<String> linjenummer;
 }

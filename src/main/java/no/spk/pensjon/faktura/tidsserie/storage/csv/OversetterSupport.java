@@ -1,5 +1,6 @@
 package no.spk.pensjon.faktura.tidsserie.storage.csv;
 
+import static java.util.Optional.of;
 import static java.util.Optional.ofNullable;
 
 import java.time.LocalDate;
@@ -56,6 +57,9 @@ class OversetterSupport {
     /**
      * Hentar ut den tekstlige verdien frå den angitte indeksen. Dersom verdien er <code>null</code> eller
      * inneheld kun whitespace, eventuelt er heilt tom, blir ein {@link java.util.Optional#empty() tom} verdi returnert.
+     * <br>
+     * Dersom indexen er større enn siste tilgjengelige index i rada, vil oppslaget ikkje feile.
+     * Fordi dette blir tolka som at kolonna er valgfri, vil {@link Optional#empty()} bli returnert.
      *
      * @param rad   rada som verdien skal hentast frå
      * @param index indexen som peikar til feltet som verdien skal hentast frå
@@ -63,6 +67,10 @@ class OversetterSupport {
      * er <code>null</code>, eller dersom det kun inneheld whitespace eller verdien er ein tom tekst-streng
      */
     Optional<String> read(final List<String> rad, final int index) {
-        return ofNullable(rad.get(index)).map(String::trim).filter(t -> !t.isEmpty());
+        return of(index)
+                .filter(i -> i < rad.size())
+                .flatMap(i -> ofNullable(rad.get(i)))
+                .map(String::trim)
+                .filter(t -> !t.isEmpty());
     }
 }
