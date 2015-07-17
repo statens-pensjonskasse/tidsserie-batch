@@ -27,6 +27,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Grunnbeloep;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Kroner;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Loennstrinn;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.LoennstrinnBeloep;
+import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Medlemslinjenummer;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Medregning;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Medregningskode;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Ordning;
@@ -212,7 +213,7 @@ public class Datavarehusformat implements CSVFormat {
         detector.utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(ArbeidsgiverId.class).map(ArbeidsgiverId::id)))
                 .utfoer(builder, p, up -> kode(observasjonsunderlag.valgfriAnnotasjonFor(Tidsserienummer.class)))
                 .utfoer(builder, p, up -> termintype())
-                .utfoer(builder, p, up -> linjenummerHistorikk())
+                .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Medlemslinjenummer.class)))
                 .utfoer(builder, p, up -> premiekategori())
         ;
 
@@ -222,10 +223,6 @@ public class Datavarehusformat implements CSVFormat {
     }
 
     private String premiekategori() {
-        return kode("");
-    }
-
-    private String linjenummerHistorikk() {
         return kode("");
     }
 
