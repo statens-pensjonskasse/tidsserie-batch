@@ -42,6 +42,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Medregning;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Medregningskode;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Ordning;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Orgnummer;
+import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Premiekategori;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Premiestatus;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.StillingsforholdId;
@@ -102,7 +103,7 @@ public class DatavarehusformatMappingTest {
                 instance(kolonne(66), Tidsserienummer.class, genererForDato(dato("2016.01.07")), forventa("20160107")),
                 instance(kolonne(67), String.class, "", forventa("")), // Termintype, foreløpig uimplementert
                 instance(kolonne(68), Medlemslinjenummer.class, Medlemslinjenummer.linjenummer(18), forventa("18")),
-                instance(kolonne(69), String.class, "", forventa("")), // Premiekategori, foreløpig ikkje en del av tidsserien
+                instance(kolonne(69), Premiekategori.class, Premiekategori.HENDELSESBASERT, forventa("LOP")),
 
                 // Premiesatsar, foreløpig hardkoda i formatet i påvente av implementasjon av oppslag
 
