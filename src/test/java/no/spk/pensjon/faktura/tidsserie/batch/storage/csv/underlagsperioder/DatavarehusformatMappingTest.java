@@ -1,6 +1,7 @@
 package no.spk.pensjon.faktura.tidsserie.batch.storage.csv.underlagsperioder;
 
 import static java.util.Arrays.asList;
+import static java.util.Optional.of;
 import static no.spk.pensjon.faktura.tidsserie.Datoar.dato;
 import static no.spk.pensjon.faktura.tidsserie.batch.Tidsserienummer.genererForDato;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Avtale.avtale;
@@ -56,6 +57,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Premiesats;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Premiestatus;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Prosent;
+import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Risikoklasse;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Satser;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.StillingsforholdId;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Stillingskode;
@@ -141,7 +143,7 @@ public class DatavarehusformatMappingTest {
                 instance(kolonne(59), Avtale.class, einPremiesats(eitYSKprodukt().satser(new Satser<>(Kroner.ZERO, kroner(450), Kroner.ZERO))), forventa("450")),
                 instance(kolonne(60), Avtale.class, einPremiesats(eitYSKprodukt().satser(new Satser<>(Kroner.ZERO, Kroner.ZERO, kroner(-45)))), forventa("-45")),
                 instance(kolonne(61), Avtale.class, einPremiesats(eitYSKprodukt().produktinfo(new Produktinfo(70))), forventa("70")),
-                instance(kolonne(62), String.class, "", forventa("2,5")), // Risikoklasse, foreløpig uimplementert
+                instance(kolonne(62), Avtale.class, einAvtale(eitYSKprodukt()).risikoklasse(of(new Risikoklasse("1,5"))).bygg(), forventa("1,5")),
                 instance(kolonne(63), UUID.class, null, matches("^\\w{8}-\\w+{4}-\\w+{4}-\\w{4}-\\w{12}$")),
                 instance(kolonne(64), Feilantall.class, null, forventa("0")),
                 instance(kolonne(65), ArbeidsgiverId.class, new ArbeidsgiverId(100_000L), forventa("100000")),
@@ -172,12 +174,16 @@ public class DatavarehusformatMappingTest {
         return fakturerbartYSKprodukt.kopi();
     }
 
-    private static Avtale einPremiesats(Premiesats.Builder premiesats) {
+    private static Avtale einPremiesats(final Premiesats.Builder premiesats) {
+        return einAvtale(premiesats)
+                .bygg();
+    }
+
+    private static Avtale.AvtaleBuilder einAvtale(final Premiesats.Builder premiesats) {
         return avtale(avtaleId(123456L))
                 .addPremiesats(
                         premiesats.bygg()
-                )
-                .bygg();
+                );
     }
 
     @Parameter(0)

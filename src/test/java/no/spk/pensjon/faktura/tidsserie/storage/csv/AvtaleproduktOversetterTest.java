@@ -61,7 +61,7 @@ public class AvtaleproduktOversetterTest {
 
     @Test
     public void skalIkkjeFeileOmRisikoklasseManglar() {
-        assertRisikoklasse(oversett("AVTALEPRODUKT;100001;YSK;2007.01.01;2010.08.31;35;0;0;0;535;0;35;"))
+        assertRisikoklasse(oversett("AVTALEPRODUKT;100001;YSK;2007.01.01;2010.08.31;35;0;0;0;535;0;35"))
                 .isEqualTo(empty());
     }
 
@@ -133,7 +133,7 @@ public class AvtaleproduktOversetterTest {
 
     private Avtaleprodukt oversett(final String text) {
         return oversetter.oversett(
-                asList(text.split(";", -1)
+                asList(text.split(";")
                 )
         );
     }

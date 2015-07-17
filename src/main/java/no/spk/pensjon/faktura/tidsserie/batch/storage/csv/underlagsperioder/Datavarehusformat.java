@@ -16,6 +16,7 @@ import no.spk.pensjon.faktura.tidsserie.batch.CSVFormat;
 import no.spk.pensjon.faktura.tidsserie.batch.Tidsserienummer;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Aksjonskode;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.ArbeidsgiverId;
+import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Avtale;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.DeltidsjustertLoenn;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Fastetillegg;
@@ -202,7 +203,7 @@ public class Datavarehusformat implements CSVFormat {
                 .multiple(builder, p, premiesatsar(Produkt.TIP))
                 .multiple(builder, p, premiesatsar(Produkt.GRU))
                 .multiple(builder, p, premiesatsar(Produkt.YSK))
-                .utfoer(builder, p, up -> kode(risikoklasse()))
+                .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Avtale.class).flatMap(Avtale::risikoklasse)))
                 .utfoer(builder, p, up -> up.id().toString())
         ;
 
@@ -230,10 +231,6 @@ public class Datavarehusformat implements CSVFormat {
 
     private String termintype() {
         return kode("");
-    }
-
-    private Optional<String> risikoklasse() {
-        return of("2,5");
     }
 
     private String prosent(final Optional<Prosent> verdi, final int antallDesimaler) {
