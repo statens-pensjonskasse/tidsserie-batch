@@ -4,10 +4,7 @@ import static java.util.stream.Collectors.toList;
 import static no.spk.pensjon.faktura.tidsserie.storage.csv.ReflectionUtils.newInstance;
 import static no.spk.pensjon.faktura.tidsserie.storage.csv.ReflectionUtils.setValue;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -19,12 +16,13 @@ import java.util.stream.Collectors;
  * <p>
  * Ved konstruksjon finner StringListToObjectFactory alle felt annotert med {@link CsvIndex} i en klasse og tilbyr metoden {@link #transform(List)} for å
  * gjøre om en liste av strenger til en instans av denne klassen.<br>
- *     Nb: P.t. støtter denne klassen kun felt av typen {@code Optional<String>}
+ * Nb: P.t. støtter denne klassen kun felt av typen {@code Optional<String>}
  * </p>
  * <p>
  * Det er en forutsenting at lister med strenger har typeindikator angitt på index 0, og at metoden {@link #transform(List)} bare
  * brukes dersom {@link #supports(List)} returnerer {@code true}.
  * </p>
+ *
  * @param <T> Typen som skal strenglister skal transformeres til.
  * @author Snorre E. Brekke - Computas
  * @see CsvIndex
@@ -33,7 +31,7 @@ public final class StringListToObjectFactory<T> {
     private final Class<T> csvClass;
 
     private final List<Field> csvFields;
-    private final int columns;
+    private final int antallObligatoriskeKolonner;
     private final String type;
 
     private final OversetterSupport oversetterSupport = new OversetterSupport();
@@ -41,8 +39,9 @@ public final class StringListToObjectFactory<T> {
     /**
      * Lager en ny StringListToObjectFactory som kan transformere lister med strenger som har {@code type} angitt på index 0,
      * om til instanser av {@code csvClass}.<br>
-     *     Nb: P.t. støtter denne klassen kun annoterte felt av typen {@code Optional<String>}
-     * @param type Streng som angir typeindikator for lister som skal transformeres til {@code csvClass}.
+     * Nb: P.t. støtter denne klassen kun annoterte felt av typen {@code Optional<String>}
+     *
+     * @param type     Streng som angir typeindikator for lister som skal transformeres til {@code csvClass}.
      * @param csvClass Klassen til typen strenglister skal transformeres til.
      * @throws IllegalArgumentException dersom klassen ikke har noen felter annotert med {@link CsvIndex}
      */
@@ -53,16 +52,39 @@ public final class StringListToObjectFactory<T> {
         csvFields = findCsvFields();
         assertAllFieldsOptionalString();
 
-        columns = csvFields.stream()
-                .map(f -> f.getAnnotation(CsvIndex.class))
+        if (csvFields.isEmpty()) {
+            throw new IllegalArgumentException(csvClass.toString() + " hadde ingen felt annotert med @CsvIndex");
+        }
+
+        csvFields.stream()
+                .reduce((a, b) -> {
+                    if (erValgfritt(a) && erObligatorisk(b)) {
+                        throw new IllegalArgumentException(
+                                "Feltet '"
+                                        + a.getName()
+                                        + "' kan ikkje ligge framfor eit obligatorisk felt."
+                                        + " Valgfrie felt er kun støtta bakom typens siste obligatoriske felt."
+                        );
+                    }
+                    return b;
+                });
+
+        antallObligatoriskeKolonner = csvFields.stream()
+                .map(this::annotation)
+                .filter(CsvIndex::obligatorisk)
                 .sorted((a1, a2) -> a2.value() - a1.value())
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(csvClass.toString() + " hadde ingen felt annotert med @CsvIndex"))
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Typen '"
+                                + csvClass.getSimpleName()
+                                + "' må inneholde minst eit obligatorisk felt."
+                ))
                 .value() + 1;
     }
 
     /**
      * Angir om raden inneholder en typeindikator på index 0 som er støttet av StringListToObjectFactory-instansen
+     *
      * @param rad som skal transformeres til T
      * @return true dersom randen har typeindikator støttet av {@code this} på index 0
      */
@@ -72,17 +94,18 @@ public final class StringListToObjectFactory<T> {
 
     /**
      * Transformerer listen med strenger til T
+     *
      * @param rad som skal transformeres til T
      * @return rad transformert til T
-     * @throws IllegalStateException dersom raden har for få kolonner eller et annotert felt ikke er av typen {@code Optional<String>}
+     * @throws IllegalArgumentException dersom raden har for få kolonner eller et annotert felt ikke er av typen {@code Optional<String>}
      */
     public T transform(final List<String> rad) {
-            if (rad.size() < columns) {
-                throw new IllegalArgumentException(getErrorMessage(rad));
-            }
-            T newCsvInstance = newInstance(csvClass);
-            csvFields.stream().forEach(f -> setValue(f, read(rad, getIndex(f)), newCsvInstance));
-            return newCsvInstance;
+        if (rad.size() < antallObligatoriskeKolonner) {
+            throw new IllegalArgumentException(getErrorMessage(rad));
+        }
+        T newCsvInstance = newInstance(csvClass);
+        csvFields.stream().forEach(f -> setValue(f, read(rad, getIndex(f)), newCsvInstance));
+        return newCsvInstance;
     }
 
     private Optional<String> read(final List<String> rad, final int index) {
@@ -97,14 +120,21 @@ public final class StringListToObjectFactory<T> {
     }
 
     private int getIndex(Field f2) {
-        return f2.getAnnotation(CsvIndex.class).value();
+        return annotation(f2).value();
+    }
+
+    private CsvIndex annotation(Field t) {
+        return t.getAnnotation(CsvIndex.class);
     }
 
     private void assertAllFieldsOptionalString() {
         csvFields.stream()
                 .forEach(f -> {
                     if (!f.getGenericType().getTypeName().equals("java.util.Optional<java.lang.String>")) {
-                        throw new IllegalStateException("Feltet '" + f.getName() + "' må ha typen Optional<String>. Fant: " + f.getType());
+                        throw new IllegalArgumentException(
+                                "Feltet '"
+                                        + f.getName()
+                                        + "' må ha typen Optional<String>. Fant: " + f.getType());
                     }
 
                 });
@@ -116,8 +146,16 @@ public final class StringListToObjectFactory<T> {
                 .filter(f -> getIndex(f) != 0)
                 .map(f -> f.getName() + "(" + getIndex(f) + ")")
                 .collect(Collectors.joining(", ",
-                        "Rader av typen <" + type + "> må inneholde minimum <" + columns + "> kolonner, " +
+                        "Rader av typen <" + type + "> må inneholde minimum <" + antallObligatoriskeKolonner + "> kolonner, " +
                                 "med følgende verdier på angitt index:\n typeindikator(0), ",
                         "\nRaden som feilet: " + rad));
+    }
+
+    private boolean erObligatorisk(Field b) {
+        return annotation(b).obligatorisk();
+    }
+
+    private boolean erValgfritt(Field a) {
+        return !erObligatorisk(a);
     }
 }

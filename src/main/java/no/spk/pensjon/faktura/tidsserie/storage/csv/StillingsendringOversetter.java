@@ -11,6 +11,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Foedselsdato;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Funksjonstillegg;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Kroner;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Loennstrinn;
+import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Medlemslinjenummer;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Personnummer;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Prosent;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.StillingsforholdId;
@@ -134,6 +135,12 @@ import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Stillingsendring;
  * <td>Stillingskode</td>
  * <td>TORT016.NUM_STILLINGSKODE</td>
  * </tr>
+ * <tr>
+ * <td>16</td>
+ * <td>integer</td>
+ * <td>Linjenummeret som i kombinasjon med fødselsdato og personnummer, unikt identifiserer stillingsendringa</td>
+ * <td>TORT016.IDE_LINJE_NR</td>
+ * </tr>
  * </tbody>
  * </table>
  *
@@ -150,7 +157,7 @@ public class StillingsendringOversetter extends ReflectiveCsvOversetter<Stilling
     @Override
     protected Stillingsendring transformer(StillingsendringCsv csvRad) {
         return new Stillingsendring()
-                .foedselsdato(csvRad.foedselsdato.map(Datoar::dato).map(Foedselsdato::new).get())
+                .foedselsdato(csvRad.foedselsdato.map(Integer::valueOf).map(Foedselsdato::foedselsdato).get())
                 .personnummer(csvRad.personnummer.map(Integer::valueOf).map(Personnummer::new).get())
                 .stillingsforhold(csvRad.stillingsforhold.map(StillingsforholdId::valueOf).get())
                 .aksjonskode(csvRad.aksjonskode.map(Aksjonskode::valueOf).orElse(Aksjonskode.UKJENT))
@@ -161,7 +168,9 @@ public class StillingsendringOversetter extends ReflectiveCsvOversetter<Stilling
                 .loenn(csvRad.loenn.map(Long::valueOf).map(Kroner::new).map(DeltidsjustertLoenn::new))
                 .fastetillegg(readFastetillegg(csvRad.fasteTillegg))
                 .variabletillegg(readVariabletillegg(csvRad.variableTillegg))
-                .funksjonstillegg(readFunksjonstillegg(csvRad.funksjonstillegg));
+                .funksjonstillegg(readFunksjonstillegg(csvRad.funksjonstillegg))
+                .linje(csvRad.linjenummer.map(Integer::valueOf).map(Medlemslinjenummer::linjenummer))
+                ;
     }
 
     /**

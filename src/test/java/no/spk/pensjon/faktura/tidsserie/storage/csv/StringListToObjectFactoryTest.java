@@ -1,6 +1,9 @@
 package no.spk.pensjon.faktura.tidsserie.storage.csv;
 
 
+import static java.util.Arrays.asList;
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
@@ -19,15 +22,47 @@ public class StringListToObjectFactoryTest {
     public ExpectedException exception = ExpectedException.none();
 
     @Test
+    public void skalKreveMinstEitObligatoriskFelt() {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("Typen 'WrongKunValgfrieFelt' må inneholde minst eit obligatorisk felt.");
+        new StringListToObjectFactory<>("TYPE", WrongKunValgfrieFelt.class);
+    }
+
+    @Test
+    public void skalAvviseValgfrieKolonnerFramomObligatoriskeKolonner() {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("Feltet 'valgfritt1' kan ikkje ligge framfor eit obligatorisk felt.");
+        exception.expectMessage("Valgfrie felt er kun støtta bakom typens siste obligatoriske felt");
+        new StringListToObjectFactory<>(
+                "TYPE",
+                WrongValgfrittFeltMellomObligatoriskefelt.class
+        );
+    }
+
+    @Test
+    public void skalStoetteValgfriekolonnerSomSisteKolonnerIFormatet() {
+        final StringListToObjectFactory<MedValgfrittFelt> factory = new StringListToObjectFactory<>(
+                "TYPE", MedValgfrittFelt.class
+        );
+        final MedValgfrittFelt expected = new MedValgfrittFelt();
+        expected.obligatorisk1 = of("ABCD");
+        expected.valgfritt1 = of("1234");
+        expected.valgfritt2 = empty();
+
+        final MedValgfrittFelt actual = factory.transform(asList("TYPE", "ABCD", "1234"));
+        assertThat(actual).isEqualToComparingFieldByField(expected);
+    }
+
+    @Test
     public void testRequiresOptionalStringField() throws Exception {
-        exception.expect(IllegalStateException.class);
+        exception.expect(IllegalArgumentException.class);
         exception.expectMessage("Feltet 'type' må ha typen Optional<String>");
         new StringListToObjectFactory<>("WrongType", WrongType.class);
     }
 
     @Test
     public void testRequiresStringGenericField() throws Exception {
-        exception.expect(IllegalStateException.class);
+        exception.expect(IllegalArgumentException.class);
         exception.expectMessage("Feltet 'type' må ha typen Optional<String>");
         new StringListToObjectFactory<>("WrongGenericType", WrongGenericType.class);
     }
@@ -82,5 +117,35 @@ public class StringListToObjectFactoryTest {
     private static class WrongGenericType{
         @CsvIndex(0)
         Optional<Object> type;
+    }
+
+    private static class MedValgfrittFelt {
+        @CsvIndex(1)
+        Optional<String> obligatorisk1;
+
+        @CsvIndex(value = 2, obligatorisk = false)
+        Optional<String> valgfritt1;
+
+        @CsvIndex(value = 3, obligatorisk = false)
+        Optional<String> valgfritt2;
+    }
+
+    private static class WrongValgfrittFeltMellomObligatoriskefelt {
+        @CsvIndex(0)
+        Optional<String> obligatorisk1;
+
+        @CsvIndex(value = 1, obligatorisk = false)
+        Optional<String> valgfritt1;
+
+        @CsvIndex(2)
+        Optional<String> obligatorisk2;
+    }
+
+    private static class WrongKunValgfrieFelt {
+        @CsvIndex(value = 0,obligatorisk = false)
+        Optional<String> valgfritt1;
+
+        @CsvIndex(value = 1,obligatorisk = false)
+        Optional<String> valgfritt2;
     }
 }

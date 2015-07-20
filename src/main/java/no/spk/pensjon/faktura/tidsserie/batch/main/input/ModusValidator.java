@@ -24,12 +24,16 @@ public class ModusValidator implements IParameterValidator {
 
     private void throwParameterException(final String value) {
         throw new ParameterException(
-                "Modus '" + value + "' er ikkje støtta av faktura-tidsserie-batch.\n"
-                        + "\nFølgjande modusar er støtta:\n"
-                        + Modus.stream()
-                        .map(Modus::kode)
-                        .map(k -> "- " + k)
-                        .collect(joining("\n"))
+                feilmelding(value)
         );
+    }
+
+    static String feilmelding(final String value) {
+        return "Modus '" + value + "' er ikkje støtta av faktura-tidsserie-batch.\n"
+                + "\nFølgjande modusar er støtta:\n"
+                + Modus.stream()
+                .map(Modus::kode)
+                .map(k -> "- " + k)
+                .collect(joining("\n"));
     }
 }

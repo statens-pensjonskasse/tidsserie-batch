@@ -1,13 +1,16 @@
 package no.spk.pensjon.faktura.tidsserie.batch.storage.csv.underlagsperioder;
 
+import static java.time.LocalDate.now;
 import static java.util.stream.Collectors.joining;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.CSVFormat;
 import no.spk.pensjon.faktura.tidsserie.batch.StorageBackend;
 import no.spk.pensjon.faktura.tidsserie.batch.Tidsseriemodus;
+import no.spk.pensjon.faktura.tidsserie.batch.Tidsserienummer;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.AvregningsRegelsett;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.Regelsett;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonspublikator;
@@ -32,6 +35,8 @@ public class LiveTidsseriemodus implements Tidsseriemodus {
     private final CSVFormat outputFormat = new Datavarehusformat();
 
     private final Regelsett reglar = new AvregningsRegelsett();
+
+    private final Tidsserienummer nummer = Tidsserienummer.genererForDato(now());
 
     /**
      * Kolonnenavna CSV-formatet for live-tidsserien benyttar seg av.
@@ -69,17 +74,47 @@ public class LiveTidsseriemodus implements Tidsseriemodus {
      */
     @Override
     public Observasjonspublikator create(final TidsserieFacade facade, final StorageBackend publikator) {
-        return s -> {
-            s.forEach(observasjonsunderlag -> {
-                observasjonsunderlag
-                        .stream()
-                        .map(underlagsperiode -> outputFormat.serialiser(
-                                observasjonsunderlag,
-                                underlagsperiode
-                        ))
-                        .map(kolonneVerdiar -> kolonneVerdiar.map(Object::toString).collect(joining(";")))
-                        .forEach(line -> publikator.lagre(builder -> builder.append(line).append('\n')));
-            });
-        };
+        return nyPublikator(
+                this::serialiserPeriode,
+                line -> lagre(publikator, line)
+        );
+    }
+
+    /**
+     * Genererer ein ny publikator som ved hjelp av <code>mapper </code> mappar alle observasjonsunderlagas perioder om
+     * til ei form som deretter blir lagra via <code>lagring</code>.
+     * <br>
+     * Kvart observasjonsunderlag blir annotert med {@link no.spk.pensjon.faktura.tidsserie.batch.Tidsserienummer}
+     * basert på dagens dato slik at mapperen unikt kan indikere at alle periodene tilhøyrer ein og samme tidsserie.
+     *
+     * @param mapper  serialiserer observasjonsunderlagas underlagsperioder til formatet <code>lagring</code> skal lagre på
+     * @param lagring tar den serialiserte versjonen av underlagsperiodene og lagrar dei
+     * @param <T>     datatypen underlagsperiodene blir serialisert til
+     * @return ein ny observasjonspublikator som kan brukast til å serialisere og lagre innholdet frå ein tidsserie
+     */
+    <T> Observasjonspublikator nyPublikator(
+            final Function<Underlag, Stream<T>> mapper, final Consumer<T> lagring) {
+        return s -> s
+                .peek(this::annoterMedTidsserienummer)
+                .flatMap(mapper)
+                .forEach(lagring);
+    }
+
+    private Underlag annoterMedTidsserienummer(Underlag u) {
+        return u.annoter(Tidsserienummer.class, nummer);
+    }
+
+    private Stream<String> serialiserPeriode(final Underlag observasjonsunderlag) {
+        return observasjonsunderlag
+                .stream()
+                .map(underlagsperiode -> outputFormat.serialiser(
+                        observasjonsunderlag,
+                        underlagsperiode
+                ))
+                .map(kolonneVerdiar -> kolonneVerdiar.map(Object::toString).collect(joining(";")));
+    }
+
+    private void lagre(StorageBackend publikator, String line) {
+        publikator.lagre(builder -> builder.append(line).append('\n'));
     }
 }

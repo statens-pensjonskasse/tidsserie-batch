@@ -1,36 +1,36 @@
 package no.spk.pensjon.faktura.tidsserie.batch.storage.csv.underlagsperioder;
 
-import static java.util.Optional.empty;
 import static java.util.Optional.of;
-import static java.util.stream.IntStream.range;
+import static no.spk.pensjon.faktura.tidsserie.batch.storage.csv.underlagsperioder.Kolonnetyper.beloep;
+import static no.spk.pensjon.faktura.tidsserie.batch.storage.csv.underlagsperioder.Kolonnetyper.dato;
+import static no.spk.pensjon.faktura.tidsserie.batch.storage.csv.underlagsperioder.Kolonnetyper.flagg;
+import static no.spk.pensjon.faktura.tidsserie.batch.storage.csv.underlagsperioder.Kolonnetyper.heiltall;
+import static no.spk.pensjon.faktura.tidsserie.batch.storage.csv.underlagsperioder.Kolonnetyper.kode;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Aksjonskode.PERMISJON_UTAN_LOENN;
 
-import java.text.NumberFormat;
-import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.CSVFormat;
+import no.spk.pensjon.faktura.tidsserie.batch.Tidsserienummer;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Aksjonskode;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.ArbeidsgiverId;
+import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Avtale;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.DeltidsjustertLoenn;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Fastetillegg;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Foedselsnummer;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Funksjonstillegg;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Grunnbeloep;
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Kroner;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Loennstrinn;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.LoennstrinnBeloep;
+import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Medlemslinjenummer;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Medregning;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Medregningskode;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Ordning;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Orgnummer;
+import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Premiekategori;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Premiestatus;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Prosent;
@@ -68,12 +68,16 @@ import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
  * <br>
  * Merk at foreløpig handhevar ikkje formatet kontrakta fullt ut med tanke på lengdeavgrensing av felt som potensielt
  * sett kan ha verdiar som blir lenger enn det kontrakta tillater.
+ * <br>
+ * Kontrakta for utvekslingsformatet ligg tilgjengelig under
+ * <a href="http://wiki/confluence/display/dok/faktura-tidsserie-batch+-+CSV-format+for+DVH+og+Qlikview">faktura-tidsserie-batch - CSV-format for DVH og Qlikview</a>
  *
  * @author Tarjei Skorgenes
  */
 public class Datavarehusformat implements CSVFormat {
-    //
-    private final ThreadLocal<Map<Integer, NumberFormat>> desimalformat = ThreadLocal.withInitial(HashMap::new);
+    private final Desimaltallformatering desimaltall = new Desimaltallformatering();
+
+    private final Premiesatskolonner premiesatskolonner = new Premiesatskolonner();
 
     @Override
     public Stream<String> kolonnenavn() {
@@ -87,7 +91,6 @@ public class Datavarehusformat implements CSVFormat {
                 "organisasjonsnummer",
                 "ordning",
                 "premiestatus",
-                "premiekategori",
                 "aksjonskode",
                 "stillingskode",
                 "stillingsprosent",
@@ -145,7 +148,9 @@ public class Datavarehusformat implements CSVFormat {
                 "antallFeil",
                 "arbeidsgivernummer",
                 "tidsserienummer",
-                "termintype"
+                "termintype",
+                "linjenummer_historikk",
+                "premiekategori"
         );
     }
 
@@ -166,7 +171,6 @@ public class Datavarehusformat implements CSVFormat {
         detector.utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Orgnummer.class).map(Orgnummer::id)))
                 .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Ordning.class).map(Ordning::kode)))
                 .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Premiestatus.class).map(Premiestatus::kode)))
-                .utfoer(builder, p, up -> kode(premiekategori()))
                 .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Aksjonskode.class).map(Aksjonskode::kode)))
                 .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Stillingskode.class).map(Stillingskode::getKode)))
                 .utfoer(builder, p, up -> prosent(deltid.map(Stillingsprosent::prosent), 3))
@@ -194,12 +198,12 @@ public class Datavarehusformat implements CSVFormat {
                 .utfoer(builder, p, up -> flagg(up.valgfriAnnotasjonFor(Medregning.class).isPresent()))
                 .utfoer(builder, p, up -> flagg(up.valgfriAnnotasjonFor(Aksjonskode.class).filter(kode -> kode.equals(PERMISJON_UTAN_LOENN)).isPresent()))
                 .utfoer(builder, p, up -> flagg(deltid.map(d -> up.beregn(MinstegrenseRegel.class).erUnderMinstegrensa(d)).orElse(false)))
-                .utfoer(builder, p, up -> premiesatserFor(up, Produkt.PEN), 4)
-                .utfoer(builder, p, up -> premiesatserFor(up, Produkt.AFP), 4)
-                .utfoer(builder, p, up -> premiesatserFor(up, Produkt.TIP), 4)
-                .utfoer(builder, p, up -> premiesatserFor(up, Produkt.GRU), 4)
-                .utfoer(builder, p, up -> premiesatserFor(up, Produkt.YSK), 4)
-                .utfoer(builder, p, up -> kode(risikoklasse()))
+                .multiple(builder, p, premiesatsar(Produkt.PEN))
+                .multiple(builder, p, premiesatsar(Produkt.AFP))
+                .multiple(builder, p, premiesatsar(Produkt.TIP))
+                .multiple(builder, p, premiesatsar(Produkt.GRU))
+                .multiple(builder, p, premiesatsar(Produkt.YSK))
+                .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Avtale.class).flatMap(Avtale::risikoklasse)))
                 .utfoer(builder, p, up -> up.id().toString())
         ;
 
@@ -210,8 +214,10 @@ public class Datavarehusformat implements CSVFormat {
         builder.add(placeholder);
 
         detector.utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(ArbeidsgiverId.class).map(ArbeidsgiverId::id)))
-                .utfoer(builder, p, up -> tidsserienummer())
+                .utfoer(builder, p, up -> kode(observasjonsunderlag.valgfriAnnotasjonFor(Tidsserienummer.class)))
                 .utfoer(builder, p, up -> termintype())
+                .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Medlemslinjenummer.class)))
+                .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Premiekategori.class).map(Premiekategori::kode)))
         ;
 
         // Må populere inn antall feil til slutt for å sikre at eventuelle feil som inntreffe etter at denne kolonna
@@ -219,36 +225,12 @@ public class Datavarehusformat implements CSVFormat {
         return builder.build().map(o -> o == placeholder ? heiltall(detector.antallFeil) : o);
     }
 
+    private Stream<Function<Underlagsperiode, String>> premiesatsar(final Produkt produkt) {
+        return premiesatskolonner.forProdukt(produkt);
+    }
+
     private String termintype() {
         return kode("");
-    }
-
-    private String tidsserienummer() {
-        return kode("");
-    }
-
-    private Optional<String> premiekategori() {
-        return empty();
-    }
-
-    private Optional<String> risikoklasse() {
-        return of("2,5");
-    }
-
-    private String dato(final LocalDate verdi) {
-        return verdi.toString();
-    }
-
-    private String heiltall(final int verdi) {
-        return Integer.toString(verdi);
-    }
-
-    private String heiltall(final long verdi) {
-        return Long.toString(verdi);
-    }
-
-    private String flagg(final boolean value) {
-        return value ? "1" : "0";
     }
 
     private String prosent(final Optional<Prosent> verdi, final int antallDesimaler) {
@@ -256,69 +238,6 @@ public class Datavarehusformat implements CSVFormat {
     }
 
     private String prosent(final Prosent verdi, final int antallDesimaler) {
-        return desimalFormat(antallDesimaler).format(verdi.toDouble() * 100d);
-    }
-
-    private String kode(final String verdi) {
-        return verdi;
-    }
-
-    private String kode(final Optional<?> verdi) {
-        return verdi.map(Object::toString).orElse("");
-    }
-
-    private String beloep(final Optional<Kroner> verdi) {
-        return verdi.map(Kroner::verdi).map(Object::toString).orElse("");
-    }
-
-    private String beloep(final Kroner beloep) {
-        return Long.toString(beloep.verdi());
-    }
-
-    private Stream<String> premiesatserFor(final Underlagsperiode up, final Produkt produkt) {
-        return Stream.of(
-                flagg(false),
-                beloep(Optional.<Kroner>empty()),
-                beloep(Optional.<Kroner>empty()),
-                beloep(Optional.<Kroner>empty()),
-                kode(Optional.<String>empty())
-        );
-    }
-
-    private NumberFormat desimalFormat(final int antallDesimaler) {
-        return desimalformat.get().computeIfAbsent(antallDesimaler, antall -> {
-            NumberFormat format = NumberFormat.getNumberInstance(Locale.ENGLISH);
-            format.setMaximumFractionDigits(antall);
-            format.setMinimumFractionDigits(antall);
-            return format;
-        });
-    }
-
-    private static class ErrorDetector {
-        int antallFeil;
-
-        ErrorDetector utfoer(final Consumer<Object> builder, final Underlagsperiode p, final Function<Underlagsperiode, String> function) {
-            try {
-                builder.accept(function.apply(p));
-            } catch (final Exception e) {
-                antallFeil++;
-                builder.accept("");
-            }
-            return this;
-        }
-
-        ErrorDetector utfoer(final Consumer<Object> builder, final Underlagsperiode p, final Function<Underlagsperiode, Stream<String>> function, final int fieldCount) {
-            try {
-                function.apply(p)
-                        .forEach(builder);
-            } catch (final Exception e) {
-                antallFeil++;
-
-                range(0, fieldCount)
-                        .mapToObj(i -> "")
-                        .forEach(builder);
-            }
-            return this;
-        }
+        return desimaltall.formater(verdi.toDouble() * 100d, antallDesimaler);
     }
 }
