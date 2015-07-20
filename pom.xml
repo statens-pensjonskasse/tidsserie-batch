@@ -14,7 +14,7 @@
 
     <properties>
         <project.build.sourceEncoding>CP1252</project.build.sourceEncoding>
-        <faktura.prognose.tidsserie.version>1.1.1-SNAPSHOT</faktura.prognose.tidsserie.version>
+        <faktura.prognose.tidsserie.version>1.1.1</faktura.prognose.tidsserie.version>
     </properties>
 
     <build>
