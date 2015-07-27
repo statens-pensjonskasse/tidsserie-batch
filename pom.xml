@@ -15,8 +15,8 @@
 
     <modules>
         <module>faktura-tidsserie-batch-felles</module>
+        <module>faktura-tidsserie-batch-infra</module>
         <module>faktura-tidsserie-batch</module>
-        <module>faktura-tidsserie-batch-jar</module>
     </modules>
 
     <properties>
