@@ -33,6 +33,7 @@ import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.Tidsserienummer;
 import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Produktinfo;
+import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Termintype;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Aksjonskode;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AktiveStillingar;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.ArbeidsgiverId;
@@ -148,7 +149,7 @@ public class DatavarehusformatMappingTest {
                 instance(kolonne(64), Feilantall.class, null, forventa("0")),
                 instance(kolonne(65), ArbeidsgiverId.class, new ArbeidsgiverId(100_000L), forventa("100000")),
                 instance(kolonne(66), Tidsserienummer.class, genererForDato(dato("2016.01.07")), forventa("20160107")),
-                instance(kolonne(67), String.class, "", forventa("")), // Termintype, foreløpig uimplementert
+                instance(kolonne(67), Termintype.class, Termintype.POA, forventa("POA")),
                 instance(kolonne(68), Medlemslinjenummer.class, Medlemslinjenummer.linjenummer(18), forventa("18")),
                 instance(kolonne(69), Premiekategori.class, Premiekategori.HENDELSESBASERT, forventa("LOP"))
         );

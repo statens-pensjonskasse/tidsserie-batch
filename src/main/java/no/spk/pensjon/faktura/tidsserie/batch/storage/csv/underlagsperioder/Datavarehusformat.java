@@ -1,6 +1,5 @@
 package no.spk.pensjon.faktura.tidsserie.batch.storage.csv.underlagsperioder;
 
-import static java.util.Optional.of;
 import static no.spk.pensjon.faktura.tidsserie.batch.storage.csv.underlagsperioder.Kolonnetyper.beloep;
 import static no.spk.pensjon.faktura.tidsserie.batch.storage.csv.underlagsperioder.Kolonnetyper.dato;
 import static no.spk.pensjon.faktura.tidsserie.batch.storage.csv.underlagsperioder.Kolonnetyper.flagg;
@@ -14,30 +13,8 @@ import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.CSVFormat;
 import no.spk.pensjon.faktura.tidsserie.batch.Tidsserienummer;
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Aksjonskode;
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.ArbeidsgiverId;
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Avtale;
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId;
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.DeltidsjustertLoenn;
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Fastetillegg;
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Foedselsnummer;
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Funksjonstillegg;
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Grunnbeloep;
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Loennstrinn;
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.LoennstrinnBeloep;
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Medlemslinjenummer;
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Medregning;
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Medregningskode;
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Ordning;
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Orgnummer;
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Premiekategori;
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Premiestatus;
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt;
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Prosent;
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.StillingsforholdId;
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Stillingskode;
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Stillingsprosent;
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Variabletillegg;
+import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Termintype;
+import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.*;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.AarsLengdeRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.AarsfaktorRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.AarsverkRegel;
@@ -215,7 +192,7 @@ public class Datavarehusformat implements CSVFormat {
 
         detector.utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(ArbeidsgiverId.class).map(ArbeidsgiverId::id)))
                 .utfoer(builder, p, up -> kode(observasjonsunderlag.valgfriAnnotasjonFor(Tidsserienummer.class)))
-                .utfoer(builder, p, up -> termintype())
+                .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Termintype.class).map(Termintype::kode)))
                 .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Medlemslinjenummer.class)))
                 .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Premiekategori.class).map(Premiekategori::kode)))
         ;
@@ -227,10 +204,6 @@ public class Datavarehusformat implements CSVFormat {
 
     private Stream<Function<Underlagsperiode, String>> premiesatsar(final Produkt produkt) {
         return premiesatskolonner.forProdukt(produkt);
-    }
-
-    private String termintype() {
-        return kode("");
     }
 
     private String prosent(final Optional<Prosent> verdi, final int antallDesimaler) {
