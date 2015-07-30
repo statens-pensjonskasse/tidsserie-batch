@@ -123,7 +123,7 @@ public class AvtaleproduktOversetter extends ReflectiveCsvOversetter<Avtaleprodu
         Prosent administrasjonsgebyrProsent = csvRad.administrasjonsgebyrProsent.map(Prosent::prosent).get();
 
         Optional<Satser<?>> prosentsatser = Stream.of(arbeidsgiverpremieProsent, medlemspremieProsent, administrasjonsgebyrProsent)
-                .filter(p -> p.equals(Prosent.ZERO, 3))
+                .filter(p -> !p.equals(Prosent.ZERO, 3))
                 .findFirst()
                 .map(p -> new Satser<>(arbeidsgiverpremieProsent, medlemspremieProsent, administrasjonsgebyrProsent));
 
