@@ -18,6 +18,7 @@ import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArgumentsFactory
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArgumentsFactory.UsageRequestedException;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
 
+import ch.qos.logback.classic.LoggerContext;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
@@ -55,6 +56,7 @@ public class ApplicationController {
     public void initialiserLogging(final BatchId id, final Path utKatalog) {
         System.setProperty("batchKatalog", id.tilArbeidskatalog(utKatalog).toString());
         MDC.put("batchId", id.toString());
+        Runtime.getRuntime().addShutdownHook(new Thread(this::shutdownLogger, "Batch shutdown"));
     }
 
     public void informerOmOppstart(final ProgramArguments argumenter) {
@@ -150,5 +152,16 @@ public class ApplicationController {
         view.informerOmMetadataOppretting();
         metaDataWriter.createMetadataFile(arguments, batchId, duration);
         metaDataWriter.createChecksumFile();
+    }
+
+    private void shutdownLogger() {
+        try {
+            //Delay shutdown to allow flushing.
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+        loggerContext.stop();
     }
 }

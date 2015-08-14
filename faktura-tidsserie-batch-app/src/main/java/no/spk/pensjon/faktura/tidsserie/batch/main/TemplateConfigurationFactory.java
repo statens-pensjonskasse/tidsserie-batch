@@ -7,6 +7,9 @@ import freemarker.template.TemplateExceptionHandler;
  * @author Snorre E. Brekke - Computas
  */
 public class TemplateConfigurationFactory {
+    static{
+        System.setProperty("org.freemarker.loggerLibrary", "SLF4J");
+    }
 
     public static Configuration create() {
         Configuration config = new Configuration(Configuration.VERSION_2_3_22);

@@ -1,6 +1,7 @@
 package no.spk.pensjon.faktura.tidsserie.batch.main.input;
 
 import java.nio.file.Path;
+import java.time.LocalTime;
 import java.util.Optional;
 
 import no.spk.pensjon.faktura.tidsserie.batch.Tidsseriemodus;
@@ -67,6 +68,17 @@ public class ProgramArguments {
     )
     Modus modus = Modus.STILLINGSFORHOLD_OBSERVASJONAR;
 
+    @Parameter(names = "-kjoeretid",
+            description = "Maks kjøretid på formatet HHmm.",
+            validateWith = DurationValidator.class)
+    String kjoeretid = "0400";
+
+    @Parameter(names = { "-sluttid" },
+            description = "Klokkeslett på formen HH:mm eller HH:mm:ss for når kjøringen senest avsluttes.",
+            validateWith = LocalTimeValidator.class,
+            converter = LocalTimeConverter.class)
+    LocalTime sluttidspunkt = LocalTime.parse("23:59");
+
     public boolean isHjelp() {
         return hjelp;
     }
@@ -115,5 +127,13 @@ public class ProgramArguments {
 
     public Tidsseriemodus modus() {
         return modus.modus();
+    }
+
+    public String getKjoeretid() {
+        return kjoeretid;
+    }
+
+    public LocalTime getSluttidspunkt() {
+        return sluttidspunkt;
     }
 }

@@ -1,9 +1,16 @@
 package no.spk.pensjon.faktura.tidsserie.batch.main;
 
+import static java.lang.Integer.parseInt;
+import static java.lang.Math.min;
+import static java.time.temporal.ChronoUnit.HOURS;
+import static java.time.temporal.ChronoUnit.MILLIS;
+import static java.time.temporal.ChronoUnit.MINUTES;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 
 import no.spk.pensjon.faktura.tidsserie.batch.FileTemplate;
@@ -39,6 +46,8 @@ public class Main {
 
         try {
             ProgramArguments arguments = ProgramArgumentsFactory.create(args);
+            startBatchTimeout(arguments, controller);
+
             final BatchId batchId = new BatchId(LocalDateTime.now());
             Path batchKatalog = batchId.tilArbeidskatalog(arguments.getUtkatalog());
 
@@ -83,6 +92,22 @@ public class Main {
             controller.informerOmUkjentFeil(e);
         }
 
+        shutdown(controller);
+    }
+
+    private static void shutdown(ApplicationController controller) {
         System.exit(controller.exitCode());
+    }
+
+    private static void startBatchTimeout(ProgramArguments arguments, ApplicationController controller) {
+        String kjoeretidString = arguments.getKjoeretid();
+        int hours = parseInt(kjoeretidString.substring(0, 2));
+        int minutes = parseInt(kjoeretidString.substring(2, 4));
+        Duration kjoeretidDuration = Duration.of(hours, HOURS).plus(Duration.of(minutes, MINUTES));
+
+        long duration = ChronoUnit.MILLIS.between(LocalTime.now(), arguments.getSluttidspunkt());
+
+        long timeout = min(kjoeretidDuration.toMillis(), duration);
+        TimeoutTaskrunner.startTimeout(Duration.of(timeout, MILLIS), () -> shutdown(controller));
     }
 }

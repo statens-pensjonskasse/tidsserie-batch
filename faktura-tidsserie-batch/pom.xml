@@ -9,7 +9,12 @@
     <packaging>jar</packaging>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>faktura-tidsserie-batch</artifactId>
+    <artifactId>pu_fak_ba_10</artifactId>
+    <name>faktura-tidsserie-batch</name>
+
+    <properties>
+        <jre.directory>jre1.8.0_51</jre.directory>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -43,4 +48,82 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>exe</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.akathist.maven.plugins.launch4j</groupId>
+                        <artifactId>launch4j-maven-plugin</artifactId>
+                        <version>1.7.7</version>
+                        <executions>
+                            <execution>
+                                <id>l4j-clui</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>launch4j</goal>
+                                </goals>
+                                <configuration>
+                                    <headerType>console</headerType>
+                                    <outfile>target/${project.artifactId}-${project.version}.exe</outfile>
+                                    <jar>target/${project.artifactId}-${project.version}.jar</jar>
+                                    <errTitle>tidserie</errTitle>
+                                    <classPath>
+                                        <mainClass>no.spk.pensjon.faktura.tidsserie.batch.main.Main</mainClass>
+                                        <addDependencies>false</addDependencies>
+                                    </classPath>
+                                    <jre>
+                                        <path>jre</path>
+                                        <bundledJre64Bit>false</bundledJre64Bit>
+                                        <jdkPreference>jreOnly</jdkPreference>
+                                        <bundledJreAsFallback>false</bundledJreAsFallback>
+                                    </jre>
+                                    <versionInfo>
+                                        <fileVersion>1.0.0.0</fileVersion>
+                                        <txtFileVersion>1</txtFileVersion>
+                                        <fileDescription>some desc</fileDescription>
+                                        <copyright>nah</copyright>
+                                        <productVersion>4.3.2.1</productVersion>
+                                        <txtProductVersion>${project.version}</txtProductVersion>
+                                        <productName>${project.name}</productName>
+                                        <internalName>${project.artifactId}</internalName>
+                                        <originalFilename>tidsserie.exe</originalFilename>
+                                    </versionInfo>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>2.5.5</version>
+                        <configuration>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <finalName>${project.artifactId}-${project.version}</finalName>
+                            <descriptorRefs>
+                                <descriptorRef>exe</descriptorRef>
+                            </descriptorRefs>
+                        </configuration>
+                        <dependencies>
+                            <dependency>
+                                <groupId>no.spk.pensjon.faktura</groupId>
+                                <artifactId>pu_fak_ba_10</artifactId>
+                                <version>${project.version}</version>
+                            </dependency>
+                        </dependencies>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

@@ -17,6 +17,7 @@
         <module>faktura-tidsserie-batch-input</module>
         <module>faktura-tidsserie-batch-app</module>
         <module>faktura-tidsserie-batch</module>
+        <module>faktura-tidsserie-batch-overvaak</module>
     </modules>
 
     <properties>
