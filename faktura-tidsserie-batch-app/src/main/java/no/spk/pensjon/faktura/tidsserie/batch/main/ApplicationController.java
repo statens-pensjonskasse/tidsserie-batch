@@ -154,6 +154,14 @@ public class ApplicationController {
         metaDataWriter.createChecksumFile();
     }
 
+    /**
+     * Oppretter triggerfil som setter igang innlesing av tdisserien i datavarehus.
+     * @param metaDataWriter skriver som lager triggerfilen
+     */
+    public void opprettTriggerfil(MetaDataWriter metaDataWriter) {
+        metaDataWriter.createTriggerFile();
+    }
+
     private void shutdownLogger() {
         try {
             //Delay shutdown to allow flushing.

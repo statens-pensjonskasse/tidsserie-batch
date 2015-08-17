@@ -12,10 +12,6 @@
     <artifactId>pu_fak_ba_10</artifactId>
     <name>faktura-tidsserie-batch</name>
 
-    <properties>
-        <jre.directory>jre1.8.0_51</jre.directory>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>no.spk.pensjon.faktura</groupId>
@@ -52,6 +48,14 @@
     <profiles>
         <profile>
             <id>exe</id>
+            <dependencies>
+                <dependency>
+                    <groupId>com.oracle</groupId>
+                    <artifactId>jre</artifactId>
+                    <version>1.8.0_51</version>
+                    <scope>provided</scope>
+                </dependency>
+            </dependencies>
             <build>
                 <plugins>
                     <plugin>

@@ -10,7 +10,7 @@
         <file>
             <fileMode>0755</fileMode>
             <source>src/main/exe/tidsserie.l4j.ini</source>
-            <outputDirectory>${project.artifactId}</outputDirectory>
+            <outputDirectory>.</outputDirectory>
             <destName>${project.artifactId}-${project.version}.l4j.ini</destName>
         </file>
     </files>
@@ -18,15 +18,21 @@
         <fileSet>
             <fileMode>0755</fileMode>
             <directory>target</directory>
-            <outputDirectory>${project.artifactId}</outputDirectory>
+            <outputDirectory>.</outputDirectory>
             <includes>
                 <include>${project.artifactId}-${project.version}.exe</include>
             </includes>
         </fileSet>
-        <fileSet>
-            <fileMode>0755</fileMode>
-            <directory>${jre.directory}</directory>
-            <outputDirectory>${project.artifactId}/jre</outputDirectory>
-        </fileSet>
     </fileSets>
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>jre</outputDirectory>
+            <unpack>true</unpack>
+            <scope>provided</scope>
+            <fileMode>0755</fileMode>
+            <includes>
+                <include>com.oracle:jre:*:1.8.0_51</include>
+            </includes>
+        </dependencySet>
+    </dependencySets>
 </assembly>

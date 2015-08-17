@@ -80,6 +80,7 @@ public class Main {
 
             MetaDataWriter metaDataWriter = new MetaDataWriter(freemarkerConfiguration, batchKatalog);
             controller.opprettMetadata(metaDataWriter, arguments, batchId, duration);
+            controller.opprettTriggerfil(metaDataWriter);
 
             controller.informerOmSuksess(batchKatalog);
         } catch (InvalidParameterException e) {

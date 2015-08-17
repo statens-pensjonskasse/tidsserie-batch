@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Arrays;
@@ -80,6 +81,18 @@ public class MetaDataWriter {
         }
 
         return Optional.of(fileToWrite);
+    }
+
+    /**
+     * Oppretter ok.trg i batchkatalogen.
+     */
+    public void createTriggerFile() {
+        Path resolve = batchKatalog.resolve("ok.trg");
+        try {
+            Files.createFile(resolve);
+        } catch (IOException e) {
+            throw new GrunnlagsdataException("Klarte ikke å opprette triggerfil.");
+        }
     }
 
     private File[] getFiles(Path directoryName) {
