@@ -78,7 +78,8 @@ public class MetaDataWriterTest {
     }
 
     private ProgramArguments getProgramArguments(File writeFolder) {
-        return ProgramArgumentsFactory.create("-b", "lager metadata", "-i", writeFolder.getAbsolutePath(), "-o", writeFolder.getAbsolutePath());
+        String file = writeFolder.getAbsolutePath();
+        return ProgramArgumentsFactory.create("-b", "lager metadata", "-i", file, "-o", file, "-log", file);
     }
 
     private MetaDataWriter getMetaDataWriter(File writeFolder) {

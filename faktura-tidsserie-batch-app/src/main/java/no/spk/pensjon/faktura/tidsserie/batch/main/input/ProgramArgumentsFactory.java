@@ -73,7 +73,7 @@ public final class ProgramArgumentsFactory {
     }
 
     private static void setDefaultBatchId(ProgramArguments arguments) {
-        final Pattern pattern = BatchIdMatcher.createBatchIdPattern("grunnlagsdata_");
+        final Pattern pattern = BatchIdMatcher.createBatchIdPattern("grunnlagsdata");
         final Path innkatalog = arguments.getInnkatalog();
         try (final Stream<Path> list = Files.list(innkatalog)) {
             String grunnlagsdataBatchId = list

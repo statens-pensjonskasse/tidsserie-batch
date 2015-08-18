@@ -60,10 +60,13 @@
         </dependency>
         <!-- test-->
         <dependency>
-            <groupId>no.spk.pensjon.faktura</groupId>
-            <artifactId>faktura-tidsserie-batch-input</artifactId>
-            <version>${project.parent.version}</version>
-            <type>test-jar</type>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-core</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -72,13 +75,15 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
+            <groupId>no.spk.pensjon.faktura</groupId>
+            <artifactId>faktura-tidsserie-batch-input</artifactId>
+            <version>${project.parent.version}</version>
+            <type>test-jar</type>
             <scope>test</scope>
         </dependency>
     </dependencies>

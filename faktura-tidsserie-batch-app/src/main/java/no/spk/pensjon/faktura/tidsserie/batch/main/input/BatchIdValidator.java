@@ -7,7 +7,7 @@ import com.beust.jcommander.ParameterException;
 
 public class BatchIdValidator implements IParameterValidator {
 
-    private static final Pattern BATCH_ID_PATTERN = BatchIdMatcher.createBatchIdPattern("grunnlagsdata_");
+    private static final Pattern BATCH_ID_PATTERN = BatchIdMatcher.createBatchIdPattern("grunnlagsdata");
 
     @Override
     public void validate(String name, String value) throws ParameterException {

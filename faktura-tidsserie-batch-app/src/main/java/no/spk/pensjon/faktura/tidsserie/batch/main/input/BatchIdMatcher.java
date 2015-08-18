@@ -7,6 +7,6 @@ import java.util.regex.Pattern;
  */
 public class BatchIdMatcher {
     public static Pattern createBatchIdPattern(String batchIdPrefix) {
-        return Pattern.compile("^(" + batchIdPrefix + "\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2}-\\d{2})$");
+        return Pattern.compile("^(" + batchIdPrefix + "_\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2}-\\d{2}|" + batchIdPrefix + ")$");
     }
 }

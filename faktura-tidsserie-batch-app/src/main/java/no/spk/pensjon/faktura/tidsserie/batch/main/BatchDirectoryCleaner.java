@@ -33,7 +33,7 @@ public class BatchDirectoryCleaner {
     private static final Logger logger = LoggerFactory.getLogger(BatchDirectoryCleaner.class);
     private static final Pattern FILENAME_PATTERN = BatchIdMatcher.createBatchIdPattern(BatchId.ID_PREFIX);
 
-    private final Path workDirectory;
+    private final List<Path> baseDirectories;
     private final BatchId batchId;
 
     /**
@@ -42,8 +42,8 @@ public class BatchDirectoryCleaner {
      * @param utKatalog rot-katalogen som innholder batchkataloger som skal slettes
      * @param batchId id for batchen - skal ikke slette arbeidskatalogen for gjeldende kjøring
      */
-    public BatchDirectoryCleaner(Path utKatalog, BatchId batchId) {
-        this.workDirectory = requireNonNull(utKatalog);
+    public BatchDirectoryCleaner(BatchId batchId, Path... cleanDirectories) {
+        this.baseDirectories = Arrays.asList(requireNonNull(cleanDirectories));
         this.batchId = batchId;
     }
 
@@ -55,14 +55,16 @@ public class BatchDirectoryCleaner {
     public Oppryddingsstatus deleteAllPreviousBatches() {
         Oppryddingsstatus oppryddingsstatus = new Oppryddingsstatus();
 
-        Path directory = workDirectory;
         logger.info("Sletter alle tidligere batch-kataloger.");
-        try {
-            Files.walkFileTree(directory, new BatchDirectoryDeleteVisitor(directory, batchId, oppryddingsstatus));
-        } catch (IOException e) {
-            oppryddingsstatus.addError("walkFileTree feilet", e);
+        for (Path directory : baseDirectories) {
+            if (directory.toFile().exists()) {
+                try {
+                    Files.walkFileTree(directory, new BatchDirectoryDeleteVisitor(directory, batchId, oppryddingsstatus));
+                } catch (IOException e) {
+                    oppryddingsstatus.addError("walkFileTree feilet", e);
+                }
+            }
         }
-
         return oppryddingsstatus;
     }
 

@@ -54,7 +54,7 @@ public class ApplicationController {
     }
 
     public void initialiserLogging(final BatchId id, final Path utKatalog) {
-        System.setProperty("batchKatalog", id.tilArbeidskatalog(utKatalog).toString());
+        System.setProperty("batchKatalog", utKatalog.toString());
         MDC.put("batchId", id.toString());
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdownLogger, "Batch shutdown"));
     }
@@ -148,21 +148,21 @@ public class ApplicationController {
         view.tidsseriegenereringFullfoert(meldingar);
     }
 
-    public void opprettMetadata(MetaDataWriter metaDataWriter, ProgramArguments arguments, BatchId batchId, Duration duration) {
+    public void opprettMetadata(MetaDataWriter metaDataWriter, Path dataKatalog, ProgramArguments arguments, BatchId batchId, Duration duration) {
         view.informerOmMetadataOppretting();
         metaDataWriter.createMetadataFile(arguments, batchId, duration);
-        metaDataWriter.createChecksumFile();
+        metaDataWriter.createChecksumFile(dataKatalog);
     }
 
     /**
      * Oppretter triggerfil som setter igang innlesing av tdisserien i datavarehus.
      * @param metaDataWriter skriver som lager triggerfilen
      */
-    public void opprettTriggerfil(MetaDataWriter metaDataWriter) {
-        metaDataWriter.createTriggerFile();
+    public void opprettTriggerfil(MetaDataWriter metaDataWriter, Path utKatalog) {
+        metaDataWriter.createTriggerFile(utKatalog);
     }
 
-    private void shutdownLogger() {
+    public void shutdownLogger() {
         try {
             //Delay shutdown to allow flushing.
             Thread.sleep(2000);

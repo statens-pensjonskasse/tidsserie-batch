@@ -49,17 +49,21 @@ public class Main {
             startBatchTimeout(arguments, controller);
 
             final BatchId batchId = new BatchId(LocalDateTime.now());
-            Path batchKatalog = batchId.tilArbeidskatalog(arguments.getUtkatalog());
+            Path logKatalog = batchId.tilArbeidskatalog(arguments.getLogkatalog());
+            Path dataKatalog = arguments.getUtkatalog().resolve("tidsserie");
 
-            Files.createDirectories(batchKatalog);
-            controller.initialiserLogging(batchId, arguments.getUtkatalog());
+            Files.createDirectories(logKatalog);
+            controller.initialiserLogging(batchId, logKatalog);
             controller.informerOmOppstart(arguments);
 
             GrunnlagsdataDirectoryValidator grunnlagsdataValidator = new GrunnlagsdataDirectoryValidator(arguments.getGrunnlagsdataBatchKatalog());
             controller.validerGrunnlagsdata(grunnlagsdataValidator);
 
-            BatchDirectoryCleaner directoryCleaner = new BatchDirectoryCleaner(arguments.getUtkatalog(), batchId);
+            BatchDirectoryCleaner directoryCleaner = new BatchDirectoryCleaner(batchId,
+                    arguments.getLogkatalog(), dataKatalog);
             controller.ryddOpp(directoryCleaner);
+
+            Files.createDirectories(dataKatalog);
 
             final Tidsseriemodus parameter = arguments.modus();
             final TidsserieBackendService backend = new HazelcastBackend(arguments.getNodes(), parameter);
@@ -72,17 +76,17 @@ public class Main {
 
             controller.lastOpp(overfoering);
             controller.lagTidsserie(backend,
-                    new FileTemplate(batchKatalog, "output-", ".csv"),
+                    new FileTemplate(dataKatalog, "tidsserie", ".csv"),
                     new Aarstall(arguments.getFraAar()),
                     new Aarstall(arguments.getTilAar()));
 
             Duration duration = Duration.of(System.currentTimeMillis() - started, ChronoUnit.MILLIS);
 
-            MetaDataWriter metaDataWriter = new MetaDataWriter(freemarkerConfiguration, batchKatalog);
-            controller.opprettMetadata(metaDataWriter, arguments, batchId, duration);
-            controller.opprettTriggerfil(metaDataWriter);
+            MetaDataWriter metaDataWriter = new MetaDataWriter(freemarkerConfiguration, logKatalog);
+            controller.opprettMetadata(metaDataWriter, dataKatalog, arguments, batchId, duration);
+            controller.opprettTriggerfil(metaDataWriter, dataKatalog);
 
-            controller.informerOmSuksess(batchKatalog);
+            controller.informerOmSuksess(logKatalog);
         } catch (InvalidParameterException e) {
             controller.informerOmUgyldigeArgumenter(e);
         } catch (UsageRequestedException e) {

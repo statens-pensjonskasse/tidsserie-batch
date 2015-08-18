@@ -13,5 +13,5 @@ Batch parametere:
 * Fra og med år: ${params.fraAar}
 * Til og med år: ${params.tilAar}
 * Grunnlagsdata batch-id: ${params.grunnlagsdataBatchId}
-* Grunnlagsdata batch-katalog: ${params.grunnlagsdataBatchKatalog}
+* Grunnlagsdata batch-katalog: ${params.grunnlagsdataBatchKatalog.toAbsolutePath().normalize()}
 * Arbeidskatalog: ${outputDirectory}

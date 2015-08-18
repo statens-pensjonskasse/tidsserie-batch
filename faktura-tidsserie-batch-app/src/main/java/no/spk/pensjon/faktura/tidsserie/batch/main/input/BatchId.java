@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter;
  */
 public class BatchId {
 
-    public static String ID_PREFIX = "tidsserie_";
+    public static String ID_PREFIX = "tidsserie";
     private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss-SS");
 
     private final String id;
@@ -20,7 +20,7 @@ public class BatchId {
 
     public BatchId(LocalDateTime localDateTime) {
         this.localDateTime = localDateTime;
-        this.id = BatchId.ID_PREFIX + dateTimeFormatter.format(localDateTime);
+        this.id = BatchId.ID_PREFIX + "_" + dateTimeFormatter.format(localDateTime);
     }
 
     /**
