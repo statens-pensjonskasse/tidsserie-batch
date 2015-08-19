@@ -9,7 +9,7 @@
     <packaging>jar</packaging>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>faktura-tidsserie-batch-felles</artifactId>
+    <artifactId>faktura-tidsserie-batch-input</artifactId>
 
     <build>
         <plugins>
