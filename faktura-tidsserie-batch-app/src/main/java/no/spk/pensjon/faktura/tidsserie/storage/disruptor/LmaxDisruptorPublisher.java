@@ -1,5 +1,11 @@
 package no.spk.pensjon.faktura.tidsserie.storage.disruptor;
 
+import static java.util.Objects.requireNonNull;
+
+import com.lmax.disruptor.RingBuffer;
+import com.lmax.disruptor.dsl.Disruptor;
+import org.slf4j.LoggerFactory;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
@@ -22,7 +28,7 @@ public class LmaxDisruptorPublisher implements Closeable, StorageBackend {
 
     public LmaxDisruptorPublisher(final ExecutorService executor, final FileTemplate fileTemplate) {
         this.executor = executor;
-        this.fileTemplate = fileTemplate;
+        this.fileTemplate = requireNonNull(fileTemplate, "fileTemplate er påkrevd, men var null");
     }
 
     public void start() {
@@ -79,12 +85,11 @@ public class LmaxDisruptorPublisher implements Closeable, StorageBackend {
         final long sequence = ringBuffer.next();
         try {
             final ObservasjonsEvent event = ringBuffer.get(sequence);
-            final StringBuilder builder = event.buffer;
-            builder.setLength(0);
-
-            consumer.accept(builder);
+            event.reset();
+            consumer.accept(event.buffer);
         } finally {
             ringBuffer.publish(sequence);
         }
     }
+
 }

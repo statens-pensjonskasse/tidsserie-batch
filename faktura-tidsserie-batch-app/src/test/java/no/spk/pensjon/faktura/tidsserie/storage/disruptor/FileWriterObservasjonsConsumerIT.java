@@ -1,16 +1,18 @@
 package no.spk.pensjon.faktura.tidsserie.storage.disruptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.List;
 
 import no.spk.pensjon.faktura.tidsserie.batch.FileTemplate;
 import no.spk.pensjon.faktura.tidsserie.util.TemporaryFolderWithDeleteVerification;
 
+import org.assertj.core.api.AbstractListAssert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -38,7 +40,7 @@ public class FileWriterObservasjonsConsumerIT {
 
     @Before
     public void _before() throws IOException {
-        when(template.createUniqueFile()).thenAnswer(invocation -> temp.newFile());
+        when(template.createUniqueFile(anyInt())).thenAnswer(invocation -> temp.newFile());
         consumer = new FileWriterObservasjonsConsumer(template);
     }
 
@@ -55,14 +57,37 @@ public class FileWriterObservasjonsConsumerIT {
     public void skalTrunkereOutputfilaVissDenEksistererFraFoer() throws IOException {
         final File alreadyExists = temp.newFile();
         Files.write(alreadyExists.toPath(), "YADA YADA\n".getBytes());
-        when(template.createUniqueFile()).thenReturn(alreadyExists);
+        when(template.createUniqueFile(anyInt())).thenReturn(alreadyExists);
 
-        try (final FileWriter writer = consumer.newWriter(template)) {
-            writer.write("MOAR MOAR MOAR\n");
-        }
+        final ObservasjonsEvent event = new ObservasjonsEvent();
+        event.buffer.append("MOAR MOAR MOAR\n");
+        consumer.onEvent(event, 1, true);
 
-        assertThat(Files.readAllLines(alreadyExists.toPath()))
+        assertFileContent(alreadyExists)
                 .hasSize(1)
                 .containsOnly("MOAR MOAR MOAR");
+    }
+
+    protected AbstractListAssert<?, ? extends List<? extends String>, String> assertFileContent(
+            final File file) throws IOException {
+        return assertThat(Files.readAllLines(file.toPath()))
+                .as("alle linjer i " + file);
+    }
+
+    @Test
+    public void skalSkriveEventenTilForskjelligeFilerBasertPaaEventserien() throws IOException {
+        when(template.createUniqueFile(1L)).thenAnswer(a -> temp.newFile("1"));
+        when(template.createUniqueFile(2L)).thenAnswer(a -> temp.newFile("2"));
+
+        final ObservasjonsEvent event = new ObservasjonsEvent();
+
+        event.serienummer(1L).medInnhold("YEY\n");
+        consumer.onEvent(event, 1, true);
+
+        event.serienummer(2L).medInnhold("YAY\n");
+        consumer.onEvent(event, 1, true);
+
+        assertFileContent(new File(temp.getRoot(), "1")).hasSize(1).containsOnly("YEY");
+        assertFileContent(new File(temp.getRoot(), "2")).hasSize(1).containsOnly("YAY");
     }
 }
