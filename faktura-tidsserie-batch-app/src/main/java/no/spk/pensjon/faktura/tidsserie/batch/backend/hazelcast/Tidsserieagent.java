@@ -16,10 +16,12 @@ import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.HazelcastInstanceAware;
+import com.hazelcast.core.IAtomicLong;
 import com.hazelcast.mapreduce.Context;
 import com.hazelcast.mapreduce.LifecycleMapperAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 /**
  * {@link Tidsserieagent} er limet som binder saman data lasta opp til in-memory gridet i Hazelcast og
@@ -29,10 +31,13 @@ import org.slf4j.LoggerFactory;
  */
 class Tidsserieagent
         extends LifecycleMapperAdapter<String, List<List<String>>, String, Integer> implements HazelcastInstanceAware {
+    public static final String MDC_SERIENUMMER = "serienummer";
     private final LocalDate foerstedato;
     private final LocalDate sistedato;
 
     private transient GenererTidsserieCommand kommando;
+    private transient IAtomicLong serienummerGenerator;
+    private transient long serienummer;
 
     Tidsserieagent(final LocalDate foerstedato, final LocalDate sistedato) {
         this.foerstedato = foerstedato;
@@ -42,6 +47,7 @@ class Tidsserieagent
     @Override
     public void setHazelcastInstance(final HazelcastInstance hazelcast) {
         configure(hazelcast.getUserContext());
+        serienummerGenerator = hazelcast.getAtomicLong("serienummer");
     }
 
     void configure(final Map<String, Object> userContext) {
@@ -49,6 +55,18 @@ class Tidsserieagent
         final StorageBackend publisher = lookup(userContext, StorageBackend.class);
         final Tidsseriemodus parameter = lookup(userContext, Tidsseriemodus.class);
         this.kommando = new GenererTidsserieCommand(grunnlagsdata, publisher, parameter);
+    }
+
+    @Override
+    public void initialize(final Context<String, Integer> context) {
+        // Serienummeret for alle eventar som blir generert for medlemmar i gjeldande partisjon
+        serienummer = serienummerGenerator.getAndIncrement();
+        MDC.put(MDC_SERIENUMMER, "" + serienummer);
+    }
+
+    @Override
+    public void finalized(final Context<String, Integer> context) {
+        MDC.remove(MDC_SERIENUMMER);
     }
 
     @Override
@@ -62,7 +80,8 @@ class Tidsserieagent
             kommando.generer(
                     value,
                     new Observasjonsperiode(foerstedato, sistedato),
-                    feilhandtering
+                    feilhandtering,
+                    serienummer
             );
         } catch (final RuntimeException | Error e) {
             log.warn("Periodisering av medlem {} feila: {} (endringar = {})", key, e.getMessage(), value);

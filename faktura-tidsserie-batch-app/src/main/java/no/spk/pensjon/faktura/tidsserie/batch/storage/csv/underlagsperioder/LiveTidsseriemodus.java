@@ -65,18 +65,20 @@ public class LiveTidsseriemodus implements Tidsseriemodus {
      * observasjonsunderlag.
      * <br>
      *
-     * @param facade     fasada som blir brukt for å generere tidsserien
-     * @param publikator backend-systemet som observasjonane av kvar periode blir lagra via
+     * @param facade      fasada som blir brukt for å generere tidsserien
+     * @param serienummer serienummer som alle eventar som blir sendt vidare til <code>backend</code> for persistering
+     *                    skal tilhøyre
+     * @param publikator  backend-systemet som observasjonane av kvar periode blir lagra via
      * @return ein by publikator som serialiserer og lagrar alle underlagsperioder for kvart observasjonsunderlag i
      * tidsserien som blir generert av <code>facade</code>
      * @see Datavarehusformat#serialiser(Underlag, Underlagsperiode)
      * @see StorageBackend#lagre(Consumer)
      */
     @Override
-    public Observasjonspublikator create(final TidsserieFacade facade, final StorageBackend publikator) {
+    public Observasjonspublikator create(final TidsserieFacade facade, long serienummer, final StorageBackend publikator) {
         return nyPublikator(
                 this::serialiserPeriode,
-                line -> lagre(publikator, line)
+                line -> lagre(publikator, line, serienummer)
         );
     }
 
@@ -114,7 +116,7 @@ public class LiveTidsseriemodus implements Tidsseriemodus {
                 .map(kolonneVerdiar -> kolonneVerdiar.map(Object::toString).collect(joining(";")));
     }
 
-    private void lagre(StorageBackend publikator, String line) {
-        publikator.lagre(builder -> builder.append(line).append('\n'));
+    private void lagre(final StorageBackend publikator, final String line, final long serienummer) {
+        publikator.lagre(event -> event.serienummer(serienummer).buffer.append(line).append("\n"));
     }
 }

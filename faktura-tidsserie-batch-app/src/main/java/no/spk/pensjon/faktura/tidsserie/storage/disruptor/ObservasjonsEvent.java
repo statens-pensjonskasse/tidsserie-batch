@@ -21,12 +21,12 @@ import java.util.Optional;
  *
  * @author Tarjei Skorgenes
  */
-class ObservasjonsEvent {
+public final class ObservasjonsEvent {
     /**
      * Ein buffer som den tekstlige representasjonen av ein tidsserieobservasjon skal mellomlagrast i
      * frå observasjonen er ferdig generert til den blir lagra til disk.
      */
-    final StringBuilder buffer = new StringBuilder(128);
+    public final StringBuilder buffer = new StringBuilder(512);
 
     private Optional<Long> serienummer = Optional.empty();
 
@@ -70,7 +70,13 @@ class ObservasjonsEvent {
         return this;
     }
 
-    public void reset() {
+    /**
+     * Nullstiller innholdet til eventen.
+     *
+     * @return
+     */
+    public ObservasjonsEvent reset() {
         buffer.setLength(0);
+        return this;
     }
 }

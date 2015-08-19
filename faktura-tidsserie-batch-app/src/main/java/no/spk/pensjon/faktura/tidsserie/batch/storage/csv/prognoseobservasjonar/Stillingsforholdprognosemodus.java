@@ -71,16 +71,20 @@ public class Stillingsforholdprognosemodus implements Tidsseriemodus {
      * Merk og at premiestatusen som blir lista ut ikkje er pålitelig i situasjonar der stillingsforholdet
      * har vore gjennom eit avtalebytte.
      *
-     * @param tidsserie tidsserien som publikatoren skal integrere mot
-     * @param lagring   backend-systemet som skal ta i mot og lagre unna observasjonane som blir generert
+     * @param tidsserie   tidsserien som publikatoren skal integrere mot
+     * @param serienummer serienummer som alle eventar som blir sendt vidare til <code>backend</code> for persistering
+     *                    skal tilhøyre
+     * @param lagring     backend-systemet som skal ta i mot og lagre unna observasjonane som blir generert
      * @return ein ny observasjonspublikator for prognoseobservasjonar og stillingsforhold- og avtalenivå
      * @see TidsserieFacade#lagObservasjonsaggregatorPrStillingsforholdOgAvtale(Consumer)
      */
     @Override
-    public Observasjonspublikator create(final TidsserieFacade tidsserie, StorageBackend lagring) {
+    public Observasjonspublikator create(final TidsserieFacade tidsserie, long serienummer, StorageBackend lagring) {
         final Consumer<TidsserieObservasjon> konsument = o -> {
-            lagring.lagre(builder -> {
-                builder
+            lagring.lagre(event -> {
+                event
+                        .serienummer(serienummer)
+                        .buffer
                         .append(o.avtale().id())
                         .append(';')
                         .append(o.stillingsforhold.id())

@@ -31,11 +31,11 @@ public class GenererTidsserieCommand {
 
     /**
      * Konstruerer ein ny kommando som koordinerer mot dei angitte tenestene når tidsseriar pr medlem blir generert
-     * av {@link #generer(List, Observasjonsperiode, Feilhandtering)}.
+     * av {@link #generer(List, Observasjonsperiode, Feilhandtering, long)}.
      *
      * @param grunnlagsdata tenesta som gir tilgang til grunnlagsdata som ikkje er medlemsspesifikke
      * @param lagring       tenesta som lagrar observasjonane generert av
-     *                      {@link Tidsseriemodus#create(TidsserieFacade, StorageBackend)}
+     *                      {@link Tidsseriemodus#create(TidsserieFacade, long, StorageBackend)}
      * @param modus         modusen som regulerer kva {@link Regelsett} som skal benyttast og korleis
      *                      tidsserieobservasjonane skal byggast opp
      * @throws NullPointerException viss nokon av argumenta er <code>null</code>
@@ -65,14 +65,16 @@ public class GenererTidsserieCommand {
      * @param periode        observasjonsperioda som bestemmer yttergrensene for tidsserien sine underlagsperioder sine
      *                       frå og med- og til og med-datoar
      * @param feilhandtering feilhandteringsstrategien som vil bli bedt om å handtere alle feil på stillingsforholdnivå
+     * @param serienummer    serienummer som alle eventar som blir sendt vidare for persistering skal tilhøyre
      * @throws RuntimeException dersom deserialiseringa av <code>medlemsdata</code> eller prosessering på medlemsnivå feilar
      */
-    public void generer(final List<List<String>> medlemsdata, final Observasjonsperiode periode, final Feilhandtering feilhandtering) {
+    public void generer(final List<List<String>> medlemsdata, final Observasjonsperiode periode,
+                        final Feilhandtering feilhandtering, final long serienummer) {
         final TidsserieFacade tidsserie = grunnlagsdata.create(feilhandtering);
         tidsserie.generer(
                 grunnlagsdata.create(medlemsdata),
                 periode,
-                parameter.create(tidsserie, lagring),
+                parameter.create(tidsserie, serienummer, lagring),
                 concat(
                         parameter.regelsett().reglar(),
                         grunnlagsdata.loennsdata()

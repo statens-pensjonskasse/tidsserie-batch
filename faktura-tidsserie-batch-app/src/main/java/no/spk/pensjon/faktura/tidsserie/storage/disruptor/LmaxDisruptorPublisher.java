@@ -40,11 +40,7 @@ public class LmaxDisruptorPublisher implements Closeable, StorageBackend {
 
         disruptor = new Disruptor<>(factory, bufferSize, this.executor);
 
-        try {
-            consumer = new FileWriterObservasjonsConsumer(this.fileTemplate);
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
+        consumer = new FileWriterObservasjonsConsumer(this.fileTemplate);
         disruptor.handleEventsWith(consumer);
 
         // Start the Disruptor, starts all threads running
@@ -81,12 +77,14 @@ public class LmaxDisruptorPublisher implements Closeable, StorageBackend {
     }
 
     @Override
-    public void lagre(final Consumer<StringBuilder> consumer) {
+    public void lagre(final Consumer<ObservasjonsEvent> consumer) {
         final long sequence = ringBuffer.next();
         try {
-            final ObservasjonsEvent event = ringBuffer.get(sequence);
-            event.reset();
-            consumer.accept(event.buffer);
+            consumer.accept(
+                    ringBuffer
+                            .get(sequence)
+                            .reset()
+            );
         } finally {
             ringBuffer.publish(sequence);
         }
