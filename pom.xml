@@ -14,8 +14,8 @@
     <version>1.0.3-SNAPSHOT</version>
 
     <modules>
-        <module>faktura-tidsserie-batch-felles</module>
-        <module>faktura-tidsserie-batch-infra</module>
+        <module>faktura-tidsserie-batch-input</module>
+        <module>faktura-tidsserie-batch-app</module>
         <module>faktura-tidsserie-batch</module>
     </modules>
 

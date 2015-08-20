@@ -14,7 +14,7 @@
     <dependencies>
         <dependency>
             <groupId>no.spk.pensjon.faktura</groupId>
-            <artifactId>faktura-tidsserie-batch-infra</artifactId>
+            <artifactId>faktura-tidsserie-batch-app</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
     </dependencies>
