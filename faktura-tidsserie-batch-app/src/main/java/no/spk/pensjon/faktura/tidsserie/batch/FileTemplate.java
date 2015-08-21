@@ -20,7 +20,14 @@ public class FileTemplate implements Serializable {
         this.suffix = suffix;
     }
 
-    public File createUniqueFile() {
-        return Paths.get(directory, prefix + UUID.randomUUID().toString() + suffix).toFile();
+    public File createUniqueFile(final long serienummer) {
+        return Paths.get(
+                directory,
+                prefix
+                        + serienummer
+                        + "-"
+                        + UUID.randomUUID()
+                        + suffix
+        ).toFile();
     }
 }

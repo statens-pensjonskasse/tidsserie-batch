@@ -31,11 +31,13 @@ public interface Tidsseriemodus {
      * <br>
      * Lagring av sluttresultatet skal skje via <code>backend</code>.
      *
-     * @param tidsserie tidsseriefasada som publikatoren skal anvendast av
-     * @param backend   backendtenesta for lagring av resultata publikatoren genererer
+     * @param tidsserie   tidsseriefasada som publikatoren skal anvendast av
+     * @param serienummer serienummer som alle eventar som blir sendt vidare til <code>backend</code> for persistering
+     *                    skal tilhøyre
+     * @param backend     backendtenesta for lagring av resultata publikatoren genererer
      * @return observasjonspublikatoren som skal benyttast av tidsseriegenereringa.
      */
-    Observasjonspublikator create(final TidsserieFacade tidsserie, final StorageBackend backend);
+    Observasjonspublikator create(final TidsserieFacade tidsserie, long serienummer, final StorageBackend backend);
 
     /**
      * Beregningsreglane som tidsserien skal anvende seg av.

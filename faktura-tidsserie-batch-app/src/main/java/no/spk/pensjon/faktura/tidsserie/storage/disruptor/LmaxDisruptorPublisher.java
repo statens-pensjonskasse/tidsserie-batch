@@ -1,5 +1,11 @@
 package no.spk.pensjon.faktura.tidsserie.storage.disruptor;
 
+import static java.util.Objects.requireNonNull;
+
+import com.lmax.disruptor.RingBuffer;
+import com.lmax.disruptor.dsl.Disruptor;
+import org.slf4j.LoggerFactory;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
@@ -22,7 +28,7 @@ public class LmaxDisruptorPublisher implements Closeable, StorageBackend {
 
     public LmaxDisruptorPublisher(final ExecutorService executor, final FileTemplate fileTemplate) {
         this.executor = executor;
-        this.fileTemplate = fileTemplate;
+        this.fileTemplate = requireNonNull(fileTemplate, "fileTemplate er påkrevd, men var null");
     }
 
     public void start() {
@@ -34,11 +40,7 @@ public class LmaxDisruptorPublisher implements Closeable, StorageBackend {
 
         disruptor = new Disruptor<>(factory, bufferSize, this.executor);
 
-        try {
-            consumer = new FileWriterObservasjonsConsumer(this.fileTemplate);
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
+        consumer = new FileWriterObservasjonsConsumer(this.fileTemplate);
         disruptor.handleEventsWith(consumer);
 
         // Start the Disruptor, starts all threads running
@@ -75,16 +77,17 @@ public class LmaxDisruptorPublisher implements Closeable, StorageBackend {
     }
 
     @Override
-    public void lagre(final Consumer<StringBuilder> consumer) {
+    public void lagre(final Consumer<ObservasjonsEvent> consumer) {
         final long sequence = ringBuffer.next();
         try {
-            final ObservasjonsEvent event = ringBuffer.get(sequence);
-            final StringBuilder builder = event.buffer;
-            builder.setLength(0);
-
-            consumer.accept(builder);
+            consumer.accept(
+                    ringBuffer
+                            .get(sequence)
+                            .reset()
+            );
         } finally {
             ringBuffer.publish(sequence);
         }
     }
+
 }

@@ -2,6 +2,8 @@ package no.spk.pensjon.faktura.tidsserie.batch;
 
 import java.util.function.Consumer;
 
+import no.spk.pensjon.faktura.tidsserie.storage.disruptor.ObservasjonsEvent;
+
 /**
  * {@link StorageBackend} representerer lagringssystemet som tidsserieobservasjonane blir lagra via.
  * <br>
@@ -16,7 +18,7 @@ import java.util.function.Consumer;
  */
 public interface StorageBackend {
     /**
-     * Lagrar det tekstlige innholdet som konsumenten populerer <code>StringBuilder</code>en med.
+     * Lagrar innholdet som konsumenten populerer <code>eventen</code>en med.
      * <br>
      * Det er ei sterk forventning om at all lagring skje asynkront slik at I/O-latency ikkje kan påvirke
      * prosesseringstrådane som kallar denne metoda.
@@ -27,9 +29,9 @@ public interface StorageBackend {
      * Ingen feil som <code>consumer</code>en kan komme til å kaste, vil bli fanga opp av backenden, alle feil vil
      * boble ut til den kallande tråden umiddelbart.
      *
-     * @param consumer konsument som den kallande tråden kan populere med tekstlig informasjon som skal lagrast
+     * @param consumer konsument som er ansvarlig for å populere eventen som skal lagrast
      * @throws RuntimeException viss <code>consumer</code> kastar ein {@link RuntimeException}
      * @throws Error            viss <code>consumer</code> kaster ein {@link Error}
      */
-    void lagre(final Consumer<StringBuilder> consumer);
+    void lagre(final Consumer<ObservasjonsEvent> consumer);
 }

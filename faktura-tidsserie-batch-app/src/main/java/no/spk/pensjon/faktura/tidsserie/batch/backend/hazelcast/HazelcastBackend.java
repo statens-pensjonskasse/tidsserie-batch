@@ -70,6 +70,7 @@ public class HazelcastBackend implements TidsserieBackendService {
     public void start() {
         this.instance = of(server.start());
         this.map = instance.map(i -> i.getMap("medlemsdata"));
+        instance.ifPresent(i -> i.getAtomicLong("serienummer").set(1L));
         registrer(Tidsseriemodus.class, parameter);
     }
 
@@ -111,8 +112,8 @@ public class HazelcastBackend implements TidsserieBackendService {
     }
 
     private void publishHeader(final LmaxDisruptorPublisher lager) {
-        lager.lagre(builder -> {
-            builder
+        lager.lagre(event -> {
+            event.buffer
                     .append(parameter.kolonnenavn().collect(joining(";")))
                     .append('\n')
             ;
