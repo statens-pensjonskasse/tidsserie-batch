@@ -5,7 +5,6 @@ import static java.time.LocalDateTime.now;
 import java.nio.file.Path;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import no.spk.pensjon.faktura.tidsserie.batch.FileTemplate;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.ArgumentSummary;
@@ -64,14 +63,6 @@ public class ConsoleView implements View{
         arguments.postMessage().ifPresent(this::println);
     }
 
-    @Override
-    public void informerOmUslettbareArbeidskatalogar(Oppryddingsstatus status) {
-        println("Følgende kataloger kunne ikke slettes:\n" +
-                status.getErrors()
-                        .stream()
-                        .map(CleanBatchError::getLabel)
-                        .collect(Collectors.joining("\n")));
-    }
 
     @Override
     public void informerOmSuksess(Path arbeidskatalog) {
@@ -108,6 +99,12 @@ public class ConsoleView implements View{
     @Override
     public void informerOmMetadataOppretting() {
         println("Oppretter metadata og sjekksumfil.");
+    }
+
+    @Override
+    public void informerOmFeiletOpprydding() {
+        println("Klarte ikke å rydde opp i ut- og/eller log-kataloger.");
+        println("Se loggen for årsak.");
     }
 
     private void println(final String melding) {

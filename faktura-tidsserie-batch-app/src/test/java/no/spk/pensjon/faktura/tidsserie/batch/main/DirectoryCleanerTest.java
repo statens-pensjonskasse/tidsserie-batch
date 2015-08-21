@@ -5,11 +5,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Stream;
 
-import no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchId;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.StandardOutputAndError;
 import no.spk.pensjon.faktura.tidsserie.util.TemporaryFolderWithDeleteVerification;
 
@@ -21,7 +19,7 @@ import org.junit.rules.TestName;
 /**
  * @author Snorre E. Brekke - Computas
  */
-public class BatchDirectoryCleanerTest {
+public class DirectoryCleanerTest {
     @Rule
     public TemporaryFolder testFolder = new TemporaryFolderWithDeleteVerification();
 
@@ -32,30 +30,25 @@ public class BatchDirectoryCleanerTest {
     public final StandardOutputAndError console = new StandardOutputAndError();
 
     @Test
-    public void testDeletePreviousBatches() throws Exception {
+    public void testDeleteDirectories() throws Exception {
         Path path = testFolder.newFolder(name.getMethodName()).toPath();
 
-        String doNotDeleteFilename = "doNotDelete.txt";
-        String tidsserieIgnored = "tidsserieIgnored";
-
-        //skal ikke slettes
-        path.resolve(tidsserieIgnored).toFile().mkdir();
-        path.resolve(doNotDeleteFilename).toFile().createNewFile();
-
         //slettes
-        path.resolve("tidsserie").toFile().mkdir();
-        path.resolve("tidsserie_2015-01-01_01-00-00-00").toFile().mkdir();
-        path.resolve("tidsserie_2015-01-01_01-00-00-01").toFile().mkdir();
+        Path path1 = path.resolve("tidsserie");
+        path1.toFile().mkdir();
+        Path path2 = path.resolve("tidsserie_2015-01-01_01-00-00-00");
+        path2.toFile().mkdir();
+        path2.resolve("somefile.txt").toFile().createNewFile();
 
         try (final Stream<Path> list = Files.list(path)) {
-            assertThat(list.count()).isEqualTo(5);
+            assertThat(list.count()).isEqualTo(2);
         }
 
-        new BatchDirectoryCleaner(new BatchId(LocalDateTime.now()), path).deleteAllPreviousBatches();
+        new DirectoryCleaner(path1, path2).deleteDirectories();
 
         try (final Stream<Path> stream = Files.list(path)) {
             List<String> list = stream.map(p -> p.toFile().getName()).collect(toList());
-            assertThat(list).containsExactly(doNotDeleteFilename, tidsserieIgnored);
+            assertThat(list).isEmpty();
         }
     }
 }

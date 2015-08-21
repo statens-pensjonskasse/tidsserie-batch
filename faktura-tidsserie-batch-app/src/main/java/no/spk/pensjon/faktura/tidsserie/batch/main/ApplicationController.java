@@ -1,13 +1,9 @@
 package no.spk.pensjon.faktura.tidsserie.batch.main;
 
-import static java.util.Objects.requireNonNull;
-import static java.util.Optional.of;
-
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Map;
-import java.util.Optional;
 
 import no.spk.pensjon.faktura.tidsserie.batch.FileTemplate;
 import no.spk.pensjon.faktura.tidsserie.batch.GrunnlagsdataService;
@@ -38,8 +34,6 @@ public class ApplicationController {
     static final int EXIT_ERROR = 1;
     static final int EXIT_WARNING = 2;
 
-    private Optional<Oppryddingsstatus> opprydding = Optional.empty();
-
     private int exitCode = EXIT_ERROR;
 
     /**
@@ -68,17 +62,9 @@ public class ApplicationController {
         validator.validate();
     }
 
-    public void ryddOpp(BatchDirectoryCleaner directoryCleaner) {
+    public void ryddOpp(DirectoryCleaner directoryCleaner) throws HousekeepingException {
         view.informerOmOppryddingStartet();
-        Oppryddingsstatus oppryddingsstatus = directoryCleaner.deleteAllPreviousBatches();
-        informerOmOpprydding(oppryddingsstatus);
-    }
-
-    private void informerOmOpprydding(final Oppryddingsstatus status) {
-        this.opprydding = of(requireNonNull(status));
-        if (!status.isSuccessful()) {
-            view.informerOmUslettbareArbeidskatalogar(status);
-        }
+        directoryCleaner.deleteDirectories();
     }
 
     public void informerOmSuksess(final Path arbeidskatalog) {
@@ -110,7 +96,7 @@ public class ApplicationController {
     public int exitCode() {
         switch (exitCode) {
             case EXIT_SUCCESS:
-                return !opprydding.orElseGet(Oppryddingsstatus::new).isSuccessful() ? EXIT_WARNING : EXIT_SUCCESS;
+                return EXIT_SUCCESS;
             case EXIT_WARNING:
             case EXIT_ERROR:
                 return exitCode;
@@ -152,6 +138,14 @@ public class ApplicationController {
         view.informerOmMetadataOppretting();
         metaDataWriter.createMetadataFile(arguments, batchId, duration);
         metaDataWriter.createChecksumFile(dataKatalog);
+    }
+
+    /**
+     * Informerer bruker om at opprydding i kataloger feilet, og markerer batchen som feilet.
+     */
+    public void informerOmFeiletOpprydding() {
+        view.informerOmFeiletOpprydding();
+        markerSomFeilet();
     }
 
     /**

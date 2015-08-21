@@ -1,6 +1,7 @@
 package no.spk.pensjon.faktura.tidsserie.batch.main.input;
 
 import static java.util.Collections.reverseOrder;
+import static no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchIdMatcher.GRUNNLAGSDATA_PATTERN;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -73,7 +74,7 @@ public final class ProgramArgumentsFactory {
     }
 
     private static void setDefaultBatchId(ProgramArguments arguments) {
-        final Pattern pattern = BatchIdMatcher.createBatchIdPattern("grunnlagsdata");
+        final Pattern pattern = GRUNNLAGSDATA_PATTERN;
         final Path innkatalog = arguments.getInnkatalog();
         try (final Stream<Path> list = Files.list(innkatalog)) {
             String grunnlagsdataBatchId = list

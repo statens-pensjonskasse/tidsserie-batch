@@ -77,6 +77,15 @@ public class MetaDataWriterTest {
         assertThat(fileName).isEqualTo("*some.csv");
     }
 
+    @Test
+    public void testCreateTriggerFile() throws Exception {
+        File writeFolder = createTestFolders();
+        MetaDataWriter metaDataWriter = getMetaDataWriter(writeFolder);
+        metaDataWriter.createTriggerFile(writeFolder.toPath());
+        assertThat(writeFolder.toPath().resolve("ok.trg")).exists();
+
+    }
+
     private ProgramArguments getProgramArguments(File writeFolder) {
         String file = writeFolder.getAbsolutePath();
         return ProgramArgumentsFactory.create("-b", "lager metadata", "-i", file, "-o", file, "-log", file);

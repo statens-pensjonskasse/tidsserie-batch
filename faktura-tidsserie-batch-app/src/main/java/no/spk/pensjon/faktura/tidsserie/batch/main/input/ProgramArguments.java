@@ -86,11 +86,9 @@ public class ProgramArguments {
             converter = LocalTimeConverter.class)
     LocalTime sluttidspunkt = LocalTime.parse("23:59");
 
-    @Parameter(names = {"-f" },
-            description = "Fjerner tidsstempel fra resultatkatalogen ved velykket kjøring, slik at den kun heter 'tidsserie'")
-    boolean fjernTidsstempel;
-
-
+    @Parameter(names = { "-slett" },
+            description = "Sletter alle batch-kataloger og innhold som er eldre enn n antall dager dersom n > 0.")
+    int slettEldreEnn = 0;
 
     public boolean isHjelp() {
         return hjelp;
@@ -155,7 +153,7 @@ public class ProgramArguments {
         return sluttidspunkt;
     }
 
-    public boolean isFjernTidsstempel() {
-        return fjernTidsstempel;
+    public int getSlettEldreEnn() {
+        return slettEldreEnn;
     }
 }

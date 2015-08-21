@@ -59,8 +59,7 @@ public class Main {
             GrunnlagsdataDirectoryValidator grunnlagsdataValidator = new GrunnlagsdataDirectoryValidator(arguments.getGrunnlagsdataBatchKatalog());
             controller.validerGrunnlagsdata(grunnlagsdataValidator);
 
-            BatchDirectoryCleaner directoryCleaner = new BatchDirectoryCleaner(batchId,
-                    arguments.getLogkatalog(), dataKatalog);
+            DirectoryCleaner directoryCleaner = createDirectoryCleaner(arguments.getSlettEldreEnn(), logKatalog, dataKatalog);
             controller.ryddOpp(directoryCleaner);
 
             Files.createDirectories(dataKatalog);
@@ -93,11 +92,20 @@ public class Main {
             controller.informerOmBruk(e);
         } catch (GrunnlagsdataException e) {
             controller.informerOmKorrupteGrunnlagsdata(e);
-        } catch (final Exception e) {
+        } catch (HousekeepingException e) {
+            controller.informerOmFeiletOpprydding();
+        }
+        catch (final Exception e) {
             controller.informerOmUkjentFeil(e);
         }
 
         shutdown(controller);
+    }
+
+    private static DirectoryCleaner createDirectoryCleaner(int slettEldreEnn, Path logKatalog, Path dataKatalog) throws HousekeepingException {
+        DeleteBatchDirectoryFinder finder = new DeleteBatchDirectoryFinder(dataKatalog, logKatalog);
+        Path[] deleteDirectories = finder.findDeletableBatchDirectories(slettEldreEnn);
+        return new DirectoryCleaner(deleteDirectories);
     }
 
     private static void shutdown(ApplicationController controller) {
