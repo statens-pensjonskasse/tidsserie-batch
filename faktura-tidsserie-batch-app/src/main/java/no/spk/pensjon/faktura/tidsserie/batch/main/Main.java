@@ -49,17 +49,17 @@ public class Main {
             startBatchTimeout(arguments, controller);
 
             final BatchId batchId = new BatchId(LocalDateTime.now());
-            Path logKatalog = batchId.tilArbeidskatalog(arguments.getLogkatalog());
+            Path batchLogKatalog = batchId.tilArbeidskatalog(arguments.getLogkatalog());
             Path dataKatalog = arguments.getUtkatalog().resolve("tidsserie");
 
-            Files.createDirectories(logKatalog);
-            controller.initialiserLogging(batchId, logKatalog);
+            Files.createDirectories(batchLogKatalog);
+            controller.initialiserLogging(batchId, batchLogKatalog);
             controller.informerOmOppstart(arguments);
 
             GrunnlagsdataDirectoryValidator grunnlagsdataValidator = new GrunnlagsdataDirectoryValidator(arguments.getGrunnlagsdataBatchKatalog());
             controller.validerGrunnlagsdata(grunnlagsdataValidator);
 
-            DirectoryCleaner directoryCleaner = createDirectoryCleaner(arguments.getSlettEldreEnn(), logKatalog, dataKatalog);
+            DirectoryCleaner directoryCleaner = createDirectoryCleaner(arguments.getSlettEldreEnn(), arguments.getLogkatalog(), dataKatalog);
             controller.ryddOpp(directoryCleaner);
 
             Files.createDirectories(dataKatalog);
@@ -81,11 +81,12 @@ public class Main {
 
             Duration duration = Duration.of(System.currentTimeMillis() - started, ChronoUnit.MILLIS);
 
-            MetaDataWriter metaDataWriter = new MetaDataWriter(freemarkerConfiguration, logKatalog);
+            MetaDataWriter metaDataWriter = new MetaDataWriter(freemarkerConfiguration, batchLogKatalog);
             controller.opprettMetadata(metaDataWriter, dataKatalog, arguments, batchId, duration);
             controller.opprettTriggerfil(metaDataWriter, dataKatalog);
+            metaDataWriter.createCsvGroupFiles(dataKatalog);
 
-            controller.informerOmSuksess(logKatalog);
+            controller.informerOmSuksess(batchLogKatalog);
         } catch (InvalidParameterException e) {
             controller.informerOmUgyldigeArgumenter(e);
         } catch (UsageRequestedException e) {

@@ -156,7 +156,7 @@ public class ApplicationController {
         metaDataWriter.createTriggerFile(utKatalog);
     }
 
-    public void shutdownLogger() {
+    private void shutdownLogger() {
         try {
             //Delay shutdown to allow flushing.
             Thread.sleep(2000);

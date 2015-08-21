@@ -4,7 +4,6 @@ import static java.util.Arrays.stream;
 import static java.util.Objects.requireNonNull;
 import static no.spk.pensjon.faktura.tidsserie.batch.Validators.require;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -41,7 +40,7 @@ public class DirectoryCleaner {
                 .map(Path::toFile)
                 .forEach(file -> require(
                         file,
-                        File::isDirectory,
+                        f -> !f.exists() || f.isDirectory(),
                         f -> new IllegalArgumentException(f.toString() + " er ikke en katalog.")
                 ));
         this.baseDirectories = Arrays.asList(deleteDirectories);

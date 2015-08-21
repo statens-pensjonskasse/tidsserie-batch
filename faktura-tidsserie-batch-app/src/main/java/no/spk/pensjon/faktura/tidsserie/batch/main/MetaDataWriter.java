@@ -37,9 +37,10 @@ import org.slf4j.LoggerFactory;
 public class MetaDataWriter {
     private static final String MD5_CHECKSUMS_FILENAME = "md5-checksums.txt";
     private static final String LOG_FILENAME = "batch.log";
-    private Logger logger = LoggerFactory.getLogger(MetaDataWriter.class);
 
+    private Logger logger = LoggerFactory.getLogger(MetaDataWriter.class);
     private final Configuration config;
+
     private final Path batchKatalog;
 
     public MetaDataWriter(Configuration config, Path batchKatalog) {
@@ -94,8 +95,17 @@ public class MetaDataWriter {
         try {
             Files.createFile(resolve);
         } catch (IOException e) {
-            throw new GrunnlagsdataException("Klarte ikke å opprette triggerfil.");
+            throw new TidsserieException("Klarte ikke å opprette triggerfil.");
         }
+    }
+
+    /**
+     * Finner alle tidsserie*.csv filer i utkatalog, og fordeler filnavmeme i ti filer: FFF_FILLISTE_[1-10].txt.
+     * Filliste-filene brukes slik at Datavarehus kan bruke faste filnavn for å paralellisere innlesingen av csv-filene.
+     * @param dataKatalog katalog med tidsserie*.csv filer. Katalogen vil inneholder 10 filer FFF_FILLISTE_[1-10].txt etter kjøring.
+     */
+    public void createCsvGroupFiles(Path dataKatalog) {
+        new CsvFileGroupWriter().createCsvGroupFiles(dataKatalog);
     }
 
     private Stream<File> getFilesToChecksum(Stream<Path> directoryNames) {

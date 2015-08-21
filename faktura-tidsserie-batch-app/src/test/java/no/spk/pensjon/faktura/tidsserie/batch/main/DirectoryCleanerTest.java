@@ -30,7 +30,7 @@ public class DirectoryCleanerTest {
     public final StandardOutputAndError console = new StandardOutputAndError();
 
     @Test
-    public void testDeleteDirectories() throws Exception {
+      public void testDeleteDirectories() throws Exception {
         Path path = testFolder.newFolder(name.getMethodName()).toPath();
 
         //slettes
@@ -50,5 +50,15 @@ public class DirectoryCleanerTest {
             List<String> list = stream.map(p -> p.toFile().getName()).collect(toList());
             assertThat(list).isEmpty();
         }
+    }
+
+    @Test
+    public void testDeleteMissingDirectories() throws Exception {
+        Path path = testFolder.newFolder(name.getMethodName()).toPath();
+
+        Path path1 = path.resolve("tidsserie");
+        Path path2 = path.resolve("tidsserie_2015-01-01_01-00-00-00");
+
+        new DirectoryCleaner(path1, path2).deleteDirectories();
     }
 }
