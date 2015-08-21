@@ -14,6 +14,7 @@ import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -124,7 +125,9 @@ public class MetaDataWriterTest {
 
     private void assertAllLinesMatch(Path file, Pattern linePattern){
         try {
-            Files.readAllLines(file).stream().forEach(s -> assertThat(s).matches(linePattern));
+            List<String> lines = Files.readAllLines(file);
+            assertThat(lines).isNotEmpty();
+            lines.stream().forEach(s -> assertThat(s).matches(linePattern));
         } catch (IOException e) {
             fail("Kunne ikke lese fil.", e);
         }
