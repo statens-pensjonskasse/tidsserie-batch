@@ -43,7 +43,7 @@ public class ProgramArguments {
     Path utkatalog;
 
     @Parameter(names = { "-log" },
-            description="Batchen vil lage en ny katalog i arbeidskatalogen hvor log og metadata for kjøringen vil bli lagret.",
+            description="Batchen vil lage en ny katalog i -log katalogen hvor batch.log og metadata for kjøringen vil bli lagret.",
             validateWith = PathStringValidator.class,
             validateValueWith = WritablePathValidator.class,
             required = true
@@ -51,13 +51,13 @@ public class ProgramArguments {
     Path logkatalog;
 
     @Parameter(names = {"-fraAar"},
-            description="Medlemsdata hentes fra og med 01.01 i angitt år.",
+            description="Tidsserien lages fra og med 01.01 i angitt år.",
             validateWith = IntegerValidator.class,
             validateValueWith = YearValidator.class)
     int fraAar = 2015;
 
     @Parameter(names = {"-tilAar"},
-            description="Medlemsdata hentes til og med 31.12 i angitt år.",
+            description="Tidsserien lages til og med 31.12 i angitt år.",
             validateWith = IntegerValidator.class,
             validateValueWith = YearValidator.class)
     int tilAar = 2015;
@@ -86,9 +86,9 @@ public class ProgramArguments {
             converter = LocalTimeConverter.class)
     LocalTime sluttidspunkt = LocalTime.parse("23:59");
 
-    @Parameter(names = { "-slett" },
-            description = "Sletter alle batch-kataloger og innhold som er eldre enn n antall dager dersom n > 0.")
-    int slettEldreEnn = 0;
+    @Parameter(names = { "-slettLog" },
+            description = "Sletter alle batch-kataloger i -log katalogen som er eldre enn n antall dager dersom n > 0.")
+    int slettLogEldreEnn = 0;
 
     public boolean isHjelp() {
         return hjelp;
@@ -153,7 +153,7 @@ public class ProgramArguments {
         return sluttidspunkt;
     }
 
-    public int getSlettEldreEnn() {
-        return slettEldreEnn;
+    public int getSlettLogEldreEnn() {
+        return slettLogEldreEnn;
     }
 }

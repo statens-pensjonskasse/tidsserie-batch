@@ -59,7 +59,7 @@ public class Main {
             GrunnlagsdataDirectoryValidator grunnlagsdataValidator = new GrunnlagsdataDirectoryValidator(arguments.getGrunnlagsdataBatchKatalog());
             controller.validerGrunnlagsdata(grunnlagsdataValidator);
 
-            DirectoryCleaner directoryCleaner = createDirectoryCleaner(arguments.getSlettEldreEnn(), arguments.getLogkatalog(), dataKatalog);
+            DirectoryCleaner directoryCleaner = createDirectoryCleaner(arguments.getSlettLogEldreEnn(), arguments.getLogkatalog(), dataKatalog);
             controller.ryddOpp(directoryCleaner);
 
             Files.createDirectories(dataKatalog);
@@ -82,9 +82,9 @@ public class Main {
             Duration duration = Duration.of(System.currentTimeMillis() - started, ChronoUnit.MILLIS);
 
             MetaDataWriter metaDataWriter = new MetaDataWriter(freemarkerConfiguration, batchLogKatalog);
-            controller.opprettMetadata(metaDataWriter, dataKatalog, arguments, batchId, duration);
-            controller.opprettTriggerfil(metaDataWriter, dataKatalog);
             metaDataWriter.createCsvGroupFiles(dataKatalog);
+            controller.opprettTriggerfil(metaDataWriter, dataKatalog);
+            controller.opprettMetadata(metaDataWriter, dataKatalog, arguments, batchId, duration);
 
             controller.informerOmSuksess(batchLogKatalog);
         } catch (InvalidParameterException e) {
