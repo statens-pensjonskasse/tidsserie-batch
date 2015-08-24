@@ -46,7 +46,6 @@ public final class ObservasjonsEvent {
      * @param serienummer eit positivt heiltall større enn 0
      * @return <code>this</code>
      * @throws IllegalArgumentException dersom serienummeret er mindre enn 1
-     * @see
      */
     public ObservasjonsEvent serienummer(final long serienummer) throws IllegalArgumentException {
         if (serienummer < 1) {
@@ -73,7 +72,7 @@ public final class ObservasjonsEvent {
     /**
      * Nullstiller innholdet til eventen.
      *
-     * @return
+     * @return event for chaining
      */
     public ObservasjonsEvent reset() {
         buffer.setLength(0);
