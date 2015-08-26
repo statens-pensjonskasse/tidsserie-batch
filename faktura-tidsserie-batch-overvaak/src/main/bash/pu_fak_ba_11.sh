@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #===========================================================
-# pu-fak-ba-09.sh
+# pu-fak-ba-11.sh
 #===========================================================
 # Beskrivelse:
 # Kjoerer faktura_tidsserie-batch-overvaak
@@ -30,8 +30,8 @@ HOMEDIR=$(dirname $0)      		                                      # Katalog hvo
 LOG_FILE=batch.log
 #Beregnede settings
 SCRIPT_NAME=${0##*/}
-LOGDIR=${WORKDIR}                                                  # Omrade hvor log filer opprettes
-MASTERLOG=${WORKDIR}/master.log                       # Loggfil for dette scriptet. Brukes av logging til batchovervåking
+LOGDIR=${WORKDIR}                                                     # Omrade hvor log filer opprettes
+MASTERLOG=${WORKDIR}/master.log                                       # Loggfil for dette scriptet. Brukes av logging til batchovervåking
 PU_FAK_BA_09_LOGDIR=${SPK_DATA}/puma/faktura/pu_fak_ba_10
 
 #===========================================================
@@ -45,7 +45,7 @@ Usage() {
 }
 
 FindLatestLog() {
-    # Finn alle tidsserie-batch-logkataloger i LOGDIR, sorter og hent ut første (nyeste kjøring)
+    # Finn alle tidsserie-batch-logkataloger i PU_FAK_BA_09_LOGDIR, sorter og hent ut første (nyeste kjøring)
     local last_batch_log=$(find ${PU_FAK_BA_09_LOGDIR} -maxdepth 2 -name "batch.log" | sort -r | head -n 1)
     echo ${last_batch_log}
 
