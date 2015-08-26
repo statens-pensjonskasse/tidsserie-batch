@@ -110,6 +110,7 @@ public class Main {
     }
 
     private static void shutdown(ApplicationController controller) {
+        controller.logExit();
         System.exit(controller.exitCode());
     }
 

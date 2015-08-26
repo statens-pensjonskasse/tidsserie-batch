@@ -15,6 +15,7 @@ import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArgumentsFactory
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
 
 import ch.qos.logback.classic.LoggerContext;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
@@ -154,6 +155,14 @@ public class ApplicationController {
      */
     public void opprettTriggerfil(MetaDataWriter metaDataWriter, Path utKatalog) {
         metaDataWriter.createTriggerFile(utKatalog);
+    }
+
+    public void logExit(){
+        getLogger().info("Exit code: " + exitCode());
+    }
+
+    private Logger getLogger() {
+        return LoggerFactory.getLogger(ApplicationController.class);
     }
 
     private void shutdownLogger() {
