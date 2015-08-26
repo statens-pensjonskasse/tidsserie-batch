@@ -86,8 +86,6 @@ public class HazelcastBackend implements TidsserieBackendService {
                 r -> new Thread(r, "lmax-disruptor-" + System.currentTimeMillis())
         );
         try (final LmaxDisruptorPublisher lager = openDisruptor(executors, outputFiles)) {
-            publishHeader(lager);
-
             return submit(
                     new Tidsserieagent(
                             fraOgMed.atStartOfYear(),
