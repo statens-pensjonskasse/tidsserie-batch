@@ -5,6 +5,7 @@ import static java.lang.Math.max;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.IntSupplier;
@@ -72,7 +73,7 @@ public class CsvFileGroupWriter {
         try {
             Files.createFile(dummyCsv);
         } catch (IOException e) {
-            throw new TidsserieException("Kunne ikke opprette " + dummyCsv.toString());
+            throw new UncheckedIOException("Kunne ikke opprette " + dummyCsv.toString(), e);
         }
         return dummyCsv;
     }
@@ -97,7 +98,7 @@ public class CsvFileGroupWriter {
         try {
             Files.createFile(groupFile);
         } catch (IOException e) {
-            throw new TidsserieException("Skriving til " + groupFile.toString() + " feilet.");
+            throw new UncheckedIOException("Skriving til " + groupFile.toString() + " feilet.", e);
         }
     }
 
@@ -109,7 +110,7 @@ public class CsvFileGroupWriter {
         try (FileWriter fileWriter = new FileWriter(groupFile.toFile(), true)) {
             fileWriter.append(csvFile.getName()).append("\n");
         } catch (IOException e) {
-            throw new TidsserieException("Skriving til " + groupFile.toString() + " feilet.");
+            throw new UncheckedIOException("Skriving til " + groupFile.toString() + " feilet.", e);
         }
     }
 }

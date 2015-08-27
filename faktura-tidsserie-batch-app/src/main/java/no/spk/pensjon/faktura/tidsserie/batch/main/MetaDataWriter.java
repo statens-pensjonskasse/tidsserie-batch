@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -95,7 +96,7 @@ public class MetaDataWriter {
         try {
             Files.createFile(resolve);
         } catch (IOException e) {
-            throw new TidsserieException("Klarte ikke å opprette triggerfil.");
+            throw new UncheckedIOException("Klarte ikke å opprette triggerfil.", e);
         }
     }
 
