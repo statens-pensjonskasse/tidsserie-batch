@@ -164,7 +164,9 @@ batch_result=$(GetResultat "${last_batch_log}")
 batch_medlem=$(GetResultatMedlemmer "${batch_result}")
 batch_errors=$(GetResultatErrors "${batch_result}")
 
-if [[ -z "$batch_hostname" || -z "$batch_start" || -z "$batch_end" || -z "$batch_exit_code" ]] ; then
+
+##Dersom start/stopp/hostname ikke er lesbart fra filen, er det for lite info til aa lage PU_FAK_BA_10 overvaaking.
+if [[ -z "$batch_hostname" || -z "$batch_start" || -z "$batch_end" ]] ; then
     ExitWithError 2 "'${last_batch_log}' kunne ikke leses, eller inneholder ufullstendig informasjon."
     exit 1
 fi
