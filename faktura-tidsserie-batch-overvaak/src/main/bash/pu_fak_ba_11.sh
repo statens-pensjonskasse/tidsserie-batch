@@ -128,6 +128,10 @@ RunInsertSql() {
     fi
 }
 
+ReplaceSpkDataPath() {
+    echo $(echo ${1} | sed -e "s|${SPK_DATA}|SPK_DATA|g")
+}
+
 #===========================================================
 # Hovedprogram
 #===========================================================
@@ -163,16 +167,18 @@ batch_result=$(GetResultat "${last_batch_log}")
 batch_medlem=$(GetResultatMedlemmer "${batch_result}")
 batch_errors=$(GetResultatErrors "${batch_result}")
 
+batch_log_path_short=$(ReplaceSpkDataPath ${last_batch_log})
 
 # Dersom start/stopp/hostname ikke er lesbart fra filen, er det for lite info til aa lage PU_FAK_BA_10 overvaaking.
 if [[ -z "$batch_hostname" || -z "$batch_start" || -z "$batch_end" ]] ; then
-    ExitWithError 2 "'${last_batch_log}' kunne ikke leses, eller inneholder ufullstendig informasjon."
+    ExitWithError 2 "'${batch_log_path_short}' kunne ikke leses, eller inneholder ufullstendig informasjon."
     exit 1
 fi
 
 check_sql="select distinct 1 from tort901 where nvn_tjeneste = 'PU_FAK_BA_10' and dat_start = '$batch_start'"
 batch_exists=$(RunSql "${check_sql}")
 
+# Lager kun PU_FAK_BA_10 rad i tort901 dersom starttidspunktet ikke finnes fra foer.
 if [[ -z "$batch_exists" ]] ; then
     ##Imiterer PU_FAK_BA_10 for overvaaking
     SERVICENAME="PU_FAK_BA_10"
@@ -183,9 +189,9 @@ if [[ -z "$batch_exists" ]] ; then
     RunInsertSql "${sql}"
 
     SERVICENAME=${OVERVAAKING_SERVICENAME}
-    ExitOk 0 "Avsluttet OK. PU_FAK_BA_10-log '${last_batch_log}' ble behandlet."
+    ExitOk 0 "Avsluttet OK. PU_FAK_BA_10-log '${batch_log_path_short}' ble behandlet."
 else
-    ExitOk 0 "Avsluttet OK. PU_FAK_BA_10-log '${last_batch_log}' var allerede behandlet."
+    ExitOk 0 "Avsluttet OK. PU_FAK_BA_10-log '${batch_log_path_short}' var allerede behandlet."
 fi
 exit 0
 
