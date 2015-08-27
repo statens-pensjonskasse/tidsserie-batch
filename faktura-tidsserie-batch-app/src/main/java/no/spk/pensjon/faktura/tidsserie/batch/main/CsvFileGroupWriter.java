@@ -7,7 +7,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.function.IntSupplier;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 
 /**
  * Finner alle tidsserie*.csv filer i utkatalog, og fordeler filnavmeme i ti filer: FFF_FILLISTE_[1-10].txt.
@@ -37,31 +39,30 @@ public class CsvFileGroupWriter {
         File[] csvFiles = dataKatalog.toFile()
                 .listFiles(f -> CSV_PATTERN.matcher(f.getName()).matches());
 
-        createGroupFiles(dataKatalog);
+        IntSupplier fileNumberSupplier = createGroupFiles(dataKatalog, GROUP_FILE_COUNT);
 
-        int currentFilenumber = 1;
         for (File csvFile : csvFiles) {
-            currentFilenumber = appendCsvFilenameToGroup(currentFilenumber, dataKatalog, csvFile);
+            appendCsvFilenameToGroup(dataKatalog, csvFile, fileNumberSupplier);
         }
 
-        int dummyCsvFileCount = max(0, GROUP_FILE_COUNT - csvFiles.length);
-        createDummyCsvFiles(dataKatalog, dummyCsvFileCount, currentFilenumber);
+        createDummyCsvFiles(dataKatalog, getDummyFileCount(csvFiles), fileNumberSupplier);
 
     }
 
-    private int appendCsvFilenameToGroup(int currentFilenumber, Path dataKatalog, File csvFile) {
-        Path groupFile = dataKatalog.resolve(getGroupFileName(currentFilenumber));
+    private int getDummyFileCount(File[] csvFiles) {
+        return max(0, GROUP_FILE_COUNT - csvFiles.length);
+    }
+
+    private void appendCsvFilenameToGroup(Path dataKatalog , File csvFile, IntSupplier fileNumberSupplier) {
+        Path groupFile = dataKatalog.resolve(getGroupFileName(fileNumberSupplier.getAsInt()));
         appendCsvFilename(csvFile, groupFile);
-        currentFilenumber = nextFileNumber(currentFilenumber);
-        return currentFilenumber;
     }
 
-    private void createDummyCsvFiles(Path dataKatalog, int dummyCsvFileCount, int currentFilenumber) {
+    private void createDummyCsvFiles(Path dataKatalog, int dummyCsvFileCount, IntSupplier fileNumberSupplier) {
         if (dummyCsvFileCount > 0) {
-
             for (int i = 0; i < dummyCsvFileCount; i++) {
                 Path dummyCsv = createDummyCsvFile(dataKatalog, i);
-                currentFilenumber = appendCsvFilenameToGroup(currentFilenumber, dataKatalog, dummyCsv.toFile());
+                appendCsvFilenameToGroup(dataKatalog, dummyCsv.toFile(), fileNumberSupplier);
             }
         }
     }
@@ -76,27 +77,32 @@ public class CsvFileGroupWriter {
         return dummyCsv;
     }
 
-    void createGroupFiles(Path dataKatalog) {
-        for (int i = 1; i <= GROUP_FILE_COUNT; i++) {
-            Path groupFile = dataKatalog.resolve(getGroupFileName(i));
-            try {
-                Files.createFile(groupFile);
-            } catch (IOException e) {
-                throw new TidsserieException("Skriving til " + groupFile.toString() + " feilet.");
+    IntSupplier createGroupFiles(Path dataKatalog, int fileCount) {
+        IntSupplier fileNumberSupplier = new IntSupplier() {
+            int current = 0;
+            public int getAsInt() {
+                return (current++ % fileCount) + 1;
             }
+        };
+
+        IntStream.generate(fileNumberSupplier)
+                .limit(fileCount)
+                .forEach(i -> createGroupFile(dataKatalog, i));
+
+        return fileNumberSupplier;
+    }
+
+    private void createGroupFile(Path dataKatalog, int fileNumber) {
+        Path groupFile = dataKatalog.resolve(getGroupFileName(fileNumber));
+        try {
+            Files.createFile(groupFile);
+        } catch (IOException e) {
+            throw new TidsserieException("Skriving til " + groupFile.toString() + " feilet.");
         }
     }
 
     String getGroupFileName(int fileNumber) {
         return "FFF_FILLISTE_" + fileNumber + ".txt";
-    }
-
-    int nextFileNumber(int currentFile) {
-        currentFile++;
-        if (currentFile > GROUP_FILE_COUNT) {
-            currentFile = 1;
-        }
-        return currentFile;
     }
 
     void appendCsvFilename(File csvFile, Path groupFile) {

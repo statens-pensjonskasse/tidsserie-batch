@@ -117,8 +117,11 @@ public class MetaDataWriterTest {
 
         Pattern groupPattern = Pattern.compile("^FFF_FILLISTE_(\\d)+.txt$");
         File[] groupFiles = writeFolder.listFiles(f -> groupPattern.matcher(f.getName()).matches());
-
         assertThat(groupFiles).hasSize(10);
+
+        Pattern csvPattern = Pattern.compile("^tidsserie.*.csv");
+        File[] csvFiles = writeFolder.listFiles(f -> csvPattern.matcher(f.getName()).matches());
+        assertThat(csvFiles.length).isGreaterThanOrEqualTo(10);
 
         stream(groupFiles).forEach(f -> assertAllLinesMatch(f.toPath(), CsvFileGroupWriter.CSV_PATTERN));
     }
