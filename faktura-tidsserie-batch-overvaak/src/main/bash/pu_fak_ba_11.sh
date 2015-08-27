@@ -21,18 +21,16 @@ STATUS=0															  # OK (0=OK, 1=Warning (Kjørt ferdig, men noe feilet), 2
 COMMENT=""															  # Kommentar til kjøringen. Kan ende opp som tom, om alt gaar bra.
 
 #Batch-spesifikke settings
-#JVM_ARGS="-Dcom.sun.management.jmxremote.port=9876 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -XX:+UseConcMarkSweepGC -Xms512m -Xmx2g -XX:MaxPermSize=1g"
 APPLIKASJONSGRUPPE=faktura
 SERVICENAME=$(basename $0 .sh)                                        # Navn på batch i batchovervåkingen utledet fra navnet på batch skriptet
 OVERVAAKING_SERVICENAME=${SERVICENAME}
 WORKDIR=${SPK_DATA}/puma/${APPLIKASJONSGRUPPE}/${SERVICENAME}		  # Arbeidsomrade for batchen. (inn/ut/log etc.)
 HOMEDIR=$(dirname $0)      		                                      # Katalog hvor shell skriptet kjøres fra
-LOG_FILE=batch.log
 #Beregnede settings
 SCRIPT_NAME=${0##*/}
 LOGDIR=${WORKDIR}                                                     # Omrade hvor log filer opprettes
 MASTERLOG=${WORKDIR}/master.log                                       # Loggfil for dette scriptet. Brukes av logging til batchovervåking
-PU_FAK_BA_09_LOGDIR=${SPK_DATA}/puma/faktura/pu_fak_ba_10
+PU_FAK_BA_10_LOGDIR=${SPK_DATA}/puma/faktura/pu_fak_ba_10
 
 #===========================================================
 # Deklarasjon av funksjoner
@@ -45,14 +43,15 @@ Usage() {
 }
 
 FindLatestLog() {
-    # Finn alle tidsserie-batch-logkataloger i PU_FAK_BA_09_LOGDIR, sorter og hent ut første (nyeste kjøring)
-    local last_batch_log=$(find ${PU_FAK_BA_09_LOGDIR} -maxdepth 2 -name "batch.log" | sort -r | head -n 1)
-    echo ${last_batch_log}
+    # Finn alle tidsserie-batch-logkataloger i PU_FAK_BA_10_LOGDIR, sorter og hent ut første (nyeste kjøring)
+    local last_batch_log=$(find ${PU_FAK_BA_10_LOGDIR} -maxdepth 2 -name "batch.log" | sort -r | head -n 1)
 
     if [[ ! -f ${last_batch_log} ]] ; then
-        ExitWithError 2 "Fant ikke batch.log i underkataloger av ${PU_FAK_BA_09_LOGDIR}."
+        ExitWithError 2 "Fant ikke batch.log i underkataloger av ${PU_FAK_BA_10_LOGDIR}."
         exit 1
     fi
+
+    echo ${last_batch_log}
 }
 
 GetHostname(){
@@ -151,7 +150,7 @@ LogStart "Leser inn logfiler fra pu_fak_ba_10."
 # Henter ut ID til den oppdaterte TORT901-innslaget lagd av LogStart
 CURRENT_IDE_SEKV_TORT901=$IDE_SEKV_TORT901
 
-# Finn alle tidsserie-batch-logkataloger i PU_FAK_BA_09_LOGDIR, sorter og hent ut første (nyeste kjøring)
+# Finn alle tidsserie-batch-logkataloger i PU_FAK_BA_10_LOGDIR, sorter og hent ut første (nyeste kjøring)
 last_batch_log=$(FindLatestLog)
 
 first_log_line=$(head -n 1 ${last_batch_log})
