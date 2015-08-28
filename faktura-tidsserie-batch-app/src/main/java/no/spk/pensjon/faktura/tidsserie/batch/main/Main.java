@@ -1,9 +1,16 @@
 package no.spk.pensjon.faktura.tidsserie.batch.main;
 
+import static java.lang.Integer.parseInt;
+import static java.lang.Math.min;
+import static java.time.temporal.ChronoUnit.HOURS;
+import static java.time.temporal.ChronoUnit.MILLIS;
+import static java.time.temporal.ChronoUnit.MINUTES;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 
 import no.spk.pensjon.faktura.tidsserie.batch.FileTemplate;
@@ -39,18 +46,23 @@ public class Main {
 
         try {
             ProgramArguments arguments = ProgramArgumentsFactory.create(args);
-            final BatchId batchId = new BatchId(LocalDateTime.now());
-            Path batchKatalog = batchId.tilArbeidskatalog(arguments.getUtkatalog());
+            startBatchTimeout(arguments, controller);
 
-            Files.createDirectories(batchKatalog);
-            controller.initialiserLogging(batchId, arguments.getUtkatalog());
+            final BatchId batchId = new BatchId(LocalDateTime.now());
+            Path batchLogKatalog = batchId.tilArbeidskatalog(arguments.getLogkatalog());
+            Path dataKatalog = arguments.getUtkatalog().resolve("tidsserie");
+
+            Files.createDirectories(batchLogKatalog);
+            controller.initialiserLogging(batchId, batchLogKatalog);
             controller.informerOmOppstart(arguments);
 
             GrunnlagsdataDirectoryValidator grunnlagsdataValidator = new GrunnlagsdataDirectoryValidator(arguments.getGrunnlagsdataBatchKatalog());
             controller.validerGrunnlagsdata(grunnlagsdataValidator);
 
-            BatchDirectoryCleaner directoryCleaner = new BatchDirectoryCleaner(arguments.getUtkatalog(), batchId);
+            DirectoryCleaner directoryCleaner = createDirectoryCleaner(arguments.getSlettLogEldreEnn(), arguments.getLogkatalog(), dataKatalog);
             controller.ryddOpp(directoryCleaner);
+
+            Files.createDirectories(dataKatalog);
 
             final Tidsseriemodus parameter = arguments.modus();
             final TidsserieBackendService backend = new HazelcastBackend(arguments.getNodes(), parameter);
@@ -63,26 +75,53 @@ public class Main {
 
             controller.lastOpp(overfoering);
             controller.lagTidsserie(backend,
-                    new FileTemplate(batchKatalog, "output-", ".csv"),
+                    new FileTemplate(dataKatalog, "tidsserie", ".csv"),
                     new Aarstall(arguments.getFraAar()),
                     new Aarstall(arguments.getTilAar()));
 
             Duration duration = Duration.of(System.currentTimeMillis() - started, ChronoUnit.MILLIS);
 
-            MetaDataWriter metaDataWriter = new MetaDataWriter(freemarkerConfiguration, batchKatalog);
-            controller.opprettMetadata(metaDataWriter, arguments, batchId, duration);
+            MetaDataWriter metaDataWriter = new MetaDataWriter(freemarkerConfiguration, batchLogKatalog);
+            metaDataWriter.createCsvGroupFiles(dataKatalog);
+            controller.opprettTriggerfil(metaDataWriter, dataKatalog);
+            controller.opprettMetadata(metaDataWriter, dataKatalog, arguments, batchId, duration);
 
-            controller.informerOmSuksess(batchKatalog);
+            controller.informerOmSuksess(batchLogKatalog);
         } catch (InvalidParameterException e) {
             controller.informerOmUgyldigeArgumenter(e);
         } catch (UsageRequestedException e) {
             controller.informerOmBruk(e);
         } catch (GrunnlagsdataException e) {
             controller.informerOmKorrupteGrunnlagsdata(e);
-        } catch (final Exception e) {
+        } catch (HousekeepingException e) {
+            controller.informerOmFeiletOpprydding();
+        }
+        catch (final Exception e) {
             controller.informerOmUkjentFeil(e);
         }
 
+        shutdown(controller);
+    }
+
+    private static DirectoryCleaner createDirectoryCleaner(int slettEldreEnn, Path logKatalog, Path dataKatalog) throws HousekeepingException {
+        DeleteBatchDirectoryFinder finder = new DeleteBatchDirectoryFinder(dataKatalog, logKatalog);
+        Path[] deleteDirectories = finder.findDeletableBatchDirectories(slettEldreEnn);
+        return new DirectoryCleaner(deleteDirectories);
+    }
+
+    private static void shutdown(ApplicationController controller) {
         System.exit(controller.exitCode());
+    }
+
+    private static void startBatchTimeout(ProgramArguments arguments, ApplicationController controller) {
+        String kjoeretidString = arguments.getKjoeretid();
+        int hours = parseInt(kjoeretidString.substring(0, 2));
+        int minutes = parseInt(kjoeretidString.substring(2, 4));
+        Duration kjoeretidDuration = Duration.of(hours, HOURS).plus(Duration.of(minutes, MINUTES));
+
+        long duration = ChronoUnit.MILLIS.between(LocalTime.now(), arguments.getSluttidspunkt());
+
+        long timeout = min(kjoeretidDuration.toMillis(), duration);
+        TimeoutTaskrunner.startTimeout(Duration.of(timeout, MILLIS), () -> shutdown(controller));
     }
 }

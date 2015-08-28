@@ -40,6 +40,7 @@ public class ProgramArgumentsFactoryTest {
                     "-m", modus.kode(),
                     "-i", path,
                     "-o", path,
+                    "-log", path,
                     "-b", name.getMethodName()
             );
             assertThat(args.modus()).isEqualTo(modus.modus());
@@ -63,7 +64,7 @@ public class ProgramArgumentsFactoryTest {
     @Test
     public void testBeskrivelseInputOutputRequired() throws Exception {
         exception.expect(InvalidParameterException.class);
-        exception.expectMessage("The following options are required: -o -i -b");
+        exception.expectMessage("The following options are required: -log -o -i -b");
 
         ProgramArgumentsFactory.create();
     }
@@ -76,7 +77,7 @@ public class ProgramArgumentsFactoryTest {
         exception.expectMessage("'-fraAar' kan ikke være større enn '-tilAar'");
         exception.expectMessage("2009 > 2008");
 
-        ProgramArgumentsFactory.create("-b", "test", "-o", path, "-i", path, "-fraAar", "2009", "-tilAar", "2008");
+        ProgramArgumentsFactory.create("-b", "test", "-o", path, "-i", path, "-log", path, "-fraAar", "2009", "-tilAar", "2008");
     }
 
     @Test
@@ -135,7 +136,8 @@ public class ProgramArgumentsFactoryTest {
 
         ProgramArgumentsFactory.create("-b", "Test batch id missing",
                                         "-i", file.getAbsolutePath(),
-                                        "-o", file.getAbsolutePath());
+                                        "-o", file.getAbsolutePath(),
+                                        "-log", file.getAbsolutePath());
     }
 
     @Test
@@ -149,6 +151,7 @@ public class ProgramArgumentsFactoryTest {
         ProgramArguments programArguments = ProgramArgumentsFactory.create(
                 "-b", "Test set default batch id",
                 "-i", path.toAbsolutePath().toString(),
+                "-log", path.toAbsolutePath().toString(),
                 "-o", path.toAbsolutePath().toString());
 
         assertThat(programArguments.getGrunnlagsdataBatchId()).isEqualTo(expectedBatchFolder);

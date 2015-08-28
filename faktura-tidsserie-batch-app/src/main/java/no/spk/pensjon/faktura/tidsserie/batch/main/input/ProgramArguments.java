@@ -1,6 +1,7 @@
 package no.spk.pensjon.faktura.tidsserie.batch.main.input;
 
 import java.nio.file.Path;
+import java.time.LocalTime;
 import java.util.Optional;
 
 import no.spk.pensjon.faktura.tidsserie.batch.Tidsseriemodus;
@@ -34,25 +35,32 @@ public class ProgramArguments {
     String grunnlagsdataBatchId;
 
     @Parameter(names = { "-o" },
-            description="Batchen vil lage en ny katalog i arbeidskatalogen hvor resultatet av kjøringen vil bli lagret.",
+            description="Katalogen hvor tidsserie.csv og ok.trg fil blir lagret",
             validateWith = PathStringValidator.class,
             validateValueWith = WritablePathValidator.class,
             required = true
     )
     Path utkatalog;
 
+    @Parameter(names = { "-log" },
+            description="Batchen vil lage en ny katalog i -log katalogen hvor batch.log og metadata for kjøringen vil bli lagret.",
+            validateWith = PathStringValidator.class,
+            validateValueWith = WritablePathValidator.class,
+            required = true
+    )
+    Path logkatalog;
+
     @Parameter(names = {"-fraAar"},
-            description="Medlemsdata hentes fra og med 01.01 i angitt år.",
+            description="Tidsserien lages fra og med 01.01 i angitt år.",
             validateWith = IntegerValidator.class,
             validateValueWith = YearValidator.class)
     int fraAar = 2015;
 
     @Parameter(names = {"-tilAar"},
-            description="Medlemsdata hentes til og med 31.12 i angitt år.",
+            description="Tidsserien lages til og med 31.12 i angitt år.",
             validateWith = IntegerValidator.class,
             validateValueWith = YearValidator.class)
     int tilAar = 2015;
-
 
     @Parameter(names = { "-n" },
             description = "Antall noder som skal brukes for å utgjøre grid for tidsserie-prossesering. Default er lik antall prosessorer på serveren minus 1.",
@@ -66,6 +74,21 @@ public class ProgramArguments {
             converter = ModusConverter.class
     )
     Modus modus = Modus.STILLINGSFORHOLD_OBSERVASJONAR;
+
+    @Parameter(names = "-kjoeretid",
+            description = "Maks kjøretid på formatet HHmm.",
+            validateWith = DurationValidator.class)
+    String kjoeretid = "0400";
+
+    @Parameter(names = { "-sluttid" },
+            description = "Klokkeslett på formen HH:mm eller HH:mm:ss for når kjøringen senest avsluttes.",
+            validateWith = LocalTimeValidator.class,
+            converter = LocalTimeConverter.class)
+    LocalTime sluttidspunkt = LocalTime.parse("23:59");
+
+    @Parameter(names = { "-slettLog" },
+            description = "Sletter alle batch-kataloger i -log katalogen som er eldre enn n antall dager dersom n > 0.")
+    int slettLogEldreEnn = 0;
 
     public boolean isHjelp() {
         return hjelp;
@@ -90,8 +113,13 @@ public class ProgramArguments {
     public int getTilAar() {
         return tilAar;
     }
+
     public Path getUtkatalog() {
         return utkatalog;
+    }
+
+    public Path getLogkatalog() {
+        return logkatalog;
     }
 
     public Path getInnkatalog() {
@@ -115,5 +143,17 @@ public class ProgramArguments {
 
     public Tidsseriemodus modus() {
         return modus.modus();
+    }
+
+    public String getKjoeretid() {
+        return kjoeretid;
+    }
+
+    public LocalTime getSluttidspunkt() {
+        return sluttidspunkt;
+    }
+
+    public int getSlettLogEldreEnn() {
+        return slettLogEldreEnn;
     }
 }

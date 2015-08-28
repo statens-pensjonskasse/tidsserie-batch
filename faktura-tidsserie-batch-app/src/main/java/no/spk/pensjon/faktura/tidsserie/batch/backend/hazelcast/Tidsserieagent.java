@@ -38,6 +38,8 @@ class Tidsserieagent
     private transient GenererTidsserieCommand kommando;
     private transient IAtomicLong serienummerGenerator;
     private transient long serienummer;
+    private transient StorageBackend publisher;
+    private transient Tidsseriemodus parameter;
 
     Tidsserieagent(final LocalDate foerstedato, final LocalDate sistedato) {
         this.foerstedato = foerstedato;
@@ -52,8 +54,8 @@ class Tidsserieagent
 
     void configure(final Map<String, Object> userContext) {
         final TidsserieFactory grunnlagsdata = lookup(userContext, TidsserieFactory.class);
-        final StorageBackend publisher = lookup(userContext, StorageBackend.class);
-        final Tidsseriemodus parameter = lookup(userContext, Tidsseriemodus.class);
+        this.publisher = lookup(userContext, StorageBackend.class);
+        this.parameter = lookup(userContext, Tidsseriemodus.class);
         this.kommando = new GenererTidsserieCommand(grunnlagsdata, publisher, parameter);
     }
 
@@ -62,6 +64,7 @@ class Tidsserieagent
         // Serienummeret for alle eventar som blir generert for medlemmar i gjeldande partisjon
         serienummer = serienummerGenerator.getAndIncrement();
         MDC.put(MDC_SERIENUMMER, "" + serienummer);
+        lagHeader(serienummer);
     }
 
     @Override
@@ -88,6 +91,13 @@ class Tidsserieagent
             log.info("Feilkilde:", e);
             emitError(context, e);
         }
+    }
+
+
+    private void lagHeader(long serienummer) {
+        publisher.lagre(event -> event.serienummer(serienummer).buffer
+                .append(parameter.kolonnenavn().collect(joining(";")))
+                .append('\n'));
     }
 
     private Feilhandtering lagFeilhandteringForMedlem(final String medlem, final Context<String, Integer> context,

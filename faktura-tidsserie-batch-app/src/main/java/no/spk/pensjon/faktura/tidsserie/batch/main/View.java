@@ -42,15 +42,6 @@ public interface View {
 
 
     /**
-     * Notifiserer brukaren om at oppryddingssteget til batchen ikkje har klart å slette
-     * alle arbeidskatalogar som er eldre enn det antall dagar brukaren har angitt som nedre øvre
-     * grenseverdi for køyringstidspunkt.
-     *
-     * @param status status som inneheld informasjon om alle arbeidskatalogane som batchen ikkje klarte å slette
-     */
-    void informerOmUslettbareArbeidskatalogar(Oppryddingsstatus status);
-
-    /**
      * Informerer brukaren om at batchen har køyrt ferdig og at køyringa gjekk føre seg utan nokon feil.
      *
      * @param arbeidskatalog den nye arbeidskatalogen som batchen har lagra alle sine resultatfiler i
@@ -75,4 +66,8 @@ public interface View {
 
     void informerOmMetadataOppretting();
 
+    /**
+     * Informerer bruker om at opprydding i kataloger feilet.
+     */
+    void informerOmFeiletOpprydding();
 }

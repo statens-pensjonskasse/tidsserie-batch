@@ -2,13 +2,11 @@ package no.spk.pensjon.faktura.tidsserie.batch.main;
 
 import static no.spk.pensjon.faktura.tidsserie.batch.main.ApplicationController.EXIT_ERROR;
 import static no.spk.pensjon.faktura.tidsserie.batch.main.ApplicationController.EXIT_SUCCESS;
-import static no.spk.pensjon.faktura.tidsserie.batch.main.ApplicationController.EXIT_WARNING;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import no.spk.pensjon.faktura.tidsserie.batch.FileTemplate;
@@ -23,6 +21,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 /**
  * @author Snorre E. Brekke - Computas
@@ -30,6 +29,9 @@ import org.junit.Test;
 public class ApplicationControllerTest {
     @Rule
     public final StandardOutputAndError console = new StandardOutputAndError();
+
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
 
     ApplicationController controller;
     ConsoleView view;
@@ -58,27 +60,20 @@ public class ApplicationControllerTest {
 
     @Test
     public void testRyddOpp() throws Exception {
-        BatchDirectoryCleaner cleaner = mock(BatchDirectoryCleaner.class);
-        when(cleaner.deleteAllPreviousBatches()).thenReturn(new Oppryddingsstatus());
+        DirectoryCleaner cleaner = mock(DirectoryCleaner.class);
         controller.ryddOpp(cleaner);
-        verify(cleaner).deleteAllPreviousBatches();
+        verify(cleaner).deleteDirectories();
         console.assertStandardOutput().contains("Sletter gamle filer.");
     }
 
     @Test
     public void testRyddOppFeilet() throws Exception {
-        BatchDirectoryCleaner cleaner = mock(BatchDirectoryCleaner.class);
-        Oppryddingsstatus oppryddingsstatus = new Oppryddingsstatus();
-        oppryddingsstatus.addError("someError", new RuntimeException("some Exception"));
-        when(cleaner.deleteAllPreviousBatches()).thenReturn(oppryddingsstatus);
-        controller.informerOmSuksess(mock(Path.class));
+        DirectoryCleaner cleaner = mock(DirectoryCleaner.class);
+        doThrow(new HousekeepingException("blabla")).when(cleaner).deleteDirectories();
+        exception.expect(HousekeepingException.class);
 
         controller.ryddOpp(cleaner);
-        verify(cleaner).deleteAllPreviousBatches();
-        console.assertStandardOutput().contains("Sletter gamle filer.");
-        console.assertStandardOutput().contains("Følgende kataloger kunne ikke slettes");
-
-        assertThat(controller.exitCode()).isEqualTo(EXIT_WARNING);
+        verify(cleaner).deleteDirectories();
     }
 
     @Test
