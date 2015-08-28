@@ -57,7 +57,7 @@ public class ConsoleView implements View{
     }
 
     public void informerOmOppstart(ProgramArguments arguments) {
-        println("Grunnlagsdata-batch startet " + now().format(DATE_TIME_FORMATTER));
+        println("Tidsserie-batch startet " + now().format(DATE_TIME_FORMATTER));
         println("Følgende programargumenter blir brukt: ");
         println(ArgumentSummary.createParameterSummary(arguments));
         arguments.postMessage().ifPresent(this::println);
