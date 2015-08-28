@@ -46,7 +46,7 @@ public class ApplicationControllerTest {
     public void testInformerOmOppstart() throws Exception {
         ProgramArguments programArguments = new ProgramArguments();
         controller.informerOmOppstart(programArguments);
-        console.assertStandardOutput().contains("Grunnlagsdata-batch startet ");
+        console.assertStandardOutput().contains("Tidsserie-batch startet ");
         console.assertStandardOutput().contains("Følgende programargumenter blir brukt: ");
     }
 
