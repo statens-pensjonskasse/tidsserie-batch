@@ -38,9 +38,6 @@ public class MetaDataWriterTest {
     @Rule
     public TemporaryFolder testFolder = new TemporaryFolder();
 
-//    @Rule
-//    public final Log4j log4j = new Log4j().failOn(Level.ERROR, Level.WARN);
-
     @Test
     public void testCreateMetadataFile() throws Exception {
         File writeFolder = createTestFolders();
@@ -57,30 +54,6 @@ public class MetaDataWriterTest {
         assertThat(fileContent).contains("Batch-id: " + batchId);
     }
 
-    @Test
-    public void testCreateChecksumFile() throws Exception {
-        File writeFolder = createTestFolders();
-
-        MetaDataWriter metaDataWriter = getMetaDataWriter(writeFolder);
-
-        String content = "someContent";
-        String memoryHex = DigestUtils.md5Hex(content);
-        Files.write(Paths.get(writeFolder.getAbsolutePath(), "some.csv"), content.getBytes());
-
-        Optional<File> checksumFile = metaDataWriter.createChecksumFile();
-        assertThat(checksumFile.isPresent()).isTrue();
-        assertThat(checksumFile.get()).exists();
-
-        String fileContent = new String(Files.readAllBytes(checksumFile.get().toPath()), Charset.forName("cp1252"));
-
-        String[] split = fileContent.trim().split(" ");
-        assertThat(split.length).isEqualTo(2);
-
-        String fileHex = split[0];
-        String fileName = split[1];
-        assertThat(fileHex).isEqualTo(memoryHex);
-        assertThat(fileName).isEqualTo("*some.csv");
-    }
 
     @Test
     public void testCreateTriggerFile() throws Exception {

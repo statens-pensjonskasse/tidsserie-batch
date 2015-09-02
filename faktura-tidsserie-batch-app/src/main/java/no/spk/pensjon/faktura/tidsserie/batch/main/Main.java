@@ -2,6 +2,8 @@ package no.spk.pensjon.faktura.tidsserie.batch.main;
 
 import static java.lang.Integer.parseInt;
 import static java.lang.Math.min;
+import static java.time.Duration.of;
+import static java.time.LocalTime.now;
 import static java.time.temporal.ChronoUnit.HOURS;
 import static java.time.temporal.ChronoUnit.MILLIS;
 import static java.time.temporal.ChronoUnit.MINUTES;
@@ -10,7 +12,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 
 import no.spk.pensjon.faktura.tidsserie.batch.FileTemplate;
@@ -79,7 +80,7 @@ public class Main {
                     new Aarstall(arguments.getFraAar()),
                     new Aarstall(arguments.getTilAar()));
 
-            Duration duration = Duration.of(System.currentTimeMillis() - started, ChronoUnit.MILLIS);
+            Duration duration = of(System.currentTimeMillis() - started, ChronoUnit.MILLIS);
 
             MetaDataWriter metaDataWriter = new MetaDataWriter(freemarkerConfiguration, batchLogKatalog);
             metaDataWriter.createCsvGroupFiles(dataKatalog);
@@ -95,8 +96,7 @@ public class Main {
             controller.informerOmKorrupteGrunnlagsdata(e);
         } catch (HousekeepingException e) {
             controller.informerOmFeiletOpprydding();
-        }
-        catch (final Exception e) {
+        } catch (final Exception e) {
             controller.informerOmUkjentFeil(e);
         }
 
@@ -115,14 +115,21 @@ public class Main {
     }
 
     private static void startBatchTimeout(ProgramArguments arguments, ApplicationController controller) {
-        String kjoeretidString = arguments.getKjoeretid();
-        int hours = parseInt(kjoeretidString.substring(0, 2));
-        int minutes = parseInt(kjoeretidString.substring(2, 4));
-        Duration kjoeretidDuration = Duration.of(hours, HOURS).plus(Duration.of(minutes, MINUTES));
+        long timeout = getTimeout(arguments);
+        TimeoutTaskrunner.startTimeout(
+                of(timeout, MILLIS),
+                () -> {
+                    controller.logTimeout();
+                    shutdown(controller);
+                });
+    }
 
-        long duration = ChronoUnit.MILLIS.between(LocalTime.now(), arguments.getSluttidspunkt());
-
-        long timeout = min(kjoeretidDuration.toMillis(), duration);
-        TimeoutTaskrunner.startTimeout(Duration.of(timeout, MILLIS), () -> shutdown(controller));
+    private static long getTimeout(ProgramArguments arguments) {
+        String kjoeretid = arguments.getKjoeretid();
+        int hours = parseInt(kjoeretid.substring(0, 2));
+        int minutes = parseInt(kjoeretid.substring(2, 4));
+        Duration maxDuration = of(hours, HOURS).plus(of(minutes, MINUTES));
+        long milliesToEnd = MILLIS.between(now(), arguments.getSluttidspunkt());
+        return min(maxDuration.toMillis(), milliesToEnd);
     }
 }

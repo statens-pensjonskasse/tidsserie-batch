@@ -99,10 +99,10 @@ LogComment(){
         logComment="Tidsserie generert OK."
     elif [[ ${batch_exit_code} -eq 1 ]] ; then
         STATUS=0
-        logComment="Tidsserie-generering feilet."
+        logComment="Tidsserie-generering feilet. Informer Team Kornmo."
     else
         STATUS=0
-        logComment="En uventet feil oppstod, sjekk loggen"
+        logComment="En uventet feil oppstod. Informer Team Kornmo."
     fi
 
     if [[ -n ${batch_medlem} ]] ; then
