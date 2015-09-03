@@ -107,6 +107,11 @@ public class ConsoleView implements View{
         println("Se loggen for årsak.");
     }
 
+    @Override
+    public void informerOmTimeout() {
+        println("Timeout - batchen har brukt for lang tid på å kjøre, og vil bli avsluttet.");
+    }
+
     private void println(final String melding) {
         System.out.println(melding);
     }

@@ -70,4 +70,6 @@ public interface View {
      * Informerer bruker om at opprydding i kataloger feilet.
      */
     void informerOmFeiletOpprydding();
+
+    void informerOmTimeout();
 }

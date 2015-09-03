@@ -1,11 +1,6 @@
 package no.spk.pensjon.faktura.tidsserie.batch.main;
 
-import static java.util.Arrays.stream;
-import static java.util.stream.Stream.concat;
-import static java.util.stream.Stream.of;
-
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -24,7 +19,6 @@ import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,28 +57,6 @@ public class MetaDataWriter {
             logger.error("Klarte ikke å opprette metadata-fil", e);
             return Optional.empty();
         }
-        return Optional.of(fileToWrite);
-    }
-
-    public Optional<File> createChecksumFile(Path... forFilesInDirectories) {
-        File fileToWrite = batchKatalog.resolve(MD5_CHECKSUMS_FILENAME).toFile();
-        try (Writer writer = new FileWriter(fileToWrite)) {
-            Stream<File> files = getFilesToChecksum(concat(stream(forFilesInDirectories), of(batchKatalog)));
-            files.forEach(file -> {
-                try {
-                    try (final FileInputStream input = new FileInputStream(file)) {
-                        String hex = DigestUtils.md5Hex(input);
-                        writer.append(hex).append(" *").append(file.getName()).append("\n");
-                    }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-        } catch (IOException e) {
-            logger.error("Klarte ikke å opprette checksum-fil", e);
-            return Optional.empty();
-        }
-
         return Optional.of(fileToWrite);
     }
 

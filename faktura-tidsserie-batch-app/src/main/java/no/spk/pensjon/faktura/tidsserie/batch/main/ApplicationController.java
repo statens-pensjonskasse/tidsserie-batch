@@ -138,7 +138,6 @@ public class ApplicationController {
     public void opprettMetadata(MetaDataWriter metaDataWriter, Path dataKatalog, ProgramArguments arguments, BatchId batchId, Duration duration) {
         view.informerOmMetadataOppretting();
         metaDataWriter.createMetadataFile(arguments, batchId, duration);
-        metaDataWriter.createChecksumFile(dataKatalog);
     }
 
     /**
@@ -157,6 +156,18 @@ public class ApplicationController {
         metaDataWriter.createTriggerFile(utKatalog);
     }
 
+    /**
+     * Logger at programmet har brukt for lang tid, og informerer bruker om dette. Marker batchen som feilet.
+     */
+    public void logTimeout() {
+        view.informerOmTimeout();
+        markerSomFeilet();
+        getLogger().warn("Timeout - Batchen har brukt for lang tid på å kjøre, og vil bli avsluttet.");
+    }
+
+    /**
+     * Logger exit-kode for tilstanden ApplicationController har nå. Denne metoden bør (skal) bare kalles når programmet avsluttes.
+     */
     public void logExit(){
         getLogger().info("Exit code: " + exitCode());
     }

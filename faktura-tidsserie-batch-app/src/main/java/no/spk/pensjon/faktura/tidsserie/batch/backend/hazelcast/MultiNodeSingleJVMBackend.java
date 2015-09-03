@@ -100,7 +100,7 @@ class MultiNodeSingleJVMBackend implements Server {
         logger.info("Startar sekundærnoder...");
         slavar.addAll(
                 IntStream
-                        .range(2, antallNoder)
+                        .rangeClosed(2, antallNoder)
                         .parallel()
                         .mapToObj(threadNr -> startInstance(config, threadNr))
                         .collect(toSet())
