@@ -5,6 +5,7 @@ import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 /**
  * {@link Desimaltallformatering} representerer ei trådsikker, låsfri teneste for formatering av
@@ -21,9 +22,10 @@ import java.util.Map;
  */
 class Desimaltallformatering {
     private final ThreadLocal<Map<Integer, NumberFormat>> desimalformat = ThreadLocal.withInitial(HashMap::new);
+    private final ThreadLocal<Map<Key, String>> formatertCache = ThreadLocal.withInitial(WeakHashMap::new);
 
-    String formater(final double value, final int antallDesimaler) {
-        return desimalFormat(antallDesimaler).format(value);
+    String formater(final double verdi, final int antallDesimaler) {
+        return formatertCache.get().computeIfAbsent(new Key(verdi, antallDesimaler), k -> desimalFormat(k.desimaler).format(k.verdi));
     }
 
     NumberFormat desimalFormat(final int antallDesimaler) {
@@ -34,5 +36,40 @@ class Desimaltallformatering {
             format.setMinimumFractionDigits(antall);
             return format;
         });
+    }
+
+    /**
+     * Klasse som omslutter verdi og disimaler, slik at disse kan brukes som nøkkel i formateringscache.
+     */
+    private static class Key{
+        private double verdi;
+        private int desimaler;
+
+        public Key(double verdi, int desimaler) {
+            this.verdi = verdi;
+            this.desimaler = desimaler;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof Key)) return false;
+
+            Key key = (Key) o;
+
+            if (Double.compare(key.verdi, verdi) != 0) return false;
+            return desimaler == key.desimaler;
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result;
+            long temp;
+            temp = Double.doubleToLongBits(verdi);
+            result = (int) (temp ^ (temp >>> 32));
+            result = 31 * result + desimaler;
+            return result;
+        }
     }
 }
