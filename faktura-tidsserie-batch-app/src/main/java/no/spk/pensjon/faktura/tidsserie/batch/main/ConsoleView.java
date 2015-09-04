@@ -98,7 +98,7 @@ public class ConsoleView implements View{
 
     @Override
     public void informerOmMetadataOppretting() {
-        println("Oppretter metadata og sjekksumfil.");
+        println("Oppretter metadata.");
     }
 
     @Override
