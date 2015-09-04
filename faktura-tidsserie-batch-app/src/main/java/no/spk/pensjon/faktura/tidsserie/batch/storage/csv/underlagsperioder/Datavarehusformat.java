@@ -51,6 +51,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.reglar.OevreLoennsgrenseRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.TermintypeRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.YrkesskadefaktureringRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonsdato;
+import no.spk.pensjon.faktura.tidsserie.domain.underlag.Beregningsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
 
@@ -198,11 +199,12 @@ public class Datavarehusformat implements CSVFormat {
                 .utfoer(builder, p, up -> flagg(up.valgfriAnnotasjonFor(Medregning.class).isPresent()))
                 .utfoer(builder, p, up -> flagg(up.valgfriAnnotasjonFor(Aksjonskode.class).filter(kode -> kode.equals(PERMISJON_UTAN_LOENN)).isPresent()))
                 .utfoer(builder, p, up -> flagg(deltid.map(d -> up.beregn(MinstegrenseRegel.class).erUnderMinstegrensa(d)).orElse(false)))
-                .multiple(builder, p, premiesatsar(Produkt.PEN))
-                .multiple(builder, p, premiesatsar(Produkt.AFP))
-                .multiple(builder, p, premiesatsar(Produkt.TIP))
-                .multiple(builder, p, premiesatsar(Produkt.GRU))
-                .multiple(builder, p, premiesatsar(Produkt.YSK))
+
+                .multiple(builder, p, premiesatsar(p, Produkt.PEN))
+                .multiple(builder, p, premiesatsar(p, Produkt.AFP))
+                .multiple(builder, p, premiesatsar(p, Produkt.TIP))
+                .multiple(builder, p, premiesatsar(p, Produkt.GRU))
+                .multiple(builder, p, premiesatsar(p, Produkt.YSK))
                 .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Avtale.class).flatMap(Avtale::risikoklasse)))
                 .utfoer(builder, p, up -> up.id().toString())
         ;
@@ -225,8 +227,8 @@ public class Datavarehusformat implements CSVFormat {
         return builder.build().map(o -> o == placeholder ? heiltall(detector.antallFeil) : o);
     }
 
-    private Stream<Function<Underlagsperiode, String>> premiesatsar(final Produkt produkt) {
-        return premiesatskolonner.forProdukt(produkt);
+    private Stream<Function<Underlagsperiode, String>> premiesatsar(final Underlagsperiode p, final Produkt produkt) {
+        return premiesatskolonner.forProdukt(p, produkt);
     }
 
     private String prosent(final Optional<Prosent> verdi, final int antallDesimaler) {

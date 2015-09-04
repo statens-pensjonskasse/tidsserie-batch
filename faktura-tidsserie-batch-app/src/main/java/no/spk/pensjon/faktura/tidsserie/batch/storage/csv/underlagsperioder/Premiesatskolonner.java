@@ -1,10 +1,14 @@
 package no.spk.pensjon.faktura.tidsserie.batch.storage.csv.underlagsperioder;
 
+import static java.util.Arrays.asList;
 import static no.spk.pensjon.faktura.tidsserie.batch.storage.csv.underlagsperioder.Kolonnetyper.beloep;
 import static no.spk.pensjon.faktura.tidsserie.batch.storage.csv.underlagsperioder.Kolonnetyper.flagg;
 import static no.spk.pensjon.faktura.tidsserie.batch.storage.csv.underlagsperioder.Kolonnetyper.kode;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -40,34 +44,63 @@ class Premiesatskolonner {
      * Dersom avtalen ikkje har produktet som blir forsøkt slått opp, blir det returnert 5 funksjonar som
      * genererer tomme-verdiar.
      *
+     * @param p
      * @param produkt produktet som premiesats-funksjonar skal hentast ut for
      * @return ein straum med 5 funksjonar som trekker ut premiesats-informasjon frå ei underlagsperiode
      */
-    Stream<Function<Underlagsperiode, String>> forProdukt(final Produkt produkt) {
+    Stream<Function<Underlagsperiode, String>> forProdukt(final Underlagsperiode p, final Produkt produkt) {
+        Function<Premiesats, Stream<Function<Underlagsperiode, String>>> memento = premiesats -> Stream.empty();
         if (produkt == Produkt.PEN || produkt == Produkt.AFP || produkt == Produkt.TIP) {
-            return Stream.of(
-                    erFakturerbar(produkt),
-                    arbeidsgiverprosent(produkt),
-                    medlemsprosent(produkt),
-                    administrasjonsgebyrprosent(produkt),
-                    produktinfo(produkt)
-            );
+            memento = premiesats -> {
+                List<Function<Underlagsperiode, String>> functions = premiesatsCache.computeIfAbsent(premiesats,
+                        key -> asList(
+                                new Memento(erFakturerbar(produkt).apply(p)),
+                                new Memento(arbeidsgiverprosent(produkt).apply(p)),
+                                new Memento(medlemsprosent(produkt).apply(p)),
+                                new Memento(administrasjonsgebyrprosent(produkt).apply(p)),
+                                new Memento(produktinfo(produkt).apply(p))
+                        )
+                );
+                return functions.stream();
+            };
         } else if (produkt == Produkt.GRU || produkt == Produkt.YSK) {
-            return Stream.of(
-                    erFakturerbar(produkt),
-                    arbeidsgiverbeloep(produkt),
-                    medlemsbeloep(produkt),
-                    administrasjonsgebyrbeloep(produkt),
-                    produktinfo(produkt)
-            );
-        } else {
-            return Stream.of(
-                    empty(),
-                    empty(),
-                    empty(),
-                    empty(),
-                    empty()
-            );
+            memento = premiesats -> {
+                List<Function<Underlagsperiode, String>> functions = premiesatsCache.computeIfAbsent(premiesats,
+                        key -> asList(
+                                new Memento(erFakturerbar(produkt).apply(p)),
+                                new Memento(arbeidsgiverbeloep(produkt).apply(p)),
+                                new Memento(medlemsbeloep(produkt).apply(p)),
+                                new Memento(administrasjonsgebyrbeloep(produkt).apply(p)),
+                                new Memento(produktinfo(produkt).apply(p))
+                        )
+                );
+                return functions.stream();
+            };
+        }
+        return p.valgfriAnnotasjonFor(Avtale.class).map(a -> a.premiesatsFor(produkt)).filter(Optional::isPresent).map(Optional::get)
+                .map(memento)
+                .orElse(Stream.of(
+                                empty(),
+                                empty(),
+                                empty(),
+                                empty(),
+                                empty()
+                        )
+                );
+    }
+
+    private final ConcurrentMap<Premiesats, List<Function<Underlagsperiode, String>>> premiesatsCache = new ConcurrentHashMap<>(200_000);
+
+    private static class Memento implements Function<Underlagsperiode, String> {
+        private final String value;
+
+        public Memento(final String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String apply(final Underlagsperiode o) {
+            return value;
         }
     }
 
