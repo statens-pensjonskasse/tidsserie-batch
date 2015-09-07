@@ -51,6 +51,8 @@ public class GrunnlagsdataService implements TidsserieFactory {
 
     private final GrunnlagsdataRepository input;
 
+    private final Map<Class<?>, MedlemsdataOversetter<?>> medlemsdataOversetter = new HashMap<>();
+
     /**
      * Konstruerer ei ny teneste som hentar grunnlagsdata via <code>repository</code> og gjer dei tilgjengelig via
      * <code>backend</code>.
@@ -62,6 +64,10 @@ public class GrunnlagsdataService implements TidsserieFactory {
     public GrunnlagsdataService(final TidsserieBackendService backend, final GrunnlagsdataRepository repository) {
         this.backend = requireNonNull(backend, "backend er påkrevd, men var null");
         this.input = requireNonNull(repository, "inputfiler er påkrevd, men var null");
+
+        medlemsdataOversetter.put(Stillingsendring.class, new StillingsendringOversetter());
+        medlemsdataOversetter.put(Avtalekoblingsperiode.class, new AvtalekoblingOversetter());
+        medlemsdataOversetter.put(Medregningsperiode.class, new MedregningsOversetter());
     }
 
     @Override
@@ -126,11 +132,7 @@ public class GrunnlagsdataService implements TidsserieFactory {
     }
 
     Map<Class<?>, MedlemsdataOversetter<?>> medlemsdataOversettere() {
-        final Map<Class<?>, MedlemsdataOversetter<?>> oversettere = new HashMap<>();
-        oversettere.put(Stillingsendring.class, new StillingsendringOversetter());
-        oversettere.put(Avtalekoblingsperiode.class, new AvtalekoblingOversetter());
-        oversettere.put(Medregningsperiode.class, new MedregningsOversetter());
-        return oversettere;
+        return medlemsdataOversetter;
     }
 
     private List<Tidsperiode<?>> grupperLoennstrinnperioder() {
