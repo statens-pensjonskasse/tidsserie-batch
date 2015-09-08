@@ -52,6 +52,8 @@
                     <groupId>com.oracle</groupId>
                     <artifactId>jre</artifactId>
                     <version>1.8.0_51</version>
+                    <classifier>zip</classifier>
+                    <type>zip</type>
                     <scope>provided</scope>
                 </dependency>
             </dependencies>
