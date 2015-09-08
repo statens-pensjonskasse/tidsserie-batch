@@ -31,7 +31,7 @@
             <scope>provided</scope>
             <fileMode>0755</fileMode>
             <includes>
-                <include>com.oracle:jre:*:1.8.0_51</include>
+                <include>com.oracle:jre:zip:zip:1.8.0_51</include>
             </includes>
         </dependencySet>
     </dependencySets>

@@ -72,7 +72,7 @@
                                 </goals>
                                 <configuration>
                                     <headerType>console</headerType>
-                                    <outfile>target/${project.artifactId}-${project.version}.exe</outfile>
+                                    <outfile>target/${project.artifactId}.exe</outfile>
                                     <jar>target/${project.artifactId}-${project.version}.jar</jar>
                                     <errTitle>tidserie</errTitle>
                                     <classPath>
@@ -114,7 +114,7 @@
                         <dependencies>
                             <dependency>
                                 <groupId>no.spk.pensjon.faktura</groupId>
-                                <artifactId>pu_fak_ba_10</artifactId>
+                                <artifactId>pu-fak-ba-10</artifactId>
                                 <version>${project.version}</version>
                             </dependency>
                         </dependencies>
