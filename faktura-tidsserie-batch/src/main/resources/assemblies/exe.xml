@@ -11,7 +11,7 @@
             <fileMode>0755</fileMode>
             <source>src/main/exe/tidsserie.l4j.ini</source>
             <outputDirectory>.</outputDirectory>
-            <destName>${project.artifactId}-${project.version}.l4j.ini</destName>
+            <destName>${project.artifactId}.l4j.ini</destName>
         </file>
     </files>
     <fileSets>
@@ -20,7 +20,7 @@
             <directory>target</directory>
             <outputDirectory>.</outputDirectory>
             <includes>
-                <include>${project.artifactId}-${project.version}.exe</include>
+                <include>${project.artifactId}.exe</include>
             </includes>
         </fileSet>
     </fileSets>

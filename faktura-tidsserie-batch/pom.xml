@@ -8,7 +8,7 @@
     <packaging>jar</packaging>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>pu_fak_ba_10</artifactId>
+    <artifactId>pu-fak-ba-10</artifactId>
     <name>faktura-tidsserie-batch</name>
 
     <dependencies>
