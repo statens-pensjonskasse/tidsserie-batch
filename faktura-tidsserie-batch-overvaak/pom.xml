@@ -32,7 +32,7 @@
                 </configuration>
                 <dependencies>
                     <dependency>
-                        <groupId>no.spk.pensjon.faktura</groupId>
+                        <groupId>no.spk.batch</groupId>
                         <artifactId>pu-fak-ba-11</artifactId>
                         <version>${project.version}</version>
                     </dependency>
