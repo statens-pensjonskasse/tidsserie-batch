@@ -188,7 +188,7 @@ if [[ -z "$batch_exists" ]] ; then
 
     LOG_START_COMMENT=$(LogComment ${batch_exit_code})
 
-    sql="insert into tort901 (nvn_maskin, nvn_tjeneste, dat_start, dat_slutt, sta_kjoring, txt_fri) values ('$batch_hostname', '$SERVICENAME', '$batch_start', '$batch_end', '$STATUS', '$LOG_START_COMMENT')\ngo\nselect @@identity"
+    sql="insert into tort901 (nvn_maskin, nvn_tjeneste, dat_start, dat_slutt, sta_kjoring, txt_fri) values ('$batch_hostname', '$SERVICENAME', '$batch_start', '$batch_end', $STATUS, '$LOG_START_COMMENT')\ngo\nselect @@identity"
     RunInsertSql "${sql}"
 
     SERVICENAME=${OVERVAAKING_SERVICENAME}
