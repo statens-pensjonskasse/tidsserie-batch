@@ -60,7 +60,7 @@
         </dependency>
         <dependency>
             <groupId>no.spk.pensjon.faktura</groupId>
-            <artifactId>faktura-boostrap-lib</artifactId>
+            <artifactId>faktura-bootstrap-lib</artifactId>
         </dependency>
         <!-- test-->
         <dependency>

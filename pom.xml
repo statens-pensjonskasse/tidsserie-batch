@@ -23,7 +23,7 @@
     <properties>
         <project.build.sourceEncoding>CP1252</project.build.sourceEncoding>
         <faktura.prognose.tidsserie.version>1.1.2</faktura.prognose.tidsserie.version>
-        <faktura-bootstrap-lib>1.0.0-SNAPSHOT</faktura-bootstrap-lib>
+        <faktura-bootstrap-lib>1.0.0</faktura-bootstrap-lib>
     </properties>
 
     <build>
@@ -138,7 +138,7 @@
             </dependency>
             <dependency>
                 <groupId>no.spk.pensjon.faktura</groupId>
-                <artifactId>faktura-boostrap-lib</artifactId>
+                <artifactId>faktura-bootstrap-lib</artifactId>
                 <version>${faktura-bootstrap-lib}</version>
             </dependency>
             <!-- test-->
