@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchId;
+import no.spk.faktura.input.BatchId;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
 
 import freemarker.template.Configuration;

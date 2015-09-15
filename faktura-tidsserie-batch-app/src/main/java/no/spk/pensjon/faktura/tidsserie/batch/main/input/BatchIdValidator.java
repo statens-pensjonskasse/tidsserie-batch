@@ -1,6 +1,6 @@
 package no.spk.pensjon.faktura.tidsserie.batch.main.input;
 
-import static no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchIdMatcher.GRUNNLAGSDATA_PATTERN;
+import static no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchIdConstants.GRUNNLAGSDATA_PATTERN;
 
 import com.beust.jcommander.IParameterValidator;
 import com.beust.jcommander.ParameterException;

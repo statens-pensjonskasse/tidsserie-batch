@@ -1,12 +1,10 @@
 package no.spk.pensjon.faktura.tidsserie.batch.main;
 
-import static java.lang.Integer.parseInt;
 import static java.lang.Math.min;
 import static java.time.Duration.of;
 import static java.time.LocalTime.now;
-import static java.time.temporal.ChronoUnit.HOURS;
 import static java.time.temporal.ChronoUnit.MILLIS;
-import static java.time.temporal.ChronoUnit.MINUTES;
+import static no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchIdConstants.TIDSSERIE_PREFIX;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,16 +12,17 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
+import no.spk.faktura.input.BatchId;
+import no.spk.faktura.input.DurationUtil;
+import no.spk.faktura.input.InvalidParameterException;
+import no.spk.faktura.input.UsageRequestedException;
 import no.spk.pensjon.faktura.tidsserie.batch.FileTemplate;
 import no.spk.pensjon.faktura.tidsserie.batch.GrunnlagsdataService;
 import no.spk.pensjon.faktura.tidsserie.batch.TidsserieBackendService;
 import no.spk.pensjon.faktura.tidsserie.batch.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast.HazelcastBackend;
-import no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchId;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
-import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArgumentsFactory;
-import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArgumentsFactory.InvalidParameterException;
-import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArgumentsFactory.UsageRequestedException;
+import no.spk.pensjon.faktura.tidsserie.batch.main.input.TidsserieArgumentsFactory;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
 import no.spk.pensjon.faktura.tidsserie.storage.GrunnlagsdataRepository;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.CSVInput;
@@ -46,10 +45,10 @@ public class Main {
         final ApplicationController controller = new ApplicationController(new ConsoleView());
 
         try {
-            ProgramArguments arguments = ProgramArgumentsFactory.create(args);
+            ProgramArguments arguments = new TidsserieArgumentsFactory().create(args);
             startBatchTimeout(arguments, controller);
 
-            final BatchId batchId = new BatchId(LocalDateTime.now());
+            final BatchId batchId = new BatchId(TIDSSERIE_PREFIX, LocalDateTime.now());
             Path batchLogKatalog = batchId.tilArbeidskatalog(arguments.getLogkatalog());
             Path dataKatalog = arguments.getUtkatalog().resolve("tidsserie");
 
@@ -125,10 +124,7 @@ public class Main {
     }
 
     private static long getTimeout(ProgramArguments arguments) {
-        String kjoeretid = arguments.getKjoeretid();
-        int hours = parseInt(kjoeretid.substring(0, 2));
-        int minutes = parseInt(kjoeretid.substring(2, 4));
-        Duration maxDuration = of(hours, HOURS).plus(of(minutes, MINUTES));
+        Duration maxDuration = DurationUtil.convert(arguments.getKjoeretid()).get();
         long milliesToEnd = MILLIS.between(now(), arguments.getSluttidspunkt());
         return min(maxDuration.toMillis(), milliesToEnd);
     }
