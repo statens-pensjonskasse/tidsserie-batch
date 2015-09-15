@@ -1,7 +1,8 @@
 package no.spk.pensjon.faktura.tidsserie.batch.main;
 
 import static java.util.Objects.requireNonNull;
-import static no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchIdMatcher.TIDSSERIE_PATTERN;
+import static no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchIdConstants.TIDSSERIE_PATTERN;
+import static no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchIdConstants.TIDSSERIE_PREFIX;
 
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
@@ -15,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 
-import no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchId;
+import no.spk.faktura.input.BatchId;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -104,8 +105,8 @@ public class DeleteBatchDirectoryFinder {
         private boolean isDirectoryDeletable(Path dir, LocalDateTime cutoff) {
             Matcher matcher = TIDSSERIE_PATTERN.matcher(dir.toFile().getName());
             if (matcher.matches()) {
-                String batchIdString = matcher.group(1);
-                BatchId batchId = BatchId.fromString(batchIdString);
+                String batchIdString = matcher.group(0);
+                BatchId batchId = BatchId.fromString(TIDSSERIE_PREFIX, batchIdString);
                 LocalDateTime batchTimestamp = batchId.asLocalDateTime();
                 return batchTimestamp.isBefore(cutoff);
 

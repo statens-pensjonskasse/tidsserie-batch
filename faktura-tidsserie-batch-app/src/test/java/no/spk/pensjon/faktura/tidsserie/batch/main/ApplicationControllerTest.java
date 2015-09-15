@@ -9,12 +9,12 @@ import static org.mockito.Mockito.verify;
 
 import java.nio.file.Paths;
 
+import no.spk.faktura.input.InvalidParameterException;
+import no.spk.faktura.input.UsageRequestedException;
 import no.spk.pensjon.faktura.tidsserie.batch.FileTemplate;
 import no.spk.pensjon.faktura.tidsserie.batch.GrunnlagsdataService;
 import no.spk.pensjon.faktura.tidsserie.batch.TidsserieBackendService;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
-import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArgumentsFactory.InvalidParameterException;
-import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArgumentsFactory.UsageRequestedException;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.StandardOutputAndError;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
 

@@ -3,10 +3,10 @@ package no.spk.pensjon.faktura.tidsserie.batch.main;
 import java.nio.file.Path;
 import java.util.Map;
 
+import no.spk.faktura.input.InvalidParameterException;
+import no.spk.faktura.input.UsageRequestedException;
 import no.spk.pensjon.faktura.tidsserie.batch.FileTemplate;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
-import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArgumentsFactory;
-import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArgumentsFactory.UsageRequestedException;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
 
 /**
@@ -36,7 +36,7 @@ public interface View {
      *
      * @param e valideringsfeilen som inneheld informasjon om kva som er feil med argumentet
      */
-    void informerOmUgyldigKommandolinjeArgument(ProgramArgumentsFactory.InvalidParameterException e);
+    void informerOmUgyldigKommandolinjeArgument(InvalidParameterException e);
 
     void informerOmOppstart(ProgramArguments arguments) ;
 

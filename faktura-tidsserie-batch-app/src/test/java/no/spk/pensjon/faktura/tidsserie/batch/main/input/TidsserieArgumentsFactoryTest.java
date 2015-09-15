@@ -8,7 +8,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArgumentsFactory.InvalidParameterException;
+import no.spk.faktura.input.InvalidParameterException;
+import no.spk.faktura.input.UsageRequestedException;
 import no.spk.pensjon.faktura.tidsserie.util.TemporaryFolderWithDeleteVerification;
 
 import org.junit.Rule;
@@ -20,7 +21,7 @@ import org.junit.rules.TestName;
 /**
  * @author Snorre E. Brekke - Computas
  */
-public class ProgramArgumentsFactoryTest {
+public class TidsserieArgumentsFactoryTest {
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
@@ -31,12 +32,14 @@ public class ProgramArgumentsFactoryTest {
     @Rule
     public final TestName name = new TestName();
 
+    private final TidsserieArgumentsFactory factory = new TidsserieArgumentsFactory();
+
     @Test
     public void skalGodtaTidsserieModusParameter() throws IOException {
         final String path = createTestFolders();
 
         Modus.stream().forEach(modus -> {
-            final ProgramArguments args = ProgramArgumentsFactory.create(
+            final ProgramArguments args = new TidsserieArgumentsFactory().create(
                     "-m", modus.kode(),
                     "-i", path,
                     "-o", path,
@@ -53,7 +56,7 @@ public class ProgramArgumentsFactoryTest {
         exception.expectMessage("Modus");
 
         final String path = createTestFolders();
-        ProgramArgumentsFactory.create(
+        factory.create(
                 "-m", "lol",
                 "-i", path,
                 "-o", path,
@@ -66,7 +69,7 @@ public class ProgramArgumentsFactoryTest {
         exception.expect(InvalidParameterException.class);
         exception.expectMessage("The following options are required: -log -o -i -b");
 
-        ProgramArgumentsFactory.create();
+        new TidsserieArgumentsFactory().create();
     }
 
     @Test
@@ -77,7 +80,7 @@ public class ProgramArgumentsFactoryTest {
         exception.expectMessage("'-fraAar' kan ikke være større enn '-tilAar'");
         exception.expectMessage("2009 > 2008");
 
-        ProgramArgumentsFactory.create("-b", "test", "-o", path, "-i", path, "-log", path, "-fraAar", "2009", "-tilAar", "2008");
+        new TidsserieArgumentsFactory().create("-b", "test", "-o", path, "-i", path, "-log", path, "-fraAar", "2009", "-tilAar", "2008");
     }
 
     @Test
@@ -96,7 +99,7 @@ public class ProgramArgumentsFactoryTest {
         exception.expect(InvalidParameterException.class);
         exception.expectMessage("kjoeretid");
 
-        ProgramArgumentsFactory.create("-b", "test", "-o", path, "-i", path, "-kjoeretid", kjoeretid);
+        new TidsserieArgumentsFactory().create("-b", "test", "-o", path, "-i", path, "-kjoeretid", kjoeretid);
     }
 
     @Test
@@ -110,14 +113,14 @@ public class ProgramArgumentsFactoryTest {
         exception.expect(InvalidParameterException.class);
         exception.expectMessage("sluttid");
 
-        ProgramArgumentsFactory.create("-b", "test", "-o", path, "-i", path, "-sluttid", sluttid);
+        new TidsserieArgumentsFactory().create("-b", "test", "-o", path, "-i", path, "-sluttid", sluttid);
     }
 
     @Test
     public void testArgsMedBeskrivelseOgHjelpThrowsUsageRequestedException() throws Exception {
-        exception.expect(ProgramArgumentsFactory.UsageRequestedException.class);
+        exception.expect(UsageRequestedException.class);
 
-        ProgramArgumentsFactory.create("-help");
+        new TidsserieArgumentsFactory().create("-help");
     }
 
     private String createTestFolders() throws IOException {
@@ -134,10 +137,10 @@ public class ProgramArgumentsFactoryTest {
         exception.expect(InvalidParameterException.class);
         exception.expectMessage("Det finnes ingen batch-kataloger i ");
 
-        ProgramArgumentsFactory.create("-b", "Test batch id missing",
-                                        "-i", file.getAbsolutePath(),
-                                        "-o", file.getAbsolutePath(),
-                                        "-log", file.getAbsolutePath());
+        new TidsserieArgumentsFactory().create("-b", "Test batch id missing",
+                "-i", file.getAbsolutePath(),
+                "-o", file.getAbsolutePath(),
+                "-log", file.getAbsolutePath());
     }
 
     @Test
@@ -148,7 +151,7 @@ public class ProgramArgumentsFactoryTest {
         path.resolve("grunnlagsdata_2015-01-01_01-00-00-00").toFile().mkdir();
         path.resolve(expectedBatchFolder).toFile().mkdir();
 
-        ProgramArguments programArguments = ProgramArgumentsFactory.create(
+        ProgramArguments programArguments = new TidsserieArgumentsFactory().create(
                 "-b", "Test set default batch id",
                 "-i", path.toAbsolutePath().toString(),
                 "-log", path.toAbsolutePath().toString(),

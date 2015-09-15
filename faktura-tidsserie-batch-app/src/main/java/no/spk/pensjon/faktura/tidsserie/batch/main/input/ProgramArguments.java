@@ -4,6 +4,12 @@ import java.nio.file.Path;
 import java.time.LocalTime;
 import java.util.Optional;
 
+import no.spk.faktura.input.Arguments;
+import no.spk.faktura.input.DurationValidator;
+import no.spk.faktura.input.IntegerValidator;
+import no.spk.faktura.input.LocalTimeConverter;
+import no.spk.faktura.input.LocalTimeValidator;
+import no.spk.faktura.input.PathStringValidator;
 import no.spk.pensjon.faktura.tidsserie.batch.Tidsseriemodus;
 
 import com.beust.jcommander.Parameter;
@@ -11,7 +17,7 @@ import com.beust.jcommander.Parameter;
 /**
  * @author Snorre E. Brekke - Computas
  */
-public class ProgramArguments {
+public class ProgramArguments implements Arguments {
     @Parameter(names = {"-hjelp", "?", "-h", "-help" }, help = true,
             description = "Printer denne oversikten.")
     boolean hjelp;
@@ -155,5 +161,10 @@ public class ProgramArguments {
 
     public int getSlettLogEldreEnn() {
         return slettLogEldreEnn;
+    }
+
+    @Override
+    public boolean hjelp() {
+        return hjelp;
     }
 }

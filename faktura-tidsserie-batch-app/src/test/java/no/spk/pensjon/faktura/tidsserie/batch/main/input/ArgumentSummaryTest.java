@@ -2,6 +2,8 @@ package no.spk.pensjon.faktura.tidsserie.batch.main.input;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import no.spk.faktura.input.ArgumentSummary;
+
 import org.junit.Test;
 
 /**
