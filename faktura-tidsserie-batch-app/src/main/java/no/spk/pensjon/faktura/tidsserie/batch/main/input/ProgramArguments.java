@@ -10,6 +10,7 @@ import no.spk.faktura.input.IntegerValidator;
 import no.spk.faktura.input.LocalTimeConverter;
 import no.spk.faktura.input.LocalTimeValidator;
 import no.spk.faktura.input.PathStringValidator;
+import no.spk.faktura.input.WritablePathValidator;
 import no.spk.pensjon.faktura.tidsserie.batch.Tidsseriemodus;
 
 import com.beust.jcommander.Parameter;
