@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import no.spk.faktura.input.PostParseValidator;
+import no.spk.faktura.input.WritablePathValidator;
 
 import com.beust.jcommander.ParameterException;
 
