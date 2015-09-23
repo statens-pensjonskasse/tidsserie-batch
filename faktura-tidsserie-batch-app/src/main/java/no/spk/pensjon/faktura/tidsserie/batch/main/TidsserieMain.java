@@ -2,6 +2,7 @@ package no.spk.pensjon.faktura.tidsserie.batch.main;
 
 import static java.lang.Math.min;
 import static java.time.Duration.of;
+import static java.time.Duration.ofMinutes;
 import static java.time.LocalTime.now;
 import static java.time.temporal.ChronoUnit.MILLIS;
 import static no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchIdConstants.TIDSSERIE_PREFIX;
@@ -16,6 +17,8 @@ import no.spk.faktura.input.BatchId;
 import no.spk.faktura.input.DurationUtil;
 import no.spk.faktura.input.InvalidParameterException;
 import no.spk.faktura.input.UsageRequestedException;
+import no.spk.faktura.timeout.BatchTimeout;
+import no.spk.faktura.timeout.BatchTimeoutTaskrunner;
 import no.spk.pensjon.faktura.tidsserie.batch.FileTemplate;
 import no.spk.pensjon.faktura.tidsserie.batch.GrunnlagsdataService;
 import no.spk.pensjon.faktura.tidsserie.batch.TidsserieBackendService;
@@ -40,7 +43,7 @@ import freemarker.template.Configuration;
  * @author Snorre E. Brekke - Computas
  * @author Tarjei Skorgenes
  */
-public class Main {
+public class TidsserieMain {
     public static void main(String[] args) {
         final ApplicationController controller = new ApplicationController(new ConsoleView());
 
@@ -114,18 +117,18 @@ public class Main {
     }
 
     private static void startBatchTimeout(ProgramArguments arguments, ApplicationController controller) {
-        long timeout = getTimeout(arguments);
-        TimeoutTaskrunner.startTimeout(
-                of(timeout, MILLIS),
-                () -> {
-                    controller.logTimeout();
-                    shutdown(controller);
-                });
+        new BatchTimeoutTaskrunner(
+                getTimeout(arguments)).startTerminationTimeout
+                (
+                        ofMinutes(1),
+                        () -> {
+                            controller.logTimeout();
+                            shutdown(controller);
+                        }
+                );
     }
 
-    private static long getTimeout(ProgramArguments arguments) {
-        Duration maxDuration = DurationUtil.convert(arguments.getKjoeretid()).get();
-        long milliesToEnd = MILLIS.between(now(), arguments.getSluttidspunkt());
-        return min(maxDuration.toMillis(), milliesToEnd);
+    private static BatchTimeout getTimeout(ProgramArguments arguments) {
+        return new BatchTimeout(arguments.getKjoeretid(), arguments.getSluttidspunkt());
     }
 }
