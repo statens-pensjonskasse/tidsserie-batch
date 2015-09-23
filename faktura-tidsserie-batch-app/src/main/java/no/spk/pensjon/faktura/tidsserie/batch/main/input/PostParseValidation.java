@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import no.spk.faktura.input.PostParseValidator;
-import no.spk.faktura.input.WritablePathValidator;
+import no.spk.faktura.input.WritableDirectoryValidator;
 
 import com.beust.jcommander.ParameterException;
 
@@ -31,7 +31,7 @@ class PostParseValidation implements PostParseValidator<ProgramArguments>{
                     programArguments.fraAar + " > " + programArguments.tilAar + ")");
         }
 
-        new WritablePathValidator().validate("Batch utkatalog", programArguments.getGrunnlagsdataBatchKatalog());
+        new WritableDirectoryValidator().validate("Batch utkatalog", programArguments.getGrunnlagsdataBatchKatalog());
     }
 
     private void setDefaultBatchId(ProgramArguments arguments) {

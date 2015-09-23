@@ -1,16 +1,18 @@
 package no.spk.pensjon.faktura.tidsserie.batch.main.input;
 
 import java.nio.file.Path;
+import java.time.Duration;
 import java.time.LocalTime;
 import java.util.Optional;
 
 import no.spk.faktura.input.Arguments;
+import no.spk.faktura.input.DurationUtil;
 import no.spk.faktura.input.DurationValidator;
 import no.spk.faktura.input.IntegerValidator;
 import no.spk.faktura.input.LocalTimeConverter;
 import no.spk.faktura.input.LocalTimeValidator;
 import no.spk.faktura.input.PathStringValidator;
-import no.spk.faktura.input.WritablePathValidator;
+import no.spk.faktura.input.WritableDirectoryValidator;
 import no.spk.pensjon.faktura.tidsserie.batch.Tidsseriemodus;
 
 import com.beust.jcommander.Parameter;
@@ -44,7 +46,7 @@ public class ProgramArguments implements Arguments {
     @Parameter(names = { "-o" },
             description="Katalogen hvor tidsserie.csv og ok.trg fil blir lagret",
             validateWith = PathStringValidator.class,
-            validateValueWith = WritablePathValidator.class,
+            validateValueWith = WritableDirectoryValidator.class,
             required = true
     )
     Path utkatalog;
@@ -52,7 +54,7 @@ public class ProgramArguments implements Arguments {
     @Parameter(names = { "-log" },
             description="Batchen vil lage en ny katalog i -log katalogen hvor batch.log og metadata for kjøringen vil bli lagret.",
             validateWith = PathStringValidator.class,
-            validateValueWith = WritablePathValidator.class,
+            validateValueWith = WritableDirectoryValidator.class,
             required = true
     )
     Path logkatalog;
@@ -152,8 +154,8 @@ public class ProgramArguments implements Arguments {
         return modus.modus();
     }
 
-    public String getKjoeretid() {
-        return kjoeretid;
+    public Duration getKjoeretid() {
+        return DurationUtil.convert(kjoeretid).get();
     }
 
     public LocalTime getSluttidspunkt() {

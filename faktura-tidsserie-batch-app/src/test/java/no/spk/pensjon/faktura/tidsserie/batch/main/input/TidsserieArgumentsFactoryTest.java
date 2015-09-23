@@ -67,7 +67,7 @@ public class TidsserieArgumentsFactoryTest {
     @Test
     public void testBeskrivelseInputOutputRequired() throws Exception {
         exception.expect(InvalidParameterException.class);
-        exception.expectMessage("The following options are required: -log -o -i -b");
+        exception.expectMessage("-log -o -i -b");
 
         new TidsserieArgumentsFactory().create();
     }
