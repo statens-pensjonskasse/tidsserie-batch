@@ -4,7 +4,6 @@ import static java.lang.Math.min;
 import static java.time.Duration.of;
 import static java.time.Duration.ofMinutes;
 import static java.time.LocalTime.now;
-import static java.time.temporal.ChronoUnit.MILLIS;
 import static no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchIdConstants.TIDSSERIE_PREFIX;
 
 import java.nio.file.Files;
@@ -14,7 +13,6 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 import no.spk.faktura.input.BatchId;
-import no.spk.faktura.input.DurationUtil;
 import no.spk.faktura.input.InvalidParameterException;
 import no.spk.faktura.input.UsageRequestedException;
 import no.spk.faktura.timeout.BatchTimeout;
@@ -118,9 +116,9 @@ public class TidsserieMain {
 
     private static void startBatchTimeout(ProgramArguments arguments, ApplicationController controller) {
         new BatchTimeoutTaskrunner(
-                getTimeout(arguments)).startTerminationTimeout
+                startBatchTimeout(arguments)).startTerminationTimeout
                 (
-                        ofMinutes(1),
+                        ofMinutes(0),
                         () -> {
                             controller.logTimeout();
                             shutdown(controller);
@@ -128,7 +126,7 @@ public class TidsserieMain {
                 );
     }
 
-    private static BatchTimeout getTimeout(ProgramArguments arguments) {
-        return new BatchTimeout(arguments.getKjoeretid(), arguments.getSluttidspunkt());
+    private static BatchTimeout startBatchTimeout(ProgramArguments arguments) {
+        return new BatchTimeout(arguments.getKjoeretid(), arguments.getSluttidspunkt()).start();
     }
 }

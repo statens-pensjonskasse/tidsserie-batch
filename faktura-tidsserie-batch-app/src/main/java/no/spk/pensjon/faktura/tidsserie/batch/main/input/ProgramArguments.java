@@ -90,7 +90,7 @@ public class ProgramArguments implements Arguments {
     String kjoeretid = "0400";
 
     @Parameter(names = { "-sluttid" },
-            description = "Klokkeslett på formen HH:mm eller HH:mm:ss for når kjøringen senest avsluttes.",
+            description = "Klokkeslett på formen HHmm eller HHmmss for når kjøringen senest avsluttes.",
             validateWith = LocalTimeValidator.class,
             converter = LocalTimeConverter.class)
     LocalTime sluttidspunkt = LocalTime.parse("23:59");
