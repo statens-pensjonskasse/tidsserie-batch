@@ -15,6 +15,7 @@ import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
 
 import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.util.ContextInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -50,6 +51,7 @@ public class ApplicationController {
 
     public void initialiserLogging(final BatchId id, final Path utKatalog) {
         System.setProperty("batchKatalog", utKatalog.toString());
+        System.setProperty(ContextInitializer.CONFIG_FILE_PROPERTY, "logback/logback.xml");
         MDC.put("batchId", id.toString());
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdownLogger, "Batch shutdown"));
     }

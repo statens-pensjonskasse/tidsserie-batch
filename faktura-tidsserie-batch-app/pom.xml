@@ -11,7 +11,7 @@
 
     <artifactId>faktura-tidsserie-batch-app</artifactId>
 
-        <dependencies>
+    <dependencies>
         <dependency>
             <groupId>no.spk.pensjon.faktura</groupId>
             <artifactId>faktura-tidsserie-batch-input</artifactId>
@@ -48,7 +48,6 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.1.2</version>
         </dependency>
         <dependency>
             <groupId>net.logstash.logback</groupId>
