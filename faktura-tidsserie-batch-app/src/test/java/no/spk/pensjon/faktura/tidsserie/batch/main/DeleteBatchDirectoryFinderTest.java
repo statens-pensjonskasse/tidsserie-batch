@@ -43,6 +43,6 @@ public class DeleteBatchDirectoryFinderTest {
         DeleteBatchDirectoryFinder finder = new DeleteBatchDirectoryFinder(dataDir, logDir);
         Path[] deletable = finder.findDeletableBatchDirectories(1);
 
-        assertThat(deletable).containsExactly(dataDir, deleteOld1, deleteOld2);
+        assertThat(deletable).containsOnly(dataDir, deleteOld1, deleteOld2);
     }
 }

@@ -1,9 +1,18 @@
 package no.spk.pensjon.faktura.tidsserie.batch.main.input;
 
 import java.nio.file.Path;
+import java.time.Duration;
 import java.time.LocalTime;
 import java.util.Optional;
 
+import no.spk.faktura.input.Arguments;
+import no.spk.faktura.input.DurationUtil;
+import no.spk.faktura.input.DurationValidator;
+import no.spk.faktura.input.IntegerValidator;
+import no.spk.faktura.input.LocalTimeConverter;
+import no.spk.faktura.input.LocalTimeValidator;
+import no.spk.faktura.input.PathStringValidator;
+import no.spk.faktura.input.WritableDirectoryValidator;
 import no.spk.pensjon.faktura.tidsserie.batch.Tidsseriemodus;
 
 import com.beust.jcommander.Parameter;
@@ -11,7 +20,7 @@ import com.beust.jcommander.Parameter;
 /**
  * @author Snorre E. Brekke - Computas
  */
-public class ProgramArguments {
+public class ProgramArguments implements Arguments {
     @Parameter(names = {"-hjelp", "?", "-h", "-help" }, help = true,
             description = "Printer denne oversikten.")
     boolean hjelp;
@@ -37,7 +46,7 @@ public class ProgramArguments {
     @Parameter(names = { "-o" },
             description="Katalogen hvor tidsserie.csv og ok.trg fil blir lagret",
             validateWith = PathStringValidator.class,
-            validateValueWith = WritablePathValidator.class,
+            validateValueWith = WritableDirectoryValidator.class,
             required = true
     )
     Path utkatalog;
@@ -45,7 +54,7 @@ public class ProgramArguments {
     @Parameter(names = { "-log" },
             description="Batchen vil lage en ny katalog i -log katalogen hvor batch.log og metadata for kjøringen vil bli lagret.",
             validateWith = PathStringValidator.class,
-            validateValueWith = WritablePathValidator.class,
+            validateValueWith = WritableDirectoryValidator.class,
             required = true
     )
     Path logkatalog;
@@ -81,7 +90,7 @@ public class ProgramArguments {
     String kjoeretid = "0400";
 
     @Parameter(names = { "-sluttid" },
-            description = "Klokkeslett på formen HH:mm eller HH:mm:ss for når kjøringen senest avsluttes.",
+            description = "Klokkeslett på formen HHmm eller HHmmss for når kjøringen senest avsluttes.",
             validateWith = LocalTimeValidator.class,
             converter = LocalTimeConverter.class)
     LocalTime sluttidspunkt = LocalTime.parse("23:59");
@@ -145,8 +154,8 @@ public class ProgramArguments {
         return modus.modus();
     }
 
-    public String getKjoeretid() {
-        return kjoeretid;
+    public Duration getKjoeretid() {
+        return DurationUtil.convert(kjoeretid).get();
     }
 
     public LocalTime getSluttidspunkt() {
@@ -155,5 +164,10 @@ public class ProgramArguments {
 
     public int getSlettLogEldreEnn() {
         return slettLogEldreEnn;
+    }
+
+    @Override
+    public boolean hjelp() {
+        return hjelp;
     }
 }

@@ -1,12 +1,10 @@
 package no.spk.pensjon.faktura.tidsserie.batch.main;
 
-import static java.lang.Integer.parseInt;
 import static java.lang.Math.min;
 import static java.time.Duration.of;
+import static java.time.Duration.ofMinutes;
 import static java.time.LocalTime.now;
-import static java.time.temporal.ChronoUnit.HOURS;
-import static java.time.temporal.ChronoUnit.MILLIS;
-import static java.time.temporal.ChronoUnit.MINUTES;
+import static no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchIdConstants.TIDSSERIE_PREFIX;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,16 +12,18 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
+import no.spk.faktura.input.BatchId;
+import no.spk.faktura.input.InvalidParameterException;
+import no.spk.faktura.input.UsageRequestedException;
+import no.spk.faktura.timeout.BatchTimeout;
+import no.spk.faktura.timeout.BatchTimeoutTaskrunner;
 import no.spk.pensjon.faktura.tidsserie.batch.FileTemplate;
 import no.spk.pensjon.faktura.tidsserie.batch.GrunnlagsdataService;
 import no.spk.pensjon.faktura.tidsserie.batch.TidsserieBackendService;
 import no.spk.pensjon.faktura.tidsserie.batch.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast.HazelcastBackend;
-import no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchId;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
-import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArgumentsFactory;
-import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArgumentsFactory.InvalidParameterException;
-import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArgumentsFactory.UsageRequestedException;
+import no.spk.pensjon.faktura.tidsserie.batch.main.input.TidsserieArgumentsFactory;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
 import no.spk.pensjon.faktura.tidsserie.storage.GrunnlagsdataRepository;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.CSVInput;
@@ -41,15 +41,15 @@ import freemarker.template.Configuration;
  * @author Snorre E. Brekke - Computas
  * @author Tarjei Skorgenes
  */
-public class Main {
+public class TidsserieMain {
     public static void main(String[] args) {
         final ApplicationController controller = new ApplicationController(new ConsoleView());
 
         try {
-            ProgramArguments arguments = ProgramArgumentsFactory.create(args);
+            ProgramArguments arguments = new TidsserieArgumentsFactory().create(args);
             startBatchTimeout(arguments, controller);
 
-            final BatchId batchId = new BatchId(LocalDateTime.now());
+            final BatchId batchId = new BatchId(TIDSSERIE_PREFIX, LocalDateTime.now());
             Path batchLogKatalog = batchId.tilArbeidskatalog(arguments.getLogkatalog());
             Path dataKatalog = arguments.getUtkatalog().resolve("tidsserie");
 
@@ -115,21 +115,18 @@ public class Main {
     }
 
     private static void startBatchTimeout(ProgramArguments arguments, ApplicationController controller) {
-        long timeout = getTimeout(arguments);
-        TimeoutTaskrunner.startTimeout(
-                of(timeout, MILLIS),
-                () -> {
-                    controller.logTimeout();
-                    shutdown(controller);
-                });
+        new BatchTimeoutTaskrunner(
+                startBatchTimeout(arguments)).startTerminationTimeout
+                (
+                        ofMinutes(0),
+                        () -> {
+                            controller.logTimeout();
+                            shutdown(controller);
+                        }
+                );
     }
 
-    private static long getTimeout(ProgramArguments arguments) {
-        String kjoeretid = arguments.getKjoeretid();
-        int hours = parseInt(kjoeretid.substring(0, 2));
-        int minutes = parseInt(kjoeretid.substring(2, 4));
-        Duration maxDuration = of(hours, HOURS).plus(of(minutes, MINUTES));
-        long milliesToEnd = MILLIS.between(now(), arguments.getSluttidspunkt());
-        return min(maxDuration.toMillis(), milliesToEnd);
+    private static BatchTimeout startBatchTimeout(ProgramArguments arguments) {
+        return new BatchTimeout(arguments.getKjoeretid(), arguments.getSluttidspunkt()).start();
     }
 }

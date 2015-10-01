@@ -2,6 +2,7 @@ package no.spk.pensjon.faktura.tidsserie.batch.main;
 
 
 import static java.util.Arrays.stream;
+import static no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchIdConstants.TIDSSERIE_PREFIX;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
@@ -18,11 +19,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
-import no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchId;
+import no.spk.faktura.input.BatchId;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
-import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArgumentsFactory;
+import no.spk.pensjon.faktura.tidsserie.batch.main.input.TidsserieArgumentsFactory;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -43,7 +43,7 @@ public class MetaDataWriterTest {
         File writeFolder = createTestFolders();
 
         MetaDataWriter metaDataWriter = getMetaDataWriter(writeFolder);
-        BatchId batchId = new BatchId(LocalDateTime.now());
+        BatchId batchId = new BatchId(TIDSSERIE_PREFIX, LocalDateTime.now());
 
         ProgramArguments programArguments = getProgramArguments(writeFolder);
         Optional<File> metadataFile = metaDataWriter.createMetadataFile(programArguments, batchId, Duration.of(10, ChronoUnit.MILLIS));
@@ -111,7 +111,7 @@ public class MetaDataWriterTest {
 
     private ProgramArguments getProgramArguments(File writeFolder) {
         String file = writeFolder.getAbsolutePath();
-        return ProgramArgumentsFactory.create("-b", "lager metadata", "-i", file, "-o", file, "-log", file);
+        return new TidsserieArgumentsFactory().create("-b", "lager metadata", "-i", file, "-o", file, "-log", file);
     }
 
     private MetaDataWriter getMetaDataWriter(File writeFolder) {

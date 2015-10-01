@@ -6,11 +6,11 @@ import java.nio.file.Path;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
+import no.spk.faktura.input.ArgumentSummary;
+import no.spk.faktura.input.InvalidParameterException;
+import no.spk.faktura.input.UsageRequestedException;
 import no.spk.pensjon.faktura.tidsserie.batch.FileTemplate;
-import no.spk.pensjon.faktura.tidsserie.batch.main.input.ArgumentSummary;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
-import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArgumentsFactory;
-import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArgumentsFactory.UsageRequestedException;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
 
 /**
@@ -51,7 +51,7 @@ public class ConsoleView implements View{
      *
      * @param e valideringsfeilen som inneheld informasjon om kva som er feil med argumentet
      */
-    public void informerOmUgyldigKommandolinjeArgument(ProgramArgumentsFactory.InvalidParameterException e){
+    public void informerOmUgyldigKommandolinjeArgument(InvalidParameterException e){
         println(e.getMessage());
         println(e.usage());
     }

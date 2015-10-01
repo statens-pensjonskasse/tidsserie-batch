@@ -17,10 +17,6 @@
             <minIndex>1</minIndex>
             <maxIndex>1</maxIndex>
         </rollingPolicy>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${batchKatalog}/file.log.%d{yyyy-MM-dd}</fileNamePattern>
-            <maxHistory>30</maxHistory>
-        </rollingPolicy>
         <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
             <maxFileSize>10MB</maxFileSize>
         </triggeringPolicy>

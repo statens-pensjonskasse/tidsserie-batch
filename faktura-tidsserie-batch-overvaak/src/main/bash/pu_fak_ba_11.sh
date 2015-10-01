@@ -94,14 +94,17 @@ LogComment(){
     local batch_exit_code=$1
     local logComment
 
-    if [[ ${batch_exit_code} -eq 0 ]] ; then
+    if [[ -z ${batch_exit_code}  ]] ; then
+        STATUS=2
+        logComment="En uventet feil oppstod. Informer Team Kornmo."
+    elif [[ ${batch_exit_code} -eq 0 ]] ; then
         STATUS=0
         logComment="Tidsserie generert OK."
     elif [[ ${batch_exit_code} -eq 1 ]] ; then
-        STATUS=0
+        STATUS=2
         logComment="Tidsserie-generering feilet. Informer Team Kornmo."
     else
-        STATUS=0
+        STATUS=2
         logComment="En uventet feil oppstod. Informer Team Kornmo."
     fi
 
@@ -185,7 +188,7 @@ if [[ -z "$batch_exists" ]] ; then
 
     LOG_START_COMMENT=$(LogComment ${batch_exit_code})
 
-    sql="insert into tort901 (nvn_maskin, nvn_tjeneste, dat_start, dat_slutt, sta_kjoring, txt_fri) values ('$batch_hostname', '$SERVICENAME', '$batch_start', '$batch_end', 0, '$LOG_START_COMMENT')\ngo\nselect @@identity"
+    sql="insert into tort901 (nvn_maskin, nvn_tjeneste, dat_start, dat_slutt, sta_kjoring, txt_fri) values ('$batch_hostname', '$SERVICENAME', '$batch_start', '$batch_end', $STATUS, '$LOG_START_COMMENT')\ngo\nselect @@identity"
     RunInsertSql "${sql}"
 
     SERVICENAME=${OVERVAAKING_SERVICENAME}
