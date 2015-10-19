@@ -12,6 +12,7 @@ import no.spk.faktura.input.IntegerValidator;
 import no.spk.faktura.input.LocalTimeConverter;
 import no.spk.faktura.input.LocalTimeValidator;
 import no.spk.faktura.input.PathStringValidator;
+import no.spk.faktura.input.ReadablePathValidator;
 import no.spk.faktura.input.WritableDirectoryValidator;
 import no.spk.pensjon.faktura.tidsserie.batch.Tidsseriemodus;
 
