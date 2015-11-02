@@ -67,7 +67,7 @@ public class TidsserieMain {
 
             final Tidsseriemodus parameter = arguments.modus();
             final TidsserieBackendService backend = new HazelcastBackend(arguments.getNodes(), parameter);
-            final GrunnlagsdataRepository input = new CSVInput(arguments.getInnkatalog().resolve(arguments.getGrunnlagsdataBatchId()));
+            final GrunnlagsdataRepository input = parameter.repository(arguments.getInnkatalog().resolve(arguments.getGrunnlagsdataBatchId()));
             final GrunnlagsdataService overfoering = new GrunnlagsdataService(backend, input);
             final Configuration freemarkerConfiguration = TemplateConfigurationFactory.create();
 

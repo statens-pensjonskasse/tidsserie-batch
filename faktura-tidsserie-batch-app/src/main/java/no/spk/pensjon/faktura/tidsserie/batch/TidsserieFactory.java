@@ -1,10 +1,8 @@
 package no.spk.pensjon.faktura.tidsserie.batch;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medlemsdata;
-import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Tidsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Feilhandtering;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade;
 
@@ -22,16 +20,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade;
  *
  * @author Tarjei Skorgenes
  */
-public interface TidsserieFactory {
-    /**
-     * Hentar ut alle tidsperiodiserte lønnsdata som ikkje er medlemsspesifikke.
-     *
-     * @return alle lønnsdata
-     * @see no.spk.pensjon.faktura.tidsserie.domain.loennsdata.Omregningsperiode
-     * @see no.spk.pensjon.faktura.tidsserie.domain.loennsdata.Loennstrinnperioder
-     */
-    Stream<Tidsperiode<?>> loennsdata();
-
+public interface TidsserieFactory extends TidsperiodeFactory {
     /**
      * Opprettar ei ny tidsserie-fasade og pre-populerer den med avtaledata.
      * <br>

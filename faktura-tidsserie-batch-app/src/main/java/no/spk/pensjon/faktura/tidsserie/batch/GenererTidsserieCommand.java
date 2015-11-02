@@ -75,10 +75,7 @@ public class GenererTidsserieCommand {
                 grunnlagsdata.create(medlemsdata),
                 periode,
                 parameter.create(tidsserie, serienummer, lagring),
-                concat(
-                        parameter.regelsett().reglar(),
-                        grunnlagsdata.loennsdata()
-                )
+                parameter.referansedata(grunnlagsdata)
         );
     }
 }

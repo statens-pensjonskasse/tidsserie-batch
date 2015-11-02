@@ -56,7 +56,7 @@ public class CSVInput implements GrunnlagsdataRepository {
      * @param oversetter ein ny oversetter
      * @return <code>this</code>
      */
-    CSVInput addOversettere(final CsvOversetter<?> oversetter) {
+    public CSVInput addOversettere(final CsvOversetter<?> oversetter) {
         this.oversettere.add(oversetter);
         return this;
     }

@@ -94,6 +94,11 @@ public class GrunnlagsdataService implements TidsserieFactory {
         );
     }
 
+    @Override
+    public <T> Stream<T> perioderAvType(final Class<T> type) {
+        return perioder.getOrDefault(type, emptyList()).stream().map(type::cast);
+    }
+
     /**
      * Leser inn alle medlems-, avtale- og lønnsdata frå inputfilene og overfører dei til backenden.
      *
@@ -148,10 +153,6 @@ public class GrunnlagsdataService implements TidsserieFactory {
         )
                 .flatMap(s -> s)
                 .collect(toList());
-    }
-
-    <T> Stream<T> perioderAvType(final Class<T> type) {
-        return perioder.getOrDefault(type, emptyList()).stream().map(type::cast);
     }
 
     private Stream<Loennstrinnperiode<?>> statligeloennstrinn() {
