@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.CSVFormat;
 import no.spk.pensjon.faktura.tidsserie.batch.StorageBackend;
+import no.spk.pensjon.faktura.tidsserie.batch.TidsserieResulat;
 import no.spk.pensjon.faktura.tidsserie.batch.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.batch.Tidsserienummer;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.AvregningsRegelsett;
@@ -119,4 +120,12 @@ public class LiveTidsseriemodus implements Tidsseriemodus {
     private void lagre(final StorageBackend publikator, final String line, final long serienummer) {
         publikator.lagre(event -> event.serienummer(serienummer).buffer.append(line).append("\n"));
     }
+
+    @Override
+    public void completed(TidsserieResulat tidsserieResulat) {
+        new LiveTidsserieAvslutter(tidsserieResulat)
+                .lagCsvGruppefiler()
+                .lagTriggerfil();
+    }
+
 }

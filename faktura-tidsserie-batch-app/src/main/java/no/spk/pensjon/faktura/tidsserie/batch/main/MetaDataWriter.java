@@ -3,15 +3,11 @@ package no.spk.pensjon.faktura.tidsserie.batch.main;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.io.Writer;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import no.spk.faktura.input.BatchId;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
@@ -30,9 +26,6 @@ import org.slf4j.LoggerFactory;
  * @author Snorre E. Brekke - Computas
  */
 public class MetaDataWriter {
-    private static final String MD5_CHECKSUMS_FILENAME = "md5-checksums.txt";
-    private static final String LOG_FILENAME = "batch.log";
-
     private Logger logger = LoggerFactory.getLogger(MetaDataWriter.class);
     private final Configuration config;
 
@@ -58,35 +51,6 @@ public class MetaDataWriter {
             return Optional.empty();
         }
         return Optional.of(fileToWrite);
-    }
-
-    /**
-     * Oppretter ok.trg i batchkatalogen.
-     */
-    public void createTriggerFile(Path utKatalog) {
-        Path resolve = utKatalog.resolve("ok.trg");
-        try {
-            Files.createFile(resolve);
-        } catch (IOException e) {
-            throw new UncheckedIOException("Klarte ikke å opprette triggerfil.", e);
-        }
-    }
-
-    /**
-     * Finner alle tidsserie*.csv filer i utkatalog, og fordeler filnavmeme i ti filer: FFF_FILLISTE_[1-10].txt.
-     * Filliste-filene brukes slik at Datavarehus kan bruke faste filnavn for å paralellisere innlesingen av csv-filene.
-     * @param dataKatalog katalog med tidsserie*.csv filer. Katalogen vil inneholder 10 filer FFF_FILLISTE_[1-10].txt etter kjøring.
-     */
-    public void createCsvGroupFiles(Path dataKatalog) {
-        new CsvFileGroupWriter().createCsvGroupFiles(dataKatalog);
-    }
-
-    private Stream<File> getFilesToChecksum(Stream<Path> directoryNames) {
-        return directoryNames
-                .map(Path::toFile)
-                .map(f -> f.listFiles(((file) -> !Arrays.asList(LOG_FILENAME, MD5_CHECKSUMS_FILENAME).contains(file.getName()) && file.isFile())))
-                .map(Arrays::stream)
-                .flatMap(s -> s);
     }
 
     private String getDurationString(Duration duration) {

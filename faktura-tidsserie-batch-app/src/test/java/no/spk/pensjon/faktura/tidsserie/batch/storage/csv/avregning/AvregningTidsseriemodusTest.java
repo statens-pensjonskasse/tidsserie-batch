@@ -135,19 +135,18 @@ public class AvregningTidsseriemodusTest {
     }
 
     @Test
-    public void skal_rute_serialiserte_linjer_basert_paa_angitt_serienummer() {
-        final long expected = 962;
+    public void skal_ikke_benytte_serienummer() {
         final ObservasjonsEvent event = new ObservasjonsEvent();
-        modus.lagre(consumer -> consumer.accept(event), "...", expected);
+        modus.lagre(consumer -> consumer.accept(event), "...");
 
-        assertThat(event.serienummer()).as("serienummer").isEqualTo(of(expected));
+        assertThat(event.serienummer()).isEmpty();
     }
 
     @Test
     public void skal_sende_serialisert_linje_vidare_for_lagring() {
         final String expected = "X;Y;Z";
         final ObservasjonsEvent event = new ObservasjonsEvent();
-        modus.lagre(consumer -> consumer.accept(event), expected, 9L);
+        modus.lagre(consumer -> consumer.accept(event), expected);
 
         assertThat(event.buffer.toString()).as("linje").isEqualTo(expected + "\n");
     }
@@ -155,6 +154,13 @@ public class AvregningTidsseriemodusTest {
     @Test
     public void skal_bruke_avregnings_regelsettet() {
         assertThat(modus.regelsett()).isInstanceOf(AvregningsRegelsett.class);
+    }
+
+    @Test
+    public void skal_ikke_skrive_noe_naar_partisjon_initisialiseres() {
+        final ObservasjonsEvent event = new ObservasjonsEvent();
+        modus.partitionInitialized(1, c -> c.accept(event));
+        assertThat(event.buffer.toString()).isEmpty();
     }
 
     private AbstractObjectArrayAssert<?, Object> assertReferansedata() {

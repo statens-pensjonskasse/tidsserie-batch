@@ -73,6 +73,18 @@ public class AvregningTidsseriemodus implements Tidsseriemodus {
         return outputFormat.kolonnenavn();
     }
 
+    @Override
+    public void partitionInitialized(long serienummer, StorageBackend storage) {
+        //noop
+    }
+
+    @Override
+    public void initStorage(final StorageBackend lager) {
+        lager.lagre(event -> event.buffer
+                .append(kolonnenavn().collect(joining(";")))
+                .append('\n'));
+    }
+
     /**
      * Beregningsreglene som benyttes ved generering av tidsserien.
      *
@@ -102,7 +114,7 @@ public class AvregningTidsseriemodus implements Tidsseriemodus {
     public Observasjonspublikator create(final TidsserieFacade facade, long serienummer, final StorageBackend publikator) {
         return nyPublikator(
                 this::serialiserPeriode,
-                line -> lagre(publikator, line, serienummer)
+                line -> lagre(publikator, line)
         );
     }
 
@@ -124,8 +136,8 @@ public class AvregningTidsseriemodus implements Tidsseriemodus {
                 .forEach(lagring);
     }
 
-    void lagre(final StorageBackend publikator, final String line, final long serienummer) {
-        publikator.lagre(event -> event.serienummer(serienummer).buffer.append(line).append("\n"));
+    void lagre(final StorageBackend publikator, final String line) {
+        publikator.lagre(event -> event.buffer.append(line).append("\n"));
     }
 
     private Underlag annoterMedTidsserienummer(Underlag u) {
