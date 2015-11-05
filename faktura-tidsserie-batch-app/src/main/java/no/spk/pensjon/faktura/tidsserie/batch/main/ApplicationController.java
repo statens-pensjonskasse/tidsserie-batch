@@ -151,14 +151,6 @@ public class ApplicationController {
     }
 
     /**
-     * Oppretter triggerfil som setter igang innlesing av tdisserien i datavarehus.
-     * @param metaDataWriter skriver som lager triggerfilen
-     */
-    public void opprettTriggerfil(MetaDataWriter metaDataWriter, Path utKatalog) {
-        metaDataWriter.createTriggerFile(utKatalog);
-    }
-
-    /**
      * Logger at programmet har brukt for lang tid, og informerer bruker om dette. Marker batchen som feilet.
      */
     public void logTimeout() {

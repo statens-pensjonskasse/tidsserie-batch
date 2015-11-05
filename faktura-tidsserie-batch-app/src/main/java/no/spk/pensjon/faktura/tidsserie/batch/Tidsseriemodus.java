@@ -1,5 +1,7 @@
 package no.spk.pensjon.faktura.tidsserie.batch;
 
+import static java.util.stream.Collectors.joining;
+
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
@@ -35,10 +37,10 @@ public interface Tidsseriemodus {
      * <br>
      * Lagring av sluttresultatet skal skje via <code>backend</code>.
      *
-     * @param tidsserie   tidsseriefasada som publikatoren skal anvendast av
+     * @param tidsserie tidsseriefasada som publikatoren skal anvendast av
      * @param serienummer serienummer som alle eventar som blir sendt vidare til <code>backend</code> for persistering
-     *                    skal tilhøyre
-     * @param backend     backendtenesta for lagring av resultata publikatoren genererer
+     * skal tilhøyre
+     * @param backend backendtenesta for lagring av resultata publikatoren genererer
      * @return observasjonspublikatoren som skal benyttast av tidsseriegenereringa.
      */
     Observasjonspublikator create(final TidsserieFacade tidsserie, long serienummer, final StorageBackend backend);
@@ -77,5 +79,37 @@ public interface Tidsseriemodus {
                 perioder.loennsdata(),
                 regelsett().reglar()
         );
+    }
+
+    /**
+     * Benyttes for å tilpasse storage for modus-implmentasjonen. Kalles før jobbene for tidsserien startes.
+     * <br> Default implementasjon er noop.
+     *
+     * @param storage som trenger tilpasset initisalisering for modusen.
+     * @since 1.2.0
+     */
+    default void initStorage(StorageBackend storage) {
+    }
+
+    /**
+     * Kalles én gang for hver partisjon i gridet, og angir hvilket serienummer partisjonen er tildelt.
+     * Default implmentasjon lagrer {@link #kolonnenavn()} til {@link StorageBackend} for angitt serienummer.
+     * @param serienummer nummer tildelt partisjonen i gridet
+     * @param storage publisher for lagring av data
+     */
+    default void partitionInitialized(long serienummer, StorageBackend storage) {
+        storage.lagre(event -> event.serienummer(serienummer)
+                        .buffer
+                        .append(kolonnenavn().collect(joining(";")))
+                        .append('\n')
+        );
+    }
+
+    /**
+     * Kalles når tidsserien er ferdig generert, og angir oppsummering av resultatet.
+     * <br> Default implementasjon er noop.
+     * @param tidsserieResulat oppsummering av tidsseriekjoeringen
+     */
+    default void completed(TidsserieResulat tidsserieResulat) {
     }
 }

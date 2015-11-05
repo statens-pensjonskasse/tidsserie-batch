@@ -4,7 +4,6 @@ import static java.util.Objects.requireNonNull;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static java.util.concurrent.Executors.newCachedThreadPool;
-import static java.util.stream.Collectors.joining;
 
 import java.util.List;
 import java.util.Map;
@@ -51,19 +50,19 @@ public class HazelcastBackend implements TidsserieBackendService {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private final Server server;
-    private final Tidsseriemodus parameter;
+    private final Tidsseriemodus modus;
 
     private Optional<IMap<String, List<List<String>>>> map = empty();
 
     private Optional<HazelcastInstance> instance = empty();
 
-    public HazelcastBackend(final int antallNoder, final Tidsseriemodus parameter) {
-        this(new MultiNodeSingleJVMBackend(antallNoder), parameter);
+    public HazelcastBackend(final int antallNoder, final Tidsseriemodus modus) {
+        this(new MultiNodeSingleJVMBackend(antallNoder), modus);
     }
 
-    HazelcastBackend(final Server server, final Tidsseriemodus parameter) {
+    HazelcastBackend(final Server server, final Tidsseriemodus modus) {
         this.server = requireNonNull(server, "server er påkrevd, men var null");
-        this.parameter = requireNonNull(parameter, "tidsserieparameter er påkrevd, men var null");
+        this.modus = requireNonNull(modus, "tidsseriemodus er påkrevd, men var null");
     }
 
     @Override
@@ -71,7 +70,7 @@ public class HazelcastBackend implements TidsserieBackendService {
         this.instance = of(server.start());
         this.map = instance.map(i -> i.getMap("medlemsdata"));
         instance.ifPresent(i -> i.getAtomicLong("serienummer").set(1L));
-        registrer(Tidsseriemodus.class, parameter);
+        registrer(Tidsseriemodus.class, modus);
     }
 
     @Override
@@ -86,6 +85,8 @@ public class HazelcastBackend implements TidsserieBackendService {
                 r -> new Thread(r, "lmax-disruptor-" + System.currentTimeMillis())
         );
         try (final LmaxDisruptorPublisher lager = openDisruptor(executors, outputFiles)) {
+            modus.initStorage(lager);
+
             return submit(
                     new Tidsserieagent(
                             fraOgMed.atStartOfYear(),
@@ -107,15 +108,6 @@ public class HazelcastBackend implements TidsserieBackendService {
         publisher.start();
         registrer(StorageBackend.class, publisher);
         return publisher;
-    }
-
-    private void publishHeader(final LmaxDisruptorPublisher lager) {
-        lager.lagre(event -> {
-            event.buffer
-                    .append(parameter.kolonnenavn().collect(joining(";")))
-                    .append('\n')
-            ;
-        });
     }
 
     private Map<String, Integer> submit(
