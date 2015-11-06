@@ -208,16 +208,16 @@ public class AvregningformatMappingTest {
                 instance(kolonne(69), Medlemslinjenummer.class, Medlemslinjenummer.linjenummer(18), forventa("18")),
                 instance(kolonne(70), Premiekategori.class, Premiekategori.HENDELSESBASERT, forventa("LOP")),
                 instance(kolonne(71), Avregningsversjon.class, avregningsversjon(58), forventa("58")),
-                instance(kolonne(72), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitPensjonsprodukt().satser(prosentsatser("10.01%", "2.55%", "0.35%"))), forventa("10.01")),
-                instance(kolonne(73), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitPensjonsprodukt().satser(prosentsatser("10.01%", "2.55%", "0.35%"))), forventa("2.55")),
+                instance(kolonne(72), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitPensjonsprodukt().satser(prosentsatser("10.01%", "2.55%", "0.35%"))), forventa("2.55")),
+                instance(kolonne(73), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitPensjonsprodukt().satser(prosentsatser("10.01%", "2.55%", "0.35%"))), forventa("10.01")),
                 instance(kolonne(74), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitPensjonsprodukt().satser(prosentsatser("10.01%", "2.55%", "0.35%"))), forventa("0.35")),
 
-                instance(kolonne(75), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitAFPprodukt().satser(prosentsatser("4%", "0%", "0%"))), forventa("4.00")),
-                instance(kolonne(76), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitAFPprodukt().satser(prosentsatser("4%", "0%", "0%"))), forventa("0.00")),
+                instance(kolonne(75), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitAFPprodukt().satser(prosentsatser("4%", "0%", "0%"))), forventa("0.00")),
+                instance(kolonne(76), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitAFPprodukt().satser(prosentsatser("4%", "0%", "0%"))), forventa("4.00")),
                 instance(kolonne(77), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitAFPprodukt().satser(prosentsatser("4%", "0%", "0%"))), forventa("0.00")),
 
-                instance(kolonne(78), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitTIPprodukt().satser(prosentsatser("120.99%", "0%", "0%"))), forventa("120.99")),
-                instance(kolonne(79), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitTIPprodukt().satser(prosentsatser("120.99%", "0%", "0%"))), forventa("0.00")),
+                instance(kolonne(78), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitTIPprodukt().satser(prosentsatser("120.99%", "0%", "0%"))), forventa("0.00")),
+                instance(kolonne(79), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitTIPprodukt().satser(prosentsatser("120.99%", "0%", "0%"))), forventa("120.99")),
                 instance(kolonne(80), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitTIPprodukt().satser(prosentsatser("120.99%", "0%", "0%"))), forventa("0.00")),
 
                 instance(kolonne(81), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitGRUprodukt().satser(kronesatsar(1000, 100, 35))), forventa("0.00")),
@@ -229,7 +229,8 @@ public class AvregningformatMappingTest {
                 instance(kolonne(86), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitYSKprodukt().satser(kronesatsar(2000, 200, 36))), forventa("0.00")),
 
                 instance(
-                        kolonne(72),
+                        kolonne(73
+                        ),
                         GrunnlagOgPremiesats.class,
                         grunnlag(kroner(1_060_440))
                                 .og(eitPensjonsprodukt().kopi().satser(prosentsatser("100%", "0%", "0%"))),
