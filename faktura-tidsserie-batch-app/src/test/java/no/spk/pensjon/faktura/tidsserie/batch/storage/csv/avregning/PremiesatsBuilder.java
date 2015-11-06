@@ -1,15 +1,31 @@
 package no.spk.pensjon.faktura.tidsserie.batch.storage.csv.avregning;
 
+import static java.lang.Integer.parseInt;
+import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Kroner.kroner;
+import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Prosent.prosent;
+
+import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Kroner;
+import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Prosent;
+import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Satser;
+
 /**
  * @author riv
  */
 public class PremiesatsBuilder {
-    private String administrasjonsgebyr;
-    private String medlem;
-    private String arbeidsgiver;
+    private static String administrasjonsgebyr;
+    private static String medlem;
+    private static String arbeidsgiver;
 
-    public static PremiesatsBuilder premiesatser() {
+    public static PremiesatsBuilder premiesatsBuilder() {
         return new PremiesatsBuilder();
+    }
+
+    public static Satser<Prosent> prosentsatser() {
+        return new Satser<>(prosent(arbeidsgiver), prosent(medlem), prosent(administrasjonsgebyr));
+    }
+
+    public static Satser<Kroner> kronesatser() {
+        return new Satser<>(kroner(parseInt(arbeidsgiver)), kroner(parseInt(medlem)), kroner(parseInt(administrasjonsgebyr)));
     }
 
     public PremiesatsBuilder administrasjonsgebyr(final String administrasjonsgebyr) {
@@ -25,17 +41,5 @@ public class PremiesatsBuilder {
     public PremiesatsBuilder arbeidsgiver(final String arbeidsgiver) {
         this.arbeidsgiver = arbeidsgiver;
         return this;
-    }
-
-    public String arbeidsgiver() {
-        return this.arbeidsgiver;
-    }
-
-    public String medlem() {
-        return this.medlem;
-    }
-
-    public String administrasjonsgebyr() {
-        return this.administrasjonsgebyr;
     }
 }

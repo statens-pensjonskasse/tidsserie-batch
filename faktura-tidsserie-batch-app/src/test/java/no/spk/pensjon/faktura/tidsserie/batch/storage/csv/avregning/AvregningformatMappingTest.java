@@ -19,6 +19,7 @@ import static no.spk.pensjon.faktura.tidsserie.batch.storage.csv.avregning.Falsk
 import static no.spk.pensjon.faktura.tidsserie.batch.storage.csv.avregning.FalskeReglar.minstegrenseRegel;
 import static no.spk.pensjon.faktura.tidsserie.batch.storage.csv.avregning.FalskeReglar.oevreLoennsgrenseRegel;
 import static no.spk.pensjon.faktura.tidsserie.batch.storage.csv.avregning.FalskeReglar.yrkesskadeFaktureringRegel;
+import static no.spk.pensjon.faktura.tidsserie.batch.storage.csv.avregning.PremiesatsBuilder.premiesatsBuilder;
 import static no.spk.pensjon.faktura.tidsserie.domain.avregning.Avregningsversjon.avregningsversjon;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Avtale.avtale;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId.avtaleId;
@@ -75,7 +76,6 @@ import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Premiekategori;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Premiesats;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Premiestatus;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt;
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Prosent;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Risikoklasse;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Satser;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.StillingsforholdId;
@@ -122,10 +122,9 @@ import org.junit.runners.Parameterized.Parameter;
 @SuppressWarnings({"unchecked", "rawtypes"})
 @RunWith(Parameterized.class)
 public class AvregningformatMappingTest {
-    private static final PremiesatsBuilder premiesatser = PremiesatsBuilder.premiesatser();
-    private static final Premiesats.Builder fakturerbartPensjonsprodukt = premiesats(PEN).produktinfo(new Produktinfo(10)).satser(prosentsatser(premiesatser.arbeidsgiver("10%").medlem("2%").administrasjonsgebyr("0.35%")));
-    private static final Premiesats.Builder fakturerbartAFPprodukt = premiesats(AFP).produktinfo(new Produktinfo(40)).satser(prosentsatser(premiesatser.arbeidsgiver("2%").medlem("0").administrasjonsgebyr("0")));
-    private static final Premiesats.Builder fakturerbartTIPprodukt = premiesats(TIP).produktinfo(new Produktinfo(94)).satser(prosentsatser(premiesatser.arbeidsgiver("-20%").medlem("0").administrasjonsgebyr("0")));
+    private static final Premiesats.Builder fakturerbartPensjonsprodukt = premiesats(PEN).produktinfo(new Produktinfo(10)).satser(premiesatsBuilder().arbeidsgiver("10%").medlem("2%").administrasjonsgebyr("0.35%").prosentsatser());
+    private static final Premiesats.Builder fakturerbartAFPprodukt = premiesats(AFP).produktinfo(new Produktinfo(40)).satser(premiesatsBuilder().arbeidsgiver("2%").medlem("0").administrasjonsgebyr("0").prosentsatser());
+    private static final Premiesats.Builder fakturerbartTIPprodukt = premiesats(TIP).produktinfo(new Produktinfo(94)).satser(premiesatsBuilder().arbeidsgiver("-20%").medlem("0").administrasjonsgebyr("0").prosentsatser());
     private static final Premiesats.Builder fakturerbartGRUprodukt = premiesats(GRU).produktinfo(new Produktinfo(35)).satser(new Satser<>(kroner(535), kroner(0), kroner(35)));
     private static final Premiesats.Builder fakturerbartYSKprodukt = premiesats(YSK).produktinfo(new Produktinfo(71)).satser(new Satser<>(kroner(2535), kroner(0), kroner(35)));
 
@@ -174,78 +173,70 @@ public class AvregningformatMappingTest {
                 instance(kolonne(36), ErPermisjonUtanLoennRegel.class, erPermisjonUtanLoenn(true), forventa("1")),
                 instance(kolonne(37), ErUnderMinstegrensaRegel.class, erUnderMinstegrensaRegel(false), forventa("0")),
                 instance(kolonne(38), Avtale.class, einPremiesats(eitPensjonsprodukt()), forventa("1")),
-                instance(kolonne(39), Avtale.class, einPremiesats(eitPensjonsprodukt().satser(prosentsatser(premiesatser.arbeidsgiver("999.0051%").medlem("0%").administrasjonsgebyr("0%")))), forventa("999.01")),
-                instance(kolonne(40), Avtale.class, einPremiesats(eitPensjonsprodukt().satser(prosentsatser(premiesatser.arbeidsgiver("0%").medlem("999.5551%").administrasjonsgebyr("0%")))), forventa("999.56")),
-                instance(kolonne(41), Avtale.class, einPremiesats(eitPensjonsprodukt().satser(prosentsatser(premiesatser.arbeidsgiver("0%").medlem("0%").administrasjonsgebyr("0.354%")))), forventa("0.35")),
+                instance(kolonne(39), Avtale.class, einPremiesats(eitPensjonsprodukt().satser(premiesatsBuilder().arbeidsgiver("999.0051%").medlem("0%").administrasjonsgebyr("0%").prosentsatser())), forventa("999.01")),
+                instance(kolonne(40), Avtale.class, einPremiesats(eitPensjonsprodukt().satser(premiesatsBuilder().arbeidsgiver("0%").medlem("999.5551%").administrasjonsgebyr("0%").prosentsatser())), forventa("999.56")),
+                instance(kolonne(41), Avtale.class, einPremiesats(eitPensjonsprodukt().satser(premiesatsBuilder().arbeidsgiver("0%").medlem("0%").administrasjonsgebyr("0.354%").prosentsatser())), forventa("0.35")),
                 instance(kolonne(42), Avtale.class, einPremiesats(eitPensjonsprodukt().produktinfo(new Produktinfo(10))), forventa("10")),
                 instance(kolonne(43), Avtale.class, einPremiesats(eitAFPprodukt()), forventa("1")),
-                instance(kolonne(44), Avtale.class, einPremiesats(eitAFPprodukt().satser(prosentsatser(premiesatser.arbeidsgiver("2%").medlem("0%").administrasjonsgebyr("0%")))), forventa("2.00")),
-                instance(kolonne(45), Avtale.class, einPremiesats(eitAFPprodukt().satser(prosentsatser(premiesatser.arbeidsgiver("0%").medlem("200%").administrasjonsgebyr("0%")))), forventa("200.00")),
-                instance(kolonne(46), Avtale.class, einPremiesats(eitAFPprodukt().satser(prosentsatser(premiesatser.arbeidsgiver("0%").medlem("0%").administrasjonsgebyr("0%")))), forventa("0.00")),
+                instance(kolonne(44), Avtale.class, einPremiesats(eitAFPprodukt().satser(premiesatsBuilder().arbeidsgiver("2%").medlem("0%").administrasjonsgebyr("0%").prosentsatser())), forventa("2.00")),
+                instance(kolonne(45), Avtale.class, einPremiesats(eitAFPprodukt().satser(premiesatsBuilder().arbeidsgiver("0%").medlem("200%").administrasjonsgebyr("0%").prosentsatser())), forventa("200.00")),
+                instance(kolonne(46), Avtale.class, einPremiesats(eitAFPprodukt().satser(premiesatsBuilder().arbeidsgiver("0%").medlem("0%").administrasjonsgebyr("0%").prosentsatser())), forventa("0.00")),
                 instance(kolonne(47), Avtale.class, einPremiesats(eitAFPprodukt().produktinfo(new Produktinfo(42))), forventa("42")),
                 instance(kolonne(48), Avtale.class, einPremiesats(eitTIPprodukt()), forventa("1")),
-                instance(kolonne(49), Avtale.class, einPremiesats(eitTIPprodukt().satser(prosentsatser(premiesatser.arbeidsgiver("108.234%").medlem("0%").administrasjonsgebyr("0%")))), forventa("108.23")),
-                instance(kolonne(50), Avtale.class, einPremiesats(eitTIPprodukt().satser(prosentsatser(premiesatser.arbeidsgiver("0%").medlem("-744.499%").administrasjonsgebyr("0%")))), forventa("-744.50")),
-                instance(kolonne(51), Avtale.class, einPremiesats(eitTIPprodukt().satser(prosentsatser(premiesatser.arbeidsgiver("0%").medlem("0%").administrasjonsgebyr("0.999%")))), forventa("1.00")),
+                instance(kolonne(49), Avtale.class, einPremiesats(eitTIPprodukt().satser(premiesatsBuilder().arbeidsgiver("108.234%").medlem("0%").administrasjonsgebyr("0%").prosentsatser())), forventa("108.23")),
+                instance(kolonne(50), Avtale.class, einPremiesats(eitTIPprodukt().satser(premiesatsBuilder().arbeidsgiver("0%").medlem("-744.499%").administrasjonsgebyr("0%").prosentsatser())), forventa("-744.50")),
+                instance(kolonne(51), Avtale.class, einPremiesats(eitTIPprodukt().satser(premiesatsBuilder().arbeidsgiver("0%").medlem("0%").administrasjonsgebyr("0.999%").prosentsatser())), forventa("1.00")),
                 instance(kolonne(52), Avtale.class, einPremiesats(eitTIPprodukt().produktinfo(new Produktinfo(95))), forventa("95")),
                 instance(kolonne(53), Avtale.class, einPremiesats(eitGRUprodukt().produktinfo(new Produktinfo(31))), forventa("0")),
                 instance(kolonne(53), Avtale.class, einPremiesats(eitGRUprodukt().produktinfo(Produktinfo.GRU_36)), forventa("1")),
-                instance(kolonne(54), Avtale.class, einPremiesats(eitGRUprodukt().satser(kronesatsar(99999, 0, 0))), forventa("99999")),
-                instance(kolonne(55), Avtale.class, einPremiesats(eitGRUprodukt().satser(kronesatsar(0, 923, 0))), forventa("923")),
-                instance(kolonne(56), Avtale.class, einPremiesats(eitGRUprodukt().satser(kronesatsar(0, 0, 17))), forventa("17")),
-                instance(kolonne(57), Avtale.class, einPremiesats(eitGRUprodukt().produktinfo(new Produktinfo(39))), forventa("39")),
-                instance(kolonne(58), Avtale.class, einPremiesats(eitYSKprodukt().produktinfo(Produktinfo.YSK_79)), forventa("0")),
-                instance(kolonne(58), Avtale.class, einPremiesats(eitYSKprodukt().produktinfo(new Produktinfo(71))), forventa("1")),
-                instance(kolonne(59), Avtale.class, einPremiesats(eitYSKprodukt().satser(kronesatsar(4500, 0, 0))), forventa("4500")),
-                instance(kolonne(60), Avtale.class, einPremiesats(eitYSKprodukt().satser(kronesatsar(0, 450, 0))), forventa("450")),
-                instance(kolonne(61), Avtale.class, einPremiesats(eitYSKprodukt().satser(kronesatsar(0, 0, -45))), forventa("-45")),
-                instance(kolonne(62), Avtale.class, einPremiesats(eitYSKprodukt().produktinfo(new Produktinfo(70))), forventa("70")),
-                instance(kolonne(63), Avtale.class, einAvtale(eitYSKprodukt()).risikoklasse(of(new Risikoklasse("1,5"))).bygg(), forventa("1,5")),
-                instance(kolonne(64), UUID.class, null, matches("^\\w{8}-\\w+{4}-\\w+{4}-\\w{4}-\\w{12}$")),
-                instance(kolonne(65), Feilantall.class, null, forventa("0")),
-                instance(kolonne(66), ArbeidsgiverId.class, new ArbeidsgiverId(100_000L), forventa("100000")),
-                instance(kolonne(67), Tidsserienummer.class, genererForDato(dato("2016.01.07")), forventa("20160107")),
-                instance(kolonne(68), Termintype.class, Termintype.UKJENT, forventa("UKJ")),
-                instance(kolonne(69), Medlemslinjenummer.class, Medlemslinjenummer.linjenummer(18), forventa("18")),
-                instance(kolonne(70), Premiekategori.class, Premiekategori.HENDELSESBASERT, forventa("LOP")),
-                instance(kolonne(71), Avregningsversjon.class, avregningsversjon(58), forventa("58")),
-                instance(kolonne(72), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitPensjonsprodukt().satser(prosentsatser(premiesatser.arbeidsgiver("10.01%").medlem("2.55%").administrasjonsgebyr("0.35%")))), forventa("2.55")),
-                instance(kolonne(73), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitPensjonsprodukt().satser(prosentsatser(premiesatser.arbeidsgiver("10.01%").medlem("2.55%").administrasjonsgebyr("0.35%")))), forventa("10.01")),
-                instance(kolonne(74), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitPensjonsprodukt().satser(prosentsatser(premiesatser.arbeidsgiver("10.01%").medlem("2.55%").administrasjonsgebyr("0.35%")))), forventa("0.35")),
+                instance(kolonne(54), Avtale.class, einPremiesats(eitGRUprodukt().satser(premiesatsBuilder().arbeidsgiver("99999").medlem("0").administrasjonsgebyr("0").kronesatser())), forventa("99999")),
+                instance(kolonne(55), Avtale.class, einPremiesats(eitGRUprodukt().satser(premiesatsBuilder().arbeidsgiver("0").medlem("923").administrasjonsgebyr("0").kronesatser())), forventa("923")),
+                instance(kolonne(56), Avtale.class, einPremiesats(eitGRUprodukt().satser(premiesatsBuilder().arbeidsgiver("0").medlem("0").administrasjonsgebyr("17").kronesatser())), forventa("17")),
+                        instance(kolonne(57), Avtale.class, einPremiesats(eitGRUprodukt().produktinfo(new Produktinfo(39))), forventa("39")),
+                        instance(kolonne(58), Avtale.class, einPremiesats(eitYSKprodukt().produktinfo(Produktinfo.YSK_79)), forventa("0")),
+                        instance(kolonne(58), Avtale.class, einPremiesats(eitYSKprodukt().produktinfo(new Produktinfo(71))), forventa("1")),
+                        instance(kolonne(59), Avtale.class, einPremiesats(eitYSKprodukt().satser(premiesatsBuilder().arbeidsgiver("4500").medlem("0").administrasjonsgebyr("0").kronesatser())), forventa("4500")),
+                        instance(kolonne(60), Avtale.class, einPremiesats(eitYSKprodukt().satser(premiesatsBuilder().arbeidsgiver("0").medlem("450").administrasjonsgebyr("0").kronesatser())), forventa("450")),
+                        instance(kolonne(61), Avtale.class, einPremiesats(eitYSKprodukt().satser(premiesatsBuilder().arbeidsgiver("0").medlem("0").administrasjonsgebyr("-45").kronesatser())), forventa("-45")),
+                                instance(kolonne(62), Avtale.class, einPremiesats(eitYSKprodukt().produktinfo(new Produktinfo(70))), forventa("70")),
+                                instance(kolonne(63), Avtale.class, einAvtale(eitYSKprodukt()).risikoklasse(of(new Risikoklasse("1,5"))).bygg(), forventa("1,5")),
+                                instance(kolonne(64), UUID.class, null, matches("^\\w{8}-\\w+{4}-\\w+{4}-\\w{4}-\\w{12}$")),
+                                instance(kolonne(65), Feilantall.class, null, forventa("0")),
+                                instance(kolonne(66), ArbeidsgiverId.class, new ArbeidsgiverId(100_000L), forventa("100000")),
+                                instance(kolonne(67), Tidsserienummer.class, genererForDato(dato("2016.01.07")), forventa("20160107")),
+                                instance(kolonne(68), Termintype.class, Termintype.UKJENT, forventa("UKJ")),
+                                instance(kolonne(69), Medlemslinjenummer.class, Medlemslinjenummer.linjenummer(18), forventa("18")),
+                                instance(kolonne(70), Premiekategori.class, Premiekategori.HENDELSESBASERT, forventa("LOP")),
+                                instance(kolonne(71), Avregningsversjon.class, avregningsversjon(58), forventa("58")),
+                                instance(kolonne(72), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitPensjonsprodukt().satser(premiesatsBuilder().arbeidsgiver("10.01%").medlem("2.55%").administrasjonsgebyr("0.35%").prosentsatser())), forventa("2.55")),
+                                instance(kolonne(73), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitPensjonsprodukt().satser(premiesatsBuilder().arbeidsgiver("10.01%").medlem("2.55%").administrasjonsgebyr("0.35%").prosentsatser())), forventa("10.01")),
+                                instance(kolonne(74), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitPensjonsprodukt().satser(premiesatsBuilder().arbeidsgiver("10.01%").medlem("2.55%").administrasjonsgebyr("0.35%").prosentsatser())), forventa("0.35")),
 
-                instance(kolonne(75), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitAFPprodukt().satser(prosentsatser(premiesatser.arbeidsgiver("4%").medlem("0%").administrasjonsgebyr("0%")))), forventa("0.00")),
-                instance(kolonne(76), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitAFPprodukt().satser(prosentsatser(premiesatser.arbeidsgiver("4%").medlem("0%").administrasjonsgebyr("0%")))), forventa("4.00")),
-                instance(kolonne(77), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitAFPprodukt().satser(prosentsatser(premiesatser.arbeidsgiver("4%").medlem("0%").administrasjonsgebyr("0%")))), forventa("0.00")),
+                                instance(kolonne(75), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitAFPprodukt().satser(premiesatsBuilder().arbeidsgiver("4%").medlem("0%").administrasjonsgebyr("0%").prosentsatser())), forventa("0.00")),
+                                instance(kolonne(76), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitAFPprodukt().satser(premiesatsBuilder().arbeidsgiver("4%").medlem("0%").administrasjonsgebyr("0%").prosentsatser())), forventa("4.00")),
+                                instance(kolonne(77), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitAFPprodukt().satser(premiesatsBuilder().arbeidsgiver("4%").medlem("0%").administrasjonsgebyr("0%").prosentsatser())), forventa("0.00")),
 
-                instance(kolonne(78), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitTIPprodukt().satser(prosentsatser(premiesatser.arbeidsgiver("120.99%").medlem("0%").administrasjonsgebyr("0%")))), forventa("0.00")),
-                instance(kolonne(79), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitTIPprodukt().satser(prosentsatser(premiesatser.arbeidsgiver("120.99%").medlem("0%").administrasjonsgebyr("0%")))), forventa("120.99")),
-                instance(kolonne(80), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitTIPprodukt().satser(prosentsatser(premiesatser.arbeidsgiver("120.99%").medlem("0%").administrasjonsgebyr("0%")))), forventa("0.00")),
+                                instance(kolonne(78), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitTIPprodukt().satser(premiesatsBuilder().arbeidsgiver("120.99%").medlem("0%").administrasjonsgebyr("0%").prosentsatser())), forventa("0.00")),
+                                instance(kolonne(79), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitTIPprodukt().satser(premiesatsBuilder().arbeidsgiver("120.99%").medlem("0%").administrasjonsgebyr("0%").prosentsatser())), forventa("120.99")),
+                                instance(kolonne(80), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitTIPprodukt().satser(premiesatsBuilder().arbeidsgiver("120.99%").medlem("0%").administrasjonsgebyr("0%").prosentsatser())), forventa("0.00")),
 
-                instance(kolonne(81), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitGRUprodukt().satser(kronesatsar(1000, 100, 35))), forventa("0.00")),
-                instance(kolonne(82), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitGRUprodukt().satser(kronesatsar(1000, 100, 35))), forventa("0.00")),
-                instance(kolonne(83), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitGRUprodukt().satser(kronesatsar(1000, 100, 35))), forventa("0.00")),
+                                instance(kolonne(81), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitGRUprodukt().satser(premiesatsBuilder().arbeidsgiver("1000").medlem("100").administrasjonsgebyr("35").kronesatser())), forventa("0.00")),
+                                instance(kolonne(82), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitGRUprodukt().satser(premiesatsBuilder().arbeidsgiver("1000").medlem("100").administrasjonsgebyr("35").kronesatser())), forventa("0.00")),
+                                instance(kolonne(83), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitGRUprodukt().satser(premiesatsBuilder().arbeidsgiver("1000").medlem("100").administrasjonsgebyr("35").kronesatser())), forventa("0.00")),
 
-                instance(kolonne(84), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitYSKprodukt().satser(kronesatsar(2000, 200, 36))), forventa("0.00")),
-                instance(kolonne(85), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitYSKprodukt().satser(kronesatsar(2000, 200, 36))), forventa("0.00")),
-                instance(kolonne(86), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitYSKprodukt().satser(kronesatsar(2000, 200, 36))), forventa("0.00")),
+                                instance(kolonne(84), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitYSKprodukt().satser(premiesatsBuilder().arbeidsgiver("2000").medlem("200").administrasjonsgebyr("36").kronesatser())), forventa("0.00")),
+                                instance(kolonne(85), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitYSKprodukt().satser(premiesatsBuilder().arbeidsgiver("2000").medlem("200").administrasjonsgebyr("36").kronesatser())), forventa("0.00")),
+                                instance(kolonne(86), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitYSKprodukt().satser(premiesatsBuilder().arbeidsgiver("2000").medlem("200").administrasjonsgebyr("36").kronesatser())), forventa("0.00")),
 
-                instance(
-                        kolonne(73
-                        ),
-                        GrunnlagOgPremiesats.class,
-                        grunnlag(kroner(1_060_440))
-                                .og(eitPensjonsprodukt().kopi().satser(prosentsatser(premiesatser.arbeidsgiver("100%").medlem("0%").administrasjonsgebyr("0%")))),
-                        forventa("1060440.00")
-                )
+                                instance(
+                                        kolonne(73
+                                        ),
+                                        GrunnlagOgPremiesats.class,
+                                        grunnlag(kroner(1_060_440))
+                                                .og(eitPensjonsprodukt().kopi().satser(premiesatsBuilder().arbeidsgiver("100%").medlem("0%").administrasjonsgebyr("0%").prosentsatser())),
+                                        forventa("1060440.00")
+                                )
         );
-    }
-
-    private static Satser<Kroner> kronesatsar(final int arbeidsgiver, final int medlem, final int administrasjonsgebyr) {
-        return new Satser<>(kroner(arbeidsgiver), kroner(medlem), kroner(administrasjonsgebyr));
-    }
-
-    private static Satser<Prosent> prosentsatser(PremiesatsBuilder premiesatser) {
-        return new Satser<>(prosent(premiesatser.arbeidsgiver()), prosent(premiesatser.medlem()), prosent(premiesatser.administrasjonsgebyr()));
     }
 
     private static Premiesats.Builder eitPensjonsprodukt() {
