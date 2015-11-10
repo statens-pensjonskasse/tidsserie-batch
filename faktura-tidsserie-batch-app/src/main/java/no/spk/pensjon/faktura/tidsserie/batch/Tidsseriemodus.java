@@ -5,6 +5,7 @@ import static java.util.stream.Collectors.joining;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
+import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medlemsdata;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.Regelsett;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Tidsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonspublikator;
@@ -111,5 +112,16 @@ public interface Tidsseriemodus {
      * @param tidsserieResulat oppsummering av tidsseriekjoeringen
      */
     default void completed(TidsserieResulat tidsserieResulat) {
+    }
+
+    /**
+     * Angir om et sett med medlemsdata er relevant å behandle for tidsseriemodusen. Tidsserien genereres gjerne utifra
+     * et underlagsdatasett som er mer omfattende enn det man har behov for å behandle. Ved å overstyre denne metoden
+     * kan man styre hvilke medlemsdata som ender opp i underlaget.
+     * @param medlemsdata som kanskje skal behandles av modusen
+     * @return true dersom angitt medlemsdata skal behandles, false ellers
+     */
+    default boolean behandleMedlem(Medlemsdata medlemsdata) {
+        return true;
     }
 }
