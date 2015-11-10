@@ -4,6 +4,9 @@ import static java.time.LocalDate.now;
 import static java.util.stream.Collectors.joining;
 
 import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -13,7 +16,10 @@ import no.spk.pensjon.faktura.tidsserie.batch.StorageBackend;
 import no.spk.pensjon.faktura.tidsserie.batch.TidsperiodeFactory;
 import no.spk.pensjon.faktura.tidsserie.batch.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.batch.Tidsserienummer;
+import no.spk.pensjon.faktura.tidsserie.domain.avregning.Avregningsavtaleperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.avregning.Avregningsperiode;
+import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId;
+import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medlemsdata;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.AvregningsRegelsett;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.Regelsett;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Tidsperiode;
@@ -23,6 +29,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
 import no.spk.pensjon.faktura.tidsserie.storage.GrunnlagsdataRepository;
+import no.spk.pensjon.faktura.tidsserie.storage.csv.AvregningsavtaleperiodeOversetter;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.AvregningsperiodeOversetter;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.CSVInput;
 
@@ -46,20 +53,33 @@ public class AvregningTidsseriemodus implements Tidsseriemodus {
 
     private final Tidsserienummer nummer = Tidsserienummer.genererForDato(now());
 
+    private Optional<Set<AvtaleId>> avtaler = Optional.empty();
+
     @Override
     public Stream<Tidsperiode<?>> referansedata(final TidsperiodeFactory perioder) {
         return Stream.of(
                 reglar.reglar(),
                 perioder.loennsdata(),
-                perioder.perioderAvType(Avregningsperiode.class)
+                perioder.perioderAvType(Avregningsperiode.class),
+                perioder.perioderAvType(Avregningsavtaleperiode.class)
         )
                 .flatMap(s -> s);
     }
 
     @Override
     public GrunnlagsdataRepository repository(final Path directory) {
+        validerFilFinnes(directory, "avregningsperioder.csv.gz");
+        validerFilFinnes(directory, "avregningsavtaler.csv.gz");
+        avtaler = Optional.of(new HashSet<>());
         return new CSVInput(directory)
-                .addOversettere(new AvregningsperiodeOversetter());
+                .addOversettere(new AvregningsperiodeOversetter())
+                .addOversettere(new AvregningsavtaleperiodeOversetter(avtale -> avtaler.get().add(avtale)));
+    }
+
+    private void validerFilFinnes(Path directory, String file) {
+        if (!directory.resolve(file).toFile().exists()) {
+            throw new IllegalStateException(file + " finnes ikke i " + directory);
+        }
     }
 
     /**
@@ -101,10 +121,10 @@ public class AvregningTidsseriemodus implements Tidsseriemodus {
      * observasjonsunderlag.
      * <br>
      *
-     * @param facade      fasada som blir brukt for å generere tidsserien
+     * @param facade fasada som blir brukt for å generere tidsserien
      * @param serienummer serienummer som alle eventar som blir sendt vidare til <code>backend</code> for persistering
-     *                    skal tilhøyre
-     * @param publikator  backend-systemet som observasjonane av kvar periode blir lagra via
+     * skal tilhøyre
+     * @param publikator backend-systemet som observasjonane av kvar periode blir lagra via
      * @return ein by publikator som serialiserer og lagrar alle underlagsperioder for kvart observasjonsunderlag i
      * tidsserien som blir generert av <code>facade</code>
      * @see Avregningformat#serialiser(Underlag, Underlagsperiode)
@@ -122,9 +142,9 @@ public class AvregningTidsseriemodus implements Tidsseriemodus {
      * Genererer ein ny publikator som ved hjelp av <code>mapper </code> serialiserer alle periodene frå alle
      * observasjonsunderlag, til ei form som deretter blir lagra via <code>lagring</code>.
      *
-     * @param mapper  serialiserer observasjonsunderlagas underlagsperioder til formatet <code>lagring</code> skal lagre på
+     * @param mapper serialiserer observasjonsunderlagas underlagsperioder til formatet <code>lagring</code> skal lagre på
      * @param lagring tar den serialiserte versjonen av underlagsperiodene og lagrar dei
-     * @param <T>     datatypen underlagsperiodene blir serialisert til
+     * @param <T> datatypen underlagsperiodene blir serialisert til
      * @return ein ny observasjonspublikator som kan brukast til å serialisere og lagre innholdet frå ein tidsserie
      */
     <T> Observasjonspublikator nyPublikator(
@@ -153,4 +173,20 @@ public class AvregningTidsseriemodus implements Tidsseriemodus {
                 ))
                 .map(kolonneVerdiar -> kolonneVerdiar.map(Object::toString).collect(joining(";")));
     }
+
+    @Override
+    public boolean behandleMedlem(Medlemsdata medlemsdata) {
+        return medlemsdata
+                .avtalekoblingar(
+                        p -> avtaler
+                                .orElseThrow(
+                                        () -> new IllegalStateException("Referansedata må være innlest før denne metoden kan benyttes")
+                                )
+                                .contains(p.avtale())
+                )
+                .findAny()
+                .isPresent();
+    }
+
+
 }

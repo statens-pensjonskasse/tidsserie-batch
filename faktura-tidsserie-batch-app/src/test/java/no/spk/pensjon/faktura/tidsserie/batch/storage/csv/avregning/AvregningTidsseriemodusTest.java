@@ -1,6 +1,8 @@
 package no.spk.pensjon.faktura.tidsserie.batch.storage.csv.avregning;
 
 import static java.time.LocalDate.now;
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static java.util.stream.Collectors.toList;
@@ -17,13 +19,18 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Stream;
 import java.util.zip.GZIPOutputStream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.TidsperiodeFactory;
 import no.spk.pensjon.faktura.tidsserie.batch.Tidsserienummer;
+import no.spk.pensjon.faktura.tidsserie.domain.avregning.Avregningsavtaleperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.avregning.Avregningsperiode;
+import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Avtalekoblingsperiode;
+import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medlemsdata;
+import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.MedlemsdataOversetter;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.AvregningsRegelsett;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.Regelperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
@@ -34,16 +41,21 @@ import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonspublikator;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Annoterbar;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
 import no.spk.pensjon.faktura.tidsserie.storage.GrunnlagsdataRepository;
+import no.spk.pensjon.faktura.tidsserie.storage.csv.AvtalekoblingOversetter;
 import no.spk.pensjon.faktura.tidsserie.storage.disruptor.ObservasjonsEvent;
 import no.spk.pensjon.faktura.tidsserie.util.TemporaryFolderWithDeleteVerification;
 
 import org.assertj.core.api.AbstractObjectArrayAssert;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public class AvregningTidsseriemodusTest {
     @Rule
     public final TemporaryFolderWithDeleteVerification temp = new TemporaryFolderWithDeleteVerification();
+
+    @Rule
+    public final ExpectedException exeption = ExpectedException.none();
 
     private final TidsperiodeFactory factory = mock(TidsperiodeFactory.class);
 
@@ -100,10 +112,8 @@ public class AvregningTidsseriemodusTest {
 
     @Test
     public void skal_inkludere_oversetter_for_avregningsperioder() throws IOException {
-        final File file = temp.newFile("avregningsperioder.csv.gz");
-        try (final OutputStream output = new GZIPOutputStream(new FileOutputStream(file))) {
-            output.write("AVREGNINGSPERIODE;2015;2015;98".getBytes("ASCII"));
-        }
+        writeAscii("avregningsperioder.csv.gz", "AVREGNINGSPERIODE;2015;2015;98");
+        writeAscii("avregningsavtaler.csv.gz", "#");
 
         final GrunnlagsdataRepository repository = modus.repository(temp.getRoot().toPath());
         assertThat(
@@ -113,7 +123,79 @@ public class AvregningTidsseriemodusTest {
                         .collect(toList())
         )
                 .hasSize(1);
+    }
 
+    @Test
+    public void skal_inkludere_oversetter_for_avregningsavtaleperioder() throws IOException {
+        writeAscii("avregningsperioder.csv.gz", "#");
+        writeAscii("avregningsavtaler.csv.gz", "AVREGNINGSAVTALE;2015;2015;1;200001");
+
+        final GrunnlagsdataRepository repository = modus.repository(temp.getRoot().toPath());
+        assertThat(
+                repository
+                        .referansedata()
+                        .filter(Avregningsavtaleperiode.class::isInstance)
+                        .collect(toList())
+        )
+                .hasSize(1);
+
+    }
+
+    @Test
+    public void skal_behandle_medlem_som_er_knyttet_til_avregningsavtale() throws IOException {
+        final int avregnetAvtale = 20001;
+        writeAscii("avregningsperioder.csv.gz", "#");
+        writeAscii("avregningsavtaler.csv.gz", "AVREGNINGSAVTALE;2015;2015;1;" + avregnetAvtale);
+        modus.repository(temp.getRoot().toPath()).referansedata().collect(toList());
+
+        final int medlemsavtale = avregnetAvtale;
+        final List<String> avtalekobling = asList(("1;54321012;54321;7654321;1942-03-01 00:00:00.0;;" + medlemsavtale + ";3010").split(";"));
+
+        Medlemsdata medlemsdata = new Medlemsdata(
+                singletonList(avtalekobling),
+                new HashMap<Class<?>, MedlemsdataOversetter<?>>() {{
+                    put(Avtalekoblingsperiode.class, new AvtalekoblingOversetter());
+                }}
+        );
+
+        assertThat(modus.behandleMedlem(medlemsdata)).isTrue();
+    }
+
+    @Test
+    public void skal_filtrere_bort_medlem_som_ikke_er_knyttet_til_avregningsavtale() throws IOException {
+        final int avregnetAvtale = 20002;
+        writeAscii("avregningsperioder.csv.gz", "#");
+        writeAscii("avregningsavtaler.csv.gz", "AVREGNINGSAVTALE;2015;2015;1;" + avregnetAvtale);
+        modus.repository(temp.getRoot().toPath()).referansedata().collect(toList());
+
+        final int medlemsavtale = 20001;
+        final List<String> avtalekobling = asList(("1;54321012;54321;7654321;1942-03-01 00:00:00.0;;" + medlemsavtale + ";3010").split(";"));
+
+        Medlemsdata medlemsdata = new Medlemsdata(
+                singletonList(avtalekobling),
+                new HashMap<Class<?>, MedlemsdataOversetter<?>>() {{
+                    put(Avtalekoblingsperiode.class, new AvtalekoblingOversetter());
+                }}
+        );
+
+        assertThat(modus.behandleMedlem(medlemsdata)).isFalse();
+    }
+
+    @Test
+    public void skal_repository_feile_dersom_avregningsperioder_mangler() throws IOException {
+        writeAscii("avregningsavtaler.csv.gz", "#");
+        exeption.expect(IllegalStateException.class);
+        exeption.expectMessage("avregningsperioder.csv.gz");
+        modus.repository(temp.getRoot().toPath()).referansedata();
+    }
+
+
+    @Test
+    public void skal_repository_feile_dersom_avregningsavtaler_mangler() throws IOException {
+        writeAscii("avregningsperioder.csv.gz", "#");
+        exeption.expect(IllegalStateException.class);
+        exeption.expectMessage("avregningsavtaler.csv.gz");
+        modus.repository(temp.getRoot().toPath()).referansedata();
     }
 
     @Test
@@ -195,5 +277,13 @@ public class AvregningTidsseriemodusTest {
         final CaptureAnnotasjon capture = new CaptureAnnotasjon();
         periode.annoter(capture);
         return capture.verdi;
+    }
+
+    private File writeAscii(String fileName, String innhold) throws IOException {
+        final File file = temp.newFile(fileName);
+        try (final OutputStream output = new GZIPOutputStream(new FileOutputStream(file))) {
+            output.write(innhold.getBytes("ASCII"));
+        }
+        return file;
     }
 }
