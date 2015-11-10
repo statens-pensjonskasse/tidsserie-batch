@@ -2,9 +2,9 @@ package no.spk.pensjon.faktura.tidsserie.batch.storage.csv.avregning;
 
 import static java.time.LocalDate.now;
 import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toSet;
 
 import java.nio.file.Path;
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -70,10 +70,20 @@ public class AvregningTidsseriemodus implements Tidsseriemodus {
     public GrunnlagsdataRepository repository(final Path directory) {
         validerFilFinnes(directory, "avregningsperioder.csv.gz");
         validerFilFinnes(directory, "avregningsavtaler.csv.gz");
-        avtaler = Optional.of(new HashSet<>());
-        return new CSVInput(directory)
+        final CSVInput grunnlag = new CSVInput(directory)
                 .addOversettere(new AvregningsperiodeOversetter())
-                .addOversettere(new AvregningsavtaleperiodeOversetter(avtale -> avtaler.get().add(avtale)));
+                .addOversettere(new AvregningsavtaleperiodeOversetter());
+        lastAvregningsavtaler(grunnlag);
+        return grunnlag;
+    }
+
+    private void lastAvregningsavtaler(CSVInput grunnlag) {
+        avtaler = Optional.of(
+                grunnlag.referansedata().filter(p -> p instanceof Avregningsavtaleperiode)
+                        .map(p -> (Avregningsavtaleperiode) p)
+                        .map(Avregningsavtaleperiode::avtale)
+                        .collect(toSet())
+        );
     }
 
     private void validerFilFinnes(Path directory, String file) {

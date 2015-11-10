@@ -26,15 +26,8 @@ public class AvregningsavtaleperiodeOversetter extends ReflectiveCsvOversetter<A
      */
     public static final String TYPEINDIKATOR = "AVREGNINGSAVTALE";
 
-    private Consumer<AvtaleId> avtaleIdConsumer = a -> {};
-
     public AvregningsavtaleperiodeOversetter() {
         super(TYPEINDIKATOR, AvregningsavtaleperiodeCsv.class);
-    }
-
-    public AvregningsavtaleperiodeOversetter(Consumer<AvtaleId> avtaleIdConsumer) {
-        super(TYPEINDIKATOR, AvregningsavtaleperiodeCsv.class);
-        this.avtaleIdConsumer = avtaleIdConsumer;
     }
 
     /**
@@ -45,7 +38,7 @@ public class AvregningsavtaleperiodeOversetter extends ReflectiveCsvOversetter<A
      */
     @Override
     protected Avregningsavtaleperiode transformer(final AvregningsavtaleperiodeCsv rad) {
-        final Avregningsavtaleperiode avregningsavtaleperiode = avregningsavtaleperiode()
+        return avregningsavtaleperiode()
                 .fraOgMed(
                         rad.premieAarFra.map(Integer::valueOf).map(Aarstall::new).get()
                 )
@@ -59,7 +52,5 @@ public class AvregningsavtaleperiodeOversetter extends ReflectiveCsvOversetter<A
                         rad.avtale.map(Integer::valueOf).map(AvtaleId::valueOf).get()
                 )
                 .bygg();
-        avtaleIdConsumer.accept(avregningsavtaleperiode.avtale());
-        return avregningsavtaleperiode;
     }
 }
