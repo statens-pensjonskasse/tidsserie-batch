@@ -1,20 +1,20 @@
 # PU-FAK-BA-10
 ## *faktura-tidsserie-batch*
-Batchen genererer tidsserier til CSV-format basert på filer generert av faktura-grunnlagsdata-batch.
+Batchen genererer tidsserier til CSV-format basert pÃ¥ filer generert av faktura-grunnlagsdata-batch.
 
 ### Moduler
 
 #### faktura-tidsserie-batch
-Applikasjonsartifakt. Lager .exe fil med embedded java for å kunne kjøre batchen på Windows.
+Applikasjonsartifakt. Lager .exe fil med embedded java for Ã¥ kunne kjÃ¸re batchen pÃ¥ Windows.
 
 #### faktura-tidsserie-batch-app
 Applikasjonskode. Inneholder koden som generer tidsserier til CSV-format. 
 
 #### faktura-tidsserie-batch-input
-Kode for å transformere grunnlagsdata på CSV-format til domene-objekter.
+Kode for Ã¥ transformere grunnlagsdata pÃ¥ CSV-format til domene-objekter.
 
 #### faktura-tidsserie-batch-overvaak
-Script for PU-FAK-BA-11. Ansvarlig for å generere batch-overvåking på vegne av PU-FAK-BA-10, basert på batch.log.
+Script for PU-FAK-BA-11. Ansvarlig for Ã¥ generere batch-overvÃ¥king pÃ¥ vegne av PU-FAK-BA-10, basert pÃ¥ batch.log.
 
 ### Systemdokumentasjon
 [Systemdokumentasjon - faktura-tidsserie-batch (pu_fak_ba_10)](http://wiki/confluence/x/BwMpDQ)
