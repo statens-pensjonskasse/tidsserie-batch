@@ -1,9 +1,8 @@
 package no.spk.pensjon.faktura.tidsserie.batch.main;
 
-import static java.lang.Math.min;
 import static java.time.Duration.of;
 import static java.time.Duration.ofMinutes;
-import static java.time.LocalTime.now;
+import static no.spk.pensjon.faktura.tidsserie.batch.TidsserieResulat.tidsserieResulat;
 import static no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchIdConstants.TIDSSERIE_PREFIX;
 
 import java.nio.file.Files;
@@ -26,7 +25,6 @@ import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.TidsserieArgumentsFactory;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
 import no.spk.pensjon.faktura.tidsserie.storage.GrunnlagsdataRepository;
-import no.spk.pensjon.faktura.tidsserie.storage.csv.CSVInput;
 
 import freemarker.template.Configuration;
 
@@ -65,9 +63,9 @@ public class TidsserieMain {
 
             Files.createDirectories(dataKatalog);
 
-            final Tidsseriemodus parameter = arguments.modus();
-            final TidsserieBackendService backend = new HazelcastBackend(arguments.getNodes(), parameter);
-            final GrunnlagsdataRepository input = new CSVInput(arguments.getInnkatalog().resolve(arguments.getGrunnlagsdataBatchId()));
+            final Tidsseriemodus modus = arguments.modus();
+            final TidsserieBackendService backend = new HazelcastBackend(arguments.getNodes(), modus);
+            final GrunnlagsdataRepository input = modus.repository(arguments.getInnkatalog().resolve(arguments.getGrunnlagsdataBatchId()));
             final GrunnlagsdataService overfoering = new GrunnlagsdataService(backend, input);
             final Configuration freemarkerConfiguration = TemplateConfigurationFactory.create();
 
@@ -80,11 +78,11 @@ public class TidsserieMain {
                     new Aarstall(arguments.getFraAar()),
                     new Aarstall(arguments.getTilAar()));
 
+            modus.completed(tidsserieResulat(dataKatalog).bygg());
+
             Duration duration = of(System.currentTimeMillis() - started, ChronoUnit.MILLIS);
 
             MetaDataWriter metaDataWriter = new MetaDataWriter(freemarkerConfiguration, batchLogKatalog);
-            metaDataWriter.createCsvGroupFiles(dataKatalog);
-            controller.opprettTriggerfil(metaDataWriter, dataKatalog);
             controller.opprettMetadata(metaDataWriter, dataKatalog, arguments, batchId, duration);
 
             controller.informerOmSuksess(batchLogKatalog);

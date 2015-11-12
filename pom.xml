@@ -11,7 +11,7 @@
 
     <groupId>no.spk.pensjon.faktura</groupId>
     <artifactId>faktura-tidsserie-batch-parent</artifactId>
-    <version>1.0.4</version>
+    <version>1.2.0</version>
 
     <modules>
         <module>faktura-tidsserie-batch-input</module>
@@ -22,8 +22,8 @@
 
     <properties>
         <project.build.sourceEncoding>CP1252</project.build.sourceEncoding>
-        <faktura.prognose.tidsserie.version>1.1.2</faktura.prognose.tidsserie.version>
-        <faktura-bootstrap-lib>1.0.6</faktura-bootstrap-lib>
+        <faktura.prognose.tidsserie.version>1.2.0</faktura.prognose.tidsserie.version>
+        <faktura-bootstrap-lib>1.0.9</faktura-bootstrap-lib>
     </properties>
 
     <build>

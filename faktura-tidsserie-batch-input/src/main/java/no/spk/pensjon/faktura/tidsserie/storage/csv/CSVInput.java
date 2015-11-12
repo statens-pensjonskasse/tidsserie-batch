@@ -1,5 +1,7 @@
 package no.spk.pensjon.faktura.tidsserie.storage.csv;
 
+import static java.util.stream.Collectors.toList;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -56,7 +58,7 @@ public class CSVInput implements GrunnlagsdataRepository {
      * @param oversetter ein ny oversetter
      * @return <code>this</code>
      */
-    CSVInput addOversettere(final CsvOversetter<?> oversetter) {
+    public CSVInput addOversettere(final CsvOversetter<?> oversetter) {
         this.oversettere.add(oversetter);
         return this;
     }
@@ -84,17 +86,17 @@ public class CSVInput implements GrunnlagsdataRepository {
      * Referansedatafiler blir plukka basert på at dei har filending <code>csv.gz</code> og ikkje
      * har filnavn medlemsdata.csv.gz.
      * <br>
-     * NB: Straumen må lukkast etter bruk for å unngå ressurslekkasjar via {@link java.nio.file.DirectoryStream}en
-     * som blir brukt for å liste ut filene.
      *
      * @return ein straum med stien til alle referansedatafiler generert av faktura-grunnlagsdata-batch
      * @throws IOException dersom ein uvent I/O-feil oppstår under utlisting av filene
      */
     Stream<Path> referansedataFiler() throws IOException {
-        return Files
+        try(final Stream<Path> filer = Files
                 .list(directory)
                 .filter(path -> path.toString().endsWith("csv.gz"))
-                .filter(path -> !path.toString().endsWith("medlemsdata.csv.gz"));
+                .filter(path -> !path.toString().endsWith("medlemsdata.csv.gz"))){
+            return filer.collect(toList()).stream();
+        }
     }
 
     private Path medlemsdataFil() {

@@ -1,10 +1,10 @@
 package no.spk.pensjon.faktura.tidsserie.batch;
 
 import static java.util.Objects.requireNonNull;
-import static java.util.stream.Stream.concat;
 
 import java.util.List;
 
+import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medlemsdata;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.Regelsett;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Feilhandtering;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade;
@@ -27,25 +27,25 @@ import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 public class GenererTidsserieCommand {
     private final TidsserieFactory grunnlagsdata;
     private final StorageBackend lagring;
-    private final Tidsseriemodus parameter;
+    private final Tidsseriemodus modus;
 
     /**
      * Konstruerer ein ny kommando som koordinerer mot dei angitte tenestene når tidsseriar pr medlem blir generert
      * av {@link #generer(List, Observasjonsperiode, Feilhandtering, long)}.
      *
      * @param grunnlagsdata tenesta som gir tilgang til grunnlagsdata som ikkje er medlemsspesifikke
-     * @param lagring       tenesta som lagrar observasjonane generert av
-     *                      {@link Tidsseriemodus#create(TidsserieFacade, long, StorageBackend)}
-     * @param modus         modusen som regulerer kva {@link Regelsett} som skal benyttast og korleis
-     *                      tidsserieobservasjonane skal byggast opp
+     * @param lagring tenesta som lagrar observasjonane generert av
+     * {@link Tidsseriemodus#create(TidsserieFacade, long, StorageBackend)}
+     * @param modus modusen som regulerer kva {@link Regelsett} som skal benyttast og korleis
+     * tidsserieobservasjonane skal byggast opp
      * @throws NullPointerException viss nokon av argumenta er <code>null</code>
      */
     public GenererTidsserieCommand(final TidsserieFactory grunnlagsdata,
-                                   final StorageBackend lagring,
-                                   final Tidsseriemodus modus) {
+            final StorageBackend lagring,
+            final Tidsseriemodus modus) {
         this.grunnlagsdata = requireNonNull(grunnlagsdata, "grunnlagsdata er påkrevd, men manglar");
         this.lagring = requireNonNull(lagring, "publikator er påkrevd, men manglar");
-        this.parameter = requireNonNull(modus, "modus er påkrevd, men manglar");
+        this.modus = requireNonNull(modus, "modus er påkrevd, men manglar");
     }
 
     /**
@@ -61,24 +61,24 @@ public class GenererTidsserieCommand {
      * Feil som oppstår i forkant av underlagsoppbygginga, som endel av prosesseringa av medlemsdatane, fører til at heile
      * tidsserien for det aktuelle medlemmet feilar, slike feil blir ikkje delegert vidare til <code>feilhandtering</code>.
      *
-     * @param medlemsdata    serialiserte medlemsdata for eit enkelt medlem
-     * @param periode        observasjonsperioda som bestemmer yttergrensene for tidsserien sine underlagsperioder sine
-     *                       frå og med- og til og med-datoar
+     * @param medlemsdata serialiserte medlemsdata for eit enkelt medlem
+     * @param periode observasjonsperioda som bestemmer yttergrensene for tidsserien sine underlagsperioder sine
+     * frå og med- og til og med-datoar
      * @param feilhandtering feilhandteringsstrategien som vil bli bedt om å handtere alle feil på stillingsforholdnivå
-     * @param serienummer    serienummer som alle eventar som blir sendt vidare for persistering skal tilhøyre
+     * @param serienummer serienummer som alle eventar som blir sendt vidare for persistering skal tilhøyre
      * @throws RuntimeException dersom deserialiseringa av <code>medlemsdata</code> eller prosessering på medlemsnivå feilar
      */
     public void generer(final List<List<String>> medlemsdata, final Observasjonsperiode periode,
-                        final Feilhandtering feilhandtering, final long serienummer) {
+            final Feilhandtering feilhandtering, final long serienummer) {
         final TidsserieFacade tidsserie = grunnlagsdata.create(feilhandtering);
-        tidsserie.generer(
-                grunnlagsdata.create(medlemsdata),
-                periode,
-                parameter.create(tidsserie, serienummer, lagring),
-                concat(
-                        parameter.regelsett().reglar(),
-                        grunnlagsdata.loennsdata()
-                )
-        );
+        final Medlemsdata medlem = grunnlagsdata.create(medlemsdata);
+        if (modus.behandleMedlem(medlem)) {
+            tidsserie.generer(
+                    medlem,
+                    periode,
+                    modus.create(tidsserie, serienummer, lagring),
+                    modus.referansedata(grunnlagsdata)
+            );
+        }
     }
 }
