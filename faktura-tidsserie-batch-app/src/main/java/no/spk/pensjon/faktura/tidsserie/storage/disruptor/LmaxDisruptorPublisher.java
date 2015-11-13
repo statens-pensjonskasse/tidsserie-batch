@@ -31,6 +31,7 @@ public class LmaxDisruptorPublisher implements Closeable, StorageBackend {
         this.fileTemplate = requireNonNull(fileTemplate, "fileTemplate er påkrevd, men var null");
     }
 
+    @SuppressWarnings("unchecked")
     public void start() {
         // The factory for the buffer
         final ObservasjonsEventFactory factory = new ObservasjonsEventFactory();

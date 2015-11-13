@@ -132,6 +132,7 @@ public class SPKMASTER11343_Verifikator {
                 .isEmpty();
     }
 
+    @SuppressWarnings("unchecked")
     private static AbstractIterableAssert<?, ? extends Iterable<?>, Object> assertDisjunction(Map<Object, Linje> a, Map<Object, Linje> b) {
         final Set<Object> tmp = new HashSet<>(a.keySet());
         tmp.removeAll(b.keySet());

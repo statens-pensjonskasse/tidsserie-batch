@@ -148,9 +148,10 @@ public class AvregningTidsseriemodusTest {
         writeAscii("avregningsavtaler.csv.gz", "AVREGNINGSAVTALE;2015;2015;1;" + avregnetAvtale);
         modus.repository(temp.getRoot().toPath()).referansedata().collect(toList());
 
-        final int medlemsavtale = avregnetAvtale;
-        final List<String> avtalekobling = asList(("1;54321012;54321;7654321;1942-03-01 00:00:00.0;;" + medlemsavtale + ";3010").split(";"));
+        final List<String> avtalekobling = asList(("1;54321012;54321;7654321;1942-03-01 00:00:00.0;;" + avregnetAvtale + ";3010").split(";"));
 
+
+        @SuppressWarnings({"serial"})
         Medlemsdata medlemsdata = new Medlemsdata(
                 singletonList(avtalekobling),
                 new HashMap<Class<?>, MedlemsdataOversetter<?>>() {{
@@ -171,6 +172,8 @@ public class AvregningTidsseriemodusTest {
         final int medlemsavtale = 20001;
         final List<String> avtalekobling = asList(("1;54321012;54321;7654321;1942-03-01 00:00:00.0;;" + medlemsavtale + ";3010").split(";"));
 
+
+        @SuppressWarnings({"serial"})
         Medlemsdata medlemsdata = new Medlemsdata(
                 singletonList(avtalekobling),
                 new HashMap<Class<?>, MedlemsdataOversetter<?>>() {{

@@ -308,20 +308,20 @@ public class AvregningformatMappingTest {
         }
         if (consumer instanceof UnderlagConsumer) {
             final UnderlagConsumer c = (UnderlagConsumer) consumer;
-            return populer(builder, c);
+            return populerFraUnderlag(builder, c);
         } else if (consumer instanceof UnderlagsperiodeConsumer) {
             final UnderlagsperiodeConsumer c = (UnderlagsperiodeConsumer) consumer;
-            return populer(builder, c);
+            return populerFraPeriode(builder, c);
         }
         return null;
     }
 
-    private Underlag populer(UnderlagsperiodeBuilder builder, UnderlagsperiodeConsumer c) {
+    private Underlag populerFraPeriode(UnderlagsperiodeBuilder builder, UnderlagsperiodeConsumer c) {
         c.accept(value, builder);
         return eitUnderlag(builder);
     }
 
-    private Underlag populer(UnderlagsperiodeBuilder builder, UnderlagConsumer c) {
+    private Underlag populerFraUnderlag(UnderlagsperiodeBuilder builder, UnderlagConsumer c) {
         final Underlag underlag = eitUnderlag(builder);
         c.accept(value, underlag);
         return underlag;
@@ -396,6 +396,8 @@ public class AvregningformatMappingTest {
         return args;
     }
 
+    
+    @SuppressWarnings({"serial"})
     private static Map<Object, Object> populators = new HashMap<Object, Object>() {
         {
             put(Observasjonsdato.class, fraUnderlag((Observasjonsdato value, Underlag underlag) -> underlag.annoter(Observasjonsdato.class, value)));

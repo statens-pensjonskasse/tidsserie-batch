@@ -38,18 +38,21 @@ class FileWriterObservasjonsConsumer implements ObservasjonsConsumer {
      */
     public void close() throws IOException {
         final List<IOException> feilVedLukking = new ArrayList<>();
-        writers.forEach((serie, writer) -> {
-            try (final Writer ignored = writer) {
-            } catch (final IOException e) {
-                feilVedLukking.add(e);
-            }
-        });
+        writers.forEach((serie, writer) -> close(writer, feilVedLukking));
         writers.clear();
 
         if (!feilVedLukking.isEmpty()) {
             final IOException e = new IOException("Lukking av " + feilVedLukking.size() + " CSV-filer feila.");
             feilVedLukking.forEach(e::addSuppressed);
             throw e;
+        }
+    }
+
+    private void close(FileWriter writer, List<IOException> feilVedLukking) {
+        try {
+            writer.close();
+        } catch (final IOException e) {
+            feilVedLukking.add(e);
         }
     }
 

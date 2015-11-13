@@ -5,7 +5,7 @@ import java.util.Optional;
 /**
  * @author Snorre E. Brekke - Computas
  */
-class AvtaleproduktCsv {
+class AvtaleProduktFraCsv {
     @CsvIndex(0)
     Optional<String> type;
     @CsvIndex(1)

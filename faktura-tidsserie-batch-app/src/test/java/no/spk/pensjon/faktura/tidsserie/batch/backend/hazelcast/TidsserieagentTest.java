@@ -2,6 +2,7 @@ package no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast;
 
 import static no.spk.pensjon.faktura.tidsserie.Datoar.dato;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -63,7 +64,7 @@ public class TidsserieagentTest {
 
     @Test
     public void skalSlaaOppPaakrevdeTenester() {
-        final Map mock = mock(Map.class);
+        final Map<String, Object> mock = spy(new HashMap<>());
         when(mock.get(TidsserieFactory.class.getSimpleName())).thenReturn(grunnlagsdata);
         when(mock.get(StorageBackend.class.getSimpleName())).thenReturn(lagring);
         when(mock.get(Tidsseriemodus.class.getSimpleName())).thenReturn(modus);

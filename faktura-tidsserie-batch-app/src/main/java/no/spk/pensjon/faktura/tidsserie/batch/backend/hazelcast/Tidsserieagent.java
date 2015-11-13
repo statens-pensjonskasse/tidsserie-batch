@@ -31,6 +31,8 @@ import org.slf4j.MDC;
  */
 class Tidsserieagent
         extends LifecycleMapperAdapter<String, List<List<String>>, String, Integer> implements HazelcastInstanceAware {
+    private final static long serialVersionUID = 1;
+
     public static final String MDC_SERIENUMMER = "serienummer";
     private final LocalDate foerstedato;
     private final LocalDate sistedato;

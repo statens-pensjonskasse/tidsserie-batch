@@ -12,19 +12,19 @@ import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Satser;
  * @author riv
  */
 public class PremiesatsBuilder {
-    private static String administrasjonsgebyr;
-    private static String medlem;
-    private static String arbeidsgiver;
+    private String administrasjonsgebyr;
+    private String medlem;
+    private String arbeidsgiver;
 
     public static PremiesatsBuilder premiesatsBuilder() {
         return new PremiesatsBuilder();
     }
 
-    public static Satser<Prosent> prosentsatser() {
+    public Satser<Prosent> prosentsatser() {
         return new Satser<>(prosent(arbeidsgiver), prosent(medlem), prosent(administrasjonsgebyr));
     }
 
-    public static Satser<Kroner> kronesatser() {
+    public Satser<Kroner> kronesatser() {
         return new Satser<>(kroner(parseInt(arbeidsgiver)), kroner(parseInt(medlem)), kroner(parseInt(administrasjonsgebyr)));
     }
 

@@ -124,7 +124,7 @@ public class DatavarehusformatTest {
                 .fraOgMed(dato("2000.01.01"))
                 .tilOgMed(dato("2000.01.31"))
                 .med(new Foedselsnummer(
-                        foedselsdato(dato("1980.01.01")),
+                        foedselsdato(19800101),
                         personnummer(1)
                 ))
                 .med(stillingsforhold(1L))

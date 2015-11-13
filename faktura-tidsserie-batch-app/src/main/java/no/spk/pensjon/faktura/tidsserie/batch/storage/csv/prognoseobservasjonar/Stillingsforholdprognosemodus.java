@@ -2,6 +2,7 @@ package no.spk.pensjon.faktura.tidsserie.batch.storage.csv.prognoseobservasjonar
 
 import java.text.NumberFormat;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -95,7 +96,7 @@ public class Stillingsforholdprognosemodus implements Tidsseriemodus {
                         .append(';')
                         .append(o.premiestatus().map(Premiestatus::kode).orElse("UKJENT"))
                         .append(';')
-                        .append(o.maaling(Aarsverk.class)
+                        .append(Optional.of(o.aarsverk())
                                         .map(Aarsverk::tilProsent)
                                         .map(Prosent::toDouble)
                                         .map(aarsverkformat()::format)

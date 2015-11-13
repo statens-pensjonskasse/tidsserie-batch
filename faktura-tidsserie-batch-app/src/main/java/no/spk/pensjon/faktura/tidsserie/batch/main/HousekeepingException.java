@@ -5,6 +5,7 @@ package no.spk.pensjon.faktura.tidsserie.batch.main;
  * @author Snorre E. Brekke - Computas
  */
 public class HousekeepingException extends Exception {
+    private final static long serialVersionUID = 1;
 
     public HousekeepingException(String message) {
         super(message);

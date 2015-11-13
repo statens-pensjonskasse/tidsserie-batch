@@ -10,6 +10,8 @@ import java.util.UUID;
  * @author Snorre E. Brekke - Computas
  */
 public class FileTemplate implements Serializable {
+    private final static long serialVersionUID = 1;
+
     private final String directory;
     private final String prefix;
     private final String suffix;
