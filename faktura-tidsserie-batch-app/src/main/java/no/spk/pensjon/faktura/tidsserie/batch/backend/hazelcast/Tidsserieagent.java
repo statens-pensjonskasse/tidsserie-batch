@@ -7,10 +7,10 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
-import no.spk.pensjon.faktura.tidsserie.batch.GenererTidsserieCommand;
-import no.spk.pensjon.faktura.tidsserie.batch.StorageBackend;
-import no.spk.pensjon.faktura.tidsserie.batch.TidsserieFactory;
-import no.spk.pensjon.faktura.tidsserie.batch.Tidsseriemodus;
+import no.spk.pensjon.faktura.tidsserie.core.GenererTidsserieCommand;
+import no.spk.pensjon.faktura.tidsserie.core.StorageBackend;
+import no.spk.pensjon.faktura.tidsserie.core.TidsserieFactory;
+import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Feilhandtering;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 
@@ -58,7 +58,7 @@ class Tidsserieagent
         final TidsserieFactory grunnlagsdata = lookup(userContext, TidsserieFactory.class);
         this.publisher = lookup(userContext, StorageBackend.class);
         this.modus = lookup(userContext, Tidsseriemodus.class);
-        this.kommando = new GenererTidsserieCommand(grunnlagsdata, publisher, modus);
+        this.kommando = modus.createTidsserieCommand(grunnlagsdata, publisher);
     }
 
     @Override

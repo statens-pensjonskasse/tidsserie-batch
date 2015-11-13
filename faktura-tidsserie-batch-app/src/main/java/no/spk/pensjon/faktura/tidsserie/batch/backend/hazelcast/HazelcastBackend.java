@@ -11,13 +11,13 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 
-import no.spk.pensjon.faktura.tidsserie.batch.FileTemplate;
-import no.spk.pensjon.faktura.tidsserie.batch.MedlemsdataUploader;
-import no.spk.pensjon.faktura.tidsserie.batch.StorageBackend;
-import no.spk.pensjon.faktura.tidsserie.batch.TidsserieBackendService;
-import no.spk.pensjon.faktura.tidsserie.batch.Tidsseriemodus;
+import no.spk.pensjon.faktura.tidsserie.batch.storage.disruptor.LmaxDisruptorPublisher;
+import no.spk.pensjon.faktura.tidsserie.batch.upload.FileTemplate;
+import no.spk.pensjon.faktura.tidsserie.batch.upload.MedlemsdataUploader;
+import no.spk.pensjon.faktura.tidsserie.batch.upload.TidsserieBackendService;
+import no.spk.pensjon.faktura.tidsserie.core.StorageBackend;
+import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
-import no.spk.pensjon.faktura.tidsserie.storage.disruptor.LmaxDisruptorPublisher;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IMap;
