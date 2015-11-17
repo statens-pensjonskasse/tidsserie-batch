@@ -1,16 +1,16 @@
 package no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast;
 
 import static no.spk.pensjon.faktura.tidsserie.Datoar.dato;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import no.spk.pensjon.faktura.tidsserie.batch.StorageBackend;
-import no.spk.pensjon.faktura.tidsserie.batch.TidsserieFactory;
-import no.spk.pensjon.faktura.tidsserie.batch.Tidsseriemodus;
+import no.spk.pensjon.faktura.tidsserie.core.StorageBackend;
+import no.spk.pensjon.faktura.tidsserie.core.TidsserieFactory;
+import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -63,7 +63,7 @@ public class TidsserieagentTest {
 
     @Test
     public void skalSlaaOppPaakrevdeTenester() {
-        final Map mock = mock(Map.class);
+        final Map<String, Object> mock = spy(new HashMap<>());
         when(mock.get(TidsserieFactory.class.getSimpleName())).thenReturn(grunnlagsdata);
         when(mock.get(StorageBackend.class.getSimpleName())).thenReturn(lagring);
         when(mock.get(Tidsseriemodus.class.getSimpleName())).thenReturn(modus);

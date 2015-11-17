@@ -3,7 +3,7 @@
     <parent>
         <artifactId>faktura-tidsserie-batch-parent</artifactId>
         <groupId>no.spk.pensjon.faktura</groupId>
-        <version>1.2.0</version>
+        <version>2.0.0.BETA1</version>
     </parent>
     <packaging>jar</packaging>
     <modelVersion>4.0.0</modelVersion>
@@ -40,6 +40,29 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>pl.project13.maven</groupId>
+                <artifactId>git-commit-id-plugin</artifactId>
+                <version>2.2.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <!-- se https://github.com/ktoso/maven-git-commit-id-plugin/ for dokumentasjon-->
+                    <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
+                    <dateFormatTimeZone>${user.timezone}</dateFormatTimeZone>
+                    <generateGitPropertiesFile>true</generateGitPropertiesFile>
+                    <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
+                    <format>properties</format>
+                    <skipPoms>true</skipPoms>
+                    <injectAllReactorProjects>false</injectAllReactorProjects>
+                    <commitIdGenerationMode>full</commitIdGenerationMode>
+                </configuration>
             </plugin>
         </plugins>
     </build>
