@@ -13,6 +13,7 @@ import no.spk.pensjon.faktura.tidsserie.batch.TidsserieResulat;
 import no.spk.pensjon.faktura.tidsserie.batch.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.batch.Tidsserienummer;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.AvregningsRegelsett;
+import no.spk.pensjon.faktura.tidsserie.domain.reglar.PrognoseRegelsett;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.Regelsett;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonspublikator;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade;
@@ -35,7 +36,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
 public class LiveTidsseriemodus implements Tidsseriemodus {
     private final CSVFormat outputFormat = new Datavarehusformat();
 
-    private final Regelsett reglar = new AvregningsRegelsett();
+    private final Regelsett reglar = new PrognoseRegelsett();
 
     private final Tidsserienummer nummer = Tidsserienummer.genererForDato(now());
 
