@@ -2,8 +2,8 @@ package no.spk.pensjon.faktura.tidsserie.batch.main;
 
 import static java.time.Duration.of;
 import static java.time.Duration.ofMinutes;
-import static no.spk.pensjon.faktura.tidsserie.batch.TidsserieResulat.tidsserieResulat;
 import static no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchIdConstants.TIDSSERIE_PREFIX;
+import static no.spk.pensjon.faktura.tidsserie.core.TidsserieResulat.tidsserieResulat;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,13 +16,12 @@ import no.spk.faktura.input.InvalidParameterException;
 import no.spk.faktura.input.UsageRequestedException;
 import no.spk.faktura.timeout.BatchTimeout;
 import no.spk.faktura.timeout.BatchTimeoutTaskrunner;
-import no.spk.pensjon.faktura.tidsserie.batch.FileTemplate;
-import no.spk.pensjon.faktura.tidsserie.batch.GrunnlagsdataService;
-import no.spk.pensjon.faktura.tidsserie.batch.TidsserieBackendService;
-import no.spk.pensjon.faktura.tidsserie.batch.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast.HazelcastBackend;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.TidsserieArgumentsFactory;
+import no.spk.pensjon.faktura.tidsserie.batch.upload.FileTemplate;
+import no.spk.pensjon.faktura.tidsserie.batch.upload.TidsserieBackendService;
+import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
 import no.spk.pensjon.faktura.tidsserie.storage.GrunnlagsdataRepository;
 

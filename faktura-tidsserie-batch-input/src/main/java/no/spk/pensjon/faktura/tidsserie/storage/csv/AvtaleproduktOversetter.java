@@ -5,10 +5,10 @@ import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.Datoar;
 import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleprodukt;
-import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Produktinfo;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Kroner;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt;
+import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produktinfo;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Prosent;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Risikoklasse;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Satser;
@@ -110,14 +110,14 @@ import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Satser;
  * </tbody>
  * </table>
  */
-public class AvtaleproduktOversetter extends ReflectiveCsvOversetter<AvtaleproduktCsv, Avtaleprodukt> implements CsvOversetter<Avtaleprodukt> {
+public class AvtaleproduktOversetter extends ReflectiveCsvOversetter<AvtaleProduktFraCsv, Avtaleprodukt> implements CsvOversetter<Avtaleprodukt> {
 
     public AvtaleproduktOversetter() {
-        super("AVTALEPRODUKT", AvtaleproduktCsv.class);
+        super("AVTALEPRODUKT", AvtaleProduktFraCsv.class);
     }
 
     @Override
-    protected Avtaleprodukt transformer(final AvtaleproduktCsv csvRad) {
+    protected Avtaleprodukt transformer(final AvtaleProduktFraCsv csvRad) {
         Prosent arbeidsgiverpremieProsent = csvRad.arbeidsgiverpremieProsent.map(Prosent::prosent).get();
         Prosent medlemspremieProsent = csvRad.medlemspremieProsent.map(Prosent::prosent).get();
         Prosent administrasjonsgebyrProsent = csvRad.administrasjonsgebyrProsent.map(Prosent::prosent).get();

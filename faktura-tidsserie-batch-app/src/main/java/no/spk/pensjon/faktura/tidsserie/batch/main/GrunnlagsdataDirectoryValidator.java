@@ -2,7 +2,7 @@ package no.spk.pensjon.faktura.tidsserie.batch.main;
 
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
-import static no.spk.pensjon.faktura.tidsserie.batch.Validators.require;
+import static no.spk.pensjon.faktura.tidsserie.core.Validators.require;
 
 import java.io.File;
 import java.io.FileInputStream;

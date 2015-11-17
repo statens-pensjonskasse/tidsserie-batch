@@ -5,10 +5,10 @@ import static java.util.Arrays.asList;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import no.spk.pensjon.faktura.tidsserie.batch.Tidsseriemodus;
-import no.spk.pensjon.faktura.tidsserie.batch.storage.csv.avregning.AvregningTidsseriemodus;
-import no.spk.pensjon.faktura.tidsserie.batch.storage.csv.prognoseobservasjonar.Stillingsforholdprognosemodus;
-import no.spk.pensjon.faktura.tidsserie.batch.storage.csv.underlagsperioder.LiveTidsseriemodus;
+import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
+import no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning.AvregningTidsseriemodus;
+import no.spk.pensjon.faktura.tidsserie.plugin.modus.prognoseobservasjonar.Stillingsforholdprognosemodus;
+import no.spk.pensjon.faktura.tidsserie.plugin.modus.underlagsperioder.LiveTidsseriemodus;
 
 /**
  * {@link Modus} representerer dei forskjellige modusane som brukaren

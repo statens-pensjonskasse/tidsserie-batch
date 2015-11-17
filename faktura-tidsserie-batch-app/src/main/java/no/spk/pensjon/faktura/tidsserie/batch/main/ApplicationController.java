@@ -8,10 +8,9 @@ import java.util.Map;
 import no.spk.faktura.input.BatchId;
 import no.spk.faktura.input.InvalidParameterException;
 import no.spk.faktura.input.UsageRequestedException;
-import no.spk.pensjon.faktura.tidsserie.batch.FileTemplate;
-import no.spk.pensjon.faktura.tidsserie.batch.GrunnlagsdataService;
-import no.spk.pensjon.faktura.tidsserie.batch.TidsserieBackendService;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
+import no.spk.pensjon.faktura.tidsserie.batch.upload.FileTemplate;
+import no.spk.pensjon.faktura.tidsserie.batch.upload.TidsserieBackendService;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
 
 import ch.qos.logback.classic.LoggerContext;
