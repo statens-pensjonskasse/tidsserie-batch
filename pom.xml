@@ -22,7 +22,7 @@
 
     <properties>
         <project.build.sourceEncoding>CP1252</project.build.sourceEncoding>
-        <faktura.prognose.tidsserie.version>2.0.0.BETA1-SNAPSHOT</faktura.prognose.tidsserie.version>
+        <faktura.prognose.tidsserie.version>2.0.0.BETA1</faktura.prognose.tidsserie.version>
         <faktura-bootstrap-lib>1.0.9</faktura-bootstrap-lib>
     </properties>
 
