@@ -7,10 +7,10 @@ import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
 
 /**
- * {@link CSVFormat} tilrettelegger for oppbygging av tidsseriemålingar på CSV-format.
+ * {@link CSVFormat} tilrettelegger for oppbygging av tidsseriemÃ¥lingar pÃ¥ CSV-format.
  * <br>
  * Formatet er spesifikt ansvarlig for kva kolonner CSV-formatet inneheld og uthenting/beregning av verdiar
- * for kvar kolonne for alle underlagsperioder som inngår i observasjonsunderlaga tidsserien er basert på.
+ * for kvar kolonne for alle underlagsperioder som inngÃ¥r i observasjonsunderlaga tidsserien er basert pÃ¥.
  *
  * @author Tarjei Skorgenes
  */
@@ -18,25 +18,25 @@ public interface CSVFormat {
     /**
      * Serialiserer <code>periode</code> til ein straum av kolonneverdiar.
      * <br>
-     * Kvar kolonne angitt av {@link #kolonnenavn()} skal få ein verdi uthenta frå <code>observasjonsunderlag</code>,
+     * Kvar kolonne angitt av {@link #kolonnenavn()} skal fÃ¥ ein verdi uthenta frÃ¥ <code>observasjonsunderlag</code>,
      * <code>perioder</code> enten direkte via desse sine annotasjonar, eller via {@link BeregningsRegel reglane} som
      * periodene er satt opp med.
      *
-     * @param observasjonsunderlag observasjonsunderlaget perioda tilhøyrer
-     * @param periode              underlagsperioda som inneheld annotasjonane og beregningsreglane som kolonneverdiane skal hentast frå eller utledast via
+     * @param observasjonsunderlag observasjonsunderlaget perioda tilhÃ¸yrer
+     * @param periode              underlagsperioda som inneheld annotasjonane og beregningsreglane som kolonneverdiane skal hentast frÃ¥ eller utledast via
      * @return ein straum av kolonneverdiar, ein pr kolonne angitt av {@link #kolonnenavn()}
      * @see #kolonnenavn()
      */
     Stream<Object> serialiser(Underlag observasjonsunderlag, Underlagsperiode periode);
 
     /**
-     * Returnerer ein straum som inneheld navnet til kvar kolonne som inngår i CSV-formatet.
+     * Returnerer ein straum som inneheld navnet til kvar kolonne som inngÃ¥r i CSV-formatet.
      * <br>
-     * Metoda forventast brukt til generering av header-linje i filer der dei serialiserte målingane
+     * Metoda forventast brukt til generering av header-linje i filer der dei serialiserte mÃ¥lingane
      * {@link #serialiser(Underlag, Underlagsperiode)} genererer, blir lagra.
      *
      * @return ein straum med kolonnenavn for CSV-formatet, ei kolonne pr verdi som
-     * {@link #serialiser(Underlag, Underlagsperiode)} returnerer, angitt i samme rekkefølge
+     * {@link #serialiser(Underlag, Underlagsperiode)} returnerer, angitt i samme rekkefÃ¸lge
      */
     Stream<String> kolonnenavn();
 }

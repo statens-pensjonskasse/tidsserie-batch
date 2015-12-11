@@ -77,7 +77,7 @@ public class TidsserieArgumentsFactoryTest {
         String path = createTestFolders();
 
         exception.expect(InvalidParameterException.class);
-        exception.expectMessage("'-fraAar' kan ikke være større enn '-tilAar'");
+        exception.expectMessage("'-fraAar' kan ikke vÃ¦re stÃ¸rre enn '-tilAar'");
         exception.expectMessage("2009 > 2008");
 
         new TidsserieArgumentsFactory().create("-b", "test", "-o", path, "-i", path, "-log", path, "-fraAar", "2009", "-tilAar", "2008");

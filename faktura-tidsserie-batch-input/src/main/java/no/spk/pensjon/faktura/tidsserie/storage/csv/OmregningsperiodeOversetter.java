@@ -6,17 +6,17 @@ import no.spk.pensjon.faktura.tidsserie.domain.loennsdata.Omregningsperiode;
 
 /**
  * {@link OmregningsperiodeOversetter} representerer algoritma
- * for å mappe om og konvertere omregningsperioder til
+ * for Ã¥ mappe om og konvertere omregningsperioder til
  * {@link no.spk.pensjon.faktura.tidsserie.domain.loennsdata.Omregningsperiode}
  * <p>
- * Informasjon henta frå statlige lønnstrinnperioder skal inneholde følgjande verdiar, alle representert som tekst:
+ * Informasjon henta frÃ¥ statlige lÃ¸nnstrinnperioder skal inneholde fÃ¸lgjande verdiar, alle representert som tekst:
  * <table summary="">
  * <thead>
  * <tr>
  * <td>Index</td>
  * <td>Verdi / Format</td>
  * <td>Beskrivelse</td>
- * <td>Blir typisk henta frå</td>
+ * <td>Blir typisk henta frÃ¥</td>
  * </tr>
  * </thead>
  * <tbody>
@@ -29,7 +29,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.loennsdata.Omregningsperiode;
  * <tr>
  * <td>1</td>
  * <td>yyyy.MM.dd</td>
- * <td>Frå og med-dato</td>
+ * <td>FrÃ¥ og med-dato</td>
  * <td>TORT024.DAT_GYLDIG_FOM</td>
  * </tr>
  * <tr>
@@ -41,7 +41,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.loennsdata.Omregningsperiode;
  * <tr>
  * <td>3</td>
  * <td>Integer</td>
- * <td>Grunnbeløpet</td>
+ * <td>GrunnbelÃ¸pet</td>
  * <td>TORT023.BEL_G</td>
  * </tr>
  * </tbody>

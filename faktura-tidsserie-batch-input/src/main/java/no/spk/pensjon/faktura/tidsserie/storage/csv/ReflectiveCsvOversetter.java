@@ -3,11 +3,11 @@ package no.spk.pensjon.faktura.tidsserie.storage.csv;
 import java.util.List;
 
 /**
- * Hjelpeklasse for å fjerne nødvendigheten av å implementere {@link #supports(List)} support} for klasser som ønsker å benytte {@link StringListToObjectFactory}.
+ * Hjelpeklasse for Ã¥ fjerne nÃ¸dvendigheten av Ã¥ implementere {@link #supports(List)} support} for klasser som Ã¸nsker Ã¥ benytte {@link StringListToObjectFactory}.
  * @author Snorre E. Brekke - Computas
  * @see CsvOversetter
  * @param <C> klassen som brukes for overgangen fra en liste med strenger til T
- * @param <T> den endelige resulattypen når en strengliste oversettes
+ * @param <T> den endelige resulattypen nÃ¥r en strengliste oversettes
  */
 public abstract class ReflectiveCsvOversetter<C, T>{
     private final StringListToObjectFactory<C> factory;
@@ -19,7 +19,7 @@ public abstract class ReflectiveCsvOversetter<C, T>{
     /**
      * Default implementasjon som kan brukes for klasser som arver fra {@link ReflectiveCsvOversetter} og samtidig implementerer {@link CsvOversetter}
      * @param rad rad som skal oversettes
-     * @return tru dersom raden er støttet av oversetteren
+     * @return tru dersom raden er stÃ¸ttet av oversetteren
      */
     public boolean supports(List<String> rad) {
         return factory.supports(rad);
@@ -36,7 +36,7 @@ public abstract class ReflectiveCsvOversetter<C, T>{
     }
 
     /**
-     * @param csvRad instans som holder på relevant data for å kunne lage T
+     * @param csvRad instans som holder pÃ¥ relevant data for Ã¥ kunne lage T
      * @return T
      */
     protected abstract T transformer(C csvRad);

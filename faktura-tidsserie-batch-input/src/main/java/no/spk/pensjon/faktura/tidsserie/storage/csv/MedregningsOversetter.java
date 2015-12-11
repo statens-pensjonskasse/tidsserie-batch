@@ -12,10 +12,10 @@ import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medregningsperiode;
 
 /**
  * {@link MedregningsOversetter} representerer algoritma
- * for å mappe om og konvertere medregningar til
+ * for Ã¥ mappe om og konvertere medregningar til
  * {@link no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medregningsperiode}
  * <p>
- * Informasjon henta frå medregningane skal inneholde følgjande verdiar, alle representert som tekst:
+ * Informasjon henta frÃ¥ medregningane skal inneholde fÃ¸lgjande verdiar, alle representert som tekst:
  * <table summary="">
  * <thead>
  * <tr>
@@ -35,7 +35,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medregningsperiode;
  * <tr>
  * <td>1</td>
  * <td>yyyy.MM.dd</td>
- * <td>Fødselsdato for medlem</td>
+ * <td>FÃ¸dselsdato for medlem</td>
  * <td>TORT014.DAT_KUNDE_FOEDT_NUM</td>
  * </tr>
  * <tr>
@@ -53,7 +53,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medregningsperiode;
  * <tr>
  * <td>4</td>
  * <td>yyyy.MM.dd</td>
- * <td>Frå og med-dato</td>
+ * <td>FrÃ¥ og med-dato</td>
  * <td>TORT014.DAT_FRA</td>
  * </tr>
  * <tr>
@@ -65,13 +65,13 @@ import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medregningsperiode;
  * <tr>
  * <td>6</td>
  * <td>2-sifra kode</td>
- * <td>Medregninskoda som nærmare beskriv kva type medregning det er snakk om</td>
+ * <td>Medregninskoda som nÃ¦rmare beskriv kva type medregning det er snakk om</td>
  * <td>TORT014.TYP_KODE</td>
  * </tr>
  * <tr>
  * <td>7</td>
  * <td>Integer</td>
- * <td>Lønn</td>
+ * <td>LÃ¸nn</td>
  * <td>TORT014.BEL_LONN</td>
  * </tr>
  * </tbody>

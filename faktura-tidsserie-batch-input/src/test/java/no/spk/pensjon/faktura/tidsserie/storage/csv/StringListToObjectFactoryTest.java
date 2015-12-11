@@ -24,7 +24,7 @@ public class StringListToObjectFactoryTest {
     @Test
     public void skalKreveMinstEitObligatoriskFelt() {
         exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("Typen 'WrongKunValgfrieFelt' må inneholde minst eit obligatorisk felt.");
+        exception.expectMessage("Typen 'WrongKunValgfrieFelt' mÃ¥ inneholde minst eit obligatorisk felt.");
         new StringListToObjectFactory<>("TYPE", WrongKunValgfrieFelt.class);
     }
 
@@ -32,7 +32,7 @@ public class StringListToObjectFactoryTest {
     public void skalAvviseValgfrieKolonnerFramomObligatoriskeKolonner() {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("Feltet 'valgfritt1' kan ikkje ligge framfor eit obligatorisk felt.");
-        exception.expectMessage("Valgfrie felt er kun støtta bakom typens siste obligatoriske felt");
+        exception.expectMessage("Valgfrie felt er kun stÃ¸tta bakom typens siste obligatoriske felt");
         new StringListToObjectFactory<>(
                 "TYPE",
                 WrongValgfrittFeltMellomObligatoriskefelt.class
@@ -56,14 +56,14 @@ public class StringListToObjectFactoryTest {
     @Test
     public void testRequiresOptionalStringField() throws Exception {
         exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("Feltet 'type' må ha typen Optional<String>");
+        exception.expectMessage("Feltet 'type' mÃ¥ ha typen Optional<String>");
         new StringListToObjectFactory<>("WrongType", WrongType.class);
     }
 
     @Test
     public void testRequiresStringGenericField() throws Exception {
         exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("Feltet 'type' må ha typen Optional<String>");
+        exception.expectMessage("Feltet 'type' mÃ¥ ha typen Optional<String>");
         new StringListToObjectFactory<>("WrongGenericType", WrongGenericType.class);
     }
 
@@ -71,8 +71,8 @@ public class StringListToObjectFactoryTest {
     public void testRequiresEnoughColumns() throws Exception {
         StringListToObjectFactory<ParsableType> factory = new StringListToObjectFactory<>("TYPE", ParsableType.class);
         exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("Rader av typen <TYPE> må inneholde minimum <4> kolonner, ");
-        exception.expectMessage("med følgende verdier på angitt index:");
+        exception.expectMessage("Rader av typen <TYPE> mÃ¥ inneholde minimum <4> kolonner, ");
+        exception.expectMessage("med fÃ¸lgende verdier pÃ¥ angitt index:");
         exception.expectMessage("typeindikator(0), field1(1), field2(3)");
         factory.transform(Arrays.asList("TYPE", "123"));
     }

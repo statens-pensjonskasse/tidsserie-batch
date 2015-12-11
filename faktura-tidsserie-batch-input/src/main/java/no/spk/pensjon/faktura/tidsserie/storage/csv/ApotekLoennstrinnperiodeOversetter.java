@@ -9,10 +9,10 @@ import no.spk.pensjon.faktura.tidsserie.domain.loennsdata.ApotekLoennstrinnperio
 
 /**
  * {@link ApotekLoennstrinnperiodeOversetter} representerer algoritma
- * for å mappe om og konvertere statlige lønnstrinn til
+ * for Ã¥ mappe om og konvertere statlige lÃ¸nnstrinn til
  * {@link no.spk.pensjon.faktura.tidsserie.domain.loennsdata.ApotekLoennstrinnperiode}
  * <p>
- * Informasjon henta frå lønnstrinnperioder tilknytta Apotekordninga skal inneholde følgjande verdiar, alle representert
+ * Informasjon henta frÃ¥ lÃ¸nnstrinnperioder tilknytta Apotekordninga skal inneholde fÃ¸lgjande verdiar, alle representert
  * som tekst:
  * <table summary="">
  * <thead>
@@ -20,20 +20,20 @@ import no.spk.pensjon.faktura.tidsserie.domain.loennsdata.ApotekLoennstrinnperio
  * <td>Index</td>
  * <td>Verdi / Format</td>
  * <td>Beskrivelse</td>
- * <td>Blir typisk henta frå</td>
+ * <td>Blir typisk henta frÃ¥</td>
  * </tr>
  * </thead>
  * <tbody>
  * <tr>
  * <td>0</td>
  * <td>POA_LTR</td>
- * <td>Typeindikator som identifiserer rada som ei statlig lønnstrinnperiode</td>
+ * <td>Typeindikator som identifiserer rada som ei statlig lÃ¸nnstrinnperiode</td>
  * <td>Hardkoda</td>
  * </tr>
  * <tr>
  * <td>1</td>
  * <td>yyyy.MM.dd</td>
- * <td>Frå og med-dato</td>
+ * <td>FrÃ¥ og med-dato</td>
  * <td>TORT012.DAT_GYLDIG_FOM</td>
  * </tr>
  * <tr>
@@ -45,7 +45,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.loennsdata.ApotekLoennstrinnperio
  * <tr>
  * <td>1</td>
  * <td>1 - 3-sifra tall</td>
- * <td>Lønnstrinn</td>
+ * <td>LÃ¸nnstrinn</td>
  * <td>TORT012.NUM_LTR</td>
  * </tr>
  * <tr>
@@ -57,7 +57,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.loennsdata.ApotekLoennstrinnperio
  * <tr>
  * <td>5</td>
  * <td>Integer</td>
- * <td>Kronebeløpet lønnstrinnet tilsvarar innanfor den aktuelle tidsperioda</td>
+ * <td>KronebelÃ¸pet lÃ¸nnstrinnet tilsvarar innanfor den aktuelle tidsperioda</td>
  * <td>TORT012.BEL_LONN</td>
  * </tr>
  * </tbody>

@@ -10,10 +10,10 @@ import com.lmax.disruptor.EventHandler;
  *
  *
  * For event har tilknytta eit serienummer som kan benyttast av {@link ObservasjonsConsumer}-implementasjonar
- * til rute eventar på ein slik måte at eventar tilhøyrande samme serie blir samlokaliserte og liggande i samme
- * rekkefølge som dei vart mottatt frå klienten i. Dette er ønskelig for eksempel for å sikre at eventar tilhøyrande
- * samme stillingsforhold blir liggande i samme fil i kronologisk rekkefølge for live-tidsserien då det forenklar
- * feilsøking radikalt.
+ * til rute eventar pÃ¥ ein slik mÃ¥te at eventar tilhÃ¸yrande samme serie blir samlokaliserte og liggande i samme
+ * rekkefÃ¸lge som dei vart mottatt frÃ¥ klienten i. Dette er Ã¸nskelig for eksempel for Ã¥ sikre at eventar tilhÃ¸yrande
+ * samme stillingsforhold blir liggande i samme fil i kronologisk rekkefÃ¸lge for live-tidsserien dÃ¥ det forenklar
+ * feilsÃ¸king radikalt.
  *
  * @see ObservasjonsEvent
  */

@@ -84,7 +84,7 @@ public class GrunnlagsdataDirectoryValidatorTest {
         GrunnlagsdataDirectoryValidator validator = new GrunnlagsdataDirectoryValidator(grunnlagsdataBatchKatalog.toPath());
 
         exception.expect(GrunnlagsdataException.class);
-        exception.expectMessage("Følgende filer er oppført i " + MD5_CHECKSUMS_FILENAME + " men finnes ikke i ");
+        exception.expectMessage("FÃ¸lgende filer er oppfÃ¸rt i " + MD5_CHECKSUMS_FILENAME + " men finnes ikke i ");
 
         validator.validate();
     }
@@ -106,7 +106,7 @@ public class GrunnlagsdataDirectoryValidatorTest {
         GrunnlagsdataDirectoryValidator validator = new GrunnlagsdataDirectoryValidator(grunnlagsdataBatchKatalog.toPath());
 
         exception.expect(GrunnlagsdataException.class);
-        exception.expectMessage("Følgende filer har en annen m5d-sjekksum enn oppgitt");
+        exception.expectMessage("FÃ¸lgende filer har en annen m5d-sjekksum enn oppgitt");
 
         validator.validate();
     }

@@ -25,7 +25,7 @@ public class LmaxDisruptorPublisher implements Closeable, StorageBackend {
 
     public LmaxDisruptorPublisher(final ExecutorService executor, final FileTemplate fileTemplate) {
         this.executor = executor;
-        this.fileTemplate = requireNonNull(fileTemplate, "fileTemplate er påkrevd, men var null");
+        this.fileTemplate = requireNonNull(fileTemplate, "fileTemplate er pÃ¥krevd, men var null");
     }
 
     @SuppressWarnings("unchecked")

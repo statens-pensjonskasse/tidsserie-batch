@@ -65,7 +65,7 @@ public class GrunnlagsdataDirectoryValidator {
                 List::isEmpty,
                 l -> new GrunnlagsdataException(
                         l.stream()
-                                .collect(joining(", ", "Følgende filer er oppført i " + MD5_CHECKSUMS_FILENAME +
+                                .collect(joining(", ", "FÃ¸lgende filer er oppfÃ¸rt i " + MD5_CHECKSUMS_FILENAME +
                                         " men finnes ikke i " + grunnlagsdataBatchKatalog.toFile().getAbsolutePath(), ""))));
     }
 
@@ -77,7 +77,7 @@ public class GrunnlagsdataDirectoryValidator {
                         .collect(toList()),
                 List::isEmpty,
                 l -> new GrunnlagsdataException(l.stream()
-                        .collect(joining(", ", "Følgende filer har en annen m5d-sjekksum enn oppgitt i " + MD5_CHECKSUMS_FILENAME + ": ", ""))));
+                        .collect(joining(", ", "FÃ¸lgende filer har en annen m5d-sjekksum enn oppgitt i " + MD5_CHECKSUMS_FILENAME + ": ", ""))));
     }
 
     private void assertChecksumfileExists(Path checksumsFile) {

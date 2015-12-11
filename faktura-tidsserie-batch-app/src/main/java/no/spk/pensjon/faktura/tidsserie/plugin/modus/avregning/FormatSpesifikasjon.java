@@ -22,20 +22,20 @@ import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
 
 /**
- * Støtteklasse for spesifisering av nye kolonnebaserte tidsserieformat.
+ * StÃ¸tteklasse for spesifisering av nye kolonnebaserte tidsserieformat.
  * <br>
- * Spesifikasjonar av nye format må arve frå denne klassa og implementere {@link #definer()} for å definere
- * opp kva kolonne som formatet støttar.
+ * Spesifikasjonar av nye format mÃ¥ arve frÃ¥ denne klassa og implementere {@link #definer()} for Ã¥ definere
+ * opp kva kolonne som formatet stÃ¸ttar.
  * <br>
- * Kvar kolonne blir spesifisert ved å kalle {@link #kolonne(int, String, KolonneMapper)}. Kolonner kan og
- * markerast som obligatoriske ved å kalle {@link KolonneSpesifikasjon#obligatorisk()} på kolonnespesifikasjonen
- * returnert frå {@link #kolonne(int, String, KolonneMapper)}.
+ * Kvar kolonne blir spesifisert ved Ã¥ kalle {@link #kolonne(int, String, KolonneMapper)}. Kolonner kan og
+ * markerast som obligatoriske ved Ã¥ kalle {@link KolonneSpesifikasjon#obligatorisk()} pÃ¥ kolonnespesifikasjonen
+ * returnert frÃ¥ {@link #kolonne(int, String, KolonneMapper)}.
  * <br>
- * Spesifikasjonen handhevar følgjande konsistensreglar:
+ * Spesifikasjonen handhevar fÃ¸lgjande konsistensreglar:
  * <ul>
- * <li>Det må eksistere minst eit kolonne</li>
+ * <li>Det mÃ¥ eksistere minst eit kolonne</li>
  * <li>Det kan kun eksistere ei kolonne pr kolonnenummer</li>
- * <li>Det kan ikkje eksistere gap mellom kolonnenummera i spesifikasjonen, om det blir lagt inn 4 kolonner må dei ha nummer 1 til 4 uten gap mellom kolonnene.</li>
+ * <li>Det kan ikkje eksistere gap mellom kolonnenummera i spesifikasjonen, om det blir lagt inn 4 kolonner mÃ¥ dei ha nummer 1 til 4 uten gap mellom kolonnene.</li>
  * </ul>
  * <br>
  *
@@ -55,7 +55,7 @@ abstract class FormatSpesifikasjon {
 
         if (kolonner.isEmpty()) {
             throw new IllegalArgumentException(
-                    "Spesifikasjonen må inneholde minst ei kolonne"
+                    "Spesifikasjonen mÃ¥ inneholde minst ei kolonne"
             );
         }
         if (kolonnenummer().min(Integer::compare).get() > 1) {
@@ -77,10 +77,10 @@ abstract class FormatSpesifikasjon {
         kolonnenummer().reduce((a, b) -> {
             if (b - a > 1) {
                 throw new IllegalArgumentException(
-                        "Spesifikasjonen må inneholde ein definisjon for alle kolonnenummer mellom kolonne 1"
+                        "Spesifikasjonen mÃ¥ inneholde ein definisjon for alle kolonnenummer mellom kolonne 1"
                                 + " og kolonne "
                                 + kolonnenummer().max(Integer::compare).get()
-                                + ".\nDet vart oppdaga eit gap på "
+                                + ".\nDet vart oppdaga eit gap pÃ¥ "
                                 + (b - a - 1)
                                 + " kolonne(r) mellom kolonne "
                                 + a
@@ -98,7 +98,7 @@ abstract class FormatSpesifikasjon {
     /**
      * Navnet for alle kolonnene som er definert i formatet.
      *
-     * @return alle kolonnenavna som er definert opp, sortert i henhold til kolonnenummer, med kolonne 1 sitt navn først
+     * @return alle kolonnenavna som er definert opp, sortert i henhold til kolonnenummer, med kolonne 1 sitt navn fÃ¸rst
      */
     public Stream<String> kolonnenavn() {
         return kolonner
@@ -107,10 +107,10 @@ abstract class FormatSpesifikasjon {
     }
 
     /**
-     * Genererer ein straum av serialiserte verdiar utleda frå underlaget og underlagsperioda, for kvar kolonne
+     * Genererer ein straum av serialiserte verdiar utleda frÃ¥ underlaget og underlagsperioda, for kvar kolonne
      * definert i spesifikasjonen.
      *
-     * @param u  observasjonsunderlaget som underlagperioda tilhøyrer
+     * @param u  observasjonsunderlaget som underlagperioda tilhÃ¸yrer
      * @param up underlagsperioda som skal serialiserast til ei rad i CSV-fila spesifikasjonen definerer formatet til
      * @return ein straum av serialiserte verdiar for underlagsperioda i henhold til formatspesifikasjonen
      */
@@ -123,13 +123,13 @@ abstract class FormatSpesifikasjon {
     }
 
     /**
-     * Spesifiserer kva kolonna på posisjon {@code kolonneNummer} heiter og korleis rader i formatet skal populere
+     * Spesifiserer kva kolonna pÃ¥ posisjon {@code kolonneNummer} heiter og korleis rader i formatet skal populere
      * kolonna med verdiar.
      *
-     * @param kolonneNummer tall som indikerer kvar kolonna skal plasserast i output-formatet, startar på kolonne nr 1
-     * @param name          navnet på kolonna, blir typisk brukt i headerrada for å indikere kva kolonna heiter
-     * @param mapper        mappingstrategi for å populere kolonna med verdiar
-     * @return kolonnespesifikasjonen, kan brukast for å indikere at kolonna er {@link KolonneSpesifikasjon#obligatorisk()}
+     * @param kolonneNummer tall som indikerer kvar kolonna skal plasserast i output-formatet, startar pÃ¥ kolonne nr 1
+     * @param name          navnet pÃ¥ kolonna, blir typisk brukt i headerrada for Ã¥ indikere kva kolonna heiter
+     * @param mapper        mappingstrategi for Ã¥ populere kolonna med verdiar
+     * @return kolonnespesifikasjonen, kan brukast for Ã¥ indikere at kolonna er {@link KolonneSpesifikasjon#obligatorisk()}
      */
     protected KolonneSpesifikasjon kolonne(int kolonneNummer, String name, KolonneMapper mapper) {
         final KolonneSpesifikasjon kolonne = new KolonneSpesifikasjon(kolonneNummer, name, mapper);
@@ -218,11 +218,11 @@ abstract class FormatSpesifikasjon {
     }
 
     /**
-     * {@link ErrorDetector} fangar feil og held oversikt over kor mange feil som har oppstått ved
+     * {@link ErrorDetector} fangar feil og held oversikt over kor mange feil som har oppstÃ¥tt ved
      * serialisering av ei enkelt {@link Underlagsperiode}.
      * <br>
      * I etterkant av at underlagsperioda er ferdig serialisert, kan antall feil hentast ut og leggast ved den serialiserte
-     * representasjonen av rada for å markere kva rader det er dårlig datakvalitet på og ikkje.
+     * representasjonen av rada for Ã¥ markere kva rader det er dÃ¥rlig datakvalitet pÃ¥ og ikkje.
      *
      * @since 1.2.0
      */
@@ -248,7 +248,7 @@ abstract class FormatSpesifikasjon {
 
     /**
      * {@link KolonneSpesifikasjon} representerer ei kolonne i CSV-formatet med mappingstrategi for korleis hente ut
-     * verdiar for kolonna frå eit observasjonsunderlag eller ei underlagsperiode.
+     * verdiar for kolonna frÃ¥ eit observasjonsunderlag eller ei underlagsperiode.
      *
      * @since 1.2.0
      */
@@ -296,8 +296,8 @@ abstract class FormatSpesifikasjon {
     }
 
     /**
-     * {@link KolonneMapper} representerer mappingstrategien for å populere ei kolonne definert via
-     * {@link FormatSpesifikasjon#kolonne(int, String, KolonneMapper)} med data henta frå eit underlag eller
+     * {@link KolonneMapper} representerer mappingstrategien for Ã¥ populere ei kolonne definert via
+     * {@link FormatSpesifikasjon#kolonne(int, String, KolonneMapper)} med data henta frÃ¥ eit underlag eller
      * ei underlagsperiode.
      *
      * @since 1.2.0

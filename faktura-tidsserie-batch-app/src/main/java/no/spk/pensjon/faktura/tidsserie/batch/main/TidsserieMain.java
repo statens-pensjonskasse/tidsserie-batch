@@ -31,8 +31,8 @@ import freemarker.template.Configuration;
  * Batch som genererer tidsseriar for forenkla fakturering fastsats.
  * <br>
  * Batchen er avhengig av datasett generert av faktura-grunnlagsdata-batch. Datafilene den genererer blir lest inn av
- * faktura-tidsserie-batch, lasta opp til ein Hazelcast-basert in-memory backend og deretter brukt for å
- * generere tidsseriar på stillingsforholdnivå pr premieår pr observasjonsdato.
+ * faktura-tidsserie-batch, lasta opp til ein Hazelcast-basert in-memory backend og deretter brukt for Ã¥
+ * generere tidsseriar pÃ¥ stillingsforholdnivÃ¥ pr premieÃ¥r pr observasjonsdato.
  * <br>
  *
  * @author Snorre E. Brekke - Computas

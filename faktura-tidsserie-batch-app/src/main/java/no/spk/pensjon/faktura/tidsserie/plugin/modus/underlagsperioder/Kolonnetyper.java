@@ -6,8 +6,8 @@ import java.util.Optional;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Kroner;
 
 /**
- * {@link Kolonnetyper} inneheld støttefunksjonar for serialisering av
- * dei forskjellige verditypene som kontrakta for DVH-formatet støttar.
+ * {@link Kolonnetyper} inneheld stÃ¸ttefunksjonar for serialisering av
+ * dei forskjellige verditypene som kontrakta for DVH-formatet stÃ¸ttar.
  *
  * @author Tarjei Skorgenes
  */

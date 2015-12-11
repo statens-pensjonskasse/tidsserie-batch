@@ -15,8 +15,8 @@ import no.spk.faktura.input.WritableDirectoryValidator;
 import com.beust.jcommander.ParameterException;
 
 /**
- * Validerer programargumenter som har avhengigheter til hverandre, f.eks. at et argument ikke kan være større enn ett annet.
- * Før validering forsøker først {@link #validate(ProgramArguments)} å finne grunnlagsdata-katalog basert på innkatalog til innkatalogen.
+ * Validerer programargumenter som har avhengigheter til hverandre, f.eks. at et argument ikke kan vÃ¦re stÃ¸rre enn ett annet.
+ * FÃ¸r validering forsÃ¸ker fÃ¸rst {@link #validate(ProgramArguments)} Ã¥ finne grunnlagsdata-katalog basert pÃ¥ innkatalog til innkatalogen.
  * @author Snorre E. Brekke - Computas
  * @see TidsserieArgumentsFactory
  */
@@ -27,7 +27,7 @@ class PostParseValidation implements PostParseValidator<ProgramArguments>{
         }
 
         if (programArguments.fraAar > programArguments.tilAar) {
-            throw new ParameterException("'-fraAar' kan ikke være større enn '-tilAar' (" +
+            throw new ParameterException("'-fraAar' kan ikke vÃ¦re stÃ¸rre enn '-tilAar' (" +
                     programArguments.fraAar + " > " + programArguments.tilAar + ")");
         }
 

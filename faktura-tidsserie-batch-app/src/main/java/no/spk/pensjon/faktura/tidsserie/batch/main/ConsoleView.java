@@ -14,7 +14,7 @@ import no.spk.pensjon.faktura.tidsserie.batch.upload.FileTemplate;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
 
 /**
- * TODO: Kva og korleis ønskjer vi å vise status for batchkøyringa når vi køyrer den for vår egen bruk?
+ * TODO: Kva og korleis Ã¸nskjer vi Ã¥ vise status for batchkÃ¸yringa nÃ¥r vi kÃ¸yrer den for vÃ¥r egen bruk?
  */
 public class ConsoleView implements View{
     private final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd - HH:mm:ss");
@@ -32,14 +32,14 @@ public class ConsoleView implements View{
 }
 
     public void startarTidsseriegenerering(FileTemplate malFilnavn, Aarstall fraOgMed, Aarstall tilOgMed) {
-        println("Starter tidsserie-generering for årsintervall fra og med " + fraOgMed +  " til og med " + tilOgMed);
+        println("Starter tidsserie-generering for Ã¥rsintervall fra og med " + fraOgMed +  " til og med " + tilOgMed);
     }
 
     /**
-     * Viser informasjon om kva kommandolinjeargument batchen støttar med forklaring av
-     * kva kvart argument blir brukt til og kva verdiar det støttar.
+     * Viser informasjon om kva kommandolinjeargument batchen stÃ¸ttar med forklaring av
+     * kva kvart argument blir brukt til og kva verdiar det stÃ¸ttar.
      *
-     * @param e hjelp-forespørslen som inneheld informasjon om tilgjengelige argument
+     * @param e hjelp-forespÃ¸rslen som inneheld informasjon om tilgjengelige argument
      */
     public void visHjelp(UsageRequestedException e){
         println(e.usage());
@@ -58,7 +58,7 @@ public class ConsoleView implements View{
 
     public void informerOmOppstart(ProgramArguments arguments) {
         println("Tidsserie-batch startet " + now().format(DATE_TIME_FORMATTER));
-        println("Følgende programargumenter blir brukt: ");
+        println("FÃ¸lgende programargumenter blir brukt: ");
         println(ArgumentSummary.createParameterSummary(arguments));
         arguments.postMessage().ifPresent(this::println);
     }
@@ -66,7 +66,7 @@ public class ConsoleView implements View{
 
     @Override
     public void informerOmSuksess(Path arbeidskatalog) {
-        println("Resultat av kjøringen ligger i katalogen " + arbeidskatalog);
+        println("Resultat av kjÃ¸ringen ligger i katalogen " + arbeidskatalog);
         println("Tidsserie-batch avsluttet OK " + now().format(DATE_TIME_FORMATTER));
     }
 
@@ -82,13 +82,13 @@ public class ConsoleView implements View{
 
     @Override
     public void informerOmKorrupteGrunnlagsdata(GrunnlagsdataException e) {
-        println("Grunnlagsdata i inn-katalogen er korrupte - avbryter kjøringen.");
-        println("Årsak: " + e.getMessage());
+        println("Grunnlagsdata i inn-katalogen er korrupte - avbryter kjÃ¸ringen.");
+        println("Ã…rsak: " + e.getMessage());
     }
 
     @Override
     public void tidsseriegenereringFullfoert(Map<String, Integer> meldingar) {
-        println("Tidsseriegenerering fullført.");
+        println("Tidsseriegenerering fullfÃ¸rt.");
     }
 
     @Override
@@ -103,13 +103,13 @@ public class ConsoleView implements View{
 
     @Override
     public void informerOmFeiletOpprydding() {
-        println("Klarte ikke å rydde opp i ut- og/eller log-kataloger.");
-        println("Se loggen for årsak.");
+        println("Klarte ikke Ã¥ rydde opp i ut- og/eller log-kataloger.");
+        println("Se loggen for Ã¥rsak.");
     }
 
     @Override
     public void informerOmTimeout() {
-        println("Timeout - batchen har brukt for lang tid på å kjøre, og vil bli avsluttet.");
+        println("Timeout - batchen har brukt for lang tid pÃ¥ Ã¥ kjÃ¸re, og vil bli avsluttet.");
     }
 
     private void println(final String melding) {

@@ -9,8 +9,8 @@ import org.assertj.core.api.AbstractCharSequenceAssert;
 import org.junit.rules.ExternalResource;
 
 /**
- * Regel som fangar inn alt som blir printa på standard output og -error og gjer det tilgjengelig for testane uten å
- * støye til konsollen.
+ * Regel som fangar inn alt som blir printa pÃ¥ standard output og -error og gjer det tilgjengelig for testane uten Ã¥
+ * stÃ¸ye til konsollen.
  *
  * @author Tarjei Skorgenes
  */

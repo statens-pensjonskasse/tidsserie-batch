@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 /**
- * Hjelpeklasse for å sjekke at alle felt i en klasse har verdi.
+ * Hjelpeklasse for Ã¥ sjekke at alle felt i en klasse har verdi.
  * @author Snorre E. Brekke - Computas
  */
 public class FeltVerdiValidering {
@@ -25,7 +25,7 @@ public class FeltVerdiValidering {
                 .map(Field::getName)
                 .collect(Collectors.joining(", "));
         if (!nullVerdier.isEmpty()) {
-            throw new IllegalStateException("Følgende felt i " + instans.getClass().getSimpleName() + " var ikke angitt: " + nullVerdier);
+            throw new IllegalStateException("FÃ¸lgende felt i " + instans.getClass().getSimpleName() + " var ikke angitt: " + nullVerdier);
         }
     }
 

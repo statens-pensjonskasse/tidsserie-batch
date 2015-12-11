@@ -10,24 +10,24 @@ import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
  * {@link TidsserieBackendService} representerer backend-systemet som er ansvarlig for generering
  * av tidsseriar.
  * <br>
- * Backendsystemet lar klientar overføre medlemsdata til backenden for mellomlagring fram til klienten ønskjer
- * å generere ein tidsserie.
+ * Backendsystemet lar klientar overfÃ¸re medlemsdata til backenden for mellomlagring fram til klienten Ã¸nskjer
+ * Ã¥ generere ein tidsserie.
  * <br>
- * Tidsseriane som blir generert kan vere på fleire forskjellige format og nivå. Kvar tidsserietype har ei
+ * Tidsseriane som blir generert kan vere pÃ¥ fleire forskjellige format og nivÃ¥. Kvar tidsserietype har ei
  * separat konstruksjonsmetode nedanfor.
  * <br>
- * Før medlemsdata kan bli lasta opp til backenden og tidsseriar generert, må backenden startast opp via
+ * FÃ¸r medlemsdata kan bli lasta opp til backenden og tidsseriar generert, mÃ¥ backenden startast opp via
  * {@link #start()}.
  * <br>
- * Det er opp til kvar backend å avgjere kva og korleis oppstart, opplasting og generering blir handtert
+ * Det er opp til kvar backend Ã¥ avgjere kva og korleis oppstart, opplasting og generering blir handtert
  * "behind-the-scenes".
  *
  * @author Tarjei Skorgenes
  */
 public interface TidsserieBackendService {
     /**
-     * Startar opp og allokerer ressursar påkrevd for å motta medlemsdata frå klientar
-     * for å kunne generere tidsseriar.
+     * Startar opp og allokerer ressursar pÃ¥krevd for Ã¥ motta medlemsdata frÃ¥ klientar
+     * for Ã¥ kunne generere tidsseriar.
      */
     void start();
 
@@ -39,23 +39,23 @@ public interface TidsserieBackendService {
     MedlemsdataUploader uploader();
 
     /**
-     * Genererer ein ny tidsserie på stillingsforholdnivå.
+     * Genererer ein ny tidsserie pÃ¥ stillingsforholdnivÃ¥.
      * <br>
-     * Tidsserien består av {@link TidsserieObservasjon observasjonar} pr stillingsforhold, avtale, premieår og
+     * Tidsserien bestÃ¥r av {@link TidsserieObservasjon observasjonar} pr stillingsforhold, avtale, premieÃ¥r og
      * observasjonsdato.
      * <br>
-     * Tidsseriens observasjonsperiode strekker seg frå 1. januar i <code>fraOgMed</code>-året til 31. desember i
-     * <code>tilOgMed</code>-året.
+     * Tidsseriens observasjonsperiode strekker seg frÃ¥ 1. januar i <code>fraOgMed</code>-Ã¥ret til 31. desember i
+     * <code>tilOgMed</code>-Ã¥ret.
      * <br>
-     * Alle resultat vil bli lagra til filer navngitt basert på <code>outputFiles</code>. Filnavnet til dette objektet
+     * Alle resultat vil bli lagra til filer navngitt basert pÃ¥ <code>outputFiles</code>. Filnavnet til dette objektet
      * blir brukt som ein mal og alle forekomstar av XXX blir bytta ut med unike verdiar backenden genererer for
-     * å splitte opp output-fila i fleire mindre filer av passande størrelse. Størrelse og oppsplittingsstrategi
-     * er ein backend-spesifikk implementasjonsdetalj som klienten ikkje kan påvirke direkte.
+     * Ã¥ splitte opp output-fila i fleire mindre filer av passande stÃ¸rrelse. StÃ¸rrelse og oppsplittingsstrategi
+     * er ein backend-spesifikk implementasjonsdetalj som klienten ikkje kan pÃ¥virke direkte.
      *
      * @param outputFiles mal for filnavna tidsserien skal lagrast til
-     * @param fraOgMed    årstallet tidsserien skal starte i
-     * @param tilOgMed    årstallet tidsserien skal avsluttast i
-     * @return alle meldingar som har blitt generert i løpet av tidsseriegenereringa, gruppert på melding med antall
+     * @param fraOgMed    Ã¥rstallet tidsserien skal starte i
+     * @param tilOgMed    Ã¥rstallet tidsserien skal avsluttast i
+     * @return alle meldingar som har blitt generert i lÃ¸pet av tidsseriegenereringa, gruppert pÃ¥ melding med antall
      * gangar meldinga var generert som verdi
      * @see Observasjonsperiode
      */
@@ -69,7 +69,7 @@ public interface TidsserieBackendService {
      * Registrerer tenesta i backendens tenesteregister slik at dei blir tilgjengelig for backendens beregningsagentar.
      * <br>
      * Tenesta <code>service</code> blir registrert under tenestenavnet angitt av <code>serviceType</code>, det
-     * forventast at tenesta kan castast til den angitte typen av klientane som slår opp og benyttar seg av tenesta.
+     * forventast at tenesta kan castast til den angitte typen av klientane som slÃ¥r opp og benyttar seg av tenesta.
      *
      * @param <T>         tenestetypen som blir registrert
      * @param serviceType kva tenestetype tenesta skal registrerast under

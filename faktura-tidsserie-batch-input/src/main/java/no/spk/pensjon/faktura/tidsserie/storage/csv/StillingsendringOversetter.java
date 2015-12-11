@@ -22,10 +22,10 @@ import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Stillingsendring;
 
 /**
  * {@link StillingsendringOversetter} representerer algoritma
- * for å mappe om og konvertere stillingshistorikk til
+ * for Ã¥ mappe om og konvertere stillingshistorikk til
  * {@link no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Stillingsendring}
  * <p>
- * Informasjon henta frå stillingshistorikken skal inneholde følgjande verdiar, alle representert som tekst:
+ * Informasjon henta frÃ¥ stillingshistorikken skal inneholde fÃ¸lgjande verdiar, alle representert som tekst:
  * <table summary="">
  * <thead>
  * <tr>
@@ -45,7 +45,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Stillingsendring;
  * <tr>
  * <td>1</td>
  * <td>yyyy.MM.dd</td>
- * <td>Fødselsdato for medlem</td>
+ * <td>FÃ¸dselsdato for medlem</td>
  * <td>TORT016.DAT_KUNDE_FOEDT_NUM</td>
  * </tr>
  * <tr>
@@ -63,7 +63,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Stillingsendring;
  * <tr>
  * <td>4</td>
  * <td>4-sifra kode</td>
- * <td>Aksjonskoda som nærmare beskrive kva type stillingsendring det er snakk om</td>
+ * <td>Aksjonskoda som nÃ¦rmare beskrive kva type stillingsendring det er snakk om</td>
  * <td>TORT016.TYP_AKSJONSKODE</td>
  * </tr>
  * <tr>
@@ -81,45 +81,45 @@ import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Stillingsendring;
  * <tr>
  * <td>7</td>
  * <td>yyyy.MM.dd</td>
- * <td>Registreringsdato for når stillingsendringa vart registrert i PUMA</td>
+ * <td>Registreringsdato for nÃ¥r stillingsendringa vart registrert i PUMA</td>
  * <td>TORT016.DAT_REGISTRERT</td>
  * </tr>
  * <tr>
  * <td>8</td>
  * <td>Double</td>
- * <td>Stillingsprosent for stillinga endringa er tilknytta, er normalt sett ein verdi mellom 0 og 100, men kan for visse historiske årgangar og
- * yrkesgrupper vere større enn 100</td>
+ * <td>Stillingsprosent for stillinga endringa er tilknytta, er normalt sett ein verdi mellom 0 og 100, men kan for visse historiske Ã¥rgangar og
+ * yrkesgrupper vere stÃ¸rre enn 100</td>
  * <td>TORT016.RTE_DELTID</td>
  * </tr>
  * <tr>
  * <td>9</td>
  * <td>Integer</td>
- * <td>Lønnstrinn, for stillingar som ikkje innrapporterer lønn blir lønna innrapportert som lønnstrinn som kan benyttast for å slå opp lønn i 100%
+ * <td>LÃ¸nnstrinn, for stillingar som ikkje innrapporterer lÃ¸nn blir lÃ¸nna innrapportert som lÃ¸nnstrinn som kan benyttast for Ã¥ slÃ¥ opp lÃ¸nn i 100%
  * stilling.</td>
  * <td>TORT016.NUM_LTR</td>
  * </tr>
  * <tr>
  * <td>10</td>
  * <td>Integer</td>
- * <td>Deltidsjustert, innrapportert lønn for stillingar som ikkje blir innrapportert med lønnstrinn</td>
+ * <td>Deltidsjustert, innrapportert lÃ¸nn for stillingar som ikkje blir innrapportert med lÃ¸nnstrinn</td>
  * <td>TORT016.BEL_LONN</td>
  * </tr>
  * <tr>
  * <td>11</td>
  * <td>Integer</td>
- * <td>Faste lønnstillegg som blir utbetalt i tillegg til grunnlønna, skal innrapporterast deltidsjustert.</td>
+ * <td>Faste lÃ¸nnstillegg som blir utbetalt i tillegg til grunnlÃ¸nna, skal innrapporterast deltidsjustert.</td>
  * <td>TORT016.BEL_FTILL</td>
  * </tr>
  * <tr>
  * <td>12</td>
  * <td>Integer</td>
- * <td>Variable lønnstillegg som blir utbetalt i tillegg til grunnlønna, skal innrapporterast deltidsjustert.</td>
+ * <td>Variable lÃ¸nnstillegg som blir utbetalt i tillegg til grunnlÃ¸nna, skal innrapporterast deltidsjustert.</td>
  * <td>TORT016.BEL_VTILL</td>
  * </tr>
  * <tr>
  * <td>13</td>
  * <td>Integer</td>
- * <td>Funksjonstillegg som blir utbetalt i tillegg til grunnlønna, skal ikkje innrapporterast deltidsjustert.</td>
+ * <td>Funksjonstillegg som blir utbetalt i tillegg til grunnlÃ¸nna, skal ikkje innrapporterast deltidsjustert.</td>
  * <td>TORT016.BEL_FUTILL</td>
  * </tr>
  * <tr>
@@ -137,7 +137,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Stillingsendring;
  * <tr>
  * <td>16</td>
  * <td>integer</td>
- * <td>Linjenummeret som i kombinasjon med fødselsdato og personnummer, unikt identifiserer stillingsendringa</td>
+ * <td>Linjenummeret som i kombinasjon med fÃ¸dselsdato og personnummer, unikt identifiserer stillingsendringa</td>
  * <td>TORT016.IDE_LINJE_NR</td>
  * </tr>
  * </tbody>
@@ -173,10 +173,10 @@ public class StillingsendringOversetter extends ReflectiveCsvOversetter<Stilling
     }
 
     /**
-     * Oversetter innholdet frå feltet på den angitte indeksen i rada frå tekst til lønnstrinn.
+     * Oversetter innholdet frÃ¥ feltet pÃ¥ den angitte indeksen i rada frÃ¥ tekst til lÃ¸nnstrinn.
      *
      * @param string med verdi
-     * @return endringas lønnstrinn eller ingenting dersom lønnstrinn manglar, er tomt eller er lik 0
+     * @return endringas lÃ¸nnstrinn eller ingenting dersom lÃ¸nnstrinn manglar, er tomt eller er lik 0
      */
     Optional<Loennstrinn> readLoennstrinn(Optional<String> string) {
         return string
@@ -186,7 +186,7 @@ public class StillingsendringOversetter extends ReflectiveCsvOversetter<Stilling
     }
 
     /**
-     * Oversetter innholdet frå feltet på den angitte indeksen i rada frå tekst til faste tillegg.
+     * Oversetter innholdet frÃ¥ feltet pÃ¥ den angitte indeksen i rada frÃ¥ tekst til faste tillegg.
      *
      * @param string med verdi
      * @return endringas faste tillegg eller ingenting dersom faste tillegg manglar, er tomt eller er lik 0
@@ -196,7 +196,7 @@ public class StillingsendringOversetter extends ReflectiveCsvOversetter<Stilling
     }
 
     /**
-     * Oversetter innholdet frå feltet på den angitte indeksen i rada frå tekst til variable tillegg.
+     * Oversetter innholdet frÃ¥ feltet pÃ¥ den angitte indeksen i rada frÃ¥ tekst til variable tillegg.
      *
      * @param string med verdi
      * @return endringas variable tillegg eller ingenting dersom variable tillegg manglar, er tomt eller er lik 0
@@ -206,7 +206,7 @@ public class StillingsendringOversetter extends ReflectiveCsvOversetter<Stilling
     }
 
     /**
-     * Oversetter innholdet frå feltet på den angitte indeksen i rada frå tekst til funksjonstillegg.
+     * Oversetter innholdet frÃ¥ feltet pÃ¥ den angitte indeksen i rada frÃ¥ tekst til funksjonstillegg.
      *
      * @param string med verdi
      * @return endringas variable tillegg eller ingenting dersom funksjonstillegg manglar, er tomt eller er lik 0

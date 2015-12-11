@@ -11,8 +11,8 @@ public class AvtalekoblingOversetterTest {
     private final AvtalekoblingOversetter oversetter = new AvtalekoblingOversetter();
 
     /**
-     * Verifiserer at oversetteren ikkje feilar dersom sybase datoar på formata
-     * YYYY-MM-DD HH:mm:ss.S blir brukt som verdi på start- eller
+     * Verifiserer at oversetteren ikkje feilar dersom sybase datoar pÃ¥ formata
+     * YYYY-MM-DD HH:mm:ss.S blir brukt som verdi pÃ¥ start- eller
      * sluttdatoane til avtalekoblingane.
      */
     @Test
@@ -36,8 +36,8 @@ public class AvtalekoblingOversetterTest {
 
 
     /**
-     * Verifiserer at oversetteren ikkje feilar dersom sybase datoar på formata
-     * YYYY-MM-DD blir brukt som verdi på start- eller
+     * Verifiserer at oversetteren ikkje feilar dersom sybase datoar pÃ¥ formata
+     * YYYY-MM-DD blir brukt som verdi pÃ¥ start- eller
      * sluttdatoane til avtalekoblingane.
      */
     @Test

@@ -27,7 +27,7 @@ public class ProgramArguments implements Arguments {
     boolean hjelp;
 
     @Parameter(names = { "-b" },
-            description = "Tekstlig beskrivelse av hensikten med kjøringen.",
+            description = "Tekstlig beskrivelse av hensikten med kjÃ¸ringen.",
             required = true)
     String beskrivelse;
 
@@ -53,7 +53,7 @@ public class ProgramArguments implements Arguments {
     Path utkatalog;
 
     @Parameter(names = { "-log" },
-            description="Batchen vil lage en ny katalog i -log katalogen hvor batch.log og metadata for kjøringen vil bli lagret.",
+            description="Batchen vil lage en ny katalog i -log katalogen hvor batch.log og metadata for kjÃ¸ringen vil bli lagret.",
             validateWith = PathStringValidator.class,
             validateValueWith = WritableDirectoryValidator.class,
             required = true
@@ -61,19 +61,19 @@ public class ProgramArguments implements Arguments {
     Path logkatalog;
 
     @Parameter(names = {"-fraAar"},
-            description="Tidsserien lages fra og med 01.01 i angitt år.",
+            description="Tidsserien lages fra og med 01.01 i angitt Ã¥r.",
             validateWith = IntegerValidator.class,
             validateValueWith = YearValidator.class)
     int fraAar = 2015;
 
     @Parameter(names = {"-tilAar"},
-            description="Tidsserien lages til og med 31.12 i angitt år.",
+            description="Tidsserien lages til og med 31.12 i angitt Ã¥r.",
             validateWith = IntegerValidator.class,
             validateValueWith = YearValidator.class)
     int tilAar = 2015;
 
     @Parameter(names = { "-n" },
-            description = "Antall noder som skal brukes for å utgjøre grid for tidsserie-prossesering. Default er lik antall prosessorer på serveren minus 1.",
+            description = "Antall noder som skal brukes for Ã¥ utgjÃ¸re grid for tidsserie-prossesering. Default er lik antall prosessorer pÃ¥ serveren minus 1.",
             validateWith = IntegerValidator.class,
             validateValueWith = NodeCountValidator.class)
     int nodes = Runtime.getRuntime().availableProcessors() - 1;
@@ -86,12 +86,12 @@ public class ProgramArguments implements Arguments {
     Modus modus = Modus.STILLINGSFORHOLD_OBSERVASJONAR;
 
     @Parameter(names = "-kjoeretid",
-            description = "Maks kjøretid på formatet HHmm.",
+            description = "Maks kjÃ¸retid pÃ¥ formatet HHmm.",
             validateWith = DurationValidator.class)
     String kjoeretid = "0400";
 
     @Parameter(names = { "-sluttid" },
-            description = "Klokkeslett på formen HHmm eller HHmmss for når kjøringen senest avsluttes.",
+            description = "Klokkeslett pÃ¥ formen HHmm eller HHmmss for nÃ¥r kjÃ¸ringen senest avsluttes.",
             validateWith = LocalTimeValidator.class,
             converter = LocalTimeConverter.class)
     LocalTime sluttidspunkt = LocalTime.parse("23:59");
@@ -146,7 +146,7 @@ public class ProgramArguments implements Arguments {
 
     public Optional<String> postMessage() {
         if (nodes == Runtime.getRuntime().availableProcessors()) {
-            return Optional.of("ADVARSEL: Antall noder angitt er lik antall prosessorer på serveren.");
+            return Optional.of("ADVARSEL: Antall noder angitt er lik antall prosessorer pÃ¥ serveren.");
         }
         return Optional.empty();
     }

@@ -38,11 +38,11 @@ import no.spk.pensjon.faktura.tidsserie.storage.csv.StillingsendringOversetter;
 
 /**
  * {@link GrunnlagsdataService} opptrer som bindeledd mellom
- * beregningsbackenden og grunnlagsdatane frå flate filer på disk.
+ * beregningsbackenden og grunnlagsdatane frÃ¥ flate filer pÃ¥ disk.
  * <br>
- * Via denne tenesta kan CSV-formaterte grunnlagsdata generert av faktura-grunnlagsdata-batch bli lest inn frå disk
+ * Via denne tenesta kan CSV-formaterte grunnlagsdata generert av faktura-grunnlagsdata-batch bli lest inn frÃ¥ disk
  * og lastast opp til beregningsbackenden. I tillegg kan beregningsbackenden hente ut avtale- og medlemsuavhengige
- * lønnsdata ved oppstart av tidsseriegenereringa.
+ * lÃ¸nnsdata ved oppstart av tidsseriegenereringa.
  *
  * @author Tarjei Skorgenes
  */
@@ -66,8 +66,8 @@ public class GrunnlagsdataService implements TidsserieFactory {
      * @throws NullPointerException viss nokon argument er <code>null</code>
      */
     public GrunnlagsdataService(final TidsserieBackendService backend, final GrunnlagsdataRepository repository) {
-        this.backend = requireNonNull(backend, "backend er påkrevd, men var null");
-        this.input = requireNonNull(repository, "inputfiler er påkrevd, men var null");
+        this.backend = requireNonNull(backend, "backend er pÃ¥krevd, men var null");
+        this.input = requireNonNull(repository, "inputfiler er pÃ¥krevd, men var null");
 
         medlemsdataOversetter.put(Stillingsendring.class, new StillingsendringOversetter());
         medlemsdataOversetter.put(Avtalekoblingsperiode.class, new AvtalekoblingOversetter());
@@ -78,14 +78,14 @@ public class GrunnlagsdataService implements TidsserieFactory {
     public TidsserieFacade create(final Feilhandtering feilhandtering) {
         final TidsserieFacade fasade = new TidsserieFacade();
         fasade.overstyr(avtaleinformasjonRepository);
-        fasade.overstyr(requireNonNull(feilhandtering, "feilhandteringsstrategi er påkrevd, men var null"));
+        fasade.overstyr(requireNonNull(feilhandtering, "feilhandteringsstrategi er pÃ¥krevd, men var null"));
         return fasade;
     }
 
     @Override
     public Medlemsdata create(final List<List<String>> data) {
         return new Medlemsdata(
-                requireNonNull(data, "medlemsdata er påkrevd, men var null"),
+                requireNonNull(data, "medlemsdata er pÃ¥krevd, men var null"),
                 medlemsdataOversettere()
         );
     }
@@ -104,9 +104,9 @@ public class GrunnlagsdataService implements TidsserieFactory {
     }
 
     /**
-     * Leser inn alle medlems-, avtale- og lønnsdata frå inputfilene og overfører dei til backenden.
+     * Leser inn alle medlems-, avtale- og lÃ¸nnsdata frÃ¥ inputfilene og overfÃ¸rer dei til backenden.
      *
-     * @throws UncheckedIOException dersom innlesinga av grunnlagsdata feilar på grunn av I/O-relaterte issues
+     * @throws UncheckedIOException dersom innlesinga av grunnlagsdata feilar pÃ¥ grunn av I/O-relaterte issues
      */
     public void lastOpp() {
         final MedlemsdataUploader upload = backend.uploader();

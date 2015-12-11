@@ -7,39 +7,39 @@ import java.util.stream.Stream;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Tidsperiode;
 
 /**
- * Datalager som styrer tilgang til grunnlagsdatane som tidligare køyringar av faktura-grunnlagsdata-batch har produsert.
+ * Datalager som styrer tilgang til grunnlagsdatane som tidligare kÃ¸yringar av faktura-grunnlagsdata-batch har produsert.
  *
  * @author Tarjei Skorgenes
  */
 public interface GrunnlagsdataRepository {
     /**
-     * Åpnar ein straum som leser inn linje for linje frå medlemsdatafila.
+     * Ã…pnar ein straum som leser inn linje for linje frÃ¥ medlemsdatafila.
      * <br>
-     * Straumen leser inn medlemsdatane just-in-time uten å realisere heile datasettet i minne på samme tid.
+     * Straumen leser inn medlemsdatane just-in-time uten Ã¥ realisere heile datasettet i minne pÃ¥ samme tid.
      * <br>
-     * Etter at straumen har blitt delvis eller fullt ut lest inn, må den lukkast for å lukke medlemsdatafila
-     * som det har blitt lest linjer frå.
+     * Etter at straumen har blitt delvis eller fullt ut lest inn, mÃ¥ den lukkast for Ã¥ lukke medlemsdatafila
+     * som det har blitt lest linjer frÃ¥.
      * <br>
      * Eventuelle kommentarlinjer blir filtrert bort og vil ikkje vere ein del av den returnerte straumen.
      *
      * @return ein straum av linjer som inneheld medlemsdata
-     * @throws UncheckedIOException viss ein I/O-relatert feil oppstår
+     * @throws UncheckedIOException viss ein I/O-relatert feil oppstÃ¥r
      */
     Stream<List<String>> medlemsdata();
 
     /**
-     * Åpnar ein straum som leser inn linje for linje frå alle referansedatafiler og konverterer linjas innhold til
+     * Ã…pnar ein straum som leser inn linje for linje frÃ¥ alle referansedatafiler og konverterer linjas innhold til
      * ei tidsperiode.
      * <br>
-     * Straumen leser inn referansedatane just-in-time uten å realisere heile datasettet i minne på samme tid.
+     * Straumen leser inn referansedatane just-in-time uten Ã¥ realisere heile datasettet i minne pÃ¥ samme tid.
      * <br>
-     * Etter at straumen har blitt delvis eller fullt ut lest inn, må den lukkast for å lukke eventuelle åpne
-     * filer som det har blitt lest tidsperioder frå.
+     * Etter at straumen har blitt delvis eller fullt ut lest inn, mÃ¥ den lukkast for Ã¥ lukke eventuelle Ã¥pne
+     * filer som det har blitt lest tidsperioder frÃ¥.
      * <br>
      * Eventuelle kommentarlinjer blir filtrert bort og vil ikkje vere ein del av den returnerte straumen.
      *
-     * @return ein straum med tidsperioder frå alle referansedatafiler
-     * @throws UncheckedIOException viss ein I/O-relatert feil oppstår
+     * @return ein straum med tidsperioder frÃ¥ alle referansedatafiler
+     * @throws UncheckedIOException viss ein I/O-relatert feil oppstÃ¥r
      */
     Stream<Tidsperiode<?>> referansedata();
 }

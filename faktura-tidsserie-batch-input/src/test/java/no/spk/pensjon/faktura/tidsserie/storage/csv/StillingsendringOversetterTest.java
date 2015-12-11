@@ -14,7 +14,7 @@ public class StillingsendringOversetterTest {
 
     /**
      * Verifiserer at dersom funksjonstillegg er tom, kun inneheld whitespace eller er lik 0
-     * så blir det tolka som at ein ikkje har funksjonstillegg.
+     * sÃ¥ blir det tolka som at ein ikkje har funksjonstillegg.
      */
     @Test
     public void skalTolkeTomtFunksjonstilleggEllerLikKroner0SomHarIkkjeFunksjonstillegg() {
@@ -30,7 +30,7 @@ public class StillingsendringOversetterTest {
 
     /**
      * Verifiserer at dersom variable tillegg er tom, kun inneheld whitespace eller er lik 0
-     * så blir det tolka som at ein ikkje har faste tillegg.
+     * sÃ¥ blir det tolka som at ein ikkje har faste tillegg.
      */
     @Test
     public void skalTolkeTommeVariabletilleggEllerLikKroner0SomHarIkkjeVariableTillegg() {
@@ -45,7 +45,7 @@ public class StillingsendringOversetterTest {
 
     /**
      * Verifiserer at dersom faste tillegg er tom, kun inneheld whitespace eller er lik 0
-     * så blir det tolka som at ein ikkje har faste tillegg.
+     * sÃ¥ blir det tolka som at ein ikkje har faste tillegg.
      */
     @Test
     public void skalTolkeTommeFastetilleggEllerLikKroner0SomHarIkkjeFasteTillegg() {
@@ -59,23 +59,23 @@ public class StillingsendringOversetterTest {
     }
 
     /**
-     * Verifiserer at dersom lønnstrinn er tom, kun inneheld whitespace eller er lik 0
-     * så blir det tolka som at ein ikkje har lønnstrinn.
+     * Verifiserer at dersom lÃ¸nnstrinn er tom, kun inneheld whitespace eller er lik 0
+     * sÃ¥ blir det tolka som at ein ikkje har lÃ¸nnstrinn.
      */
     @Test
     public void skalTolkeLoennstrinn0SomAtStillingaIkkjeHarLoennstrinn() {
         assertThat(oversetter.readLoennstrinn(Optional.of("0")))
-                .as("stillingsendringas lønnstrinn")
+                .as("stillingsendringas lÃ¸nnstrinn")
                 .isEqualTo(empty());
 
         assertThat(empty())
-                .as("stillingsendringas lønnstrinn")
+                .as("stillingsendringas lÃ¸nnstrinn")
                 .isEqualTo(empty());
     }
 
     /**
-     * Verifiserer at oversetteren ikkje feilar dersom sybase datoar på formata
-     * YYYY-MM-DD HH:mm:ss.S blir brukt som verdi på start- eller
+     * Verifiserer at oversetteren ikkje feilar dersom sybase datoar pÃ¥ formata
+     * YYYY-MM-DD HH:mm:ss.S blir brukt som verdi pÃ¥ start- eller
      * sluttdatoane til avtalekoblingane.
      */
     @Test
@@ -95,8 +95,8 @@ public class StillingsendringOversetterTest {
 
 
     /**
-     * Verifiserer at oversetteren ikkje feilar dersom sybase datoar på formata
-     * YYYY-MM-DD blir brukt som verdi på start- eller
+     * Verifiserer at oversetteren ikkje feilar dersom sybase datoar pÃ¥ formata
+     * YYYY-MM-DD blir brukt som verdi pÃ¥ start- eller
      * sluttdatoane til avtalekoblingane.
      */
     @Test

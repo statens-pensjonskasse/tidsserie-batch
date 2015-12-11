@@ -12,7 +12,7 @@ import no.spk.pensjon.faktura.tidsserie.plugin.modus.underlagsperioder.LiveTidss
 
 /**
  * {@link Modus} representerer dei forskjellige modusane som brukaren
- * kan velge mellom for å styre output-formatet på CSV-filene batchen genererer.
+ * kan velge mellom for Ã¥ styre output-formatet pÃ¥ CSV-filene batchen genererer.
  */
 enum Modus {
     LIVE_TIDSSERIE("live_tidsserie", new LiveTidsseriemodus()),
@@ -29,7 +29,7 @@ enum Modus {
     }
 
     /**
-     * Slår opp modusen som brukar den angitte koda.
+     * SlÃ¥r opp modusen som brukar den angitte koda.
      *
      * @param kode tekstlig-kode som skal konverterast til ein modus
      * @return modusen som brukar den angitte koda, eller ingenting dersom koda ikkje matchar ein kjent modus

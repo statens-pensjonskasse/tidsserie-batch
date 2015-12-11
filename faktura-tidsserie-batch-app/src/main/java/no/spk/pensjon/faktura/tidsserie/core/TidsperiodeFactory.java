@@ -5,16 +5,16 @@ import java.util.stream.Stream;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Tidsperiode;
 
 /**
- * {@link TidsperiodeFactory} gir tilgang til alle tidsperioder frå grunnlagsdatane batchen har tilgang til.
+ * {@link TidsperiodeFactory} gir tilgang til alle tidsperioder frÃ¥ grunnlagsdatane batchen har tilgang til.
  *
  * @author Tarjei Skorgenes
  * @since 1.2.0
  */
 public interface TidsperiodeFactory {
     /**
-     * Hentar ut alle tidsperiodiserte lønnsdata som ikkje er medlemsspesifikke.
+     * Hentar ut alle tidsperiodiserte lÃ¸nnsdata som ikkje er medlemsspesifikke.
      *
-     * @return alle lønnsdata
+     * @return alle lÃ¸nnsdata
      * @see no.spk.pensjon.faktura.tidsserie.domain.loennsdata.Omregningsperiode
      * @see no.spk.pensjon.faktura.tidsserie.domain.loennsdata.Loennstrinnperioder
      */
