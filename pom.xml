@@ -22,8 +22,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <faktura.prognose.tidsserie.version>2.0.2-SNAPSHOT</faktura.prognose.tidsserie.version>
-        <faktura-bootstrap-lib>1.0.15-SNAPSHOT</faktura-bootstrap-lib>
+        <faktura.prognose.tidsserie.version>2.0.2</faktura.prognose.tidsserie.version>
+        <faktura-bootstrap-lib>1.0.15</faktura-bootstrap-lib>
     </properties>
 
     <build>
@@ -76,6 +76,8 @@
                 <version>1.0-m4.3</version>
                 <configuration>
                     <!-- see goals wiki page for configuration options -->
+                    <noDeploy>true</noDeploy>
+                    <pushReleases>false</pushReleases>
                 </configuration>
             </plugin>
         </plugins>
