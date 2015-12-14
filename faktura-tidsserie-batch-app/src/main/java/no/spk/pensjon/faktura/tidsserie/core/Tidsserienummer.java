@@ -7,16 +7,16 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 /**
- * {@link Tidsserienummer} er ein semi-unik identifikator som lar ein skille to tidsseriar frå kvarandre.
+ * {@link Tidsserienummer} er ein semi-unik identifikator som lar ein skille to tidsseriar frÃ¥ kvarandre.
  * <br>
- * Intensjonen med identifikatoren er å kunne skille to tidsseriar generert på forskjellige datoar frå kvarandre.
- * Foreløpig antas det at ein ikkje kjem til å ha behov for å generere meir enn 1 tidsserie pr dag, ergo
- * blir dagens dato brukt som identifikator. Ein vil dermed ikkje vere i stand til å skille to tidsseriar generert
- * samme dag frå kvarandre basert på denne identifikatoren.
+ * Intensjonen med identifikatoren er Ã¥ kunne skille to tidsseriar generert pÃ¥ forskjellige datoar frÃ¥ kvarandre.
+ * ForelÃ¸pig antas det at ein ikkje kjem til Ã¥ ha behov for Ã¥ generere meir enn 1 tidsserie pr dag, ergo
+ * blir dagens dato brukt som identifikator. Ein vil dermed ikkje vere i stand til Ã¥ skille to tidsseriar generert
+ * samme dag frÃ¥ kvarandre basert pÃ¥ denne identifikatoren.
  * <br>
- * For å ta høgde for at ein i framtida kan få behov for å generere fleire tidsseriar pr dag, er det satt av
+ * For Ã¥ ta hÃ¸gde for at ein i framtida kan fÃ¥ behov for Ã¥ generere fleire tidsseriar pr dag, er det satt av
  * opp til 9 siffer i CSV-formatet mot DVH slik at ein kan legge til eit ekstra siffer som lar ein generere
- * opp til 9 tidsseriar pr dag før ein får samme problem på nytt.
+ * opp til 9 tidsseriar pr dag fÃ¸r ein fÃ¥r samme problem pÃ¥ nytt.
  *
  * @author Tarjei Skorgenes
  * @since 1.0.2
@@ -28,7 +28,7 @@ public final class Tidsserienummer {
 
     private Tidsserienummer(final String id) {
         this.id = require(
-                requireNonNull(id, "tidsserienummer er påkrevd, men var null"),
+                requireNonNull(id, "tidsserienummer er pÃ¥krevd, men var null"),
                 t -> t.matches("[0-9]{8}"),
                 Tidsserienummer::feilLengdePaaId
         );
@@ -54,14 +54,14 @@ public final class Tidsserienummer {
     }
 
     /**
-     * Genererer eit nytt tidsserienummer basert på den angitte datoen.
+     * Genererer eit nytt tidsserienummer basert pÃ¥ den angitte datoen.
      * <br>
-     * Tidsserienummeret blir generert basert på datoen i yyyyMMdd-format.
+     * Tidsserienummeret blir generert basert pÃ¥ datoen i yyyyMMdd-format.
      *
      * @param dato datoen tidsserienummeret skal benytte
-     * @return eit nytt tidsserienummer basert på angitt dato
+     * @return eit nytt tidsserienummer basert pÃ¥ angitt dato
      * @throws java.lang.NullPointerException     viss <code>dato</code> er <code>null</code>
-     * @throws java.lang.IllegalArgumentException viss <code>dato</code> på yyyyMMdd-format blir meir enn 8-siffer langt
+     * @throws java.lang.IllegalArgumentException viss <code>dato</code> pÃ¥ yyyyMMdd-format blir meir enn 8-siffer langt
      */
     public static Tidsserienummer genererForDato(final LocalDate dato) {
         return new Tidsserienummer(yyyyMMdd.format(dato));
@@ -69,7 +69,7 @@ public final class Tidsserienummer {
 
     private static RuntimeException feilLengdePaaId(final String id) {
         return new IllegalArgumentException(
-                "tidsserienummer må vere 8-siffer langt, men var "
+                "tidsserienummer mÃ¥ vere 8-siffer langt, men var "
                         + id.length() + "-siffer langt (" + id + ")"
         );
     }

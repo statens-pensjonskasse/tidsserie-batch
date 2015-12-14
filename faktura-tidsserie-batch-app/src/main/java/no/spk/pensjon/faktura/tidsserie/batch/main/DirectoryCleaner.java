@@ -33,9 +33,9 @@ public class DirectoryCleaner {
      * @param deleteDirectories kataloger som skal slettes
      */
     public DirectoryCleaner(Path... deleteDirectories) {
-        require(requireNonNull(deleteDirectories, "deleteDirectories kan ikke være null."),
+        require(requireNonNull(deleteDirectories, "deleteDirectories kan ikke vÃ¦re null."),
                 d -> d.length > 0,
-                p -> new IllegalArgumentException("Må angi minst en katalog for sletting."));
+                p -> new IllegalArgumentException("MÃ¥ angi minst en katalog for sletting."));
         stream(deleteDirectories)
                 .map(Path::toFile)
                 .forEach(file -> require(
@@ -47,7 +47,7 @@ public class DirectoryCleaner {
     }
 
     /**
-     * Sletter alle batch-kataloger generert av tidligere kjøringer av faktura-tidsserie-batch.
+     * Sletter alle batch-kataloger generert av tidligere kjÃ¸ringer av faktura-tidsserie-batch.
      *
      */
     public void deleteDirectories() throws HousekeepingException {

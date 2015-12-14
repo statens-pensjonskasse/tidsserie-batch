@@ -21,9 +21,9 @@
     </modules>
 
     <properties>
-        <project.build.sourceEncoding>CP1252</project.build.sourceEncoding>
-        <faktura.prognose.tidsserie.version>2.0.1</faktura.prognose.tidsserie.version>
-        <faktura-bootstrap-lib>1.0.9</faktura-bootstrap-lib>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <faktura.prognose.tidsserie.version>2.0.2-SNAPSHOT</faktura.prognose.tidsserie.version>
+        <faktura-bootstrap-lib>1.0.15-SNAPSHOT</faktura-bootstrap-lib>
     </properties>
 
     <build>
@@ -67,7 +67,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <encoding>CP1252</encoding>
+                    <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
             <plugin>

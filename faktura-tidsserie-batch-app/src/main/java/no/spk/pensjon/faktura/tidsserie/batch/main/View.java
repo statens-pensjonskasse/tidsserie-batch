@@ -10,7 +10,7 @@ import no.spk.pensjon.faktura.tidsserie.batch.upload.FileTemplate;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
 
 /**
- * TODO: Kva og korleis ønskjer vi å vise status for batchkøyringa når vi køyrer den for vår egen bruk?
+ * TODO: Kva og korleis Ã¸nskjer vi Ã¥ vise status for batchkÃ¸yringa nÃ¥r vi kÃ¸yrer den for vÃ¥r egen bruk?
  */
 public interface View {
 
@@ -23,10 +23,10 @@ public interface View {
     void startarTidsseriegenerering(FileTemplate malFilnavn, Aarstall fraOgMed, Aarstall tilOgMed) ;
 
     /**
-     * Viser informasjon om kva kommandolinjeargument batchen støttar med forklaring av
-     * kva kvart argument blir brukt til og kva verdiar det støttar.
+     * Viser informasjon om kva kommandolinjeargument batchen stÃ¸ttar med forklaring av
+     * kva kvart argument blir brukt til og kva verdiar det stÃ¸ttar.
      *
-     * @param e hjelp-forespørslen som inneheld informasjon om tilgjengelige argument
+     * @param e hjelp-forespÃ¸rslen som inneheld informasjon om tilgjengelige argument
      */
     void visHjelp(UsageRequestedException e);
 
@@ -42,7 +42,7 @@ public interface View {
 
 
     /**
-     * Informerer brukaren om at batchen har køyrt ferdig og at køyringa gjekk føre seg utan nokon feil.
+     * Informerer brukaren om at batchen har kÃ¸yrt ferdig og at kÃ¸yringa gjekk fÃ¸re seg utan nokon feil.
      *
      * @param arbeidskatalog den nye arbeidskatalogen som batchen har lagra alle sine resultatfiler i
      */
@@ -50,7 +50,7 @@ public interface View {
 
 
     /**
-     * Notifiserer brukaren om at ein ukjent feil har hindra batchen frå å køyre ferdig og
+     * Notifiserer brukaren om at ein ukjent feil har hindra batchen frÃ¥ Ã¥ kÃ¸yre ferdig og
      * at det er logga meir detaljert informasjon om feilen i loggfila til batchen.
      */
     void informerOmUkjentFeil();

@@ -20,12 +20,12 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 /**
- * ApplicationController styrer all kommunikasjon med sluttbrukaren og held på
+ * ApplicationController styrer all kommunikasjon med sluttbrukaren og held pÃ¥
  * applikasjonstilstanden som styrer exit-koda som batchen returnerer til
- * prosessen som batchen blir køyrt frå.
+ * prosessen som batchen blir kÃ¸yrt frÃ¥.
  * <p>
- * NB: Kontrolleren kan ikkje bruke eller instansiere nokon form for logger eller logging før tidligast i
- * eller etter at {@link #informerOmOppstart(ProgramArguments)} har blitt kalla. Om så blir forsøkt
+ * NB: Kontrolleren kan ikkje bruke eller instansiere nokon form for logger eller logging fÃ¸r tidligast i
+ * eller etter at {@link #informerOmOppstart(ProgramArguments)} har blitt kalla. Om sÃ¥ blir forsÃ¸kt
  * vil ikkje batchens loggfil inneholde meldinga.
  *
  * @author Snorre E. Brekke - computas
@@ -155,11 +155,11 @@ public class ApplicationController {
     public void logTimeout() {
         view.informerOmTimeout();
         markerSomFeilet();
-        getLogger().warn("Timeout - Batchen har brukt for lang tid på å kjøre, og vil bli avsluttet.");
+        getLogger().warn("Timeout - Batchen har brukt for lang tid pÃ¥ Ã¥ kjÃ¸re, og vil bli avsluttet.");
     }
 
     /**
-     * Logger exit-kode for tilstanden ApplicationController har nå. Denne metoden bør (skal) bare kalles når programmet avsluttes.
+     * Logger exit-kode for tilstanden ApplicationController har nÃ¥. Denne metoden bÃ¸r (skal) bare kalles nÃ¥r programmet avsluttes.
      */
     public void logExit(){
         getLogger().info("Exit code: " + exitCode());

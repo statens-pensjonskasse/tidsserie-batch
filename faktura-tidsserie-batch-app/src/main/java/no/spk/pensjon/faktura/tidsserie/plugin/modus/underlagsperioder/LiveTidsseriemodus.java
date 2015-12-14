@@ -21,10 +21,10 @@ import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
 
 /**
- * {@link LiveTidsseriemodus} setter opp batchen til å generere ein live-tidsserie på periodenivå, formatert i
+ * {@link LiveTidsseriemodus} setter opp batchen til Ã¥ generere ein live-tidsserie pÃ¥ periodenivÃ¥, formatert i
  * henhold til kontrakta for innmating til Qlikview og EDW/DVH.
  * <br>
- * Inntil vidare brukar live-tidsserien avregningsreglane sidan prognosereglane ikkje inkluderer støtte for beregning
+ * Inntil vidare brukar live-tidsserien avregningsreglane sidan prognosereglane ikkje inkluderer stÃ¸tte for beregning
  * av  YSK/GRU-faktureringsandel.
  * <br>
  * Ansvaret ofr generering av verdiane som endar opp i CSV-formatet for DVH-innmatinga, blir handtert av
@@ -67,9 +67,9 @@ public class LiveTidsseriemodus implements Tidsseriemodus {
      * observasjonsunderlag.
      * <br>
      *
-     * @param facade      fasada som blir brukt for å generere tidsserien
+     * @param facade      fasada som blir brukt for Ã¥ generere tidsserien
      * @param serienummer serienummer som alle eventar som blir sendt vidare til <code>backend</code> for persistering
-     *                    skal tilhøyre
+     *                    skal tilhÃ¸yre
      * @param publikator  backend-systemet som observasjonane av kvar periode blir lagra via
      * @return ein by publikator som serialiserer og lagrar alle underlagsperioder for kvart observasjonsunderlag i
      * tidsserien som blir generert av <code>facade</code>
@@ -89,12 +89,12 @@ public class LiveTidsseriemodus implements Tidsseriemodus {
      * til ei form som deretter blir lagra via <code>lagring</code>.
      * <br>
      * Kvart observasjonsunderlag blir annotert med {@link no.spk.pensjon.faktura.tidsserie.core.Tidsserienummer}
-     * basert på dagens dato slik at mapperen unikt kan indikere at alle periodene tilhøyrer ein og samme tidsserie.
+     * basert pÃ¥ dagens dato slik at mapperen unikt kan indikere at alle periodene tilhÃ¸yrer ein og samme tidsserie.
      *
-     * @param mapper  serialiserer observasjonsunderlagas underlagsperioder til formatet <code>lagring</code> skal lagre på
+     * @param mapper  serialiserer observasjonsunderlagas underlagsperioder til formatet <code>lagring</code> skal lagre pÃ¥
      * @param lagring tar den serialiserte versjonen av underlagsperiodene og lagrar dei
      * @param <T>     datatypen underlagsperiodene blir serialisert til
-     * @return ein ny observasjonspublikator som kan brukast til å serialisere og lagre innholdet frå ein tidsserie
+     * @return ein ny observasjonspublikator som kan brukast til Ã¥ serialisere og lagre innholdet frÃ¥ ein tidsserie
      */
     <T> Observasjonspublikator nyPublikator(
             final Function<Underlag, Stream<T>> mapper, final Consumer<T> lagring) {

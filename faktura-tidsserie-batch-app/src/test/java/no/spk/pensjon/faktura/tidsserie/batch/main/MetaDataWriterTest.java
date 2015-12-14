@@ -7,6 +7,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Duration;
@@ -45,7 +46,7 @@ public class MetaDataWriterTest {
         assertThat(metadataFile.isPresent()).isTrue();
         assertThat(metadataFile.get()).exists();
 
-        String fileContent = new String(Files.readAllBytes(metadataFile.get().toPath()), Charset.forName("cp1252"));
+        String fileContent = new String(Files.readAllBytes(metadataFile.get().toPath()), StandardCharsets.UTF_8);
         assertThat(fileContent).contains("Batch-id: " + batchId);
     }
 

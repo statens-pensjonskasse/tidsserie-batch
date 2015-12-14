@@ -58,15 +58,15 @@ import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
  * {@link Datavarehusformat} representerer kontrakta og mapping-strategien for konvertering av {@link Underlagsperiode}r til
  * CSV-formaterte rader for innmating i DVH og Qlikview for live-tidsserien til FFF.
  * <br>
- * Merk at ei kvar utad-synlig endring på formatet må avklarast mot Team Polaris for å verifisere om eller korleis det
- * påvirkar EDW og DVH-modelleringa + ETL-jobbane i DVH og Qlikview.
+ * Merk at ei kvar utad-synlig endring pÃ¥ formatet mÃ¥ avklarast mot Team Polaris for Ã¥ verifisere om eller korleis det
+ * pÃ¥virkar EDW og DVH-modelleringa + ETL-jobbane i DVH og Qlikview.
  * <br>
- * Nye kolonner skal alltid leggast til etter siste eksisterande kolonne og dokumenterast i kontrakta på wiki.
+ * Nye kolonner skal alltid leggast til etter siste eksisterande kolonne og dokumenterast i kontrakta pÃ¥ wiki.
  * <br>
- * Formatendringar på eksisterande kolonner bør ein unngå i så stor grad som mulig. Fortrinnsvis bør ein vurdere
- * å beholde gamal kolonne på gamalt format og legge til ny kolonne for nytt format.
+ * Formatendringar pÃ¥ eksisterande kolonner bÃ¸r ein unngÃ¥ i sÃ¥ stor grad som mulig. Fortrinnsvis bÃ¸r ein vurdere
+ * Ã¥ beholde gamal kolonne pÃ¥ gamalt format og legge til ny kolonne for nytt format.
  * <br>
- * Merk at foreløpig handhevar ikkje formatet kontrakta fullt ut med tanke på lengdeavgrensing av felt som potensielt
+ * Merk at forelÃ¸pig handhevar ikkje formatet kontrakta fullt ut med tanke pÃ¥ lengdeavgrensing av felt som potensielt
  * sett kan ha verdiar som blir lenger enn det kontrakta tillater.
  * <br>
  * Kontrakta for utvekslingsformatet ligg tilgjengelig under
@@ -208,8 +208,8 @@ public class Datavarehusformat implements CSVFormat {
                 .utfoer(builder, p, up -> up.id().toString())
         ;
 
-        // Sidan kolonna for antall feil ikkje er siste kolonne i formatet, må det leggast inn ein
-        // midlertidig verdi her for å reservere kolonneposisjonen og sikre at seinare kolonner ikkje blir forskyvd
+        // Sidan kolonna for antall feil ikkje er siste kolonne i formatet, mÃ¥ det leggast inn ein
+        // midlertidig verdi her for Ã¥ reservere kolonneposisjonen og sikre at seinare kolonner ikkje blir forskyvd
         // ei kolonne fram
         final Object placeholder = new Object();
         builder.add(placeholder);
@@ -221,7 +221,7 @@ public class Datavarehusformat implements CSVFormat {
                 .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Premiekategori.class).map(Premiekategori::kode)))
         ;
 
-        // Må populere inn antall feil til slutt for å sikre at eventuelle feil som inntreffe etter at denne kolonna
+        // MÃ¥ populere inn antall feil til slutt for Ã¥ sikre at eventuelle feil som inntreffe etter at denne kolonna
         // blir lagt til builderen, blir med i tellinga
         return builder.build().map(o -> o == placeholder ? heiltall(detector.antallFeil) : o);
     }

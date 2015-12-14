@@ -46,7 +46,7 @@ public class ApplicationControllerTest {
         ProgramArguments programArguments = new ProgramArguments();
         controller.informerOmOppstart(programArguments);
         console.assertStandardOutput().contains("Tidsserie-batch startet ");
-        console.assertStandardOutput().contains("Følgende programargumenter blir brukt: ");
+        console.assertStandardOutput().contains("FÃ¸lgende programargumenter blir brukt: ");
     }
 
     @Test
@@ -101,7 +101,7 @@ public class ApplicationControllerTest {
     @Test
     public void testInformerOmKorrupteGrunnlagsdata() throws Exception {
         controller.informerOmKorrupteGrunnlagsdata(new GrunnlagsdataException("Feil."));
-        console.assertStandardOutput().contains("Grunnlagsdata i inn-katalogen er korrupte - avbryter kjøringen.");
+        console.assertStandardOutput().contains("Grunnlagsdata i inn-katalogen er korrupte - avbryter kjÃ¸ringen.");
         assertThat(controller.exitCode()).isEqualTo(EXIT_ERROR);
     }
 
@@ -124,6 +124,6 @@ public class ApplicationControllerTest {
         console.assertStandardOutput().contains("Starter lasting av grunnlagsdata...");
         console.assertStandardOutput().contains("Grunnlagsdata lastet.");
         console.assertStandardOutput().contains("Starter tidsserie-generering");
-        console.assertStandardOutput().contains("Tidsseriegenerering fullført.");
+        console.assertStandardOutput().contains("Tidsseriegenerering fullfÃ¸rt.");
     }
 }

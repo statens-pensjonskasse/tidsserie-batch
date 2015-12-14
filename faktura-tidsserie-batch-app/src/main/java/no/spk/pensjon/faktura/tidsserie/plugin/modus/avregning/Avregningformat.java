@@ -65,16 +65,16 @@ import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
  * <br>
  * Nye kolonner skal alltid leggast til etter siste eksisterande kolonne i formatet.
  * <br>
- * Formatendringar på eksisterande kolonner bør ein unngå i så stor grad som mulig. Fortrinnsvis bør ein vurdere
- * å beholde gamal kolonne på gamalt format og legge til ny kolonne for nytt format.
+ * Formatendringar pÃ¥ eksisterande kolonner bÃ¸r ein unngÃ¥ i sÃ¥ stor grad som mulig. Fortrinnsvis bÃ¸r ein vurdere
+ * Ã¥ beholde gamal kolonne pÃ¥ gamalt format og legge til ny kolonne for nytt format.
  * <br>
- * Merk at ei kvar endring på eksisterande kolonner i formatet må sjekkast opp mot tabelldefinisjonen for TORT277 i
- * forhold til kva den støttar av verdityper, lengder, antall desimalar og liknande. Dersom endringa medfører at
- * betydninga eller tolkinga av verdiar frå kolonner eksponert via TOVIXXX-viewa, må det og avklarast mot Team Polaris
- * sidan EDW og DVH-jobbane deira kan komme til å kreve endring. Ergo: Unngå endring på eksisterande kolonner i så stor
+ * Merk at ei kvar endring pÃ¥ eksisterande kolonner i formatet mÃ¥ sjekkast opp mot tabelldefinisjonen for TORT277 i
+ * forhold til kva den stÃ¸ttar av verdityper, lengder, antall desimalar og liknande. Dersom endringa medfÃ¸rer at
+ * betydninga eller tolkinga av verdiar frÃ¥ kolonner eksponert via TOVIXXX-viewa, mÃ¥ det og avklarast mot Team Polaris
+ * sidan EDW og DVH-jobbane deira kan komme til Ã¥ kreve endring. Ergo: UnngÃ¥ endring pÃ¥ eksisterande kolonner i sÃ¥ stor
  * grad som mulig.
  * <br>
- * Merk at foreløpig handhevar ikkje formatet kontrakta fullt ut med tanke på lengdeavgrensing av felt som potensielt
+ * Merk at forelÃ¸pig handhevar ikkje formatet kontrakta fullt ut med tanke pÃ¥ lengdeavgrensing av felt som potensielt
  * sett kan ha verdiar som blir lenger enn det kontrakta tillater.
  *
  * @author Tarjei Skorgenes

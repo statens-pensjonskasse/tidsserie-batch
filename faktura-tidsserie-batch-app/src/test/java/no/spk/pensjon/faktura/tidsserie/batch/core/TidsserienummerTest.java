@@ -28,7 +28,7 @@ public class TidsserienummerTest {
     @Test
     public void skalIkkjeGodtaNummerLengreEnn8Siffer() {
         e.expect(IllegalArgumentException.class);
-        e.expectMessage("må vere 8-siffer");
+        e.expectMessage("mÃ¥ vere 8-siffer");
         e.expectMessage("var 10-siffer");
         e.expectMessage("(+999990101)");
         Tidsserienummer.genererForDato(LocalDate.of(99999, 1, 1));

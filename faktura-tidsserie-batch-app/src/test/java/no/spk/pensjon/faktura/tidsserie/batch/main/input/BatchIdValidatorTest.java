@@ -25,7 +25,7 @@ public class BatchIdValidatorTest {
     @Test
      public void testInvalidFormat() throws Exception {
         exception.expect(ParameterException.class);
-        exception.expectMessage("må oppgis på formatet grunnlagsdata_yyyy-MM-dd_HH-mm-ss-SS");
+        exception.expectMessage("mÃ¥ oppgis pÃ¥ formatet grunnlagsdata_yyyy-MM-dd_HH-mm-ss-SS");
         validator.validate(SOME_PARAMETER, "12");
     }
 

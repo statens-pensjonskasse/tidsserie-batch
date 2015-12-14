@@ -34,13 +34,13 @@ import no.spk.pensjon.faktura.tidsserie.storage.csv.AvregningsperiodeOversetter;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.CSVInput;
 
 /**
- * {@link AvregningTidsseriemodus} kan benyttes for å generere en tidsserie tilrettelagt for avregning.
+ * {@link AvregningTidsseriemodus} kan benyttes for Ã¥ generere en tidsserie tilrettelagt for avregning.
  * <br>
- * Modusen genererer tidsserier som lagres til flate filer på CSV-format, i henhold til formatspesifikasjonen
+ * Modusen genererer tidsserier som lagres til flate filer pÃ¥ CSV-format, i henhold til formatspesifikasjonen
  * definert via {@link Avregningformat}.
  * <br>
- * Foreløpig støtter avregningsmodusen kun premieberegning for pensjonsproduktene, forsikringsproduktene avventer
- * avklaring fra forretning på hvordan de skal avregnes.
+ * ForelÃ¸pig stÃ¸tter avregningsmodusen kun premieberegning for pensjonsproduktene, forsikringsproduktene avventer
+ * avklaring fra forretning pÃ¥ hvordan de skal avregnes.
  *
  * @author Tarjei Skorgenes
  * @see Avregningformat
@@ -95,7 +95,7 @@ public class AvregningTidsseriemodus implements Tidsseriemodus {
     /**
      * Navnet til alle kolonnene som CSV-filene kan inneholde verdier for.
      *
-     * @return ein strøm med navn på alle kolonnene i CSV-filene til tidsserien
+     * @return ein strÃ¸m med navn pÃ¥ alle kolonnene i CSV-filene til tidsserien
      * @see Avregningformat#kolonnenavn()
      */
     @Override
@@ -131,9 +131,9 @@ public class AvregningTidsseriemodus implements Tidsseriemodus {
      * observasjonsunderlag.
      * <br>
      *
-     * @param facade fasada som blir brukt for å generere tidsserien
+     * @param facade fasada som blir brukt for Ã¥ generere tidsserien
      * @param serienummer serienummer som alle eventar som blir sendt vidare til <code>backend</code> for persistering
-     * skal tilhøyre
+     * skal tilhÃ¸yre
      * @param publikator backend-systemet som observasjonane av kvar periode blir lagra via
      * @return ein by publikator som serialiserer og lagrar alle underlagsperioder for kvart observasjonsunderlag i
      * tidsserien som blir generert av <code>facade</code>
@@ -149,13 +149,13 @@ public class AvregningTidsseriemodus implements Tidsseriemodus {
     }
 
     /**
-     * Genererer ein ny publikator som ved hjelp av <code>mapper </code> serialiserer alle periodene frå alle
+     * Genererer ein ny publikator som ved hjelp av <code>mapper </code> serialiserer alle periodene frÃ¥ alle
      * observasjonsunderlag, til ei form som deretter blir lagra via <code>lagring</code>.
      *
-     * @param mapper serialiserer observasjonsunderlagas underlagsperioder til formatet <code>lagring</code> skal lagre på
+     * @param mapper serialiserer observasjonsunderlagas underlagsperioder til formatet <code>lagring</code> skal lagre pÃ¥
      * @param lagring tar den serialiserte versjonen av underlagsperiodene og lagrar dei
      * @param <T> datatypen underlagsperiodene blir serialisert til
-     * @return ein ny observasjonspublikator som kan brukast til å serialisere og lagre innholdet frå ein tidsserie
+     * @return ein ny observasjonspublikator som kan brukast til Ã¥ serialisere og lagre innholdet frÃ¥ ein tidsserie
      */
     <T> Observasjonspublikator nyPublikator(
             final Function<Underlag, Stream<T>> mapper, final Consumer<T> lagring) {
@@ -190,7 +190,7 @@ public class AvregningTidsseriemodus implements Tidsseriemodus {
                 .avtalekoblingar(
                         p -> avtaler
                                 .orElseThrow(
-                                        () -> new IllegalStateException("Referansedata må være innlest før denne metoden kan benyttes")
+                                        () -> new IllegalStateException("Referansedata mÃ¥ vÃ¦re innlest fÃ¸r denne metoden kan benyttes")
                                 )
                                 .contains(p.avtale())
                 )

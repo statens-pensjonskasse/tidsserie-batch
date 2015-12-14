@@ -51,8 +51,8 @@ public class FileWriterObservasjonsConsumerIT {
     }
 
     /**
-     * Dersom input-fila mot formodning eksisterer frå før, skal consumeren trunkere den slik
-     * at resultata av tidligare køyringar ikkje blir blanda med resultata frå neste køyring.
+     * Dersom input-fila mot formodning eksisterer frÃ¥ fÃ¸r, skal consumeren trunkere den slik
+     * at resultata av tidligare kÃ¸yringar ikkje blir blanda med resultata frÃ¥ neste kÃ¸yring.
      */
     @Test
     public void skalTrunkereOutputfilaVissDenEksistererFraFoer() throws IOException {

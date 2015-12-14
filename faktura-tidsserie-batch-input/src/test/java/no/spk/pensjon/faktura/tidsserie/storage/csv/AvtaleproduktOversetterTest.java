@@ -115,18 +115,18 @@ public class AvtaleproduktOversetterTest {
     @Test
     public void testProduktlinjeMedPremisatserOgKronestatserKasterFeilmelding() throws Exception {
         e.expect(IllegalStateException.class);
-        e.expectMessage("Både prosentsatser og kronesatser kan ikke være i bruk for et avtaleprodukt.");
+        e.expectMessage("BÃ¥de prosentsatser og kronesatser kan ikke vÃ¦re i bruk for et avtaleprodukt.");
         oversett("AVTALEPRODUKT;100001;XXX;2007.01.01;2010.08.31;11;0.00;0.00;10.00;0;0;2");
     }
 
     @Test
     public void testForFaaAntallKolonnerGirFeilmelding() throws Exception {
         e.expect(IllegalArgumentException.class);
-        e.expectMessage("Rader av typen <AVTALEPRODUKT> må inneholde minimum <12> kolonner, med følgende verdier på angitt index:");
+        e.expectMessage("Rader av typen <AVTALEPRODUKT> mÃ¥ inneholde minimum <12> kolonner, med fÃ¸lgende verdier pÃ¥ angitt index:");
         e.expectMessage("typeindikator(0), avtaleId(1), produkt(2), fraOgMedDato(3), tilOgMedDato(4), produktInfo(5), arbeidsgiverpremieProsent(6), medlemspremieProsent(7), " +
                 "administrasjonsgebyrProsent(8), arbeidsgiverpremieBeloep(9), medlemspremieBeloep(10), administrasjonsgebyrBeloep(11)");
         oversetter.oversett(new ArrayList<>());
-        e.expectMessage("Både prosentsatser og kronesatser kan ikke være i bruk for et avtaleprodukt.");
+        e.expectMessage("BÃ¥de prosentsatser og kronesatser kan ikke vÃ¦re i bruk for et avtaleprodukt.");
     }
 
     private Avtaleprodukt oversett(final String text) {

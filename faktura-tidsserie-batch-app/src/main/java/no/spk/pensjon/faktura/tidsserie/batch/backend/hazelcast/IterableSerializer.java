@@ -23,14 +23,14 @@ class IterableSerializer implements StreamSerializer<List<List<String>>> {
     public void write(final ObjectDataOutput out, final List<List<String>> rows) throws IOException {
         final int rowCount = rows.size();
         if (rowCount > 32767) {
-            throw new Error("Serialisering av medlem med " + rowCount + " endringar feila, øvre antall endringar som er støtta er 32767, endringar = " + rows);
+            throw new Error("Serialisering av medlem med " + rowCount + " endringar feila, Ã¸vre antall endringar som er stÃ¸tta er 32767, endringar = " + rows);
         }
         out.writeShort(rowCount);
 
         for (final List<String> row : rows) {
             final int columnCount = row.size();
             if (columnCount > 127) {
-                throw new Error("Serialisering av endring med " + columnCount + " kolonner feila, øvre grense for antall kolonner pr endring er 127 kolonner, rad = '" + row + "'");
+                throw new Error("Serialisering av endring med " + columnCount + " kolonner feila, Ã¸vre grense for antall kolonner pr endring er 127 kolonner, rad = '" + row + "'");
             }
             out.writeByte(columnCount);
             for (final String cell : row) {
@@ -39,7 +39,7 @@ class IterableSerializer implements StreamSerializer<List<List<String>>> {
                 } else {
                     final int length = cell.length();
                     if (length > 127) {
-                        throw new Error("Serialisering av endring med lengde " + length + " feila, øvre grense for endringslengde er 127 tegn, verdi = '" + cell + "'");
+                        throw new Error("Serialisering av endring med lengde " + length + " feila, Ã¸vre grense for endringslengde er 127 tegn, verdi = '" + cell + "'");
                     }
                     out.writeByte(length);
                     out.writeBytes(cell);

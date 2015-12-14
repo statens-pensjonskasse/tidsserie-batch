@@ -16,7 +16,7 @@ public class BehandleMedlemCommand implements GenererTidsserieCommand {
     private final Medlemsbehandler medlemsbehandler;
 
     /**
-     * Konstruerer ein ny kommando som koordinerer mot dei angitte tenestene når tidsseriar pr medlem blir generert
+     * Konstruerer ein ny kommando som koordinerer mot dei angitte tenestene nÃ¥r tidsseriar pr medlem blir generert
      * av {@link #generer(List, Observasjonsperiode, Feilhandtering, long)}.
      *
      * @param grunnlagsdata tenesta som gir tilgang til grunnlagsdata som ikkje er medlemsspesifikke
@@ -30,9 +30,9 @@ public class BehandleMedlemCommand implements GenererTidsserieCommand {
     public BehandleMedlemCommand(final TidsserieFactory grunnlagsdata,
             final StorageBackend lagring,
             final Medlemsbehandler medlemsbehandler) {
-        this.grunnlagsdata = requireNonNull(grunnlagsdata, "grunnlagsdata er påkrevd, men manglar");
-        this.lagring = requireNonNull(lagring, "publikator er påkrevd, men manglar");
-        this.medlemsbehandler = requireNonNull(medlemsbehandler, "medlemsbehandler er påkrevd, men manglar");
+        this.grunnlagsdata = requireNonNull(grunnlagsdata, "grunnlagsdata er pÃ¥krevd, men manglar");
+        this.lagring = requireNonNull(lagring, "publikator er pÃ¥krevd, men manglar");
+        this.medlemsbehandler = requireNonNull(medlemsbehandler, "medlemsbehandler er pÃ¥krevd, men manglar");
     }
 
     @Override

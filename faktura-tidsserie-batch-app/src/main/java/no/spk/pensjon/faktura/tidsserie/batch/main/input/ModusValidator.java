@@ -9,7 +9,7 @@ import com.beust.jcommander.ParameterException;
 
 /**
  * {@link no.spk.pensjon.faktura.tidsserie.batch.main.input.ModusValidator} verifiserer
- * at den angitte moduskoda tilhøyrer ein av modusane som batchen støttar.
+ * at den angitte moduskoda tilhÃ¸yrer ein av modusane som batchen stÃ¸ttar.
  *
  * @see no.spk.pensjon.faktura.tidsserie.batch.main.input.Modus
  */
@@ -29,8 +29,8 @@ public class ModusValidator implements IParameterValidator {
     }
 
     static String feilmelding(final String value) {
-        return "Modus '" + value + "' er ikkje støtta av faktura-tidsserie-batch.\n"
-                + "\nFølgjande modusar er støtta:\n"
+        return "Modus '" + value + "' er ikkje stÃ¸tta av faktura-tidsserie-batch.\n"
+                + "\nFÃ¸lgjande modusar er stÃ¸tta:\n"
                 + Modus.stream()
                 .map(Modus::kode)
                 .map(k -> "- " + k)

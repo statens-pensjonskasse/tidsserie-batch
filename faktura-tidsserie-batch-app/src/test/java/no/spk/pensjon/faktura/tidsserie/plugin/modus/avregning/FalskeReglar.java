@@ -28,9 +28,9 @@ import no.spk.pensjon.faktura.tidsserie.domain.underlag.PaakrevdAnnotasjonMangla
 /**
  * {@link FalskeReglar} implementerer falske versjonar av alle reglane som ikkje er spesifikke for avregning.
  * <br>
- * Intensjonen med dette er å redusere oppsettet som er påkrevd for å verifisere formatering og mapping
+ * Intensjonen med dette er Ã¥ redusere oppsettet som er pÃ¥krevd for Ã¥ verifisere formatering og mapping
  * av tidsserien. Desse reglane blir testa i domenemodellen og av andre integrasjons- og akkseptansetestar. Det
- * er derfor ikkje påkrevd å teste og sette opp desse for avregninga.
+ * er derfor ikkje pÃ¥krevd Ã¥ teste og sette opp desse for avregninga.
  *
  * @author Tarjei Skorgenes
  */

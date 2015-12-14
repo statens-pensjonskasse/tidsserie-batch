@@ -44,7 +44,7 @@ public class DatavarehusformatTest {
         final List<Object> actual = serialiser(observasjonsdato(), eiPeriodeMedKunObligatoriskeVerdiar())
                 .collect(toList());
         assertThat(actual)
-                .as("kolonner generert av serialiseringa vs kolonnenavna serialiseringa seier den støttar")
+                .as("kolonner generert av serialiseringa vs kolonnenavna serialiseringa seier den stÃ¸ttar")
                 .hasSameSizeAs(expected);
     }
 

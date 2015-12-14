@@ -15,7 +15,7 @@ public class FormatSpesifikasjonTest {
     @Test
     public void skal_verifisere_at_det_er_lagt_inn_minst_ei_kolonne() {
         e.expect(IllegalArgumentException.class);
-        e.expectMessage("Spesifikasjonen må inneholde minst ei kolonne");
+        e.expectMessage("Spesifikasjonen mÃ¥ inneholde minst ei kolonne");
 
         new FormatSpesifikasjon(desimalar) {
             @Override
@@ -57,7 +57,7 @@ public class FormatSpesifikasjonTest {
     @Test
     public void skal_verifisere_at_det_ikkje_er_gap_mellom_kolonnene() {
         e.expect(IllegalArgumentException.class);
-        e.expectMessage("Spesifikasjonen må inneholde ein definisjon for alle kolonnenummer mellom kolonne 1 og kolonne 4");
+        e.expectMessage("Spesifikasjonen mÃ¥ inneholde ein definisjon for alle kolonnenummer mellom kolonne 1 og kolonne 4");
         e.expectMessage("kolonne 1 og 3");
 
         new FormatSpesifikasjon(desimalar) {

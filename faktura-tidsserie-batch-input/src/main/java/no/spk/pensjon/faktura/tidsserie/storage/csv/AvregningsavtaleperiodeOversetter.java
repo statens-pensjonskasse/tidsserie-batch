@@ -13,7 +13,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
  * Mapper for konvertering av rader fra CSV-filer for avregningsavtaleperiode til instanser av
  * {@link Avregningsavtaleperiode}.
  * <br>
- * CSV-radene må benytte typeindikatoren {@value #TYPEINDIKATOR} for av oversetteren skal kunne identifisere rada som
+ * CSV-radene mÃ¥ benytte typeindikatoren {@value #TYPEINDIKATOR} for av oversetteren skal kunne identifisere rada som
  * ei avregningsperiode, og dermed kunne oversette den.
  *
  * @author Snorre E. Brekke
@@ -22,7 +22,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
  */
 public class AvregningsavtaleperiodeOversetter extends ReflectiveCsvOversetter<AvregningsavtaleperiodeCsv, Avregningsavtaleperiode> implements CsvOversetter<Avregningsavtaleperiode> {
     /**
-     * Typeindikatoren som CSV-radene må benytte for at oversetteren skal kunne oversette de.
+     * Typeindikatoren som CSV-radene mÃ¥ benytte for at oversetteren skal kunne oversette de.
      */
     public static final String TYPEINDIKATOR = "AVREGNINGSAVTALE";
 
@@ -33,8 +33,8 @@ public class AvregningsavtaleperiodeOversetter extends ReflectiveCsvOversetter<A
     /**
      * Konverterer innholdet fra {@code rad} til ei ny {@link Avregningsavtaleperiode}.
      *
-     * @param rad CSV-rada som verdiane til avregningsavtaleperioda skal hentast frå
-     * @return ei ny avregningsavtaleperiode, populert med verdiar frå {@code rad}
+     * @param rad CSV-rada som verdiane til avregningsavtaleperioda skal hentast frÃ¥
+     * @return ei ny avregningsavtaleperiode, populert med verdiar frÃ¥ {@code rad}
      */
     @Override
     protected Avregningsavtaleperiode transformer(final AvregningsavtaleperiodeCsv rad) {

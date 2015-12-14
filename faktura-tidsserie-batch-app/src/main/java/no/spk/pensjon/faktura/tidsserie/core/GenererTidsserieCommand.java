@@ -10,7 +10,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
  * {@link GenererTidsserieCommand} er eit backend-uavhengig kommandobjekt som genererer ein tidsserie
  * for eit enkelt medlem.
  * <br>
- * Kommandoen er primært ein koordinator mellom følgjande tenester/fasader i og utanfor domenemodellen:
+ * Kommandoen er primÃ¦rt ein koordinator mellom fÃ¸lgjande tenester/fasader i og utanfor domenemodellen:
  * <ul>
  * <li>{@link TidsserieFactory}</li>
  * <li>{@link Tidsseriemodus}</li>
@@ -22,24 +22,24 @@ import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
  */
 public interface GenererTidsserieCommand {
     /**
-     * Genererer ein ny tidsserie basert på <code>medlemsdata</code> og avtale- og referansedata frå
+     * Genererer ein ny tidsserie basert pÃ¥ <code>medlemsdata</code> og avtale- og referansedata frÃ¥
      * {@link TidsserieFactory}.
      * <br>
-     * Tidsserien blir avgrensa til å ikkje strekke seg lenger enn den angitte observasjonsperioda.
+     * Tidsserien blir avgrensa til Ã¥ ikkje strekke seg lenger enn den angitte observasjonsperioda.
      * <br>
-     * Alle feil som oppstår på stillingsforholdnivå, det vil seie som ein del av underlagsoppbygginga og -prosesseringa,
-     * blir delegert til <code>feilhandtering</code> før prosesseringa går vidare til medlemmets neste stillingsforhold
-     * eller neste medlemm viss det ikkje er fleire stillingar å behandle for medlemmet det feila på.
+     * Alle feil som oppstÃ¥r pÃ¥ stillingsforholdnivÃ¥, det vil seie som ein del av underlagsoppbygginga og -prosesseringa,
+     * blir delegert til <code>feilhandtering</code> fÃ¸r prosesseringa gÃ¥r vidare til medlemmets neste stillingsforhold
+     * eller neste medlemm viss det ikkje er fleire stillingar Ã¥ behandle for medlemmet det feila pÃ¥.
      * <br>
-     * Feil som oppstår i forkant av underlagsoppbygginga, som endel av prosesseringa av medlemsdatane, fører til at heile
+     * Feil som oppstÃ¥r i forkant av underlagsoppbygginga, som endel av prosesseringa av medlemsdatane, fÃ¸rer til at heile
      * tidsserien for det aktuelle medlemmet feilar, slike feil blir ikkje delegert vidare til <code>feilhandtering</code>.
      *
      * @param medlemsdata serialiserte medlemsdata for eit enkelt medlem
      * @param periode observasjonsperioda som bestemmer yttergrensene for tidsserien sine underlagsperioder sine
-     * frå og med- og til og med-datoar
-     * @param feilhandtering feilhandteringsstrategien som vil bli bedt om å handtere alle feil på stillingsforholdnivå
-     * @param serienummer serienummer som alle eventar som blir sendt vidare for persistering skal tilhøyre
-     * @throws RuntimeException dersom deserialiseringa av <code>medlemsdata</code> eller prosessering på medlemsnivå feilar
+     * frÃ¥ og med- og til og med-datoar
+     * @param feilhandtering feilhandteringsstrategien som vil bli bedt om Ã¥ handtere alle feil pÃ¥ stillingsforholdnivÃ¥
+     * @param serienummer serienummer som alle eventar som blir sendt vidare for persistering skal tilhÃ¸yre
+     * @throws RuntimeException dersom deserialiseringa av <code>medlemsdata</code> eller prosessering pÃ¥ medlemsnivÃ¥ feilar
      */
     void generer(List<List<String>> medlemsdata, Observasjonsperiode periode,
             Feilhandtering feilhandtering, long serienummer);

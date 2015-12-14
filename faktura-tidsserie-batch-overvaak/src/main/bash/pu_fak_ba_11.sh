@@ -17,19 +17,19 @@
 # Deklarasjon av variable + evt. debug
 #===========================================================
 #Initialiseringer
-STATUS=0															  # OK (0=OK, 1=Warning (Kjørt ferdig, men noe feilet), 2=Error)
-COMMENT=""															  # Kommentar til kjøringen. Kan ende opp som tom, om alt gaar bra.
+STATUS=0															  # OK (0=OK, 1=Warning (KjÃ¸rt ferdig, men noe feilet), 2=Error)
+COMMENT=""															  # Kommentar til kjÃ¸ringen. Kan ende opp som tom, om alt gaar bra.
 
 #Batch-spesifikke settings
 APPLIKASJONSGRUPPE=faktura
-SERVICENAME=$(basename $0 .sh)                                        # Navn på batch i batchovervåkingen utledet fra navnet på batch skriptet
+SERVICENAME=$(basename $0 .sh)                                        # Navn pÃ¥ batch i batchovervÃ¥kingen utledet fra navnet pÃ¥ batch skriptet
 OVERVAAKING_SERVICENAME=${SERVICENAME}
 WORKDIR=${SPK_DATA}/puma/${APPLIKASJONSGRUPPE}/${SERVICENAME}		  # Arbeidsomrade for batchen. (inn/ut/log etc.)
-HOMEDIR=$(dirname $0)      		                                      # Katalog hvor shell skriptet kjøres fra
+HOMEDIR=$(dirname $0)      		                                      # Katalog hvor shell skriptet kjÃ¸res fra
 #Beregnede settings
 SCRIPT_NAME=${0##*/}
 LOGDIR=${WORKDIR}                                                     # Omrade hvor log filer opprettes
-MASTERLOG=${WORKDIR}/master.log                                       # Loggfil for dette scriptet. Brukes av logging til batchovervåking
+MASTERLOG=${WORKDIR}/master.log                                       # Loggfil for dette scriptet. Brukes av logging til batchovervÃ¥king
 PU_FAK_BA_10_LOGDIR=${SPK_DATA}/puma/faktura/pu_fak_ba_10
 
 #===========================================================
@@ -43,7 +43,7 @@ Usage() {
 }
 
 FindLatestLog() {
-    # Finn alle tidsserie-batch-logkataloger i PU_FAK_BA_10_LOGDIR, sorter og hent ut første (nyeste kjøring)
+    # Finn alle tidsserie-batch-logkataloger i PU_FAK_BA_10_LOGDIR, sorter og hent ut fÃ¸rste (nyeste kjÃ¸ring)
     local last_batch_log=$(find ${PU_FAK_BA_10_LOGDIR} -maxdepth 2 -name "batch.log" | sort -r | head -n 1)
 
     if [[ ! -f ${last_batch_log} ]] ; then
@@ -125,7 +125,7 @@ RunSql() {
 
 RunInsertSql() {
     if ! IDE_SEKV_TORT901=$(echo -e "$1" | syb_sql_run.sh -clean) ; then
-            LOG_START_COMMENT="Innsetting av status i $DB_DATABASE.tort901 på server $DB_SERVER med bruker $DB_USER for kjøring \"$SERVICENAME\" feilet! Kommentar fra kjørescript: \"$LOG_START_COMMENT\""
+            LOG_START_COMMENT="Innsetting av status i $DB_DATABASE.tort901 pÃ¥ server $DB_SERVER med bruker $DB_USER for kjÃ¸ring \"$SERVICENAME\" feilet! Kommentar fra kjÃ¸rescript: \"$LOG_START_COMMENT\""
             SERVICENAME=${OVERVAAKING_SERVICENAME}
             LogFatal "$LOG_START_COMMENT"
     fi
@@ -150,14 +150,14 @@ done
 ExitIfNotExistsSPK_DATA
 CreateRequiredCatalogs ${LOGDIR}
 
-# KJØR BATCH
+# KJÃ˜R BATCH
 cd ${HOMEDIR}
 
 LogStart "Leser inn logfiler fra pu_fak_ba_10."
 # Henter ut ID til den oppdaterte TORT901-innslaget lagd av LogStart
 CURRENT_IDE_SEKV_TORT901=$IDE_SEKV_TORT901
 
-# Finn alle tidsserie-batch-logkataloger i PU_FAK_BA_10_LOGDIR, sorter og hent ut første (nyeste kjøring)
+# Finn alle tidsserie-batch-logkataloger i PU_FAK_BA_10_LOGDIR, sorter og hent ut fÃ¸rste (nyeste kjÃ¸ring)
 last_batch_log=$(FindLatestLog)
 
 first_log_line=$(head -n 1 ${last_batch_log})

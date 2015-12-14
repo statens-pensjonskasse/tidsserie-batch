@@ -10,13 +10,13 @@ import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade;
  * {@link TidsserieFactory} tilbyr klientane enkelt oppretting av
  * dei sentrale datatypene og fasadene som trengst ved generering av nye tidsseriar.
  * <br>
- * Det er primært {@link no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade} og
+ * Det er primÃ¦rt {@link no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade} og
  * {@link no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medlemsdata} som kan opprettast via denne fabrikken.
  * <br>
- * I tillegg er fabrikken ansvarlig for å koble inn/gi tilgang til avtale- og lønnsdata som tidsserien kan benytte seg av.
+ * I tillegg er fabrikken ansvarlig for Ã¥ koble inn/gi tilgang til avtale- og lÃ¸nnsdata som tidsserien kan benytte seg av.
  * <br>
- * Objekttypene fabrikken returnerer kan ikkje forventast å vere tråd-sikre, objekta generert av fabrikken bør derfor
- * ikkje delast på tvers av trådar i samme JVM.
+ * Objekttypene fabrikken returnerer kan ikkje forventast Ã¥ vere trÃ¥d-sikre, objekta generert av fabrikken bÃ¸r derfor
+ * ikkje delast pÃ¥ tvers av trÃ¥dar i samme JVM.
  *
  * @author Tarjei Skorgenes
  */
@@ -24,10 +24,10 @@ public interface TidsserieFactory extends TidsperiodeFactory {
     /**
      * Opprettar ei ny tidsserie-fasade og pre-populerer den med avtaledata.
      * <br>
-     * Fasada blir og satt opp til å bruke den angitte feilhandteringsstrategien for å handtere alle fatale feil på
-     * medlems- eller stillingsforholdnivå.
+     * Fasada blir og satt opp til Ã¥ bruke den angitte feilhandteringsstrategien for Ã¥ handtere alle fatale feil pÃ¥
+     * medlems- eller stillingsforholdnivÃ¥.
      *
-     * @param feilhandtering feilhandteringsstrategi for feil som oppstår ved oppbygging av medlems- eller stillingsforholdunderlag
+     * @param feilhandtering feilhandteringsstrategi for feil som oppstÃ¥r ved oppbygging av medlems- eller stillingsforholdunderlag
      * @return ei ny tidsserie-fasade prepopulert med avtaledata og feilhandteringsstrategi
      * @see no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade#overstyr(no.spk.pensjon.faktura.tidsserie.domain.tidsserie.AvtaleinformasjonRepository)
      * @see no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade#overstyr(no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Feilhandtering)
@@ -36,13 +36,13 @@ public interface TidsserieFactory extends TidsperiodeFactory {
 
     /**
      * Opprettar eit nytt sett med {@link no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medlemsdata} for eit medlem
-     * basert på CSV-data generert av faktura-tidsserie-batch.
+     * basert pÃ¥ CSV-data generert av faktura-tidsserie-batch.
      * <br>
      * Medlemsdatane blir populert med oversettarar som konverterer <code>data</code> (gitt at det er data som er generert av
-     * faktura-grunnlagsdata-batch) til domeneobjekt for alle påkrevde/støtta medlemsdata-typer.
+     * faktura-grunnlagsdata-batch) til domeneobjekt for alle pÃ¥krevde/stÃ¸tta medlemsdata-typer.
      *
-     * @param data medlemsdata på CSV-format
-     * @return eit nytt sett med medlemsdata, preopulert med data og oversettarar som støttar konvertering av desse til domeneobjekt
+     * @param data medlemsdata pÃ¥ CSV-format
+     * @return eit nytt sett med medlemsdata, preopulert med data og oversettarar som stÃ¸ttar konvertering av desse til domeneobjekt
      */
     Medlemsdata create(final List<List<String>> data);
 }
