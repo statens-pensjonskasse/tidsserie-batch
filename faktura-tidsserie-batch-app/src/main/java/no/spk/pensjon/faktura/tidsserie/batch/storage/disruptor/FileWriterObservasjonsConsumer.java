@@ -17,7 +17,7 @@ import no.spk.pensjon.faktura.tidsserie.core.ObservasjonsEvent;
  * Fil-basert implementasjon av {@link ObservasjonsConsumer}.
  * <br>
  * {@link ObservasjonsEvent}ar som blir mottatt av {@link #onEvent(ObservasjonsEvent, long, boolean)} blir lagra
- * til disk via ordinær, ubuffra {@link Writer}-basert blocking I/O.
+ * til disk via ordinÃ¦r, ubuffra {@link Writer}-basert blocking I/O.
  * <br>
  * Ved slutten av kvar batch og ved lukking av consumeren, blir eventane flusha til disk.
  *
@@ -33,7 +33,7 @@ class FileWriterObservasjonsConsumer implements ObservasjonsConsumer {
     }
 
     /**
-     * Flushar og lukkar alle åpne filer
+     * Flushar og lukkar alle Ã¥pne filer
      *
      * @throws IOException
      */
@@ -58,20 +58,20 @@ class FileWriterObservasjonsConsumer implements ObservasjonsConsumer {
     }
 
     /**
-     * Lagrar unna det tekstlige innhaldet til eventen til flate filer ved hjelp av ordinær blocking I/O.
+     * Lagrar unna det tekstlige innhaldet til eventen til flate filer ved hjelp av ordinÃ¦r blocking I/O.
      * <br>
      * Innhaldet blir lagra til disk med systemet sin standard encoding.
      * <br>
-     * Klienten kan styre kva filer eventen blir skreven til ved å sjå til at kvar event har eit serienummer som
+     * Klienten kan styre kva filer eventen blir skreven til ved Ã¥ sjÃ¥ til at kvar event har eit serienummer som
      * i kombinasjon med {@link FileTemplate#createUniqueFile(long)}, regulerer output-fila eventen blir ruta til.
      * <br>
      * Eventar utan serienummer vil bli behandla som om serienummeret er <code>1</code>.
      *
-     * @param event      eventen som inneheld innholdet som skal lagrast og serienummeret den eventuelt tilhøyrer
+     * @param event      eventen som inneheld innholdet som skal lagrast og serienummeret den eventuelt tilhÃ¸yrer
      * @param sequence   sekvensnummeret til eventen som blir prosessert
      * @param endOfBatch <code>true</code> dersom dette er siste event i ein batch, <code>false</code> viss det
      *                   vil bli sendt inn fleire eventar til consumeren straks metoda returnerer
-     * @throws UncheckedIOException dersom skriving til disk eller åpning av nye filer feilar
+     * @throws UncheckedIOException dersom skriving til disk eller Ã¥pning av nye filer feilar
      */
     @Override
     public void onEvent(final ObservasjonsEvent event, final long sequence, final boolean endOfBatch) throws UncheckedIOException {
@@ -99,7 +99,7 @@ class FileWriterObservasjonsConsumer implements ObservasjonsConsumer {
         try {
             return new FileWriter(file, false);
         } catch (IOException e) {
-            throw new UncheckedIOException("Klarte ikkje åpne " + file + " for skriving", e);
+            throw new UncheckedIOException("Klarte ikkje Ã¥pne " + file + " for skriving", e);
         }
     }
 }

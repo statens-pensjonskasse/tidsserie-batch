@@ -24,7 +24,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
  * {@link Premiesatskolonner} representerer uthentings- og formateringslogikken
  * som skal anvendast ved uthenting av 5 kolonner pr produkt som ein tar med i CSV-formatet.
  * <br>
- * Premiesatsar angitt i prosent blir formatert med 2 desimalar, premiesatsar angitt som kronebeløp
+ * Premiesatsar angitt i prosent blir formatert med 2 desimalar, premiesatsar angitt som kronebelÃ¸p
  * blir angitt utan desimalar.
  *
  * @author Tarjei Skorgenes
@@ -34,19 +34,19 @@ class Premiesatskolonner {
      * Returnerer ein straum av funksjonar som trekker ut verdiar for dei 5 kolonnene
      * som beskriv premiesatsinformasjon for det angitte produktet.
      * <br>
-     * Første funksjon  trekker ut informasjon om korvidt produktet er fakturerbart eller ei.
+     * FÃ¸rste funksjon  trekker ut informasjon om korvidt produktet er fakturerbart eller ei.
      * <br>
      * Andre, tredje og fjerde funksjon trekker ut gjeldande premiesatsar for produket, enten som prosent
-     * eller som kronebeløp avhengig av typen produkt.
+     * eller som kronebelÃ¸p avhengig av typen produkt.
      * <br>
      * Femte og siste kolonne inneheld produktinfo-koda for produktet.
      * <br>
-     * Dersom avtalen ikkje har produktet som blir forsøkt slått opp, blir det returnert 5 funksjonar som
+     * Dersom avtalen ikkje har produktet som blir forsÃ¸kt slÃ¥tt opp, blir det returnert 5 funksjonar som
      * genererer tomme-verdiar.
      *
      * @param p
      * @param produkt produktet som premiesats-funksjonar skal hentast ut for
-     * @return ein straum med 5 funksjonar som trekker ut premiesats-informasjon frå ei underlagsperiode
+     * @return ein straum med 5 funksjonar som trekker ut premiesats-informasjon frÃ¥ ei underlagsperiode
      */
     Stream<Function<Underlagsperiode, String>> forProdukt(final Underlagsperiode p, final Produkt produkt) {
         Function<Premiesats, Stream<Function<Underlagsperiode, String>>> memento = premiesats -> Stream.empty();

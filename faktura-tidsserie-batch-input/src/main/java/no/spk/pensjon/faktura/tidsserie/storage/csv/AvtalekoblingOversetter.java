@@ -11,10 +11,10 @@ import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.MedlemsdataOversetter
 
 /**
  * {@link AvtalekoblingOversetter} representerer algoritma
- * for å mappe om og konvertere avtalekoblingar til
+ * for Ã¥ mappe om og konvertere avtalekoblingar til
  * {@link no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Avtalekoblingsperiode}.
  * <p>
- * Ei avtalekobling skal inneholde følgjande verdiar, alle representert som tekst:
+ * Ei avtalekobling skal inneholde fÃ¸lgjande verdiar, alle representert som tekst:
  * <table summary="">
  * <thead>
  * <tr>
@@ -34,7 +34,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.MedlemsdataOversetter
  * <tr>
  * <td>1</td>
  * <td>yyyy.MM.dd</td>
- * <td>Fødselsdato for medlem</td>
+ * <td>FÃ¸dselsdato for medlem</td>
  * <td>TORT126.DAT_KUNDE_FOEDT_NUM</td>
  * </tr>
  * <tr>
@@ -52,7 +52,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.MedlemsdataOversetter
  * <tr>
  * <td>4</td>
  * <td>yyyy.MM.dd</td>
- * <td>Startdato, første dag i perioda stillingsforholdet er tilknytta avtalen</td>
+ * <td>Startdato, fÃ¸rste dag i perioda stillingsforholdet er tilknytta avtalen</td>
  * <td>TORT126.DAT_START</td>
  * </tr>
  * <tr>

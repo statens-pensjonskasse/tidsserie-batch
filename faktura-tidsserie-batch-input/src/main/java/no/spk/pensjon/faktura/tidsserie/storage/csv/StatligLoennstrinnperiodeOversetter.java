@@ -7,36 +7,36 @@ import no.spk.pensjon.faktura.tidsserie.domain.loennsdata.StatligLoennstrinnperi
 
 /**
  * {@link StatligLoennstrinnperiodeOversetter} representerer algoritma
- * for å mappe om og konvertere statlige lønnstrinn til
+ * for Ã¥ mappe om og konvertere statlige lÃ¸nnstrinn til
  * {@link no.spk.pensjon.faktura.tidsserie.domain.loennsdata.StatligLoennstrinnperiode}
  * <p>
- * Informasjon henta frå statlige lønnstrinnperioder skal inneholde følgjande verdiar, alle representert som tekst:
+ * Informasjon henta frÃ¥ statlige lÃ¸nnstrinnperioder skal inneholde fÃ¸lgjande verdiar, alle representert som tekst:
  * <table summary="">
  * <thead>
  * <tr>
  * <td>Index</td>
  * <td>Verdi / Format</td>
  * <td>Beskrivelse</td>
- * <td>Blir typisk henta frå</td>
+ * <td>Blir typisk henta frÃ¥</td>
  * </tr>
  * </thead>
  * <tbody>
  * <tr>
  * <td>0</td>
  * <td>SPK_LTR</td>
- * <td>Typeindikator som identifiserer rada som ei statlig lønnstrinnperiode</td>
+ * <td>Typeindikator som identifiserer rada som ei statlig lÃ¸nnstrinnperiode</td>
  * <td>Hardkoda</td>
  * </tr>
  * <tr>
  * <td>1</td>
  * <td>1 - 3-sifra tall</td>
- * <td>Lønnstrinn</td>
+ * <td>LÃ¸nnstrinn</td>
  * <td>TORT011.NUM_LTR</td>
  * </tr>
  * <tr>
  * <td>2</td>
  * <td>yyyy.MM.dd</td>
- * <td>Frå og med-dato</td>
+ * <td>FrÃ¥ og med-dato</td>
  * <td>TORT011.DAT_GYLDIG_FOM</td>
  * </tr>
  * <tr>
@@ -48,7 +48,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.loennsdata.StatligLoennstrinnperi
  * <tr>
  * <td>4</td>
  * <td>Integer</td>
- * <td>Kronebeløpet lønnstrinnet tilsvarar innanfor den aktuelle tidsperioda</td>
+ * <td>KronebelÃ¸pet lÃ¸nnstrinnet tilsvarar innanfor den aktuelle tidsperioda</td>
  * <td>TORT011.BEL_LONN</td>
  * </tr>
  * </tbody>

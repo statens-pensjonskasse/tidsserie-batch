@@ -7,6 +7,7 @@ import java.io.Writer;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Optional;
 
 import no.spk.faktura.input.BatchId;
@@ -19,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Har i oppgrave å generere metadata.txt fil for batchen som gir en oppsummering av parametre og status på kjøringen.
+ * Har i oppgrave Ã¥ generere metadata.txt fil for batchen som gir en oppsummering av parametre og status pÃ¥ kjÃ¸ringen.
  * I tilegg kan klassen produserere checksums.txt som inneholder checksummer for alle .csv filer som blir lagret
  * i arbeidskatalogen for batchen.
  *
@@ -44,10 +45,10 @@ public class MetaDataWriter {
             dataModel.put("batchId", batchId);
             dataModel.put("jobDuration", getDurationString(duration));
             dataModel.put("outputDirectory", batchKatalog.toAbsolutePath().normalize().toString());
-            Template template = config.getTemplate("metadata.ftl");
+            Template template = config.getTemplate("metadata.ftl", Locale.forLanguageTag("no"), "utf-8");
             template.process(dataModel, writer);
         } catch (IOException | TemplateException e) {
-            logger.error("Klarte ikke å opprette metadata-fil", e);
+            logger.error("Klarte ikke Ã¥ opprette metadata-fil", e);
             return Optional.empty();
         }
         return Optional.of(fileToWrite);

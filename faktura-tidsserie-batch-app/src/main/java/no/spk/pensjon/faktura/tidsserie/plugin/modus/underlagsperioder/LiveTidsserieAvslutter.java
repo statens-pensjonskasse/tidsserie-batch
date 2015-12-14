@@ -18,12 +18,12 @@ public class LiveTidsserieAvslutter {
     private final TidsserieResulat resulat;
 
     public LiveTidsserieAvslutter(TidsserieResulat resulat) {
-        this.resulat = requireNonNull(resulat, "resulat kan ikke være null.");
+        this.resulat = requireNonNull(resulat, "resulat kan ikke vÃ¦re null.");
     }
 
     /**
      * Finner alle tidsserie*.csv filer i utkatalog, og fordeler filnavmeme i ti filer: FFF_FILLISTE_[1-10].txt.
-     * Filliste-filene brukes slik at Datavarehus kan bruke faste filnavn for å paralellisere innlesingen av csv-filene.
+     * Filliste-filene brukes slik at Datavarehus kan bruke faste filnavn for Ã¥ paralellisere innlesingen av csv-filene.
      */
     public LiveTidsserieAvslutter lagCsvGruppefiler() {
         new CsvFileGroupWriter().createCsvGroupFiles(resulat.tidsserieKatalog());
@@ -38,7 +38,7 @@ public class LiveTidsserieAvslutter {
         try {
             Files.createFile(resolve);
         } catch (IOException e) {
-            throw new UncheckedIOException("Klarte ikke å opprette triggerfil.", e);
+            throw new UncheckedIOException("Klarte ikke Ã¥ opprette triggerfil.", e);
         }
         return this;
     }

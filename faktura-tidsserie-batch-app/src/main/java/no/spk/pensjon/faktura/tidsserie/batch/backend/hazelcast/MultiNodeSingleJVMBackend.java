@@ -27,22 +27,22 @@ import org.slf4j.LoggerFactory;
  * {@link MultiNodeSingleJVMBackend} handterer og kontrollerer Hazelcast-gridet som tidsseriane
  * blir generert via.
  * <br>
- * Backenden startar opp eit brukar-kontrollerbart antall beregningsnoder som inngår i eit delt datagrid. Griddet
- * blir satt opp med eit unikt cluster-navn og med innstillingar som skal sikre at det kun er nodene som køyrer
+ * Backenden startar opp eit brukar-kontrollerbart antall beregningsnoder som inngÃ¥r i eit delt datagrid. Griddet
+ * blir satt opp med eit unikt cluster-navn og med innstillingar som skal sikre at det kun er nodene som kÃ¸yrer
  * innanfor den aktive JVMen som vil bli brukt av tidsseriegenereringa.
  * <br>
- * Gridet består av ei master-node og N-1 slave-noder der N blir styrt via kommandolinjeargument ved oppstart av
+ * Gridet bestÃ¥r av ei master-node og N-1 slave-noder der N blir styrt via kommandolinjeargument ved oppstart av
  * batchen.
  * <br>
- * For å redusere minnebruken for medlemsdatane tidsserien skal genererast ut i frå, blir alle medlemsdata lagra i
- * binært-format, ikkje i serialisert form.
+ * For Ã¥ redusere minnebruken for medlemsdatane tidsserien skal genererast ut i frÃ¥, blir alle medlemsdata lagra i
+ * binÃ¦rt-format, ikkje i serialisert form.
  * <br>
  * Sidan beregningsagentane som {@link no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast.HazelcastBackend} sender
- * ut i gridet også er avhengig av fellestenester for lagring av resultat og innhenting av avtale- og referansedata,
- * tilbyr klassa muligheiter for å registrere fellestenester i kvar enkelt node sin
+ * ut i gridet ogsÃ¥ er avhengig av fellestenester for lagring av resultat og innhenting av avtale- og referansedata,
+ * tilbyr klassa muligheiter for Ã¥ registrere fellestenester i kvar enkelt node sin
  * {@link com.hazelcast.core.HazelcastInstance#getUserContext()}.
  * <br>
- * Hazelcast blir satt opp til å rute alle logginnslag via slf4j.
+ * Hazelcast blir satt opp til Ã¥ rute alle logginnslag via slf4j.
  *
  * @author Tarjei Skorgenes
  */
@@ -63,7 +63,7 @@ class MultiNodeSingleJVMBackend implements Server {
     /**
      * Startar opp master- og slavenodene.
      * <br>
-     * Etter at metoda returnerer vil gridet vere klart til å behandle og ta vare på data opplasta via
+     * Etter at metoda returnerer vil gridet vere klart til Ã¥ behandle og ta vare pÃ¥ data opplasta via
      * {@link HazelcastBackend#uploader()}.
      *
      * @return masternoda
@@ -97,7 +97,7 @@ class MultiNodeSingleJVMBackend implements Server {
         logger.info("Startar masternoda...");
         master = of(startInstance(config, 1));
 
-        logger.info("Startar sekundærnoder...");
+        logger.info("Startar sekundÃ¦rnoder...");
         slavar.addAll(
                 IntStream
                         .rangeClosed(2, antallNoder)
@@ -115,14 +115,14 @@ class MultiNodeSingleJVMBackend implements Server {
      *
      * @param <T>         tenestetypen som blir registrert
      * @param serviceType kva tenestetype tenesta skal registrerast som. Det forventast at tenesta kan castast til
-     *                    denne typen av klientane som slår den opp frå usercontexten seinare
+     *                    denne typen av klientane som slÃ¥r den opp frÃ¥ usercontexten seinare
      * @param service     tenesta som skal registrerast under det angitte tenestenavnet i usercontexten til alle nodene
      */
     @Override
     public <T> void registrer(final Class<T> serviceType, final T service) {
         final String key = serviceType.getSimpleName();
         master.orElseThrow(
-                () -> new IllegalStateException("Registrering av tenester kan ikkje utførast før etter at Hazelcast-backenden har blitt starta")
+                () -> new IllegalStateException("Registrering av tenester kan ikkje utfÃ¸rast fÃ¸r etter at Hazelcast-backenden har blitt starta")
         ).getUserContext().put(key, service);
         slavar.forEach(slave -> slave.getUserContext().put(key, service));
     }

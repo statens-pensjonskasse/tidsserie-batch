@@ -18,13 +18,13 @@ import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieObservasjon;
 
 /**
- * {@link Stillingsforholdprognosemodus} setter opp batchen til å generere månedlige observasjonar
- * på stillingsforholdnivå.
+ * {@link Stillingsforholdprognosemodus} setter opp batchen til Ã¥ generere mÃ¥nedlige observasjonar
+ * pÃ¥ stillingsforholdnivÃ¥.
  * <br>
- * Observasjonane blir seinare (aka utanfor batchen) aggregert til avtalenivå og mata inn i MySQL for bruk av FAN
+ * Observasjonane blir seinare (aka utanfor batchen) aggregert til avtalenivÃ¥ og mata inn i MySQL for bruk av FAN
  * ved generering av ny eller oppdagerte prognoser.
  * <br>
- * Formatet forventast fasa ut i løpet av 2015 når live-tidsserien blir mata inn i Qlikview / DVH regelmessig.
+ * Formatet forventast fasa ut i lÃ¸pet av 2015 nÃ¥r live-tidsserien blir mata inn i Qlikview / DVH regelmessig.
  *
  * @author Tarjei Skorgenes
  */
@@ -32,20 +32,20 @@ public class Stillingsforholdprognosemodus implements Tidsseriemodus {
     private final ThreadLocal<NumberFormat> format = new ThreadLocal<>();
 
     /**
-     * Kolonnenavna for kolonnene som prognoseobservasjonane består.
+     * Kolonnenavna for kolonnene som prognoseobservasjonane bestÃ¥r.
      * <br>
-     * Kolonnene er som følger:
+     * Kolonnene er som fÃ¸lger:
      * <ol>
      * <li>avtaleId</li>
      * <li>stillingsforholdId</li>
      * <li>observasjonsdato</li>
      * <li>maskinelt_grunnlag</li>
-     * <li>premiestatus (ustabil/ustøtta)</li>
-     * <li>årsverk</li>
+     * <li>premiestatus (ustabil/ustÃ¸tta)</li>
+     * <li>Ã¥rsverk</li>
      * <li>personnummer (uimplementert)</li>
      * </ol>
      *
-     * @return ein straum med dei 7 kolonnene som modusen genererer data for på aggregert nivå
+     * @return ein straum med dei 7 kolonnene som modusen genererer data for pÃ¥ aggregert nivÃ¥
      */
     @Override
     public Stream<String> kolonnenavn() {
@@ -55,28 +55,28 @@ public class Stillingsforholdprognosemodus implements Tidsseriemodus {
                 "observasjonsdato",
                 "maskinelt_grunnlag",
                 "premiestatus",
-                "årsverk",
+                "Ã¥rsverk",
                 "personnummer"
         );
     }
 
     /**
      * Genererer ein observasjonspublikator som aggregerer alle underlagsperioder pr observasjonsunderlag,
-     * til stillingsforhold- og avtalenivå.
+     * til stillingsforhold- og avtalenivÃ¥.
      * <br>
-     * Dei aggregerte målingane blir serialisert til tekst og lagra via <code>lagring</code>.
+     * Dei aggregerte mÃ¥lingane blir serialisert til tekst og lagra via <code>lagring</code>.
      * <br>
-     * Merk at sjølv om personnummer er med som ei kolonne i denne modusen så blir den ikkje
+     * Merk at sjÃ¸lv om personnummer er med som ei kolonne i denne modusen sÃ¥ blir den ikkje
      * populert med gyldige data sidan informasjon om medlemmet ikkje er inkludert i aggregeringa av observasjonane.
      * <br>
-     * Merk og at premiestatusen som blir lista ut ikkje er pålitelig i situasjonar der stillingsforholdet
+     * Merk og at premiestatusen som blir lista ut ikkje er pÃ¥litelig i situasjonar der stillingsforholdet
      * har vore gjennom eit avtalebytte.
      *
      * @param tidsserie   tidsserien som publikatoren skal integrere mot
      * @param serienummer serienummer som alle eventar som blir sendt vidare til <code>backend</code> for persistering
-     *                    skal tilhøyre
+     *                    skal tilhÃ¸yre
      * @param lagring     backend-systemet som skal ta i mot og lagre unna observasjonane som blir generert
-     * @return ein ny observasjonspublikator for prognoseobservasjonar og stillingsforhold- og avtalenivå
+     * @return ein ny observasjonspublikator for prognoseobservasjonar og stillingsforhold- og avtalenivÃ¥
      * @see TidsserieFacade#lagObservasjonsaggregatorPrStillingsforholdOgAvtale(Consumer)
      */
     @Override
@@ -113,7 +113,7 @@ public class Stillingsforholdprognosemodus implements Tidsseriemodus {
     /**
      * Returnerer regelsettet som skal benyttast ved generering av prognoseobservasjonar.
      *
-     * @return eit nytt sett med reglar for prognoseformål
+     * @return eit nytt sett med reglar for prognoseformÃ¥l
      * @see PrognoseRegelsett
      */
     @Override

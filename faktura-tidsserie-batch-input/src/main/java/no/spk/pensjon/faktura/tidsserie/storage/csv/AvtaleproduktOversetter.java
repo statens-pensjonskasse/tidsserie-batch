@@ -15,10 +15,10 @@ import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Satser;
 
 /**
  * {@link AvtaleproduktOversetter} representerer algoritma
- * for å mappe om og konvertere stillingshistorikk til
+ * for Ã¥ mappe om og konvertere stillingshistorikk til
  * {@link Avtaleprodukt}
  * <br>
- * Informasjon henta frå avtaleprodukt skal inneholde følgjande verdiar, alle representert som tekst:
+ * Informasjon henta frÃ¥ avtaleprodukt skal inneholde fÃ¸lgjande verdiar, alle representert som tekst:
  * <table summary="">
  * <thead>
  * <tr>
@@ -50,7 +50,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Satser;
  * <tr>
  * <td>3</td>
  * <td>yyyy.MM.dd</td>
- * <td>Fra og med-dato, første dag i perioda avtaleproduktet strekker seg over</td>
+ * <td>Fra og med-dato, fÃ¸rste dag i perioda avtaleproduktet strekker seg over</td>
  * <td>TORT023.DAT_FRA</td>
  * </tr>
  * <tr>
@@ -137,7 +137,7 @@ public class AvtaleproduktOversetter extends ReflectiveCsvOversetter<AvtaleProdu
                 .map(p -> new Satser<>(arbeidsgiverpremieBeloep, medlemspremieBeloep, administrasjonsgebyrBeloep));
 
         if (kronesatser.isPresent() && prosentsatser.isPresent()) {
-            throw new IllegalStateException("Både prosentsatser og kronesatser kan ikke være i bruk for et avtaleprodukt.");
+            throw new IllegalStateException("BÃ¥de prosentsatser og kronesatser kan ikke vÃ¦re i bruk for et avtaleprodukt.");
         }
 
         Satser<?> satser = Stream.of(kronesatser, prosentsatser)

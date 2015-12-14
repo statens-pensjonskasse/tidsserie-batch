@@ -4,16 +4,16 @@ import static java.util.Objects.requireNonNull;
 import static no.spk.pensjon.faktura.tidsserie.core.Validators.require;
 
 /**
- * {@link MedlemsId} blir brukt for å unikt identifisere medlemmet eit sett med medlemsdata tilhøyrer.
+ * {@link MedlemsId} blir brukt for Ã¥ unikt identifisere medlemmet eit sett med medlemsdata tilhÃ¸yrer.
  * <br>
- * Fødselsnummer er bygd opp som ei 13-sifra kode som består av to delar:
+ * FÃ¸dselsnummer er bygd opp som ei 13-sifra kode som bestÃ¥r av to delar:
  * <ol>
- * <li>8-sifra fødselsdato på format yyyyMMdd</li>
+ * <li>8-sifra fÃ¸dselsdato pÃ¥ format yyyyMMdd</li>
  * <li>5-sifra personnummer</li>
  * </ol>
  * <br>
- * Grunna bruken av tall som representasjonsform for både fødselsdato og personnummer i kasper, vil personnummer med
- * verdi under 10000, inneholde færre enn 5-siffer. For å normalisere desse bli dei derfor padda med påkrevd
+ * Grunna bruken av tall som representasjonsform for bÃ¥de fÃ¸dselsdato og personnummer i kasper, vil personnummer med
+ * verdi under 10000, inneholde fÃ¦rre enn 5-siffer. For Ã¥ normalisere desse bli dei derfor padda med pÃ¥krevd
  * antall 0-siffer i front av personnummeret slik at det alltid blir behandla vidare som ei 5-sifra kode.
  *
  * @author Tarjei Skorgenes
@@ -23,39 +23,39 @@ public class MedlemsId {
     private final String text;
 
     /**
-     * Konstruerer eit nytt fødselsnummer.
+     * Konstruerer eit nytt fÃ¸dselsnummer.
      * <br>
-     * Verdiane blir syntaktisk validert, det blir ikkje validert korvidt fødseldatoen er ein gyldig dato
+     * Verdiane blir syntaktisk validert, det blir ikkje validert korvidt fÃ¸dseldatoen er ein gyldig dato
      * eller korvidt personnummeret er eit gyldig personnummer.
      * <br>
      * Personnummer blir automatisk utvida til 5-siffer viss det inneheld eit 1- til 4-sifra tall. Utvidelsen
-     * skjer ved å legge til ledande 0ara slik at den endelige koda blir 5-sifra.
+     * skjer ved Ã¥ legge til ledande 0ara slik at den endelige koda blir 5-sifra.
      *
-     * @param foedselsdato fødselsdato, kun eit 8-sifra tall blir godtatt
+     * @param foedselsdato fÃ¸dselsdato, kun eit 8-sifra tall blir godtatt
      * @param personnummer personnummeret, 1-5 siffer blir godtatt
      * @throws NullPointerException     dersom nokon av argumenta er <code>null</code>
-     * @throws IllegalArgumentException dersom fødselsdato ikkje er eit 8-sifra tall eller dersom personnummer ikkje
+     * @throws IllegalArgumentException dersom fÃ¸dselsdato ikkje er eit 8-sifra tall eller dersom personnummer ikkje
      *                                  er eit 1- til 5-sifra tall
      */
     public MedlemsId(final String foedselsdato, final String personnummer) {
         final String korrigertFoedselsdato = require(
-                requireNonNull(foedselsdato, "Fødselsdato er påkrevd, men var null")
+                requireNonNull(foedselsdato, "FÃ¸dselsdato er pÃ¥krevd, men var null")
                         .trim(),
                 value -> value.matches("[0-9]{8}"),
-                value -> new IllegalArgumentException("Fødselsdato må vere eit 8-sifra tall, var " + value)
+                value -> new IllegalArgumentException("FÃ¸dselsdato mÃ¥ vere eit 8-sifra tall, var " + value)
         );
         final String korrigertPersonnummer = padWithLeadingZeroes(
                 require(
-                        requireNonNull(personnummer, "Personnummer er påkrevd, men var null")
+                        requireNonNull(personnummer, "Personnummer er pÃ¥krevd, men var null")
                                 .trim(),
                         value -> value.length() <= PERSONNUMMER_LENGDE,
-                        value -> new IllegalArgumentException("Personnummer må vere eit 5-sifra tall, var " + value)
+                        value -> new IllegalArgumentException("Personnummer mÃ¥ vere eit 5-sifra tall, var " + value)
                 )
         );
         require(
                 korrigertPersonnummer,
                 value -> value.matches("[0-9]{5}"),
-                value -> new IllegalArgumentException("Personnummer må vere eit 5-sifra tall, var " + value)
+                value -> new IllegalArgumentException("Personnummer mÃ¥ vere eit 5-sifra tall, var " + value)
         );
         this.text = korrigertFoedselsdato + korrigertPersonnummer;
     }
@@ -86,11 +86,11 @@ public class MedlemsId {
     }
 
     /**
-     * Konstruerer eit nytt fødselsnummer.
+     * Konstruerer eit nytt fÃ¸dselsnummer.
      *
-     * @param foedselsdato fødselsdato, kun eit 8-sifra tall blir godtatt
+     * @param foedselsdato fÃ¸dselsdato, kun eit 8-sifra tall blir godtatt
      * @param personnummer personnummeret, 1-5 siffer blir godtatt
-     * @return det nye fødselsnummeret
+     * @return det nye fÃ¸dselsnummeret
      * @see #MedlemsId(String, String)
      */
     public static MedlemsId medlemsId(final String foedselsdato, String personnummer) {

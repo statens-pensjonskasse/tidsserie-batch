@@ -19,7 +19,7 @@ public class MedlemslinjeTest {
     @Test
     public void skalVerifisereAtInputIkkjeErNull() {
         e.expect(NullPointerException.class);
-        e.expectMessage("verdiar for medlemslinja er påkrevd, men var null");
+        e.expectMessage("verdiar for medlemslinja er pÃ¥krevd, men var null");
 
         new Medlemslinje(null);
     }
@@ -44,7 +44,7 @@ public class MedlemslinjeTest {
     }
 
     /**
-     * Verifiserer at medlemsidentifikatoren frå første kolonne i CSV-fila, blir filtrert bort av medlemslinja slik
+     * Verifiserer at medlemsidentifikatoren frÃ¥ fÃ¸rste kolonne i CSV-fila, blir filtrert bort av medlemslinja slik
      * at den ikkje blir med vidare inn i domenemodellen.
      */
     @Test
@@ -84,7 +84,7 @@ public class MedlemslinjeTest {
 
     private BooleanAssert softlyAssertThat(final Medlemslinje linje, final String foedselsdato, final String personnummer) {
         final MedlemsId medlem = MedlemsId.medlemsId(foedselsdato, personnummer);
-        return softly.assertThat(linje.tilhoeyrer(medlem)).as("tilhøyrer {" + linje + "} medlem " + medlem + "?");
+        return softly.assertThat(linje.tilhoeyrer(medlem)).as("tilhÃ¸yrer {" + linje + "} medlem " + medlem + "?");
     }
 
 }

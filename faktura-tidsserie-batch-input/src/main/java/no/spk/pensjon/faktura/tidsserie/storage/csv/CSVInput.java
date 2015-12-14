@@ -23,9 +23,9 @@ import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Tidsperiode;
 import no.spk.pensjon.faktura.tidsserie.storage.GrunnlagsdataRepository;
 
 /**
- * Parameterobjekt som helde på kjennskapen til kvar datafilene som skal matast inn i tidsserien ligg tilgjengelig.
+ * Parameterobjekt som helde pÃ¥ kjennskapen til kvar datafilene som skal matast inn i tidsserien ligg tilgjengelig.
  * <br>
- * Det følest også naturlig å plassere kunnskapen om kva oversetter-implementasjonar som skal benyttast for å behandle
+ * Det fÃ¸lest ogsÃ¥ naturlig Ã¥ plassere kunnskapen om kva oversetter-implementasjonar som skal benyttast for Ã¥ behandle
  * datafilene her.
  *
  * @author Tarjei Skorgenes
@@ -34,7 +34,7 @@ public class CSVInput implements GrunnlagsdataRepository {
     private static final int DO_NOT_STRIP_TRAILING_SEPARATORS = -1;
     private final List<CsvOversetter<? extends Tidsperiode<?>>> oversettere = new ArrayList<>();
 
-    private final Charset dataencoding = Charset.forName("CP1252");
+    private final Charset dataencoding = Charset.forName("UTF-8");
 
     private final Path directory;
 
@@ -52,8 +52,8 @@ public class CSVInput implements GrunnlagsdataRepository {
     }
 
     /**
-     * Legger til <code>oversetter</code> som en av oversettarane som blir forsøkt brukt ved konvertering av linjer
-     * frå referansedata-filer til tidsperioder.
+     * Legger til <code>oversetter</code> som en av oversettarane som blir forsÃ¸kt brukt ved konvertering av linjer
+     * frÃ¥ referansedata-filer til tidsperioder.
      *
      * @param oversetter ein ny oversetter
      * @return <code>this</code>
@@ -83,12 +83,12 @@ public class CSVInput implements GrunnlagsdataRepository {
      * Returnerer stien til alle CSV-filer som inneheld referansedata som ikkje er
      * medlemsspesifikke.
      * <br>
-     * Referansedatafiler blir plukka basert på at dei har filending <code>csv.gz</code> og ikkje
+     * Referansedatafiler blir plukka basert pÃ¥ at dei har filending <code>csv.gz</code> og ikkje
      * har filnavn medlemsdata.csv.gz.
      * <br>
      *
      * @return ein straum med stien til alle referansedatafiler generert av faktura-grunnlagsdata-batch
-     * @throws IOException dersom ein uvent I/O-feil oppstår under utlisting av filene
+     * @throws IOException dersom ein uvent I/O-feil oppstÃ¥r under utlisting av filene
      */
     Stream<Path> referansedataFiler() throws IOException {
         try(final Stream<Path> filer = Files
@@ -104,7 +104,7 @@ public class CSVInput implements GrunnlagsdataRepository {
     }
 
     private Stream<? extends Tidsperiode<?>> oversettLinje(final List<String> linje) {
-        // Kan ikkje inlinast i 1.8.0_11 på grunn av type-inference feil ved kompilering
+        // Kan ikkje inlinast i 1.8.0_11 pÃ¥ grunn av type-inference feil ved kompilering
         final Function<CsvOversetter<? extends Tidsperiode<?>>, ? extends Tidsperiode<?>> mapper =
                 oversetter -> oversetter.oversett(linje);
         return oversettere

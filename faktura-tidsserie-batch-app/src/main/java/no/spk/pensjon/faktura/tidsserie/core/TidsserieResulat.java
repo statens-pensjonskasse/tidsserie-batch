@@ -5,7 +5,7 @@ import static no.spk.pensjon.faktura.tidsserie.core.FeltVerdiValidering.validerA
 import java.nio.file.Path;
 
 /**
- * Klasse som holder på relevant tilstand for gjennomført tidsseriekjøring.
+ * Klasse som holder pÃ¥ relevant tilstand for gjennomfÃ¸rt tidsseriekjÃ¸ring.
  * @author Snorre E. Brekke - Computas
  */
 public class TidsserieResulat {

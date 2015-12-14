@@ -7,11 +7,11 @@ Beskrivelse: ${params.beskrivelse}
 <#--Status: ${job.exitStatus.exitCode}-->
 <#--Startet: ${job.startTime?string["dd.MM.yyyy - HH:mm:ss"]}-->
 <#--Avsluttet: ${job.endTime?string["dd.MM.yyyy - HH:mm:ss"]}-->
-<#--Kjøretid: ${jobDuration}-->
+<#--KjÃ¸retid: ${jobDuration}-->
 
 Batch parametere:
-* Fra og med år: ${params.fraAar}
-* Til og med år: ${params.tilAar}
+* Fra og med Ã¥r: ${params.fraAar}
+* Til og med Ã¥r: ${params.tilAar}
 * Grunnlagsdata batch-id: ${params.grunnlagsdataBatchId}
 * Grunnlagsdata batch-katalog: ${params.grunnlagsdataBatchKatalog.toAbsolutePath().normalize()}
 * Arbeidskatalog: ${outputDirectory}

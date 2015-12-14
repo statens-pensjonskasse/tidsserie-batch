@@ -14,7 +14,7 @@ import java.util.stream.IntStream;
 
 /**
  * Finner alle tidsserie*.csv filer i utkatalog, og fordeler filnavmeme i ti filer: FFF_FILLISTE_[1-10].txt.
- * Filliste-filene brukes slik at Datavarehus kan bruke faste filnavn for å paralellisere innlesingen av csv-filene.
+ * Filliste-filene brukes slik at Datavarehus kan bruke faste filnavn for Ã¥ paralellisere innlesingen av csv-filene.
  *
  * @author Snorre E. Brekke - Computas
  */
@@ -27,14 +27,14 @@ public class CsvFileGroupWriter {
 
     /**
      * Finner alle tidsserie*.csv filer i utkatalog, og fordeler filnavmeme i ti filer: FFF_FILLISTE_[1-10].txt.
-     * Filliste-filene brukes slik at Datavarehus kan bruke faste filnavn for å paralellisere innlesingen av csv-filene.
+     * Filliste-filene brukes slik at Datavarehus kan bruke faste filnavn for Ã¥ paralellisere innlesingen av csv-filene.
      * <p>
-     * Dersom det er færre enn 10 tidsserie.*csv filer i dataKatalogen, vil det bli opprettet en {@code tidsserie_dummy_*.csv}-filer,
+     * Dersom det er fÃ¦rre enn 10 tidsserie.*csv filer i dataKatalogen, vil det bli opprettet en {@code tidsserie_dummy_*.csv}-filer,
      * som vil bli referert i resternede FFF_FILLISTE_ filer.
-     * Dette gjøres for å forenkle innlesingen for datavarehus.
+     * Dette gjÃ¸res for Ã¥ forenkle innlesingen for datavarehus.
      * </p>
      *
-     * @param dataKatalog katalog med tidsserie*.csv filer. Katalogen vil inneholder 10 filer FFF_FILLISTE_[1-10].txt etter kjøring.
+     * @param dataKatalog katalog med tidsserie*.csv filer. Katalogen vil inneholder 10 filer FFF_FILLISTE_[1-10].txt etter kjÃ¸ring.
      */
     public void createCsvGroupFiles(Path dataKatalog) {
         File[] csvFiles = dataKatalog.toFile()

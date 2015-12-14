@@ -8,10 +8,10 @@ import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Premiestatus;
 
 /**
  * {@link AvtaleversjonOversetter} representerer algoritma
- * for å mappe om og konvertere stillingshistorikk til
+ * for Ã¥ mappe om og konvertere stillingshistorikk til
  * {@link no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleversjon}
  * <br>
- * Informasjon henta frå avtaleversjonane skal inneholde følgjande verdiar, alle representert som tekst:
+ * Informasjon henta frÃ¥ avtaleversjonane skal inneholde fÃ¸lgjande verdiar, alle representert som tekst:
  * <table summary="">
  * <thead>
  * <tr>
@@ -37,7 +37,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Premiestatus;
  * <tr>
  * <td>2</td>
  * <td>yyyy.MM.dd</td>
- * <td>Frå og med-dato, første dag i perioda avtaleversjonen strekker seg over</td>
+ * <td>FrÃ¥ og med-dato, fÃ¸rste dag i perioda avtaleversjonen strekker seg over</td>
  * <td>TORT131.DAT_GYLDIG_FOM</td>
  * </tr>
  * <tr>

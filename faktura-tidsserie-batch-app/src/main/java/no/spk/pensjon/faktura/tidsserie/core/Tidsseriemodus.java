@@ -18,9 +18,9 @@ import no.spk.pensjon.faktura.tidsserie.storage.csv.CSVInput;
 
 /**
  * {@link Tidsseriemodus} er ansvarlig for oppretting og koordinering av {@link Observasjonspublikator} og
- * {@link CSVFormat} som tar seg av formatering og publisering av målingar basert på tidsserien.
+ * {@link CSVFormat} som tar seg av formatering og publisering av mÃ¥lingar basert pÃ¥ tidsserien.
  * <br>
- * Ettersom hensikta med målingane kan variere mellom forskjellige tidsseriar er modusen og ansvarlig
+ * Ettersom hensikta med mÃ¥lingane kan variere mellom forskjellige tidsseriar er modusen og ansvarlig
  * for kva {@link Regelsett} som skal benyttast ved oppbygging av tidsserien.
  *
  * @author Tarjei Skorgenes
@@ -44,10 +44,10 @@ public interface Tidsseriemodus extends Medlemsbehandler {
     Regelsett regelsett();
 
     /**
-     * Oppretter eit nytt repository som les alt av grunnlagsdata frå ein bestemt katalog.
+     * Oppretter eit nytt repository som les alt av grunnlagsdata frÃ¥ ein bestemt katalog.
      *
-     * @param directory katalogen som inneheld filene grunnlagsdata skal hentast frå
-     * @return eit nytt repository som les grunnlagsdata frå den angitte katalogen
+     * @param directory katalogen som inneheld filene grunnlagsdata skal hentast frÃ¥
+     * @return eit nytt repository som les grunnlagsdata frÃ¥ den angitte katalogen
      * @since 1.2.0
      */
     default GrunnlagsdataRepository repository(Path directory) {
@@ -66,7 +66,7 @@ public interface Tidsseriemodus extends Medlemsbehandler {
     }
 
     /**
-     * Benyttes for å tilpasse storage for modus-implmentasjonen. Kalles før jobbene for tidsserien startes.
+     * Benyttes for Ã¥ tilpasse storage for modus-implmentasjonen. Kalles fÃ¸r jobbene for tidsserien startes.
      * <br> Default implementasjon er noop.
      *
      * @param storage som trenger tilpasset initisalisering for modusen.
@@ -76,7 +76,7 @@ public interface Tidsseriemodus extends Medlemsbehandler {
     }
 
     /**
-     * Kalles én gang for hver partisjon i gridet, og angir hvilket serienummer partisjonen er tildelt.
+     * Kalles Ã©n gang for hver partisjon i gridet, og angir hvilket serienummer partisjonen er tildelt.
      * Default implmentasjon lagrer {@link #kolonnenavn()} til {@link StorageBackend} for angitt serienummer.
      * @param serienummer nummer tildelt partisjonen i gridet
      * @param storage publisher for lagring av data
@@ -90,7 +90,7 @@ public interface Tidsseriemodus extends Medlemsbehandler {
     }
 
     /**
-     * Kalles når tidsserien er ferdig generert, og angir oppsummering av resultatet.
+     * Kalles nÃ¥r tidsserien er ferdig generert, og angir oppsummering av resultatet.
      * <br> Default implementasjon er noop.
      * @param tidsserieResulat oppsummering av tidsseriekjoeringen
      */
@@ -106,7 +106,7 @@ public interface Tidsseriemodus extends Medlemsbehandler {
     }
 
     /**
-     * Konstruerer ein ny kommando som koordinerer mot dei angitte tenestene når tidsseriar pr medlem blir generert
+     * Konstruerer ein ny kommando som koordinerer mot dei angitte tenestene nÃ¥r tidsseriar pr medlem blir generert
      * av {@link GenererTidsserieCommand#generer(List, Observasjonsperiode, Feilhandtering, long)}.
      *
      * @param grunnlagsdata tenesta som gir tilgang til grunnlagsdata som ikkje er medlemsspesifikke

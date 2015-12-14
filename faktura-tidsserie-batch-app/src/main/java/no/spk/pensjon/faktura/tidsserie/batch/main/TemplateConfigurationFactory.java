@@ -14,7 +14,7 @@ public class TemplateConfigurationFactory {
     public static Configuration create() {
         Configuration config = new Configuration(Configuration.VERSION_2_3_22);
         config.setClassLoaderForTemplateLoading(Thread.currentThread().getContextClassLoader(), "templates");
-        config.setDefaultEncoding("cp1252");
+        config.setDefaultEncoding("utf-8");
         config.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
         return config;
     }

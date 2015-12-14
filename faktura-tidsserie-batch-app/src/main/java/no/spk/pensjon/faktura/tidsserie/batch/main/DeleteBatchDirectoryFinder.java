@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Finner kataloger som skal slettes når batchen kjører. Dette vil være data-katalogen hvor tidsserien lagres,
+ * Finner kataloger som skal slettes nÃ¥r batchen kjÃ¸rer. Dette vil vÃ¦re data-katalogen hvor tidsserien lagres,
  * og kataloger under log-katalogen som er eldre enn en konfigurarbart antall dager.
  * @author Snorre E. Brekke - Computas
  */
@@ -36,16 +36,16 @@ public class DeleteBatchDirectoryFinder {
     /**
      * Lager en ny {@link DeleteBatchDirectoryFinder}. {@code dataDirectory} vil alltid bli returnert fra {@link #findDeletableBatchDirectories(int)},
      * @param dataDirectory katalogen hvor tidsserien blir lagret. Vil alltid bli returnert fra {@link #findDeletableBatchDirectories(int)}
-     * @param logDirectory katalogen hvor det lages under-kataloger per batch-kjøring som inneholder log og metadata.  {@link DeleteBatchDirectoryFinder} vil
+     * @param logDirectory katalogen hvor det lages under-kataloger per batch-kjÃ¸ring som inneholder log og metadata.  {@link DeleteBatchDirectoryFinder} vil
      * se etter underkataloger som kan slettes her.
      */
     public DeleteBatchDirectoryFinder(Path dataDirectory, Path logDirectory) {
-        this.dataDirectory = requireNonNull(dataDirectory, "dataDirectory kan ikke være null.");
-        this.logDirectory = requireNonNull(logDirectory, "logDirectory kan ikke være null.");
+        this.dataDirectory = requireNonNull(dataDirectory, "dataDirectory kan ikke vÃ¦re null.");
+        this.logDirectory = requireNonNull(logDirectory, "logDirectory kan ikke vÃ¦re null.");
     }
 
     /**
-     * Finner alle under-kataloger i log-katalogen som har navn på samme format som {@link BatchId} og som basert på id'en har kjørt tidligere enn
+     * Finner alle under-kataloger i log-katalogen som har navn pÃ¥ samme format som {@link BatchId} og som basert pÃ¥ id'en har kjÃ¸rt tidligere enn
      * [{@code midnatt for &lt;i morgen&gt; - olderThanDays}]. Returnerer alltid dataDirectory.
      * @param olderThanDays alle batch-kataloger som er eldre enn [{@code midnatt for &lt;i morgen&gt; - olderThanDays}] i {@code workdirectory} vil bli slettet
      */

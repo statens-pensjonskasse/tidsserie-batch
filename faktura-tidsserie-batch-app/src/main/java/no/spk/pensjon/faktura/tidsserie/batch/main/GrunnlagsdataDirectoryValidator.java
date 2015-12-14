@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -41,7 +42,7 @@ public class GrunnlagsdataDirectoryValidator {
     }
 
     private Map<String, String> mapFilenamesToChecksums(Path checksumsFile) {
-        try (final Stream<String> lines = Files.lines(checksumsFile, Charset.forName("cp1252"))) {
+        try (final Stream<String> lines = Files.lines(checksumsFile, StandardCharsets.UTF_8)) {
             return lines
                     .map(s -> s.split(" \\*"))
                     .map(s -> require(s, v -> v.length == 2, v -> new GrunnlagsdataException(MD5_CHECKSUMS_FILENAME + " er korrupt.")))
@@ -65,7 +66,7 @@ public class GrunnlagsdataDirectoryValidator {
                 List::isEmpty,
                 l -> new GrunnlagsdataException(
                         l.stream()
-                                .collect(joining(", ", "Følgende filer er oppført i " + MD5_CHECKSUMS_FILENAME +
+                                .collect(joining(", ", "FÃ¸lgende filer er oppfÃ¸rt i " + MD5_CHECKSUMS_FILENAME +
                                         " men finnes ikke i " + grunnlagsdataBatchKatalog.toFile().getAbsolutePath(), ""))));
     }
 
@@ -77,7 +78,7 @@ public class GrunnlagsdataDirectoryValidator {
                         .collect(toList()),
                 List::isEmpty,
                 l -> new GrunnlagsdataException(l.stream()
-                        .collect(joining(", ", "Følgende filer har en annen m5d-sjekksum enn oppgitt i " + MD5_CHECKSUMS_FILENAME + ": ", ""))));
+                        .collect(joining(", ", "FÃ¸lgende filer har en annen m5d-sjekksum enn oppgitt i " + MD5_CHECKSUMS_FILENAME + ": ", ""))));
     }
 
     private void assertChecksumfileExists(Path checksumsFile) {

@@ -70,7 +70,7 @@ public class GrunnlagsdataServiceTest {
 
     /**
      * Verifiserer at backenden blir notifisert via uploaderen om at opplasting av alle data
-     * er fullført.
+     * er fullfÃ¸rt.
      */
     @Test
     public void skalNotifisereBackendenOmAtLastingaErFullfoert() {
@@ -103,7 +103,7 @@ public class GrunnlagsdataServiceTest {
     }
 
     /**
-     * Verifiserer at alle linjer tilhøyrande eit og samme medlem blir lasta opp sammen, ikkje ein gang pr linje.
+     * Verifiserer at alle linjer tilhÃ¸yrande eit og samme medlem blir lasta opp sammen, ikkje ein gang pr linje.
      */
     @Test
     public void skalLasteOppEinGangPrMedlem() {
@@ -126,8 +126,8 @@ public class GrunnlagsdataServiceTest {
     }
 
     /**
-     * Verifiserer at straumen med referansedata blir automatisk lukka etter behandling for å sikre at eventuelle
-     * åpne filer blir lukka.
+     * Verifiserer at straumen med referansedata blir automatisk lukka etter behandling for Ã¥ sikre at eventuelle
+     * Ã¥pne filer blir lukka.
      */
     @Test
     public void skalLukkeReferansedataEtterBruk() {
@@ -143,8 +143,8 @@ public class GrunnlagsdataServiceTest {
     }
 
     /**
-     * Verifiserer at straumen med medlemsdata blir automatisk lukka etter behandling for å sikre at eventuelle
-     * åpne filer blir lukka.
+     * Verifiserer at straumen med medlemsdata blir automatisk lukka etter behandling for Ã¥ sikre at eventuelle
+     * Ã¥pne filer blir lukka.
      */
     @Test
     public void skalLukkeMedlemsdataEtterBruk() throws IOException {
@@ -160,10 +160,10 @@ public class GrunnlagsdataServiceTest {
     }
 
     /**
-     * Verifiserer at {@link GrunnlagsdataService#perioderAvType} returnerer ei tom liste slik at vi unngår
+     * Verifiserer at {@link GrunnlagsdataService#perioderAvType} returnerer ei tom liste slik at vi unngÃ¥r
      * NPE dersom det manglar data for ein eller fleire av datatypene som opptrer som referansedata i tidsserien.
      * <br>
-     * Intensjonen med dette er å la dette problemet bli validert elsewhere og unngå ein ekkel og uhandterbar NPE i
+     * Intensjonen med dette er Ã¥ la dette problemet bli validert elsewhere og unngÃ¥ ein ekkel og uhandterbar NPE i
      * loggane til batchen.
      */
     @Test

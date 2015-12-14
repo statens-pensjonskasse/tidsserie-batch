@@ -8,6 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -28,20 +29,20 @@ import org.junit.Test;
  * Ad-hoc test for semi-manuell teamtest av at resultata SPKMASTER-11343 genererer
  * er som forventa i forhold til forrige versjon (1.0.1) av batchen m/gamal domenemodell.
  * <br>
- * Verifiseringa tar inn to CSV-filer, ei generert av gamal løysing, ei generert av ny løysing.
+ * Verifiseringa tar inn to CSV-filer, ei generert av gamal lÃ¸ysing, ei generert av ny lÃ¸ysing.
  * <br>
- * Verifikasjonen tar stikkprøver på differansane og verifiserer manuelt at dei alle:
+ * Verifikasjonen tar stikkprÃ¸ver pÃ¥ differansane og verifiserer manuelt at dei alle:
  * <ul>
- * <li>Tilhøyrer eit stillingsforhold som er sluttmeldt på observasjonsdatoen
- * <li>Forskyver nedgangen i årsverk til neste observasjon
+ * <li>TilhÃ¸yrer eit stillingsforhold som er sluttmeldt pÃ¥ observasjonsdatoen
+ * <li>Forskyver nedgangen i Ã¥rsverk til neste observasjon
  * <li>Forskyver nedgangen i grunnlag til neste observasjon
  * </ul>
  * <br>
- * For å køyre testen må du manuelt generere to datasett, ein med versjonen du ønskjer å samanlikne mot
- * og ein med versjonen som inneheld endringane du ønskjer å teste.
+ * For Ã¥ kÃ¸yre testen mÃ¥ du manuelt generere to datasett, ein med versjonen du Ã¸nskjer Ã¥ samanlikne mot
+ * og ein med versjonen som inneheld endringane du Ã¸nskjer Ã¥ teste.
  * <br>
- * Plasser tidsserien på aggregert stillingsforholdnivå i fila gammal-versjon.csv og ny-versjon.csv i modulens
- * rotkatalog og køyr testen.
+ * Plasser tidsserien pÃ¥ aggregert stillingsforholdnivÃ¥ i fila gammal-versjon.csv og ny-versjon.csv i modulens
+ * rotkatalog og kÃ¸yr testen.
  *
  * @author Tarjei Skorgenes
  */
@@ -69,7 +70,7 @@ public class SPKMASTER11343_Verifikator {
     }
 
     /**
-     * SPKMASTER-11343 skal medføre endringar mellom dei to filene.
+     * SPKMASTER-11343 skal medfÃ¸re endringar mellom dei to filene.
      */
     @Test
     public void skalInneholdeForskjellar() {
@@ -83,36 +84,36 @@ public class SPKMASTER11343_Verifikator {
     @Test
     public void skalInneholdeEksaktSammeObservasjonsnoekklar() throws IOException {
         assertDisjunction(old, ny)
-                .as("nøklar for rader som er i gamal fil men ikkje i ny")
+                .as("nÃ¸klar for rader som er i gamal fil men ikkje i ny")
                 .isEmpty();
 
         assertDisjunction(ny, old)
-                .as("nøklar for rader som er i ny fil men ikkje i gamal")
+                .as("nÃ¸klar for rader som er i ny fil men ikkje i gamal")
                 .hasSize(0);
     }
 
     /**
-     * Verifiserer at årsverkverdien er størst i ny versjon for alle observasjonane som er forskjellige i dei to datasetta.
+     * Verifiserer at Ã¥rsverkverdien er stÃ¸rst i ny versjon for alle observasjonane som er forskjellige i dei to datasetta.
      */
     @Test
     public void skalHaStoerreAarsverkverdiiNyVersjonPaaAlleObservasjonarSomErForskjellige() {
         assertThat(
                 forskjellar
                         .stream()
-                        .filter(d -> parseDouble(d.ny.årsverk) - parseDouble(d.old.årsverk) <= 0d)
+                        .filter(d -> parseDouble(d.ny.Ã¥rsverk) - parseDouble(d.old.Ã¥rsverk) <= 0d)
                         .collect(toList())
         )
-                .as("målingar der nye årsverk _ikkje_ er større enn dei gamle")
+                .as("mÃ¥lingar der nye Ã¥rsverk _ikkje_ er stÃ¸rre enn dei gamle")
                 .isEmpty();
     }
 
     /**
-     * Verifiserer at grunnlag er størst i ny versjon for alle observasjonane som er forskjellige i dei to datasetta.
+     * Verifiserer at grunnlag er stÃ¸rst i ny versjon for alle observasjonane som er forskjellige i dei to datasetta.
      * <br>
-     * For alle stillingar som den feilar på kan du bruke følgjande SQL mot databasen datane er henta frå for å sjekke manuelt om siste historikkrad indikerer at stillinga er ute i permisjon utan lønn eller er under minstegrensa fram til den sluttar.
+     * For alle stillingar som den feilar pÃ¥ kan du bruke fÃ¸lgjande SQL mot databasen datane er henta frÃ¥ for Ã¥ sjekke manuelt om siste historikkrad indikerer at stillinga er ute i permisjon utan lÃ¸nn eller er under minstegrensa fram til den sluttar.
      * <code>
      * SELECT * FROM TORT016 s WHERE FLG_SLETTET = 0
-     * AND IDE_SEKV_TORT125 IN( legg til stillingaforholda frå diffen her... )
+     * AND IDE_SEKV_TORT125 IN( legg til stillingaforholda frÃ¥ diffen her... )
      * AND IDE_LINJE_NR = (SELECT IDE_LINJE_NR_FORRIGE FROM TORT016 s2 WHERE FLG_SLETTET = 0 AND s.IDE_SEKV_TORT125 = s2.IDE_SEKV_TORT125 AND TYP_AKSJONSKODE = '031')
      * ORDER BY DAT_AKSJON DESC
      * <p>
@@ -128,7 +129,7 @@ public class SPKMASTER11343_Verifikator {
                         .filter(d -> parseDouble(d.ny.grunnlag) - parseDouble(d.old.grunnlag) <= 0d)
                         .collect(toList())
         )
-                .as("målingar der nye grunnlag  _ikkje_ er større enn dei gamle")
+                .as("mÃ¥lingar der nye grunnlag  _ikkje_ er stÃ¸rre enn dei gamle")
                 .isEmpty();
     }
 
@@ -140,7 +141,7 @@ public class SPKMASTER11343_Verifikator {
     }
 
     public static Map<Object, Linje> group(Path old) throws IOException {
-        try (final Stream<String> lines = Files.lines(old, Charset.forName("CP1252"))) {
+        try (final Stream<String> lines = Files.lines(old, StandardCharsets.UTF_8)) {
             return lines
                     .filter(line -> !line.startsWith("avtale"))
                     .map(Linje::new)
@@ -186,7 +187,7 @@ public class SPKMASTER11343_Verifikator {
         String avtale;
         String stilling;
         String observasjonsdato;
-        String årsverk;
+        String Ã¥rsverk;
         String grunnlag;
 
         public Linje(final String line) {
@@ -195,7 +196,7 @@ public class SPKMASTER11343_Verifikator {
             avtale = columns[0];
             stilling = columns[1];
             observasjonsdato = columns[2];
-            årsverk = columns[5];
+            Ã¥rsverk = columns[5];
             grunnlag = columns[3];
         }
 

@@ -8,15 +8,15 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 /**
- * {@link Desimaltallformatering} representerer ei trådsikker, låsfri teneste for formatering av
+ * {@link Desimaltallformatering} representerer ei trÃ¥dsikker, lÃ¥sfri teneste for formatering av
  * desimaltall.
  * <br>
- * Tenesta benyttar seg av {@link NumberFormat} som er ikkje er trådsikker og dermed ikkje kan
- * delast på tvers av trådar. Men ein ønskjer likevel å cache formata som blir oppretta, med eit format
- * pr type formatering basert på antall desimalar som krevest.
+ * Tenesta benyttar seg av {@link NumberFormat} som er ikkje er trÃ¥dsikker og dermed ikkje kan
+ * delast pÃ¥ tvers av trÃ¥dar. Men ein Ã¸nskjer likevel Ã¥ cache formata som blir oppretta, med eit format
+ * pr type formatering basert pÃ¥ antall desimalar som krevest.
  * <br>
- * For å unngå deling/låsing av NumberFormat genererer derfor tenesta ein cache med eit NumberFormat pr antall desimalar
- * pr tråd.
+ * For Ã¥ unngÃ¥ deling/lÃ¥sing av NumberFormat genererer derfor tenesta ein cache med eit NumberFormat pr antall desimalar
+ * pr trÃ¥d.
  *
  * @author Tarjei Skorgenes
  */
@@ -39,7 +39,7 @@ class Desimaltallformatering {
     }
 
     /**
-     * Klasse som omslutter verdi og disimaler, slik at disse kan brukes som nøkkel i formateringscache.
+     * Klasse som omslutter verdi og disimaler, slik at disse kan brukes som nÃ¸kkel i formateringscache.
      */
     private static class Key{
         private double verdi;

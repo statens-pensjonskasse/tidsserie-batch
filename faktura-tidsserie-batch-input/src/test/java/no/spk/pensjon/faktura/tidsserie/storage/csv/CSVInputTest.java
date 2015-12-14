@@ -54,7 +54,7 @@ public class CSVInputTest {
     }
 
     /**
-     * Verifiserer at medlemsdatafila blir lukka når straumen med innleste linjer blir lukka.
+     * Verifiserer at medlemsdatafila blir lukka nÃ¥r straumen med innleste linjer blir lukka.
      */
     @Test
     public void skalLukkeMedlemsdatafilVedLukkingAvStream() throws IOException {
@@ -68,7 +68,7 @@ public class CSVInputTest {
     }
 
     /**
-     * Verifiserer at alle filene med referansedata blir lukka etter at straumen med tidsperioder lest frå filene
+     * Verifiserer at alle filene med referansedata blir lukka etter at straumen med tidsperioder lest frÃ¥ filene
      * blir lukka.
      */
     @Test

@@ -10,8 +10,8 @@ import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 
 /**
- * Utvidelse av {@link TemporaryFolder} som feilar dersom opprydding/sletting feilar på ei eller fleire
- * av dei temporære filene/katalogane som regelen har oppretta.
+ * Utvidelse av {@link TemporaryFolder} som feilar dersom opprydding/sletting feilar pÃ¥ ei eller fleire
+ * av dei temporÃ¦re filene/katalogane som regelen har oppretta.
  *
  * @author Tarjei Skorgenes
  */
@@ -27,7 +27,7 @@ public class TemporaryFolderWithDeleteVerification extends TemporaryFolder {
             recursiveDelete(deleteFailures, folder);
         }
         assertThat(deleteFailures)
-                .as("filer/katalogar som ikkje det var mulig å slette")
+                .as("filer/katalogar som ikkje det var mulig Ã¥ slette")
                 .isEmpty();
     }
 

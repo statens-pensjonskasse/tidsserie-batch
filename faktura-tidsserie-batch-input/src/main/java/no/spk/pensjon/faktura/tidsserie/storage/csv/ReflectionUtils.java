@@ -5,7 +5,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * Hjelpeklasse for å fjerne exception-støy fra reflection-kode.
+ * Hjelpeklasse for Ã¥ fjerne exception-stÃ¸y fra reflection-kode.
  * @author Snorre E. Brekke - Computas
  */
 public final class ReflectionUtils {
@@ -14,8 +14,8 @@ public final class ReflectionUtils {
     }
 
     /**
-     * Lager en ny instans av klassen ved å kalle default-konstruktøren (no-args) til klassen.
-     * Konstruktøren kan være private.
+     * Lager en ny instans av klassen ved Ã¥ kalle default-konstruktÃ¸ren (no-args) til klassen.
+     * KonstruktÃ¸ren kan vÃ¦re private.
      * @param classToInstantiate er klassen som skal instansieres
      * @param <T> typen til klassen
      * @return ny instans av T

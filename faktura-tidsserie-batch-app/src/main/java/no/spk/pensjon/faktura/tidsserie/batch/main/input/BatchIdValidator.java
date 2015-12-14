@@ -10,7 +10,7 @@ public class BatchIdValidator implements IParameterValidator {
     @Override
     public void validate(String name, String value) throws ParameterException {
         if (value != null && !GRUNNLAGSDATA_PATTERN.matcher(value).matches()) {
-            throw new ParameterException("'" + name + "': må oppgis på formatet grunnlagsdata_yyyy-MM-dd_HH-mm-ss-SS.");
+            throw new ParameterException("'" + name + "': mÃ¥ oppgis pÃ¥ formatet grunnlagsdata_yyyy-MM-dd_HH-mm-ss-SS.");
         }
     }
 }

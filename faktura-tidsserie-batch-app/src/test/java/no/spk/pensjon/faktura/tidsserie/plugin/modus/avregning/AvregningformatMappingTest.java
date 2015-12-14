@@ -112,10 +112,10 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 
 /**
- * Integrasjonstest som verifiserer at {@link Avregningformat} genererer tekstlige verdiar på forventa format.
+ * Integrasjonstest som verifiserer at {@link Avregningformat} genererer tekstlige verdiar pÃ¥ forventa format.
  * <br>
- * Testen blir satt opp med eit parametrisert sett med forventningar for kvar kolonne og verifiserer ut frå dette
- * at gitt ein bestemt input så blir den tekstlige verdien som kjem ut av mappinga, generert med rett format.
+ * Testen blir satt opp med eit parametrisert sett med forventningar for kvar kolonne og verifiserer ut frÃ¥ dette
+ * at gitt ein bestemt input sÃ¥ blir den tekstlige verdien som kjem ut av mappinga, generert med rett format.
  *
  * @author Tarjei Skorgenes
  */
@@ -301,7 +301,7 @@ public class AvregningformatMappingTest {
     private Underlag populer(UnderlagsperiodeBuilder builder) {
         Object consumer = populators.get(fieldType);
 
-        // Anta verdien kjem frå ein annotasjon på perioda viss ingen populator er lagt til
+        // Anta verdien kjem frÃ¥ ein annotasjon pÃ¥ perioda viss ingen populator er lagt til
         if (consumer == null) {
             builder.med(fieldType, value);
             return eitUnderlag(builder);

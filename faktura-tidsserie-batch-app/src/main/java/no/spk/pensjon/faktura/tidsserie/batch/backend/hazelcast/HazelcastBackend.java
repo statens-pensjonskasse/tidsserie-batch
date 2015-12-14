@@ -61,8 +61,8 @@ public class HazelcastBackend implements TidsserieBackendService {
     }
 
     HazelcastBackend(final Server server, final Tidsseriemodus modus) {
-        this.server = requireNonNull(server, "server er påkrevd, men var null");
-        this.modus = requireNonNull(modus, "tidsseriemodus er påkrevd, men var null");
+        this.server = requireNonNull(server, "server er pÃ¥krevd, men var null");
+        this.modus = requireNonNull(modus, "tidsseriemodus er pÃ¥krevd, men var null");
     }
 
     @Override
@@ -122,16 +122,16 @@ public class HazelcastBackend implements TidsserieBackendService {
         long start = System.currentTimeMillis();
 
 
-        log.info("Startar køyring av {}", mapper);
+        log.info("Startar kÃ¸yring av {}", mapper);
         try {
 
             final Map<String, Integer> resultat = future.get();
-            log.info("Resultat av køyring: {}", resultat);
+            log.info("Resultat av kÃ¸yring: {}", resultat);
             return resultat;
         } catch (final InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         } finally {
-            log.info("Køyring fullført på {} ms", System.currentTimeMillis() - start);
+            log.info("KÃ¸yring fullfÃ¸rt pÃ¥ {} ms", System.currentTimeMillis() - start);
         }
     }
 
