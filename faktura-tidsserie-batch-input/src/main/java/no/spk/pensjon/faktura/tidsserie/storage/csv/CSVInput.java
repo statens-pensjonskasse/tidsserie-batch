@@ -34,7 +34,7 @@ public class CSVInput implements GrunnlagsdataRepository {
     private static final int DO_NOT_STRIP_TRAILING_SEPARATORS = -1;
     private final List<CsvOversetter<? extends Tidsperiode<?>>> oversettere = new ArrayList<>();
 
-    private final Charset dataencoding = Charset.forName("CP1252");
+    private final Charset dataencoding = Charset.forName("UTF-8");
 
     private final Path directory;
 

@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -129,7 +130,7 @@ public class GrunnlagsdataDirectoryValidatorTest {
     }
 
     private Path write(String content, File file) throws IOException {
-        return Files.write(file.toPath(), content.getBytes(Charset.forName("cp1252")));
+        return Files.write(file.toPath(), content.getBytes(StandardCharsets.UTF_8));
     }
 
     private String getMd5Checksum(File fileToCheck) {

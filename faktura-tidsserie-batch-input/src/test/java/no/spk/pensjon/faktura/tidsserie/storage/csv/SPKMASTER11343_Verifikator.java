@@ -8,6 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -140,7 +141,7 @@ public class SPKMASTER11343_Verifikator {
     }
 
     public static Map<Object, Linje> group(Path old) throws IOException {
-        try (final Stream<String> lines = Files.lines(old, Charset.forName("CP1252"))) {
+        try (final Stream<String> lines = Files.lines(old, StandardCharsets.UTF_8)) {
             return lines
                     .filter(line -> !line.startsWith("avtale"))
                     .map(Linje::new)
