@@ -22,7 +22,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <faktura.prognose.tidsserie.version>2.0.2</faktura.prognose.tidsserie.version>
+        <faktura.prognose.tidsserie.version>2.0.3</faktura.prognose.tidsserie.version>
         <faktura-bootstrap-lib>1.0.15</faktura-bootstrap-lib>
     </properties>
 
