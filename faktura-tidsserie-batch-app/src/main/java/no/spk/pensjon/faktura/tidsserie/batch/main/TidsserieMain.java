@@ -21,8 +21,10 @@ import no.spk.faktura.timeout.BatchTimeoutTaskrunner;
 import no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast.HazelcastBackend;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.TidsserieArgumentsFactory;
+import no.spk.pensjon.faktura.tidsserie.batch.storage.disruptor.LmaxDisruptorPublisher;
 import no.spk.pensjon.faktura.tidsserie.batch.upload.FileTemplate;
 import no.spk.pensjon.faktura.tidsserie.batch.upload.TidsserieBackendService;
+import no.spk.pensjon.faktura.tidsserie.core.StorageBackend;
 import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
 import no.spk.pensjon.faktura.tidsserie.storage.GrunnlagsdataRepository;
@@ -72,15 +74,25 @@ public class TidsserieMain {
             final ExecutorService executors = newCachedThreadPool(
                     r -> new Thread(r, "lmax-disruptor-" + System.currentTimeMillis())
             );
+            final LmaxDisruptorPublisher disruptor = new LmaxDisruptorPublisher(
+                    executors,
+                    new FileTemplate(dataKatalog, "tidsserie", ".csv")
+            );
 
             long started = System.currentTimeMillis();
             controller.startBackend(backend);
 
             controller.lastOpp(overfoering);
-            controller.lagTidsserie(backend,
-                    new FileTemplate(dataKatalog, "tidsserie", ".csv"),
-                    new Aarstall(arguments.getFraAar()),
-                    new Aarstall(arguments.getTilAar()), executors);
+
+            try (final LmaxDisruptorPublisher lager = disruptor.start()) {
+                backend.registrer(StorageBackend.class, lager);
+                modus.initStorage(lager);
+
+                controller.lagTidsserie(backend,
+                        new Aarstall(arguments.getFraAar()),
+                        new Aarstall(arguments.getTilAar())
+                );
+            }
 
             modus.completed(tidsserieResulat(dataKatalog).bygg());
 

@@ -29,7 +29,7 @@ public class LmaxDisruptorPublisher implements Closeable, StorageBackend {
     }
 
     @SuppressWarnings("unchecked")
-    public void start() {
+    public LmaxDisruptorPublisher start() {
         // The factory for the buffer
         final ObservasjonsEventFactory factory = new ObservasjonsEventFactory();
 
@@ -45,6 +45,8 @@ public class LmaxDisruptorPublisher implements Closeable, StorageBackend {
         disruptor.start();
 
         ringBuffer = disruptor.getRingBuffer();
+
+        return this;
     }
 
     @Override

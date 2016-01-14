@@ -20,7 +20,7 @@ public interface View {
 
     void opplastingFullfoert() ;
 
-    void startarTidsseriegenerering(FileTemplate malFilnavn, Aarstall fraOgMed, Aarstall tilOgMed) ;
+    void startarTidsseriegenerering(Aarstall fraOgMed, Aarstall tilOgMed) ;
 
     /**
      * Viser informasjon om kva kommandolinjeargument batchen støttar med forklaring av

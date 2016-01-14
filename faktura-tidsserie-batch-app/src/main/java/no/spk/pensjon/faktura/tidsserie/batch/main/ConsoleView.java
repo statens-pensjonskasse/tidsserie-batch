@@ -31,7 +31,7 @@ public class ConsoleView implements View{
         println("Grunnlagsdata lastet.");
 }
 
-    public void startarTidsseriegenerering(FileTemplate malFilnavn, Aarstall fraOgMed, Aarstall tilOgMed) {
+    public void startarTidsseriegenerering(Aarstall fraOgMed, Aarstall tilOgMed) {
         println("Starter tidsserie-generering for årsintervall fra og med " + fraOgMed +  " til og med " + tilOgMed);
     }
 

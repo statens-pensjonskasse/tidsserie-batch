@@ -6,13 +6,11 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
 
 import no.spk.faktura.input.BatchId;
 import no.spk.faktura.input.InvalidParameterException;
 import no.spk.faktura.input.UsageRequestedException;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
-import no.spk.pensjon.faktura.tidsserie.batch.upload.FileTemplate;
 import no.spk.pensjon.faktura.tidsserie.batch.upload.TidsserieBackendService;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
 
@@ -129,13 +127,11 @@ public class ApplicationController {
         view.opplastingFullfoert();
     }
 
-    public void lagTidsserie(TidsserieBackendService backend, FileTemplate malFilnavn, Aarstall fraOgMed, Aarstall tilOgMed, final ExecutorService executors) {
-        view.startarTidsseriegenerering(malFilnavn, fraOgMed, tilOgMed);;
+    public void lagTidsserie(TidsserieBackendService backend, Aarstall fraOgMed, Aarstall tilOgMed) {
+        view.startarTidsseriegenerering(fraOgMed, tilOgMed);;
         Map<String, Integer> meldingar = backend.lagTidsseriePaaStillingsforholdNivaa(
-                malFilnavn,
                 fraOgMed,
-                tilOgMed,
-                executors
+                tilOgMed
         );
         view.tidsseriegenereringFullfoert(meldingar);
     }

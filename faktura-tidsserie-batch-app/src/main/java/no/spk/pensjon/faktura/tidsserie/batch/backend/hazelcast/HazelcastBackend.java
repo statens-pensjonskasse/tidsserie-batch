@@ -3,16 +3,13 @@ package no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
-import static java.util.concurrent.Executors.newCachedThreadPool;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 
 import no.spk.pensjon.faktura.tidsserie.batch.storage.disruptor.LmaxDisruptorPublisher;
-import no.spk.pensjon.faktura.tidsserie.batch.upload.FileTemplate;
 import no.spk.pensjon.faktura.tidsserie.batch.upload.MedlemsdataUploader;
 import no.spk.pensjon.faktura.tidsserie.batch.upload.TidsserieBackendService;
 import no.spk.pensjon.faktura.tidsserie.core.StorageBackend;
@@ -80,29 +77,18 @@ public class HazelcastBackend implements TidsserieBackendService {
 
     @Override
     public Map<String, Integer> lagTidsseriePaaStillingsforholdNivaa(
-            final FileTemplate outputFiles, final Aarstall fraOgMed, final Aarstall tilOgMed, final ExecutorService executors) {
-        try (final LmaxDisruptorPublisher lager = openDisruptor(executors, outputFiles)) {
-            modus.initStorage(lager);
-
-            return submit(
-                    new Tidsserieagent(
-                            fraOgMed.atStartOfYear(),
-                            tilOgMed.atEndOfYear()
-                    )
-            );
-        }
+            final Aarstall fraOgMed, final Aarstall tilOgMed) {
+        return submit(
+                new Tidsserieagent(
+                        fraOgMed.atStartOfYear(),
+                        tilOgMed.atEndOfYear()
+                )
+        );
     }
 
     @Override
     public <T> void registrer(final Class<T> serviceType, final T service) {
         server.registrer(serviceType, service);
-    }
-
-    private LmaxDisruptorPublisher openDisruptor(final ExecutorService executors, final FileTemplate fileTemplate) {
-        final LmaxDisruptorPublisher publisher = new LmaxDisruptorPublisher(executors, fileTemplate);
-        publisher.start();
-        registrer(StorageBackend.class, publisher);
-        return publisher;
     }
 
     private Map<String, Integer> submit(
