@@ -10,12 +10,14 @@ import java.util.function.Consumer;
 import no.spk.pensjon.faktura.tidsserie.batch.upload.FileTemplate;
 import no.spk.pensjon.faktura.tidsserie.core.ObservasjonsEvent;
 import no.spk.pensjon.faktura.tidsserie.core.StorageBackend;
+import no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklus;
+import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
 import org.slf4j.LoggerFactory;
 
-public class LmaxDisruptorPublisher implements Closeable, StorageBackend {
+public class LmaxDisruptorPublisher implements StorageBackend, TidsserieLivssyklus {
     private final ExecutorService executor;
     private final FileTemplate fileTemplate;
 
@@ -29,7 +31,8 @@ public class LmaxDisruptorPublisher implements Closeable, StorageBackend {
     }
 
     @SuppressWarnings("unchecked")
-    public LmaxDisruptorPublisher start() {
+    @Override
+    public void start(final ServiceRegistry registry) {
         // The factory for the buffer
         final ObservasjonsEventFactory factory = new ObservasjonsEventFactory();
 
@@ -40,21 +43,14 @@ public class LmaxDisruptorPublisher implements Closeable, StorageBackend {
 
         consumer = new FileWriterObservasjonsConsumer(this.fileTemplate);
         disruptor.handleEventsWith(consumer);
-
         // Start the Disruptor, starts all threads running
         disruptor.start();
 
         ringBuffer = disruptor.getRingBuffer();
-
-        return this;
     }
 
     @Override
-    public void close() {
-        stop();
-    }
-
-    public void stop() {
+    public void stop(final ServiceRegistry registry) {
         long i = 0;
         while (!ringBuffer.hasAvailableCapacity(ringBuffer.getBufferSize())) {
             try {

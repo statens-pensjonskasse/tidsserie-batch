@@ -5,6 +5,8 @@ import static java.time.Duration.ofMinutes;
 import static java.time.LocalDateTime.now;
 import static java.util.concurrent.Executors.newCachedThreadPool;
 import static no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchIdConstants.TIDSSERIE_PREFIX;
+import static no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklus.onStart;
+import static no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklus.onStop;
 import static no.spk.pensjon.faktura.tidsserie.core.TidsserieResulat.tidsserieResulat;
 
 import java.nio.file.Files;
@@ -30,8 +32,8 @@ import no.spk.pensjon.faktura.tidsserie.core.GenererTidsserieCommand;
 import no.spk.pensjon.faktura.tidsserie.core.StorageBackend;
 import no.spk.pensjon.faktura.tidsserie.core.TidsperiodeFactory;
 import no.spk.pensjon.faktura.tidsserie.core.TidsserieFactory;
+import no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklus;
 import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
-import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 import no.spk.pensjon.faktura.tidsserie.storage.GrunnlagsdataRepository;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistration;
@@ -85,6 +87,7 @@ public class TidsserieMain {
 
             final Tidsseriemodus modus = arguments.modus();
             registrer(Tidsseriemodus.class, modus);
+            registrer(TidsserieLivssyklus.class, onStop(() -> modus.completed(tidsserieResulat(utKatalog).bygg())));
 
             final TidsserieBackendService backend = new HazelcastBackend(REGISTRY, arguments.getNodes());
             registrer(TidsserieBackendService.class, backend);
@@ -104,12 +107,15 @@ public class TidsserieMain {
                     r -> new Thread(r, "lmax-disruptor-" + System.currentTimeMillis())
             );
             registrer(ExecutorService.class, executors);
+            registrer(TidsserieLivssyklus.class, onStop(executors::shutdown));
 
             final LmaxDisruptorPublisher disruptor = new LmaxDisruptorPublisher(
                     executors,
                     new FileTemplate(utKatalog, "tidsserie", ".csv")
             );
             registrer(StorageBackend.class, disruptor);
+            registrer(TidsserieLivssyklus.class, disruptor);
+            registrer(TidsserieLivssyklus.class, onStart(() -> modus.initStorage(disruptor)));
 
             final GenererTidsserieCommand genereringskommando = modus.createTidsserieCommand(overfoering, disruptor);
             registrer(GenererTidsserieCommand.class, genereringskommando);
@@ -119,17 +125,26 @@ public class TidsserieMain {
             controller.startBackend(backend);
             controller.lastOpp(overfoering);
 
-            modus.initStorage(disruptor);
-            disruptor.start();
+            REGISTRY
+                    .getServiceReferences(TidsserieLivssyklus.class)
+                    .stream()
+                    .map(REGISTRY::getService)
+                    .flatMap(Optionals::stream)
+                    .forEach(l -> l.start(REGISTRY));
 
             controller.lagTidsserie(
                     backend,
                     arguments.observasjonsperiode()
             );
 
-            modus.completed(tidsserieResulat(utKatalog).bygg());
+            REGISTRY
+                    .getServiceReferences(TidsserieLivssyklus.class)
+                    .stream()
+                    .map(REGISTRY::getService)
+                    .flatMap(Optionals::stream)
+                    .forEach(l -> l.stop(REGISTRY));
+
             controller.opprettMetadata(metaDataWriter, utKatalog, arguments, batchId, between(started, now()));
-            executors.shutdown();
 
             controller.informerOmSuksess(logKatalog);
         } catch (InvalidParameterException e) {
@@ -207,4 +222,5 @@ public class TidsserieMain {
     private static BatchTimeout startBatchTimeout(ProgramArguments arguments) {
         return new BatchTimeout(arguments.getKjoeretid(), arguments.getSluttidspunkt()).start();
     }
+
 }
