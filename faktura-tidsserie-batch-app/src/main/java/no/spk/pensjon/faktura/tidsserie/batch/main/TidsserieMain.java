@@ -1,7 +1,9 @@
 package no.spk.pensjon.faktura.tidsserie.batch.main;
 
+import static java.time.Duration.between;
 import static java.time.Duration.of;
 import static java.time.Duration.ofMinutes;
+import static java.time.LocalDateTime.now;
 import static java.util.concurrent.Executors.newCachedThreadPool;
 import static no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchIdConstants.TIDSSERIE_PREFIX;
 import static no.spk.pensjon.faktura.tidsserie.core.TidsserieResulat.tidsserieResulat;
@@ -51,27 +53,26 @@ public class TidsserieMain {
             ProgramArguments arguments = new TidsserieArgumentsFactory().create(args);
             startBatchTimeout(arguments, controller);
 
-            final BatchId batchId = new BatchId(TIDSSERIE_PREFIX, LocalDateTime.now());
+            final BatchId batchId = new BatchId(TIDSSERIE_PREFIX, now());
             Path batchLogKatalog = batchId.tilArbeidskatalog(arguments.getLogkatalog());
             Path dataKatalog = arguments.getUtkatalog().resolve("tidsserie");
 
+
             Files.createDirectories(batchLogKatalog);
+
             controller.initialiserLogging(batchId, batchLogKatalog);
             controller.informerOmOppstart(arguments);
 
-            GrunnlagsdataDirectoryValidator grunnlagsdataValidator = new GrunnlagsdataDirectoryValidator(arguments.getGrunnlagsdataBatchKatalog());
-            controller.validerGrunnlagsdata(grunnlagsdataValidator);
-
-            DirectoryCleaner directoryCleaner = createDirectoryCleaner(arguments.getSlettLogEldreEnn(), arguments.getLogkatalog(), dataKatalog);
+            final DirectoryCleaner directoryCleaner = createDirectoryCleaner(arguments.getSlettLogEldreEnn(), arguments.getLogkatalog(), dataKatalog);
             controller.ryddOpp(directoryCleaner);
-
             Files.createDirectories(dataKatalog);
 
+            final GrunnlagsdataDirectoryValidator grunnlagsdataValidator = new GrunnlagsdataDirectoryValidator(arguments.getGrunnlagsdataBatchKatalog());
             final Tidsseriemodus modus = arguments.modus();
             final TidsserieBackendService backend = new HazelcastBackend(arguments.getNodes());
             final GrunnlagsdataRepository input = modus.repository(arguments.getInnkatalog().resolve(arguments.getGrunnlagsdataBatchId()));
             final GrunnlagsdataService overfoering = new GrunnlagsdataService(backend, input);
-            final Configuration freemarkerConfiguration = TemplateConfigurationFactory.create();
+            final MetaDataWriter metaDataWriter = new MetaDataWriter(TemplateConfigurationFactory.create(), batchLogKatalog);
             final ExecutorService executors = newCachedThreadPool(
                     r -> new Thread(r, "lmax-disruptor-" + System.currentTimeMillis())
             );
@@ -80,33 +81,28 @@ public class TidsserieMain {
                     new FileTemplate(dataKatalog, "tidsserie", ".csv")
             );
 
-            long started = System.currentTimeMillis();
+            final LocalDateTime started = now();
+            controller.validerGrunnlagsdata(grunnlagsdataValidator);
             controller.startBackend(backend);
 
             controller.lastOpp(overfoering);
 
-            try (final LmaxDisruptorPublisher lager = disruptor.start()) {
-                backend.registrer(StorageBackend.class, disruptor);
-                backend.registrer(Tidsseriemodus.class, modus);
-                backend.registrer(TidsserieFactory.class, overfoering);
-                modus.initStorage(lager);
+            backend.registrer(StorageBackend.class, disruptor);
+            backend.registrer(Tidsseriemodus.class, modus);
+            backend.registrer(TidsserieFactory.class, overfoering);
+            modus.initStorage(disruptor);
+            disruptor.start();
 
-                controller.lagTidsserie(backend,
-                        new Aarstall(arguments.getFraAar()),
-                        new Aarstall(arguments.getTilAar())
-                );
-            }
+            controller.lagTidsserie(backend,
+                    new Aarstall(arguments.getFraAar()),
+                    new Aarstall(arguments.getTilAar())
+            );
 
             modus.completed(tidsserieResulat(dataKatalog).bygg());
-
-            Duration duration = of(System.currentTimeMillis() - started, ChronoUnit.MILLIS);
-
-            MetaDataWriter metaDataWriter = new MetaDataWriter(freemarkerConfiguration, batchLogKatalog);
-            controller.opprettMetadata(metaDataWriter, dataKatalog, arguments, batchId, duration);
+            controller.opprettMetadata(metaDataWriter, dataKatalog, arguments, batchId, between(started, now()));
+            executors.shutdown();
 
             controller.informerOmSuksess(batchLogKatalog);
-
-            executors.shutdown();
         } catch (InvalidParameterException e) {
             controller.informerOmUgyldigeArgumenter(e);
         } catch (UsageRequestedException e) {
