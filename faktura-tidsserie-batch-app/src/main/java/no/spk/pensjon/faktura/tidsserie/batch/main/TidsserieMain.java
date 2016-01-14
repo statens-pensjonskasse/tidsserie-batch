@@ -1,7 +1,6 @@
 package no.spk.pensjon.faktura.tidsserie.batch.main;
 
 import static java.time.Duration.between;
-import static java.time.Duration.of;
 import static java.time.Duration.ofMinutes;
 import static java.time.LocalDateTime.now;
 import static java.util.concurrent.Executors.newCachedThreadPool;
@@ -10,12 +9,11 @@ import static no.spk.pensjon.faktura.tidsserie.core.TidsserieResulat.tidsserieRe
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.Iterator;
+import java.util.Properties;
 import java.util.ServiceLoader;
 import java.util.concurrent.ExecutorService;
+import java.util.stream.Stream;
 
 import no.spk.faktura.input.BatchId;
 import no.spk.faktura.input.InvalidParameterException;
@@ -28,14 +26,16 @@ import no.spk.pensjon.faktura.tidsserie.batch.main.input.TidsserieArgumentsFacto
 import no.spk.pensjon.faktura.tidsserie.batch.storage.disruptor.LmaxDisruptorPublisher;
 import no.spk.pensjon.faktura.tidsserie.batch.upload.FileTemplate;
 import no.spk.pensjon.faktura.tidsserie.batch.upload.TidsserieBackendService;
+import no.spk.pensjon.faktura.tidsserie.core.GenererTidsserieCommand;
 import no.spk.pensjon.faktura.tidsserie.core.StorageBackend;
+import no.spk.pensjon.faktura.tidsserie.core.TidsperiodeFactory;
 import no.spk.pensjon.faktura.tidsserie.core.TidsserieFactory;
 import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
+import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 import no.spk.pensjon.faktura.tidsserie.storage.GrunnlagsdataRepository;
+import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistration;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
-
-import freemarker.template.Configuration;
 
 /**
  * Batch som genererer tidsseriar for forenkla fakturering fastsats.
@@ -61,55 +61,77 @@ public class TidsserieMain {
             startBatchTimeout(arguments, controller);
 
             final BatchId batchId = new BatchId(TIDSSERIE_PREFIX, now());
-            Path batchLogKatalog = batchId.tilArbeidskatalog(arguments.getLogkatalog());
-            Path dataKatalog = arguments.getUtkatalog().resolve("tidsserie");
+            Path logKatalog = batchId.tilArbeidskatalog(arguments.getLogkatalog());
+            Path utKatalog = arguments.getUtkatalog().resolve("tidsserie");
 
+            registrer(Path.class, logKatalog, "katalog=log");
+            registrer(Path.class, utKatalog, "katalog=ut");
+            registrer(Path.class, arguments.getGrunnlagsdataBatchKatalog(), "katalog=grunnlagsdata");
 
-            Files.createDirectories(batchLogKatalog);
+            registrer(Observasjonsperiode.class, arguments.observasjonsperiode());
 
-            controller.initialiserLogging(batchId, batchLogKatalog);
+            Files.createDirectories(logKatalog);
+
+            controller.initialiserLogging(batchId, logKatalog);
             controller.informerOmOppstart(arguments);
 
-            final DirectoryCleaner directoryCleaner = createDirectoryCleaner(arguments.getSlettLogEldreEnn(), arguments.getLogkatalog(), dataKatalog);
+            final DirectoryCleaner directoryCleaner = createDirectoryCleaner(arguments.getSlettLogEldreEnn(), arguments.getLogkatalog(), utKatalog);
+            registrer(DirectoryCleaner.class, directoryCleaner);
             controller.ryddOpp(directoryCleaner);
-            Files.createDirectories(dataKatalog);
+            Files.createDirectories(utKatalog);
 
             final GrunnlagsdataDirectoryValidator grunnlagsdataValidator = new GrunnlagsdataDirectoryValidator(arguments.getGrunnlagsdataBatchKatalog());
+            registrer(GrunnlagsdataDirectoryValidator.class, grunnlagsdataValidator);
+
             final Tidsseriemodus modus = arguments.modus();
-            final TidsserieBackendService backend = new HazelcastBackend(arguments.getNodes());
+            registrer(Tidsseriemodus.class, modus);
+
+            final TidsserieBackendService backend = new HazelcastBackend(REGISTRY, arguments.getNodes());
+            registrer(TidsserieBackendService.class, backend);
+
             final GrunnlagsdataRepository input = modus.repository(arguments.getInnkatalog().resolve(arguments.getGrunnlagsdataBatchId()));
+            registrer(GrunnlagsdataRepository.class, input);
+
             final GrunnlagsdataService overfoering = new GrunnlagsdataService(backend, input);
-            final MetaDataWriter metaDataWriter = new MetaDataWriter(TemplateConfigurationFactory.create(), batchLogKatalog);
+            registrer(GrunnlagsdataService.class, overfoering);
+            registrer(TidsserieFactory.class, overfoering);
+            registrer(TidsperiodeFactory.class, overfoering);
+
+            final MetaDataWriter metaDataWriter = new MetaDataWriter(TemplateConfigurationFactory.create(), logKatalog);
+            registrer(MetaDataWriter.class, metaDataWriter);
+
             final ExecutorService executors = newCachedThreadPool(
                     r -> new Thread(r, "lmax-disruptor-" + System.currentTimeMillis())
             );
+            registrer(ExecutorService.class, executors);
+
             final LmaxDisruptorPublisher disruptor = new LmaxDisruptorPublisher(
                     executors,
-                    new FileTemplate(dataKatalog, "tidsserie", ".csv")
+                    new FileTemplate(utKatalog, "tidsserie", ".csv")
             );
+            registrer(StorageBackend.class, disruptor);
+
+            final GenererTidsserieCommand genereringskommando = modus.createTidsserieCommand(overfoering, disruptor);
+            registrer(GenererTidsserieCommand.class, genereringskommando);
 
             final LocalDateTime started = now();
             controller.validerGrunnlagsdata(grunnlagsdataValidator);
             controller.startBackend(backend);
-
             controller.lastOpp(overfoering);
 
-            backend.registrer(StorageBackend.class, disruptor);
-            backend.registrer(Tidsseriemodus.class, modus);
-            backend.registrer(TidsserieFactory.class, overfoering);
             modus.initStorage(disruptor);
             disruptor.start();
 
-            controller.lagTidsserie(backend,
-                    new Aarstall(arguments.getFraAar()),
-                    new Aarstall(arguments.getTilAar())
+            controller.lagTidsserie(
+                    backend,
+                    arguments.observasjonsperiode()
             );
 
-            modus.completed(tidsserieResulat(dataKatalog).bygg());
-            controller.opprettMetadata(metaDataWriter, dataKatalog, arguments, batchId, between(started, now()));
+            modus.completed(tidsserieResulat(utKatalog).bygg());
+            controller.opprettMetadata(metaDataWriter, utKatalog, arguments, batchId, between(started, now()));
             executors.shutdown();
 
-            controller.informerOmSuksess(batchLogKatalog);
+            controller.informerOmSuksess(logKatalog);
         } catch (InvalidParameterException e) {
             controller.informerOmUgyldigeArgumenter(e);
         } catch (UsageRequestedException e) {
@@ -123,6 +145,40 @@ public class TidsserieMain {
         }
 
         shutdown(controller);
+    }
+
+    /**
+     * Registrerer {@code tjeneste} i tjenesteregisteret under typen {@code type} med ein eller fleire valgfrie {@code
+     * egenskapar}.
+     *
+     * @param <T> tjenestetypen
+     * @param type tjenestetypen tjenesta skal registrerast under i tjenesteregisteret
+     * @param tjeneste tjenesteinstansen som skal registrerast
+     * @param egenskapar 0 eller fleire egenskapar på formatet egenskap=verdi
+     * @return registreringa for tjenesta
+     */
+    private static <T> ServiceRegistration<T> registrer(final Class<T> type, final T tjeneste, final String... egenskapar) {
+        return REGISTRY.registerService(
+                type,
+                tjeneste,
+                Stream.of(egenskapar)
+                        .map(egenskap -> {
+                            final int index = egenskap.indexOf("=");
+                            return new String[]{egenskap.substring(0, index), egenskap.substring(index + 1)};
+                        })
+                        .reduce(
+                                new Properties(),
+                                (Properties props, String[] egenskap) -> {
+                                    props.setProperty(egenskap[0], egenskap[1]);
+                                    return props;
+                                },
+                                (a, b) -> {
+                                    final Properties c = new Properties(a);
+                                    c.putAll(b);
+                                    return c;
+                                }
+                        )
+        );
     }
 
     private static DirectoryCleaner createDirectoryCleaner(int slettEldreEnn, Path logKatalog, Path dataKatalog) throws HousekeepingException {

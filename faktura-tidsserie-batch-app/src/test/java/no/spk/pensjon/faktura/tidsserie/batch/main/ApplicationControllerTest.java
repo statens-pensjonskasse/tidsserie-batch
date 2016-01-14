@@ -1,6 +1,7 @@
 package no.spk.pensjon.faktura.tidsserie.batch.main;
 
 import static java.util.concurrent.Executors.newCachedThreadPool;
+import static no.spk.pensjon.faktura.tidsserie.Datoar.dato;
 import static no.spk.pensjon.faktura.tidsserie.batch.main.ApplicationController.EXIT_ERROR;
 import static no.spk.pensjon.faktura.tidsserie.batch.main.ApplicationController.EXIT_SUCCESS;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -16,6 +17,7 @@ import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.StandardOutputAndError;
 import no.spk.pensjon.faktura.tidsserie.batch.upload.TidsserieBackendService;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
+import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -113,11 +115,11 @@ public class ApplicationControllerTest {
 
         controller.startBackend(backend);
         controller.lastOpp(overfoering);
-        controller.lagTidsserie(backend, aarstall, aarstall);
+        controller.lagTidsserie(backend, new Observasjonsperiode(dato("1970.01.01"), dato("1980.12.31")));
 
         verify(backend).start();
         verify(overfoering).lastOpp();
-        verify(backend).lagTidsseriePaaStillingsforholdNivaa(eq(aarstall), eq(aarstall));
+        verify(backend).lagTidsseriePaaStillingsforholdNivaa();
 
         console.assertStandardOutput().contains("Starter server.");
         console.assertStandardOutput().contains("Starter lasting av grunnlagsdata...");

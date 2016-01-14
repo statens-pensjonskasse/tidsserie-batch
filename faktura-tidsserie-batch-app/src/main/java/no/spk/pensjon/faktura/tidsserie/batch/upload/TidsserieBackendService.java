@@ -2,7 +2,6 @@ package no.spk.pensjon.faktura.tidsserie.batch.upload;
 
 import java.util.Map;
 
-import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieObservasjon;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 
@@ -52,26 +51,11 @@ public interface TidsserieBackendService {
      * å splitte opp output-fila i fleire mindre filer av passande størrelse. Størrelse og oppsplittingsstrategi
      * er ein backend-spesifikk implementasjonsdetalj som klienten ikkje kan påvirke direkte.
      *
-     * @param fraOgMed    årstallet tidsserien skal starte i
-     * @param tilOgMed    årstallet tidsserien skal avsluttast i
      * @return alle meldingar som har blitt generert i løpet av tidsseriegenereringa, gruppert på melding med antall
      * gangar meldinga var generert som verdi
      * @see Observasjonsperiode
      */
     Map<String, Integer> lagTidsseriePaaStillingsforholdNivaa(
-            Aarstall fraOgMed,
-            Aarstall tilOgMed
     );
 
-    /**
-     * Registrerer tenesta i backendens tenesteregister slik at dei blir tilgjengelig for backendens beregningsagentar.
-     * <br>
-     * Tenesta <code>service</code> blir registrert under tenestenavnet angitt av <code>serviceType</code>, det
-     * forventast at tenesta kan castast til den angitte typen av klientane som slår opp og benyttar seg av tenesta.
-     *
-     * @param <T>         tenestetypen som blir registrert
-     * @param serviceType kva tenestetype tenesta skal registrerast under
-     * @param service     tenesta som skal registrerast under den angitte tenestetypen i backenden sitt tjenesteregister
-     */
-    <T> void registrer(Class<T> serviceType, T service);
 }

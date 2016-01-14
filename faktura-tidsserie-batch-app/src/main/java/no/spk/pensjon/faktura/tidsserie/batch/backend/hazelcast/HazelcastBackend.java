@@ -12,6 +12,7 @@ import java.util.concurrent.ExecutionException;
 import no.spk.pensjon.faktura.tidsserie.batch.upload.MedlemsdataUploader;
 import no.spk.pensjon.faktura.tidsserie.batch.upload.TidsserieBackendService;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
+import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IMap;
@@ -49,8 +50,13 @@ public class HazelcastBackend implements TidsserieBackendService {
 
     private Optional<HazelcastInstance> instance = empty();
 
-    public HazelcastBackend(final int antallNoder) {
-        this(new MultiNodeSingleJVMBackend(antallNoder));
+    public HazelcastBackend(final ServiceRegistry registry, final int antallNoder) {
+        this(
+                new MultiNodeSingleJVMBackend(
+                        registry,
+                        antallNoder
+                )
+        );
     }
 
     HazelcastBackend(final Server server) {
@@ -70,19 +76,8 @@ public class HazelcastBackend implements TidsserieBackendService {
     }
 
     @Override
-    public Map<String, Integer> lagTidsseriePaaStillingsforholdNivaa(
-            final Aarstall fraOgMed, final Aarstall tilOgMed) {
-        return submit(
-                new Tidsserieagent(
-                        fraOgMed.atStartOfYear(),
-                        tilOgMed.atEndOfYear()
-                )
-        );
-    }
-
-    @Override
-    public <T> void registrer(final Class<T> serviceType, final T service) {
-        server.registrer(serviceType, service);
+    public Map<String, Integer> lagTidsseriePaaStillingsforholdNivaa() {
+        return submit(new Tidsserieagent());
     }
 
     private Map<String, Integer> submit(

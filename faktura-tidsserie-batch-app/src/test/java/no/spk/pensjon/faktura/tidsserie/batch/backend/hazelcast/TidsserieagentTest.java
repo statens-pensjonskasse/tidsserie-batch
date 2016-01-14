@@ -1,6 +1,5 @@
 package no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast;
 
-import static no.spk.pensjon.faktura.tidsserie.Datoar.dato;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -8,9 +7,11 @@ import static org.mockito.Mockito.when;
 import java.util.HashMap;
 import java.util.Map;
 
+import no.spk.pensjon.faktura.tidsserie.batch.ServiceRegistryRule;
+import no.spk.pensjon.faktura.tidsserie.core.GenererTidsserieCommand;
 import no.spk.pensjon.faktura.tidsserie.core.StorageBackend;
-import no.spk.pensjon.faktura.tidsserie.core.TidsserieFactory;
 import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
+import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -27,8 +28,11 @@ public class TidsserieagentTest {
     @Rule
     public final ExpectedException e = ExpectedException.none();
 
+    @Rule
+    public final ServiceRegistryRule registry = new ServiceRegistryRule();
+
     @Mock
-    private TidsserieFactory grunnlagsdata;
+    private GenererTidsserieCommand command;
 
     @Mock
     private StorageBackend lagring;
@@ -38,11 +42,11 @@ public class TidsserieagentTest {
 
     private Map<String, Object> tenester = new HashMap<>();
 
-    private Tidsserieagent agent = new Tidsserieagent(dato("1970.01.01"), dato("1970.12.31"));
+    private Tidsserieagent agent = new Tidsserieagent();
 
     @Before
     public void _before() {
-        registrer(tenester, TidsserieFactory.class, grunnlagsdata);
+        registrer(tenester, GenererTidsserieCommand.class, command);
         registrer(tenester, StorageBackend.class, lagring);
         registrer(tenester, Tidsseriemodus.class, modus);
     }
@@ -62,17 +66,17 @@ public class TidsserieagentTest {
     }
 
     @Test
-    public void skalSlaaOppPaakrevdeTenester() {
+    public void skal_hente_tjenesteregisteret_fra_usercontexten() {
         final Map<String, Object> mock = spy(new HashMap<>());
-        when(mock.get(TidsserieFactory.class.getSimpleName())).thenReturn(grunnlagsdata);
-        when(mock.get(StorageBackend.class.getSimpleName())).thenReturn(lagring);
-        when(mock.get(Tidsseriemodus.class.getSimpleName())).thenReturn(modus);
+        when(mock.get(ServiceRegistry.class.getSimpleName())).thenReturn(registry.registry());
+
+        registry.registrer(GenererTidsserieCommand.class, command);
+        registry.registrer(StorageBackend.class, lagring);
+        registry.registrer(Tidsseriemodus.class, modus);
 
         agent.configure(mock);
 
-        verify(mock).get(TidsserieFactory.class.getSimpleName());
-        verify(mock).get(StorageBackend.class.getSimpleName());
-        verify(mock).get(Tidsseriemodus.class.getSimpleName());
+        verify(mock).get(ServiceRegistry.class.getSimpleName());
     }
 
     private static <T> void registrer(final Map<String, T> tenester, Class<? extends T> type, T service) {

@@ -2,6 +2,7 @@ package no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast;
 
 import static com.hazelcast.instance.HazelcastInstanceFactory.newHazelcastInstance;
 import static java.lang.System.setProperty;
+import static java.util.Objects.requireNonNull;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static java.util.stream.Collectors.toSet;
@@ -11,6 +12,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.IntStream;
+
+import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 import com.hazelcast.config.Config;
 import com.hazelcast.config.EvictionPolicy;
@@ -52,11 +55,14 @@ class MultiNodeSingleJVMBackend implements Server {
 
     private final Set<HazelcastInstance> slavar = new HashSet<>();
 
+    private final ServiceRegistry registry;
+
     private final int antallNoder;
 
     private Optional<HazelcastInstance> master = empty();
 
-    public MultiNodeSingleJVMBackend(int antallNoder) {
+    public MultiNodeSingleJVMBackend(final ServiceRegistry registry, int antallNoder) {
+        this.registry = requireNonNull(registry, "registry er påkrevd, men var null");
         this.antallNoder = antallNoder;
     }
 
@@ -109,29 +115,13 @@ class MultiNodeSingleJVMBackend implements Server {
         return master.get();
     }
 
-    /**
-     * Registrerer tenesta angitt via <code>service</code> under tenestenavnet angitt av <code>serviceType</code>
-     * i master- og slavenodenes {@link com.hazelcast.core.HazelcastInstance#getUserContext() usercontext}.
-     *
-     * @param <T>         tenestetypen som blir registrert
-     * @param serviceType kva tenestetype tenesta skal registrerast som. Det forventast at tenesta kan castast til
-     *                    denne typen av klientane som slår den opp frå usercontexten seinare
-     * @param service     tenesta som skal registrerast under det angitte tenestenavnet i usercontexten til alle nodene
-     */
-    @Override
-    public <T> void registrer(final Class<T> serviceType, final T service) {
-        final String key = serviceType.getSimpleName();
-        master.orElseThrow(
-                () -> new IllegalStateException("Registrering av tenester kan ikkje utførast før etter at Hazelcast-backenden har blitt starta")
-        ).getUserContext().put(key, service);
-        slavar.forEach(slave -> slave.getUserContext().put(key, service));
-    }
-
-    private static HazelcastInstance startInstance(final Config config, final int instanceNr) {
-        return newHazelcastInstance(
+    private HazelcastInstance startInstance(final Config config, final int instanceNr) {
+        HazelcastInstance instance = newHazelcastInstance(
                 config,
                 "faktura-prognose-tidsserie-" + instanceNr,
                 new DefaultNodeContext()
         );
+        instance.getUserContext().put(ServiceRegistry.class.getSimpleName(), registry);
+        return instance;
     }
 }
