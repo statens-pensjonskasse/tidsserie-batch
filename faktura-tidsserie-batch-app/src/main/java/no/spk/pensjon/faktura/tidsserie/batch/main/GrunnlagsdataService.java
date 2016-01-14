@@ -128,8 +128,6 @@ public class GrunnlagsdataService implements TidsserieFactory {
         }
 
         lesInnReferansedata();
-
-        backend.registrer(TidsserieFactory.class, this);
     }
 
     void lesInnReferansedata() {

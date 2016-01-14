@@ -25,7 +25,7 @@ public class HazelcastBackendTest {
 
     @Before
     public void _before() {
-        backend = new HazelcastBackend(server, parameter);
+        backend = new HazelcastBackend(server);
     }
 
     @Test

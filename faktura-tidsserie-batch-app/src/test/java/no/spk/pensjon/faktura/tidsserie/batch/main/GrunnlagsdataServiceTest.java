@@ -69,16 +69,6 @@ public class GrunnlagsdataServiceTest {
     }
 
     /**
-     * Verifiserer at backenden blir notifisert via uploaderen om at opplasting av alle data
-     * er fullført.
-     */
-    @Test
-    public void skalNotifisereBackendenOmAtLastingaErFullfoert() {
-        service.lastOpp();
-        verify(backend).registrer(TidsserieFactory.class, service);
-    }
-
-    /**
      * Verifiserer at alle medlemsdata blir lasta opp, inkludert siste rad.
      */
     @Test
@@ -171,15 +161,5 @@ public class GrunnlagsdataServiceTest {
         assertThat(service.perioderAvType(GenerellTidsperiode.class).count())
                 .as("antall perioder av type " + GenerellTidsperiode.class)
                 .isEqualTo(0);
-    }
-
-    @Test
-    public void skalLukkeInputfiler() throws IOException {
-        when(backend.uploader()).thenReturn(uploader);
-        when(repository.medlemsdata()).thenReturn(singletonList(MEDLEMSDATA).stream());
-
-        service.lastOpp();
-
-        verify(backend).registrer(TidsserieFactory.class, service);
     }
 }

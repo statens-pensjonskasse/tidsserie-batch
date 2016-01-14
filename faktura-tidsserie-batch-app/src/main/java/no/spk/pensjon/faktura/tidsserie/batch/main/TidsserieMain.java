@@ -25,6 +25,7 @@ import no.spk.pensjon.faktura.tidsserie.batch.storage.disruptor.LmaxDisruptorPub
 import no.spk.pensjon.faktura.tidsserie.batch.upload.FileTemplate;
 import no.spk.pensjon.faktura.tidsserie.batch.upload.TidsserieBackendService;
 import no.spk.pensjon.faktura.tidsserie.core.StorageBackend;
+import no.spk.pensjon.faktura.tidsserie.core.TidsserieFactory;
 import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
 import no.spk.pensjon.faktura.tidsserie.storage.GrunnlagsdataRepository;
@@ -67,7 +68,7 @@ public class TidsserieMain {
             Files.createDirectories(dataKatalog);
 
             final Tidsseriemodus modus = arguments.modus();
-            final TidsserieBackendService backend = new HazelcastBackend(arguments.getNodes(), modus);
+            final TidsserieBackendService backend = new HazelcastBackend(arguments.getNodes());
             final GrunnlagsdataRepository input = modus.repository(arguments.getInnkatalog().resolve(arguments.getGrunnlagsdataBatchId()));
             final GrunnlagsdataService overfoering = new GrunnlagsdataService(backend, input);
             final Configuration freemarkerConfiguration = TemplateConfigurationFactory.create();
@@ -85,7 +86,9 @@ public class TidsserieMain {
             controller.lastOpp(overfoering);
 
             try (final LmaxDisruptorPublisher lager = disruptor.start()) {
-                backend.registrer(StorageBackend.class, lager);
+                backend.registrer(StorageBackend.class, disruptor);
+                backend.registrer(Tidsseriemodus.class, modus);
+                backend.registrer(TidsserieFactory.class, overfoering);
                 modus.initStorage(lager);
 
                 controller.lagTidsserie(backend,

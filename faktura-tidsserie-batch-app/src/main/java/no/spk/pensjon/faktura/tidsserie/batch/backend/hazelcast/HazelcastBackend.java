@@ -9,11 +9,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
-import no.spk.pensjon.faktura.tidsserie.batch.storage.disruptor.LmaxDisruptorPublisher;
 import no.spk.pensjon.faktura.tidsserie.batch.upload.MedlemsdataUploader;
 import no.spk.pensjon.faktura.tidsserie.batch.upload.TidsserieBackendService;
-import no.spk.pensjon.faktura.tidsserie.core.StorageBackend;
-import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
 
 import com.hazelcast.core.HazelcastInstance;
@@ -47,19 +44,17 @@ public class HazelcastBackend implements TidsserieBackendService {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private final Server server;
-    private final Tidsseriemodus modus;
 
     private Optional<IMap<String, List<List<String>>>> map = empty();
 
     private Optional<HazelcastInstance> instance = empty();
 
-    public HazelcastBackend(final int antallNoder, final Tidsseriemodus modus) {
-        this(new MultiNodeSingleJVMBackend(antallNoder), modus);
+    public HazelcastBackend(final int antallNoder) {
+        this(new MultiNodeSingleJVMBackend(antallNoder));
     }
 
-    HazelcastBackend(final Server server, final Tidsseriemodus modus) {
+    HazelcastBackend(final Server server) {
         this.server = requireNonNull(server, "server er påkrevd, men var null");
-        this.modus = requireNonNull(modus, "tidsseriemodus er påkrevd, men var null");
     }
 
     @Override
@@ -67,7 +62,6 @@ public class HazelcastBackend implements TidsserieBackendService {
         this.instance = of(server.start());
         this.map = instance.map(i -> i.getMap("medlemsdata"));
         instance.ifPresent(i -> i.getAtomicLong("serienummer").set(1L));
-        registrer(Tidsseriemodus.class, modus);
     }
 
     @Override
