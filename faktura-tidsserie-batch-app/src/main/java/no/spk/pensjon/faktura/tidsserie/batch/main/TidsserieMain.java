@@ -13,6 +13,8 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Iterator;
+import java.util.ServiceLoader;
 import java.util.concurrent.ExecutorService;
 
 import no.spk.faktura.input.BatchId;
@@ -31,6 +33,7 @@ import no.spk.pensjon.faktura.tidsserie.core.TidsserieFactory;
 import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
 import no.spk.pensjon.faktura.tidsserie.storage.GrunnlagsdataRepository;
+import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 import freemarker.template.Configuration;
 
@@ -46,6 +49,10 @@ import freemarker.template.Configuration;
  * @author Tarjei Skorgenes
  */
 public class TidsserieMain {
+    private final static ServiceRegistry REGISTRY = ServiceLoader.load(ServiceRegistry.class)
+            .iterator()
+            .next();
+
     public static void main(String[] args) {
         final ApplicationController controller = new ApplicationController(new ConsoleView());
 
