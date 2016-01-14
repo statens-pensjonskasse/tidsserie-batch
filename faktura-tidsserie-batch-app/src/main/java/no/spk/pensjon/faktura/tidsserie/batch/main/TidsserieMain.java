@@ -2,6 +2,7 @@ package no.spk.pensjon.faktura.tidsserie.batch.main;
 
 import static java.time.Duration.of;
 import static java.time.Duration.ofMinutes;
+import static java.util.concurrent.Executors.newCachedThreadPool;
 import static no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchIdConstants.TIDSSERIE_PREFIX;
 import static no.spk.pensjon.faktura.tidsserie.core.TidsserieResulat.tidsserieResulat;
 
@@ -10,6 +11,7 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.concurrent.ExecutorService;
 
 import no.spk.faktura.input.BatchId;
 import no.spk.faktura.input.InvalidParameterException;
@@ -67,6 +69,9 @@ public class TidsserieMain {
             final GrunnlagsdataRepository input = modus.repository(arguments.getInnkatalog().resolve(arguments.getGrunnlagsdataBatchId()));
             final GrunnlagsdataService overfoering = new GrunnlagsdataService(backend, input);
             final Configuration freemarkerConfiguration = TemplateConfigurationFactory.create();
+            final ExecutorService executors = newCachedThreadPool(
+                    r -> new Thread(r, "lmax-disruptor-" + System.currentTimeMillis())
+            );
 
             long started = System.currentTimeMillis();
             controller.startBackend(backend);
@@ -75,7 +80,7 @@ public class TidsserieMain {
             controller.lagTidsserie(backend,
                     new FileTemplate(dataKatalog, "tidsserie", ".csv"),
                     new Aarstall(arguments.getFraAar()),
-                    new Aarstall(arguments.getTilAar()));
+                    new Aarstall(arguments.getTilAar()), executors);
 
             modus.completed(tidsserieResulat(dataKatalog).bygg());
 
@@ -85,6 +90,8 @@ public class TidsserieMain {
             controller.opprettMetadata(metaDataWriter, dataKatalog, arguments, batchId, duration);
 
             controller.informerOmSuksess(batchLogKatalog);
+
+            executors.shutdown();
         } catch (InvalidParameterException e) {
             controller.informerOmUgyldigeArgumenter(e);
         } catch (UsageRequestedException e) {

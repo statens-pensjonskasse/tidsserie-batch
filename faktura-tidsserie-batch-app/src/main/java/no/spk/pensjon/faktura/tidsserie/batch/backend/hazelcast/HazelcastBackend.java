@@ -80,10 +80,7 @@ public class HazelcastBackend implements TidsserieBackendService {
 
     @Override
     public Map<String, Integer> lagTidsseriePaaStillingsforholdNivaa(
-            final FileTemplate outputFiles, final Aarstall fraOgMed, final Aarstall tilOgMed) {
-        final ExecutorService executors = newCachedThreadPool(
-                r -> new Thread(r, "lmax-disruptor-" + System.currentTimeMillis())
-        );
+            final FileTemplate outputFiles, final Aarstall fraOgMed, final Aarstall tilOgMed, final ExecutorService executors) {
         try (final LmaxDisruptorPublisher lager = openDisruptor(executors, outputFiles)) {
             modus.initStorage(lager);
 
@@ -93,8 +90,6 @@ public class HazelcastBackend implements TidsserieBackendService {
                             tilOgMed.atEndOfYear()
                     )
             );
-        } finally {
-            executors.shutdown();
         }
     }
 

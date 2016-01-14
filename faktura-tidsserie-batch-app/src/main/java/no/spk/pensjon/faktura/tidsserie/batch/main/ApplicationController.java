@@ -1,9 +1,12 @@
 package no.spk.pensjon.faktura.tidsserie.batch.main;
 
+import static java.util.concurrent.Executors.newCachedThreadPool;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 
 import no.spk.faktura.input.BatchId;
 import no.spk.faktura.input.InvalidParameterException;
@@ -126,12 +129,13 @@ public class ApplicationController {
         view.opplastingFullfoert();
     }
 
-    public void lagTidsserie(TidsserieBackendService backend, FileTemplate malFilnavn, Aarstall fraOgMed, Aarstall tilOgMed) {
+    public void lagTidsserie(TidsserieBackendService backend, FileTemplate malFilnavn, Aarstall fraOgMed, Aarstall tilOgMed, final ExecutorService executors) {
         view.startarTidsseriegenerering(malFilnavn, fraOgMed, tilOgMed);;
         Map<String, Integer> meldingar = backend.lagTidsseriePaaStillingsforholdNivaa(
                 malFilnavn,
                 fraOgMed,
-                tilOgMed
+                tilOgMed,
+                executors
         );
         view.tidsseriegenereringFullfoert(meldingar);
     }

@@ -1,6 +1,7 @@
 package no.spk.pensjon.faktura.tidsserie.batch.upload;
 
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieObservasjon;
@@ -55,6 +56,7 @@ public interface TidsserieBackendService {
      * @param outputFiles mal for filnavna tidsserien skal lagrast til
      * @param fraOgMed    årstallet tidsserien skal starte i
      * @param tilOgMed    årstallet tidsserien skal avsluttast i
+     * @param executors   threadpool som lagringa av observasjonar skal køyre via
      * @return alle meldingar som har blitt generert i løpet av tidsseriegenereringa, gruppert på melding med antall
      * gangar meldinga var generert som verdi
      * @see Observasjonsperiode
@@ -62,7 +64,8 @@ public interface TidsserieBackendService {
     Map<String, Integer> lagTidsseriePaaStillingsforholdNivaa(
             FileTemplate outputFiles,
             Aarstall fraOgMed,
-            Aarstall tilOgMed
+            Aarstall tilOgMed,
+            ExecutorService executors
     );
 
     /**
