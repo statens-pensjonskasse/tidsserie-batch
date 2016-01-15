@@ -5,14 +5,11 @@ import static java.time.Duration.ofMinutes;
 import static java.time.LocalDateTime.now;
 import static java.util.concurrent.Executors.newCachedThreadPool;
 import static no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchIdConstants.TIDSSERIE_PREFIX;
-import static no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklus.onStart;
 import static no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklus.onStop;
-import static no.spk.pensjon.faktura.tidsserie.core.TidsserieResulat.tidsserieResulat;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
-import java.util.Properties;
 import java.util.ServiceLoader;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Stream;
@@ -29,6 +26,7 @@ import no.spk.pensjon.faktura.tidsserie.batch.storage.disruptor.LmaxDisruptorPub
 import no.spk.pensjon.faktura.tidsserie.batch.upload.FileTemplate;
 import no.spk.pensjon.faktura.tidsserie.batch.upload.TidsserieBackendService;
 import no.spk.pensjon.faktura.tidsserie.core.GenererTidsserieCommand;
+import no.spk.pensjon.faktura.tidsserie.core.Katalog;
 import no.spk.pensjon.faktura.tidsserie.core.StorageBackend;
 import no.spk.pensjon.faktura.tidsserie.core.TidsperiodeFactory;
 import no.spk.pensjon.faktura.tidsserie.core.TidsserieFactory;
@@ -51,24 +49,26 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
  * @author Tarjei Skorgenes
  */
 public class TidsserieMain {
-    private final static ServiceRegistry REGISTRY = ServiceLoader.load(ServiceRegistry.class)
+    private final ServiceRegistry registry = ServiceLoader.load(ServiceRegistry.class)
             .iterator()
             .next();
 
-    public static void main(String[] args) {
-        final ApplicationController controller = new ApplicationController(new ConsoleView());
+    private ApplicationController controller;
+
+    public void run(String[] args) {
+        controller = new ApplicationController(new ConsoleView());
 
         try {
             ProgramArguments arguments = new TidsserieArgumentsFactory().create(args);
-            startBatchTimeout(arguments, controller);
+            startBatchTimeout(arguments);
 
             final BatchId batchId = new BatchId(TIDSSERIE_PREFIX, now());
             Path logKatalog = batchId.tilArbeidskatalog(arguments.getLogkatalog());
             Path utKatalog = arguments.getUtkatalog().resolve("tidsserie");
 
-            registrer(Path.class, logKatalog, "katalog=log");
-            registrer(Path.class, utKatalog, "katalog=ut");
-            registrer(Path.class, arguments.getGrunnlagsdataBatchKatalog(), "katalog=grunnlagsdata");
+            registrer(Path.class, logKatalog, Katalog.LOG.egenskap());
+            registrer(Path.class, utKatalog, Katalog.UT.egenskap());
+            registrer(Path.class, arguments.getGrunnlagsdataBatchKatalog(), Katalog.GRUNNLAGSDATA.egenskap());
 
             registrer(Observasjonsperiode.class, arguments.observasjonsperiode());
 
@@ -87,9 +87,8 @@ public class TidsserieMain {
 
             final Tidsseriemodus modus = arguments.modus();
             registrer(Tidsseriemodus.class, modus);
-            registrer(TidsserieLivssyklus.class, onStop(() -> modus.completed(tidsserieResulat(utKatalog).bygg())));
 
-            final TidsserieBackendService backend = new HazelcastBackend(REGISTRY, arguments.getNodes());
+            final TidsserieBackendService backend = new HazelcastBackend(registry, arguments.getNodes());
             registrer(TidsserieBackendService.class, backend);
 
             final GrunnlagsdataRepository input = modus.repository(arguments.getInnkatalog().resolve(arguments.getGrunnlagsdataBatchId()));
@@ -115,36 +114,27 @@ public class TidsserieMain {
             );
             registrer(StorageBackend.class, disruptor);
             registrer(TidsserieLivssyklus.class, disruptor);
-            registrer(TidsserieLivssyklus.class, onStart(() -> modus.initStorage(disruptor)));
 
             final GenererTidsserieCommand genereringskommando = modus.createTidsserieCommand(overfoering, disruptor);
             registrer(GenererTidsserieCommand.class, genereringskommando);
+
+            modus.registerServices(registry);
 
             final LocalDateTime started = now();
             controller.validerGrunnlagsdata(grunnlagsdataValidator);
             controller.startBackend(backend);
             controller.lastOpp(overfoering);
 
-            REGISTRY
-                    .getServiceReferences(TidsserieLivssyklus.class)
-                    .stream()
-                    .map(REGISTRY::getService)
-                    .flatMap(Optionals::stream)
-                    .forEach(l -> l.start(REGISTRY));
+            all(TidsserieLivssyklus.class).forEach((l -> l.start(registry)));
 
             controller.lagTidsserie(
                     backend,
                     arguments.observasjonsperiode()
             );
 
-            REGISTRY
-                    .getServiceReferences(TidsserieLivssyklus.class)
-                    .stream()
-                    .map(REGISTRY::getService)
-                    .flatMap(Optionals::stream)
-                    .forEach(l -> l.stop(REGISTRY));
+            all(TidsserieLivssyklus.class).forEach((l -> l.stop(registry)));
 
-            controller.opprettMetadata(metaDataWriter, utKatalog, arguments, batchId, between(started, now()));
+            controller.opprettMetadata(metaDataWriter, arguments, batchId, between(started, now()));
 
             controller.informerOmSuksess(logKatalog);
         } catch (InvalidParameterException e) {
@@ -159,47 +149,45 @@ public class TidsserieMain {
             controller.informerOmUkjentFeil(e);
         }
 
-        shutdown(controller);
+        shutdown();
     }
 
-    /**
-     * Registrerer {@code tjeneste} i tjenesteregisteret under typen {@code type} med ein eller fleire valgfrie {@code
-     * egenskapar}.
-     *
-     * @param <T> tjenestetypen
-     * @param type tjenestetypen tjenesta skal registrerast under i tjenesteregisteret
-     * @param tjeneste tjenesteinstansen som skal registrerast
-     * @param egenskapar 0 eller fleire egenskapar på formatet egenskap=verdi
-     * @return registreringa for tjenesta
-     */
-    private static <T> ServiceRegistration<T> registrer(final Class<T> type, final T tjeneste, final String... egenskapar) {
-        return REGISTRY.registerService(type, tjeneste, egenskapar);
+    private <T> Stream<T> all(Class<T> type) {
+        return lookupAll(registry, type);
     }
 
-    private static DirectoryCleaner createDirectoryCleaner(int slettEldreEnn, Path logKatalog, Path dataKatalog) throws HousekeepingException {
+    public static void main(String[] args){
+        new TidsserieMain().run(args);
+    }
+
+    private <T> ServiceRegistration<T> registrer(final Class<T> type, final T tjeneste, final String... egenskapar) {
+        return Services.registrer(registry, type, tjeneste, egenskapar);
+    }
+
+    private DirectoryCleaner createDirectoryCleaner(int slettEldreEnn, Path logKatalog, Path dataKatalog) throws HousekeepingException {
         DeleteBatchDirectoryFinder finder = new DeleteBatchDirectoryFinder(dataKatalog, logKatalog);
         Path[] deleteDirectories = finder.findDeletableBatchDirectories(slettEldreEnn);
         return new DirectoryCleaner(deleteDirectories);
     }
 
-    private static void shutdown(ApplicationController controller) {
+    private void shutdown() {
         controller.logExit();
         System.exit(controller.exitCode());
     }
 
-    private static void startBatchTimeout(ProgramArguments arguments, ApplicationController controller) {
+    private void startBatchTimeout(ProgramArguments arguments) {
         new BatchTimeoutTaskrunner(
-                startBatchTimeout(arguments)).startTerminationTimeout
+                createBatchTimeout(arguments)).startTerminationTimeout
                 (
                         ofMinutes(0),
                         () -> {
                             controller.logTimeout();
-                            shutdown(controller);
+                            shutdown();
                         }
                 );
     }
 
-    private static BatchTimeout startBatchTimeout(ProgramArguments arguments) {
+    private BatchTimeout createBatchTimeout(ProgramArguments arguments) {
         return new BatchTimeout(arguments.getKjoeretid(), arguments.getSluttidspunkt()).start();
     }
 

@@ -1,7 +1,5 @@
 package no.spk.pensjon.faktura.tidsserie.core;
 
-import static java.util.stream.Collectors.joining;
-
 import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
@@ -15,6 +13,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 import no.spk.pensjon.faktura.tidsserie.storage.GrunnlagsdataRepository;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.CSVInput;
+import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**
  * {@link Tidsseriemodus} er ansvarlig for oppretting og koordinering av {@link Observasjonspublikator} og
@@ -29,6 +28,13 @@ import no.spk.pensjon.faktura.tidsserie.storage.csv.CSVInput;
  * @see Regelsett
  */
 public interface Tidsseriemodus extends Medlemsbehandler {
+
+    /**
+     * Metoden kalles før generering av tidsserie, slik at modusen kan utvide tjenesteregisteret med tjenster
+     * den skal benytte senere.
+     * @param serviceRegistry tjenesteregistertet som blir benyttet
+     */
+    void registerServices(ServiceRegistry serviceRegistry);
     /**
      * Returnerer ein straum med kolonnenavna som modusen vil generere verdiar for.
      *
@@ -63,38 +69,6 @@ public interface Tidsseriemodus extends Medlemsbehandler {
                 perioder.loennsdata(),
                 regelsett().reglar()
         );
-    }
-
-    /**
-     * Benyttes for å tilpasse storage for modus-implmentasjonen. Kalles før jobbene for tidsserien startes.
-     * <br> Default implementasjon er noop.
-     *
-     * @param storage som trenger tilpasset initisalisering for modusen.
-     * @since 1.2.0
-     */
-    default void initStorage(StorageBackend storage) {
-    }
-
-    /**
-     * Kalles én gang for hver partisjon i gridet, og angir hvilket serienummer partisjonen er tildelt.
-     * Default implmentasjon lagrer {@link #kolonnenavn()} til {@link StorageBackend} for angitt serienummer.
-     * @param serienummer nummer tildelt partisjonen i gridet
-     * @param storage publisher for lagring av data
-     */
-    default void partitionInitialized(long serienummer, StorageBackend storage) {
-        storage.lagre(event -> event.serienummer(serienummer)
-                        .buffer
-                        .append(kolonnenavn().collect(joining(";")))
-                        .append('\n')
-        );
-    }
-
-    /**
-     * Kalles når tidsserien er ferdig generert, og angir oppsummering av resultatet.
-     * <br> Default implementasjon er noop.
-     * @param tidsserieResulat oppsummering av tidsseriekjoeringen
-     */
-    default void completed(TidsserieResulat tidsserieResulat) {
     }
 
     /**

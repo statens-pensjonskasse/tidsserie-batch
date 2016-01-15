@@ -1,5 +1,7 @@
 package no.spk.pensjon.faktura.tidsserie.plugin.modus.prognoseobservasjonar;
 
+import static java.util.stream.Collectors.toList;
+
 import java.text.NumberFormat;
 import java.util.Locale;
 import java.util.Optional;
@@ -7,6 +9,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.core.StorageBackend;
+import no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklus;
 import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Aarsverk;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Premiestatus;
@@ -16,6 +19,8 @@ import no.spk.pensjon.faktura.tidsserie.domain.reglar.Regelsett;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonspublikator;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieObservasjon;
+import no.spk.pensjon.faktura.tidsserie.plugin.modus.DefaultTidsseriemodusLivssyklus;
+import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**
  * {@link Stillingsforholdprognosemodus} setter opp batchen til å generere månedlige observasjonar
@@ -30,6 +35,14 @@ import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieObservasjon;
  */
 public class Stillingsforholdprognosemodus implements Tidsseriemodus {
     private final ThreadLocal<NumberFormat> format = new ThreadLocal<>();
+
+    @Override
+    public void registerServices(ServiceRegistry serviceRegistry) {
+        serviceRegistry.registerService(
+                TidsserieLivssyklus.class,
+                new DefaultTidsseriemodusLivssyklus(kolonnenavn().collect(toList()))
+        );
+    }
 
     /**
      * Kolonnenavna for kolonnene som prognoseobservasjonane består.

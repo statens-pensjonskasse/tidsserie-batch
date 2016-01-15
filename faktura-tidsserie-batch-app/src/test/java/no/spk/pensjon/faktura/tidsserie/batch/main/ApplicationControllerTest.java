@@ -1,12 +1,9 @@
 package no.spk.pensjon.faktura.tidsserie.batch.main;
 
-import static java.util.concurrent.Executors.newCachedThreadPool;
 import static no.spk.pensjon.faktura.tidsserie.Datoar.dato;
 import static no.spk.pensjon.faktura.tidsserie.batch.main.ApplicationController.EXIT_ERROR;
 import static no.spk.pensjon.faktura.tidsserie.batch.main.ApplicationController.EXIT_SUCCESS;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -119,7 +116,7 @@ public class ApplicationControllerTest {
 
         verify(backend).start();
         verify(overfoering).lastOpp();
-        verify(backend).lagTidsseriePaaStillingsforholdNivaa();
+        verify(backend).lagTidsserie();
 
         console.assertStandardOutput().contains("Starter server.");
         console.assertStandardOutput().contains("Starter lasting av grunnlagsdata...");

@@ -26,6 +26,7 @@ import java.util.zip.GZIPOutputStream;
 
 import no.spk.pensjon.faktura.tidsserie.core.ObservasjonsEvent;
 import no.spk.pensjon.faktura.tidsserie.core.TidsperiodeFactory;
+import no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklus;
 import no.spk.pensjon.faktura.tidsserie.core.Tidsserienummer;
 import no.spk.pensjon.faktura.tidsserie.domain.avregning.AvregningsRegelsett;
 import no.spk.pensjon.faktura.tidsserie.domain.avregning.Avregningsavtaleperiode;
@@ -44,6 +45,8 @@ import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
 import no.spk.pensjon.faktura.tidsserie.storage.GrunnlagsdataRepository;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.AvtalekoblingOversetter;
 import no.spk.pensjon.faktura.tidsserie.util.TemporaryFolderWithDeleteVerification;
+import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
+import no.spk.pensjon.faktura.tjenesteregister.support.SimpleServiceRegistry;
 
 import org.assertj.core.api.AbstractObjectArrayAssert;
 import org.junit.Rule;
@@ -242,10 +245,13 @@ public class AvregningTidsseriemodusTest {
     }
 
     @Test
-    public void skal_ikke_skrive_noe_naar_partisjon_initisialiseres() {
-        final ObservasjonsEvent event = new ObservasjonsEvent();
-        modus.partitionInitialized(1, c -> c.accept(event));
-        assertThat(event.buffer.toString()).isEmpty();
+    public void skal_registrere_header_writer() {
+        ServiceRegistry serviceRegistry = new SimpleServiceRegistry();
+        modus.registerServices(serviceRegistry);
+        assertThat(serviceRegistry.getServiceReference(TidsserieLivssyklus.class)
+                .flatMap(serviceRegistry::getService)
+                .filter(s -> s instanceof Kolonnenavnskriver))
+                .isPresent();
     }
 
     private AbstractObjectArrayAssert<?, Object> assertReferansedata() {

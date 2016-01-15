@@ -7,18 +7,24 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import no.spk.pensjon.faktura.tidsserie.core.TidsserieResulat;
+import no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklus;
+import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**
  * Klasse som lager filer som benyttes av datavarehus ved innlesing av livetidsserien.
  * Filene opprettes etter tidsserien er ferdig generert.
  * @author Snorre E. Brekke - Computas
  */
-public class LiveTidsserieAvslutter {
-    private final TidsserieResulat resulat;
+public class LiveTidsserieAvslutter implements TidsserieLivssyklus{
+    private final Path tidserieKatalog;
 
-    public LiveTidsserieAvslutter(TidsserieResulat resulat) {
-        this.resulat = requireNonNull(resulat, "resulat kan ikke være null.");
+    public LiveTidsserieAvslutter(Path tidserieKatalog) {
+        this.tidserieKatalog = requireNonNull(tidserieKatalog, "tidserieKatalog kan ikke være null.");
+    }
+
+    @Override
+    public void stop(ServiceRegistry serviceRegistry) {
+        lagCsvGruppefiler().lagTriggerfil();
     }
 
     /**
@@ -26,7 +32,7 @@ public class LiveTidsserieAvslutter {
      * Filliste-filene brukes slik at Datavarehus kan bruke faste filnavn for å paralellisere innlesingen av csv-filene.
      */
     public LiveTidsserieAvslutter lagCsvGruppefiler() {
-        new CsvFileGroupWriter().createCsvGroupFiles(resulat.tidsserieKatalog());
+        new CsvFileGroupWriter().createCsvGroupFiles(tidserieKatalog);
         return this;
     }
 
@@ -34,7 +40,7 @@ public class LiveTidsserieAvslutter {
      * Oppretter ok.trg i tidsseriekatalogen.
      */
     public LiveTidsserieAvslutter lagTriggerfil() {
-        Path resolve = resulat.tidsserieKatalog().resolve("ok.trg");
+        Path resolve = tidserieKatalog.resolve("ok.trg");
         try {
             Files.createFile(resolve);
         } catch (IOException e) {

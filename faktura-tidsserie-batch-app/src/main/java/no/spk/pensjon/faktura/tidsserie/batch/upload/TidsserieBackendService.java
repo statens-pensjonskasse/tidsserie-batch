@@ -2,7 +2,7 @@ package no.spk.pensjon.faktura.tidsserie.batch.upload;
 
 import java.util.Map;
 
-import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieObservasjon;
+import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 
 /**
@@ -38,24 +38,15 @@ public interface TidsserieBackendService {
     MedlemsdataUploader uploader();
 
     /**
-     * Genererer ein ny tidsserie på stillingsforholdnivå.
-     * <br>
-     * Tidsserien består av {@link TidsserieObservasjon observasjonar} pr stillingsforhold, avtale, premieår og
-     * observasjonsdato.
+     * Genererer ein ny tidsserie. Formatet bestemmes av {@link Tidsseriemodus}.
      * <br>
      * Tidsseriens observasjonsperiode strekker seg frå 1. januar i <code>fraOgMed</code>-året til 31. desember i
      * <code>tilOgMed</code>-året.
      * <br>
-     * Alle resultat vil bli lagra til filer navngitt basert på <code>outputFiles</code>. Filnavnet til dette objektet
-     * blir brukt som ein mal og alle forekomstar av XXX blir bytta ut med unike verdiar backenden genererer for
-     * å splitte opp output-fila i fleire mindre filer av passande størrelse. Størrelse og oppsplittingsstrategi
-     * er ein backend-spesifikk implementasjonsdetalj som klienten ikkje kan påvirke direkte.
-     *
      * @return alle meldingar som har blitt generert i løpet av tidsseriegenereringa, gruppert på melding med antall
      * gangar meldinga var generert som verdi
      * @see Observasjonsperiode
      */
-    Map<String, Integer> lagTidsseriePaaStillingsforholdNivaa(
-    );
+    Map<String, Integer> lagTidsserie();
 
 }

@@ -9,7 +9,7 @@ import com.hazelcast.core.HazelcastInstance;
  *
  * @author Tarjei Skorgenes
  */
-interface Server {
+public interface Server {
     /**
      * Startar opp master- og slavenodene.
      * <br>

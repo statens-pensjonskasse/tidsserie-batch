@@ -1,7 +1,6 @@
 package no.spk.pensjon.faktura.tidsserie.plugin.modus.underlagsperioder;
 
 import static java.util.Arrays.stream;
-import static no.spk.pensjon.faktura.tidsserie.core.TidsserieResulat.tidsserieResulat;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
@@ -12,6 +11,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.regex.Pattern;
+
+import no.spk.pensjon.faktura.tjenesteregister.support.SimpleServiceRegistry;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,7 +32,7 @@ public class LiveTidsserieAvslutterTest {
     @Test
     public void testCreateTriggerFile() throws Exception {
         File writeFolder = createTestFolders();
-        new LiveTidsserieAvslutter(tidsserieResulat(writeFolder.toPath()).bygg())
+        new LiveTidsserieAvslutter(writeFolder.toPath())
                 .lagTriggerfil();
         assertThat(writeFolder.toPath().resolve("ok.trg")).exists();
     }
@@ -51,13 +52,21 @@ public class LiveTidsserieAvslutterTest {
         testCreateCsvGroupFiles(0);
     }
 
+
+    @Test
+    public void testStopLagerFiler() throws Exception {
+        File writeFolder = createTestFolders();
+        new LiveTidsserieAvslutter(writeFolder.toPath()).stop(new SimpleServiceRegistry());
+        assertThat(writeFolder.toPath().resolve("ok.trg")).exists();
+    }
+
     private void testCreateCsvGroupFiles(int numberOfCsvFiles) throws IOException {
         File writeFolder = testFolder.newFolder(name.getMethodName());
         for (int i = 0; i < numberOfCsvFiles; i++) {
             writeFolder.toPath().resolve("tidsserie" + i + ".csv").toFile().createNewFile();
         }
 
-       new LiveTidsserieAvslutter(tidsserieResulat(writeFolder.toPath()).bygg())
+       new LiveTidsserieAvslutter(writeFolder.toPath())
                .lagCsvGruppefiler();
 
         Pattern groupPattern = Pattern.compile("^FFF_FILLISTE_(\\d)+.txt$");

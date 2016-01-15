@@ -2,6 +2,7 @@ package no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning;
 
 import static java.time.LocalDate.now;
 import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 import java.nio.file.Path;
@@ -14,6 +15,7 @@ import java.util.stream.Stream;
 import no.spk.pensjon.faktura.tidsserie.core.CSVFormat;
 import no.spk.pensjon.faktura.tidsserie.core.StorageBackend;
 import no.spk.pensjon.faktura.tidsserie.core.TidsperiodeFactory;
+import no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklus;
 import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.core.Tidsserienummer;
 import no.spk.pensjon.faktura.tidsserie.domain.avregning.AvregningsRegelsett;
@@ -32,6 +34,7 @@ import no.spk.pensjon.faktura.tidsserie.storage.GrunnlagsdataRepository;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.AvregningsavtaleperiodeOversetter;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.AvregningsperiodeOversetter;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.CSVInput;
+import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**
  * {@link AvregningTidsseriemodus} kan benyttes for å generere en tidsserie tilrettelagt for avregning.
@@ -54,6 +57,12 @@ public class AvregningTidsseriemodus implements Tidsseriemodus {
     private final Tidsserienummer nummer = Tidsserienummer.genererForDato(now());
 
     private Optional<Set<AvtaleId>> avtaler = Optional.empty();
+
+    @Override
+    public void registerServices(ServiceRegistry serviceRegistry) {
+        final Kolonnenavnskriver kolonnenavnskriver = new Kolonnenavnskriver(kolonnenavn().collect(toList()));
+        serviceRegistry.registerService(TidsserieLivssyklus.class, kolonnenavnskriver);
+    }
 
     @Override
     public Stream<Tidsperiode<?>> referansedata(final TidsperiodeFactory perioder) {
@@ -101,18 +110,6 @@ public class AvregningTidsseriemodus implements Tidsseriemodus {
     @Override
     public Stream<String> kolonnenavn() {
         return outputFormat.kolonnenavn();
-    }
-
-    @Override
-    public void partitionInitialized(long serienummer, StorageBackend storage) {
-        //noop
-    }
-
-    @Override
-    public void initStorage(final StorageBackend lager) {
-        lager.lagre(event -> event.buffer
-                .append(kolonnenavn().collect(joining(";")))
-                .append('\n'));
     }
 
     /**
