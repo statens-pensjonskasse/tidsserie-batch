@@ -19,15 +19,4 @@ interface Server {
      * @return masternoda
      */
     HazelcastInstance start();
-
-    /**
-     * Registrerer tenesta angitt via <code>service</code> under tenestenavnet angitt av <code>serviceType</code>
-     * i master- og slavenodenes {@link com.hazelcast.core.HazelcastInstance#getUserContext() usercontext}.
-     *
-     * @param <T>         tenestetypen som blir registrert
-     * @param serviceType kva tenestetype tenesta skal registrerast som. Det forventast at tenesta kan castast til
-     *                    denne typen av klientane som slår den opp frå usercontexten seinare
-     * @param service     tenesta som skal registrerast under det angitte tenestenavnet i usercontexten til alle nodene
-     */
-    <T> void registrer(Class<T> serviceType, T service);
 }

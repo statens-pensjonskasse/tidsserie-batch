@@ -15,6 +15,8 @@ import no.spk.faktura.input.PathStringValidator;
 import no.spk.faktura.input.ReadablePathValidator;
 import no.spk.faktura.input.WritableDirectoryValidator;
 import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
+import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
+import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 
 import com.beust.jcommander.Parameter;
 
@@ -170,5 +172,12 @@ public class ProgramArguments implements Arguments {
     @Override
     public boolean hjelp() {
         return hjelp;
+    }
+
+    public Observasjonsperiode observasjonsperiode() {
+        return new Observasjonsperiode(
+                new Aarstall(fraAar).atStartOfYear(),
+                new Aarstall(tilAar).atEndOfYear()
+        );
     }
 }

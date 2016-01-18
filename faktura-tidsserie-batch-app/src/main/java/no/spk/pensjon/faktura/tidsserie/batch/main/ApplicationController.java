@@ -1,5 +1,7 @@
 package no.spk.pensjon.faktura.tidsserie.batch.main;
 
+import static java.util.concurrent.Executors.newCachedThreadPool;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -9,9 +11,9 @@ import no.spk.faktura.input.BatchId;
 import no.spk.faktura.input.InvalidParameterException;
 import no.spk.faktura.input.UsageRequestedException;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
-import no.spk.pensjon.faktura.tidsserie.batch.upload.FileTemplate;
 import no.spk.pensjon.faktura.tidsserie.batch.upload.TidsserieBackendService;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
+import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.util.ContextInitializer;
@@ -126,12 +128,9 @@ public class ApplicationController {
         view.opplastingFullfoert();
     }
 
-    public void lagTidsserie(TidsserieBackendService backend, FileTemplate malFilnavn, Aarstall fraOgMed, Aarstall tilOgMed) {
-        view.startarTidsseriegenerering(malFilnavn, fraOgMed, tilOgMed);;
+    public void lagTidsserie(TidsserieBackendService backend, final Observasjonsperiode periode) {
+        view.startarTidsseriegenerering(periode.fraOgMed(), periode.tilOgMed().get());
         Map<String, Integer> meldingar = backend.lagTidsseriePaaStillingsforholdNivaa(
-                malFilnavn,
-                fraOgMed,
-                tilOgMed
         );
         view.tidsseriegenereringFullfoert(meldingar);
     }

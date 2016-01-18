@@ -3,6 +3,7 @@ package no.spk.pensjon.faktura.tidsserie.batch.main;
 import static java.time.LocalDateTime.now;
 
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
@@ -31,8 +32,8 @@ public class ConsoleView implements View{
         println("Grunnlagsdata lastet.");
 }
 
-    public void startarTidsseriegenerering(FileTemplate malFilnavn, Aarstall fraOgMed, Aarstall tilOgMed) {
-        println("Starter tidsserie-generering for årsintervall fra og med " + fraOgMed +  " til og med " + tilOgMed);
+    public void startarTidsseriegenerering(LocalDate fraOgMed, LocalDate tilOgMed) {
+        println("Starter tidsserie-generering for observasjonsperioden " + fraOgMed +  " -> " + tilOgMed);
     }
 
     /**
