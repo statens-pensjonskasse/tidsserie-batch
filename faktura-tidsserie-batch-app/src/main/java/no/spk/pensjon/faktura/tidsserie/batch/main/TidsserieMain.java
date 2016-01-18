@@ -173,27 +173,7 @@ public class TidsserieMain {
      * @return registreringa for tjenesta
      */
     private static <T> ServiceRegistration<T> registrer(final Class<T> type, final T tjeneste, final String... egenskapar) {
-        return REGISTRY.registerService(
-                type,
-                tjeneste,
-                Stream.of(egenskapar)
-                        .map(egenskap -> {
-                            final int index = egenskap.indexOf("=");
-                            return new String[]{egenskap.substring(0, index), egenskap.substring(index + 1)};
-                        })
-                        .reduce(
-                                new Properties(),
-                                (Properties props, String[] egenskap) -> {
-                                    props.setProperty(egenskap[0], egenskap[1]);
-                                    return props;
-                                },
-                                (a, b) -> {
-                                    final Properties c = new Properties(a);
-                                    c.putAll(b);
-                                    return c;
-                                }
-                        )
-        );
+        return REGISTRY.registerService(type, tjeneste, egenskapar);
     }
 
     private static DirectoryCleaner createDirectoryCleaner(int slettEldreEnn, Path logKatalog, Path dataKatalog) throws HousekeepingException {
