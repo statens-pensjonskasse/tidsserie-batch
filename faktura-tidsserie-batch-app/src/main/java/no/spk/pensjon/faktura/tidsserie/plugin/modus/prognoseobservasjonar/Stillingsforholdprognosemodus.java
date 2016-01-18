@@ -1,12 +1,21 @@
 package no.spk.pensjon.faktura.tidsserie.plugin.modus.prognoseobservasjonar;
 
+import static java.util.stream.Collectors.joining;
+import static no.spk.pensjon.faktura.tidsserie.util.Services.lookup;
+
 import java.text.NumberFormat;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import no.spk.pensjon.faktura.tidsserie.batch.upload.TidsserieBackendService;
+import no.spk.pensjon.faktura.tidsserie.core.AgentInitializer;
+import no.spk.pensjon.faktura.tidsserie.core.BehandleMedlemCommand;
+import no.spk.pensjon.faktura.tidsserie.core.GenererTidsserieCommand;
 import no.spk.pensjon.faktura.tidsserie.core.StorageBackend;
+import no.spk.pensjon.faktura.tidsserie.core.TidsserieFactory;
 import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Aarsverk;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Premiestatus;
@@ -16,6 +25,8 @@ import no.spk.pensjon.faktura.tidsserie.domain.reglar.Regelsett;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonspublikator;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieObservasjon;
+import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistration;
+import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**
  * {@link Stillingsforholdprognosemodus} setter opp batchen til å generere månedlige observasjonar
@@ -30,6 +41,12 @@ import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieObservasjon;
  */
 public class Stillingsforholdprognosemodus implements Tidsseriemodus {
     private final ThreadLocal<NumberFormat> format = new ThreadLocal<>();
+
+    @Override
+    public void registerServices(ServiceRegistry serviceRegistry) {
+        final StorageBackend storage = lookup(serviceRegistry, StorageBackend.class);
+        serviceRegistry.registerService(AgentInitializer.class, kolonneskriver(storage));
+    }
 
     /**
      * Kolonnenavna for kolonnene som prognoseobservasjonane består.
@@ -130,5 +147,24 @@ public class Stillingsforholdprognosemodus implements Tidsseriemodus {
             this.format.set(format);
         }
         return format;
+    }
+
+    @Override
+    public Map<String, Integer> lagTidsserie(ServiceRegistry registry) {
+        final StorageBackend storage = lookup(registry, StorageBackend.class);
+        final TidsserieFactory tidsserieFactory = lookup(registry, TidsserieFactory.class);
+        final TidsserieBackendService tidsserieService = lookup(registry, TidsserieBackendService.class);
+
+        final GenererTidsserieCommand command = new BehandleMedlemCommand(tidsserieFactory, storage, this);
+        registry.registerService(GenererTidsserieCommand.class, command);
+        return tidsserieService.lagTidsserie();
+    }
+
+    private AgentInitializer kolonneskriver(StorageBackend storage) {
+        return serienummer -> storage.lagre(event -> event.serienummer(serienummer)
+                .buffer
+                .append(kolonnenavn().collect(joining(";")))
+                .append('\n')
+        );
     }
 }

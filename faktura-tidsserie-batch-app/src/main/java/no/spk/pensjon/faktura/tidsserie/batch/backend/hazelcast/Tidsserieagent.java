@@ -2,15 +2,16 @@ package no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast;
 
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
+import static no.spk.pensjon.faktura.tidsserie.util.Services.lookupAll;
 
 import java.util.List;
 import java.util.Map;
 
+import no.spk.pensjon.faktura.tidsserie.core.AgentInitializer;
 import no.spk.pensjon.faktura.tidsserie.core.GenererTidsserieCommand;
-import no.spk.pensjon.faktura.tidsserie.core.StorageBackend;
-import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Feilhandtering;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
+import no.spk.pensjon.faktura.tidsserie.util.Services;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 import com.hazelcast.core.HazelcastInstance;
@@ -37,8 +38,6 @@ class Tidsserieagent
     private transient GenererTidsserieCommand kommando;
     private transient IAtomicLong serienummerGenerator;
     private transient long serienummer;
-    private transient StorageBackend publisher;
-    private transient Tidsseriemodus modus;
     private transient ServiceRegistry registry;
 
     @Override
@@ -49,10 +48,7 @@ class Tidsserieagent
 
     void configure(final Map<String, Object> userContext) {
         this.registry = lookup(userContext, ServiceRegistry.class);
-
-        this.publisher = lookup(StorageBackend.class);
-        this.modus = lookup(Tidsseriemodus.class);
-        this.kommando = lookup(GenererTidsserieCommand.class);
+        this.kommando = Services.lookup(registry, GenererTidsserieCommand.class);
     }
 
     @Override
@@ -60,7 +56,7 @@ class Tidsserieagent
         // Serienummeret for alle eventar som blir generert for medlemmar i gjeldande partisjon
         serienummer = serienummerGenerator.getAndIncrement();
         MDC.put(MDC_SERIENUMMER, "" + serienummer);
-        modus.partitionInitialized(serienummer, publisher);
+        lookupAll(registry, AgentInitializer.class).forEach(i -> i.partitionInitialized(serienummer));
     }
 
     @Override
@@ -78,7 +74,7 @@ class Tidsserieagent
         try {
             kommando.generer(
                     value,
-                    lookup(Observasjonsperiode.class),
+                    Services.lookup(registry, Observasjonsperiode.class),
                     feilhandtering,
                     serienummer
             );
@@ -105,17 +101,7 @@ class Tidsserieagent
         context.emit("errors_message_" + (t.getMessage() != null ? t.getMessage() : "null"), 1);
     }
 
-    private <T> T lookup(final Class<T> type) {
-        return this.registry
-                .getServiceReference(type)
-                .flatMap(registry::getService)
-                .orElseThrow(() -> new IllegalStateException(
-                                "Ingen teneste av type " +
-                                        type.getSimpleName()
-                                        + " er registrert i tenesteregisteret."
-                        )
-                );
-    }
+
 
     static <T> T lookup(final Map<String, Object> userContext, final Class<T> serviceType) {
         return ofNullable(

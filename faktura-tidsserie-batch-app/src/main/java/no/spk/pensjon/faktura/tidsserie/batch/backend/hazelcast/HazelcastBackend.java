@@ -11,7 +11,6 @@ import java.util.concurrent.ExecutionException;
 
 import no.spk.pensjon.faktura.tidsserie.batch.upload.MedlemsdataUploader;
 import no.spk.pensjon.faktura.tidsserie.batch.upload.TidsserieBackendService;
-import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 import com.hazelcast.core.HazelcastInstance;
@@ -76,7 +75,7 @@ public class HazelcastBackend implements TidsserieBackendService {
     }
 
     @Override
-    public Map<String, Integer> lagTidsseriePaaStillingsforholdNivaa() {
+    public Map<String, Integer> lagTidsserie() {
         return submit(new Tidsserieagent());
     }
 

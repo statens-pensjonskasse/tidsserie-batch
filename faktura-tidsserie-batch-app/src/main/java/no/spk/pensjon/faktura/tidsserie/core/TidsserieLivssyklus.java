@@ -1,6 +1,5 @@
 package no.spk.pensjon.faktura.tidsserie.core;
 
-import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistration;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**

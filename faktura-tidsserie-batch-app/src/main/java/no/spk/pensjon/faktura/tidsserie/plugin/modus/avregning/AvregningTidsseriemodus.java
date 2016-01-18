@@ -3,17 +3,23 @@ package no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning;
 import static java.time.LocalDate.now;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toSet;
+import static no.spk.pensjon.faktura.tidsserie.util.Services.lookup;
 
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import no.spk.pensjon.faktura.tidsserie.batch.upload.TidsserieBackendService;
+import no.spk.pensjon.faktura.tidsserie.core.BehandleMedlemCommand;
 import no.spk.pensjon.faktura.tidsserie.core.CSVFormat;
+import no.spk.pensjon.faktura.tidsserie.core.GenererTidsserieCommand;
 import no.spk.pensjon.faktura.tidsserie.core.StorageBackend;
 import no.spk.pensjon.faktura.tidsserie.core.TidsperiodeFactory;
+import no.spk.pensjon.faktura.tidsserie.core.TidsserieFactory;
 import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.core.Tidsserienummer;
 import no.spk.pensjon.faktura.tidsserie.domain.avregning.AvregningsRegelsett;
@@ -32,6 +38,8 @@ import no.spk.pensjon.faktura.tidsserie.storage.GrunnlagsdataRepository;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.AvregningsavtaleperiodeOversetter;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.AvregningsperiodeOversetter;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.CSVInput;
+import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistration;
+import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**
  * {@link AvregningTidsseriemodus} kan benyttes for å generere en tidsserie tilrettelagt for avregning.
@@ -92,6 +100,11 @@ public class AvregningTidsseriemodus implements Tidsseriemodus {
         }
     }
 
+    @Override
+    public void registerServices(ServiceRegistry serviceRegistry) {
+        //noop
+    }
+
     /**
      * Navnet til alle kolonnene som CSV-filene kan inneholde verdier for.
      *
@@ -101,18 +114,6 @@ public class AvregningTidsseriemodus implements Tidsseriemodus {
     @Override
     public Stream<String> kolonnenavn() {
         return outputFormat.kolonnenavn();
-    }
-
-    @Override
-    public void partitionInitialized(long serienummer, StorageBackend storage) {
-        //noop
-    }
-
-    @Override
-    public void initStorage(final StorageBackend lager) {
-        lager.lagre(event -> event.buffer
-                .append(kolonnenavn().collect(joining(";")))
-                .append('\n'));
     }
 
     /**
@@ -198,5 +199,23 @@ public class AvregningTidsseriemodus implements Tidsseriemodus {
                 .isPresent();
     }
 
+    @Override
+    public Map<String, Integer> lagTidsserie(ServiceRegistry registry) {
+        final StorageBackend storage = lookup(registry, StorageBackend.class);
+        final TidsserieFactory tidsserieFactory = lookup(registry, TidsserieFactory.class);
+        final TidsserieBackendService tidsserieService = lookup(registry, TidsserieBackendService.class);
+
+        skrivKolonneoverskrifter(storage);
+
+        final GenererTidsserieCommand command = new BehandleMedlemCommand(tidsserieFactory, storage, this);
+        registry.registerService(GenererTidsserieCommand.class, command);
+        return tidsserieService.lagTidsserie();
+    }
+
+    private void skrivKolonneoverskrifter(StorageBackend storage) {
+        storage.lagre(event -> event.buffer
+                .append(kolonnenavn().collect(joining(";")))
+                .append('\n'));
+    }
 
 }

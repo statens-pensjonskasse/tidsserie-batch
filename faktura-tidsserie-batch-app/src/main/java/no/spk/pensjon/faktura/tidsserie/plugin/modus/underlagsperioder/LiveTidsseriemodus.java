@@ -2,14 +2,23 @@ package no.spk.pensjon.faktura.tidsserie.plugin.modus.underlagsperioder;
 
 import static java.time.LocalDate.now;
 import static java.util.stream.Collectors.joining;
+import static no.spk.pensjon.faktura.tidsserie.util.Services.lookup;
 
+import java.nio.file.Path;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import no.spk.pensjon.faktura.tidsserie.batch.upload.TidsserieBackendService;
+import no.spk.pensjon.faktura.tidsserie.core.AgentInitializer;
+import no.spk.pensjon.faktura.tidsserie.core.BehandleMedlemCommand;
 import no.spk.pensjon.faktura.tidsserie.core.CSVFormat;
+import no.spk.pensjon.faktura.tidsserie.core.GenererTidsserieCommand;
+import no.spk.pensjon.faktura.tidsserie.core.Katalog;
 import no.spk.pensjon.faktura.tidsserie.core.StorageBackend;
-import no.spk.pensjon.faktura.tidsserie.core.TidsserieResulat;
+import no.spk.pensjon.faktura.tidsserie.core.TidsserieFactory;
+import no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklus;
 import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.core.Tidsserienummer;
 import no.spk.pensjon.faktura.tidsserie.domain.avregning.AvregningsRegelsett;
@@ -19,6 +28,8 @@ import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonspublikator;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
+import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistration;
+import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**
  * {@link LiveTidsseriemodus} setter opp batchen til å generere ein live-tidsserie på periodenivå, formatert i
@@ -40,6 +51,15 @@ public class LiveTidsseriemodus implements Tidsseriemodus {
 
     private final Tidsserienummer nummer = Tidsserienummer.genererForDato(now());
 
+    @Override
+    public void registerServices(ServiceRegistry serviceRegistry) {
+        final StorageBackend storage = lookup(serviceRegistry, StorageBackend.class);
+        serviceRegistry.registerService(AgentInitializer.class, kolonneskriver(storage));
+
+        final Path tidsserieKatalog = lookup(serviceRegistry, Path.class, Katalog.UT.egenskap());
+        serviceRegistry.registerService(TidsserieLivssyklus.class, new LiveTidsserieAvslutter(tidsserieKatalog));
+    }
+
     /**
      * Kolonnenavna CSV-formatet for live-tidsserien benyttar seg av.
      *
@@ -60,6 +80,17 @@ public class LiveTidsseriemodus implements Tidsseriemodus {
     @Override
     public Regelsett regelsett() {
         return reglar;
+    }
+
+    @Override
+    public Map<String, Integer> lagTidsserie(ServiceRegistry registry) {
+        final StorageBackend storage = lookup(registry, StorageBackend.class);
+        final TidsserieFactory tidsserieFactory = lookup(registry, TidsserieFactory.class);
+        final TidsserieBackendService tidsserieService = lookup(registry, TidsserieBackendService.class);
+
+        final GenererTidsserieCommand command = new BehandleMedlemCommand(tidsserieFactory, storage, this);
+        registry.registerService(GenererTidsserieCommand.class, command);
+        return tidsserieService.lagTidsserie();
     }
 
     /**
@@ -122,11 +153,11 @@ public class LiveTidsseriemodus implements Tidsseriemodus {
         publikator.lagre(event -> event.serienummer(serienummer).buffer.append(line).append("\n"));
     }
 
-    @Override
-    public void completed(TidsserieResulat tidsserieResulat) {
-        new LiveTidsserieAvslutter(tidsserieResulat)
-                .lagCsvGruppefiler()
-                .lagTriggerfil();
+    private AgentInitializer kolonneskriver(StorageBackend storage) {
+        return serienummer -> storage.lagre(event -> event.serienummer(serienummer)
+                .buffer
+                .append(kolonnenavn().collect(joining(";")))
+                .append('\n')
+        );
     }
-
 }

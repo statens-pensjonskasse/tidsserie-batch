@@ -5,6 +5,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static no.spk.pensjon.faktura.tidsserie.Datoar.dato;
 import static no.spk.pensjon.faktura.tidsserie.domain.avregning.Avregningsperiode.avregningsperiode;
@@ -24,8 +25,11 @@ import java.util.List;
 import java.util.stream.Stream;
 import java.util.zip.GZIPOutputStream;
 
+import no.spk.pensjon.faktura.tidsserie.batch.upload.TidsserieBackendService;
 import no.spk.pensjon.faktura.tidsserie.core.ObservasjonsEvent;
+import no.spk.pensjon.faktura.tidsserie.core.StorageBackend;
 import no.spk.pensjon.faktura.tidsserie.core.TidsperiodeFactory;
+import no.spk.pensjon.faktura.tidsserie.core.TidsserieFactory;
 import no.spk.pensjon.faktura.tidsserie.core.Tidsserienummer;
 import no.spk.pensjon.faktura.tidsserie.domain.avregning.AvregningsRegelsett;
 import no.spk.pensjon.faktura.tidsserie.domain.avregning.Avregningsavtaleperiode;
@@ -44,6 +48,8 @@ import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
 import no.spk.pensjon.faktura.tidsserie.storage.GrunnlagsdataRepository;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.AvtalekoblingOversetter;
 import no.spk.pensjon.faktura.tidsserie.util.TemporaryFolderWithDeleteVerification;
+import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
+import no.spk.pensjon.faktura.tjenesteregister.support.SimpleServiceRegistry;
 
 import org.assertj.core.api.AbstractObjectArrayAssert;
 import org.junit.Rule;
@@ -242,10 +248,16 @@ public class AvregningTidsseriemodusTest {
     }
 
     @Test
-    public void skal_ikke_skrive_noe_naar_partisjon_initisialiseres() {
+    public void skal_skrive_kolonnenavn() {
+        ServiceRegistry serviceRegistry = new SimpleServiceRegistry();
+
         final ObservasjonsEvent event = new ObservasjonsEvent();
-        modus.partitionInitialized(1, c -> c.accept(event));
-        assertThat(event.buffer.toString()).isEmpty();
+        serviceRegistry.registerService(StorageBackend.class, consumer -> consumer.accept(event));
+        serviceRegistry.registerService(TidsserieBackendService.class, mock(TidsserieBackendService.class));
+        serviceRegistry.registerService(TidsserieFactory.class, mock(TidsserieFactory.class));
+        modus.lagTidsserie(serviceRegistry);
+
+        assertThat(event.buffer.toString()).isEqualTo(modus.kolonnenavn().collect(joining(";", "", "\n")));
     }
 
     private AbstractObjectArrayAssert<?, Object> assertReferansedata() {

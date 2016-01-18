@@ -1,12 +1,9 @@
 package no.spk.pensjon.faktura.tidsserie.batch.main;
 
-import static java.util.concurrent.Executors.newCachedThreadPool;
 import static no.spk.pensjon.faktura.tidsserie.Datoar.dato;
 import static no.spk.pensjon.faktura.tidsserie.batch.main.ApplicationController.EXIT_ERROR;
 import static no.spk.pensjon.faktura.tidsserie.batch.main.ApplicationController.EXIT_SUCCESS;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -16,8 +13,10 @@ import no.spk.faktura.input.UsageRequestedException;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.StandardOutputAndError;
 import no.spk.pensjon.faktura.tidsserie.batch.upload.TidsserieBackendService;
-import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
+import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
+import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
+import no.spk.pensjon.faktura.tjenesteregister.support.SimpleServiceRegistry;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -109,17 +108,18 @@ public class ApplicationControllerTest {
 
     @Test
     public void testTidsserieGenerering() throws Exception {
+        ServiceRegistry registry = new SimpleServiceRegistry();
         TidsserieBackendService backend = mock(TidsserieBackendService.class);
+        Tidsseriemodus modus = mock(Tidsseriemodus.class);
         GrunnlagsdataService overfoering = mock(GrunnlagsdataService.class);
-        Aarstall aarstall = new Aarstall(2007);
 
         controller.startBackend(backend);
         controller.lastOpp(overfoering);
-        controller.lagTidsserie(backend, new Observasjonsperiode(dato("1970.01.01"), dato("1980.12.31")));
+        controller.lagTidsserie(registry, modus, new Observasjonsperiode(dato("1970.01.01"), dato("1980.12.31")));
 
         verify(backend).start();
         verify(overfoering).lastOpp();
-        verify(backend).lagTidsseriePaaStillingsforholdNivaa();
+        verify(modus).lagTidsserie(registry);
 
         console.assertStandardOutput().contains("Starter server.");
         console.assertStandardOutput().contains("Starter lasting av grunnlagsdata...");

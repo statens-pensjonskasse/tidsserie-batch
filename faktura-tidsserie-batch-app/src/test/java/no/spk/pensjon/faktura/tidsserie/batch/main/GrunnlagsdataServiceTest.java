@@ -1,7 +1,6 @@
 package no.spk.pensjon.faktura.tidsserie.batch.main;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.Mockito.mock;
@@ -16,7 +15,6 @@ import java.util.stream.Stream;
 import no.spk.pensjon.faktura.tidsserie.batch.upload.MedlemsdataUploader;
 import no.spk.pensjon.faktura.tidsserie.batch.upload.Medlemslinje;
 import no.spk.pensjon.faktura.tidsserie.batch.upload.TidsserieBackendService;
-import no.spk.pensjon.faktura.tidsserie.core.TidsserieFactory;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Avtalekoblingsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medregningsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Stillingsendring;
