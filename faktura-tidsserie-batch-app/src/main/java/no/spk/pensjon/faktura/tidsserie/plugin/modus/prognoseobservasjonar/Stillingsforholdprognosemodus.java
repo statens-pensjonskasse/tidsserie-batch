@@ -1,6 +1,6 @@
 package no.spk.pensjon.faktura.tidsserie.plugin.modus.prognoseobservasjonar;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.joining;
 import static no.spk.pensjon.faktura.tidsserie.util.Services.lookup;
 
 import java.text.NumberFormat;
@@ -11,11 +11,11 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.upload.TidsserieBackendService;
+import no.spk.pensjon.faktura.tidsserie.core.AgentInitializer;
 import no.spk.pensjon.faktura.tidsserie.core.BehandleMedlemCommand;
 import no.spk.pensjon.faktura.tidsserie.core.GenererTidsserieCommand;
 import no.spk.pensjon.faktura.tidsserie.core.StorageBackend;
 import no.spk.pensjon.faktura.tidsserie.core.TidsserieFactory;
-import no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklus;
 import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Aarsverk;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Premiestatus;
@@ -25,7 +25,6 @@ import no.spk.pensjon.faktura.tidsserie.domain.reglar.Regelsett;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonspublikator;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieObservasjon;
-import no.spk.pensjon.faktura.tidsserie.plugin.modus.DefaultTidsseriemodusLivssyklus;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistration;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
@@ -45,10 +44,8 @@ public class Stillingsforholdprognosemodus implements Tidsseriemodus {
 
     @Override
     public void registerServices(ServiceRegistry serviceRegistry) {
-        serviceRegistry.registerService(
-                TidsserieLivssyklus.class,
-                new DefaultTidsseriemodusLivssyklus(kolonnenavn().collect(toList()))
-        );
+        final StorageBackend storage = lookup(serviceRegistry, StorageBackend.class);
+        serviceRegistry.registerService(AgentInitializer.class, kolonneskriver(storage));
     }
 
     /**
@@ -152,7 +149,6 @@ public class Stillingsforholdprognosemodus implements Tidsseriemodus {
         return format;
     }
 
-
     @Override
     public Map<String, Integer> lagTidsserie(ServiceRegistry registry) {
         final StorageBackend storage = lookup(registry, StorageBackend.class);
@@ -165,5 +161,13 @@ public class Stillingsforholdprognosemodus implements Tidsseriemodus {
         commandRegistration.unregister();
 
         return result;
+    }
+
+    private AgentInitializer kolonneskriver(StorageBackend storage) {
+        return serienummer -> storage.lagre(event -> event.serienummer(serienummer)
+                .buffer
+                .append(kolonnenavn().collect(joining(";")))
+                .append('\n')
+        );
     }
 }

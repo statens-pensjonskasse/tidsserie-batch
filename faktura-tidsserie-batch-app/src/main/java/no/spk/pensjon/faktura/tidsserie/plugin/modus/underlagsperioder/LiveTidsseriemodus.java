@@ -2,7 +2,6 @@ package no.spk.pensjon.faktura.tidsserie.plugin.modus.underlagsperioder;
 
 import static java.time.LocalDate.now;
 import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
 import static no.spk.pensjon.faktura.tidsserie.util.Services.lookup;
 
 import java.nio.file.Path;
@@ -12,6 +11,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.upload.TidsserieBackendService;
+import no.spk.pensjon.faktura.tidsserie.core.AgentInitializer;
 import no.spk.pensjon.faktura.tidsserie.core.BehandleMedlemCommand;
 import no.spk.pensjon.faktura.tidsserie.core.CSVFormat;
 import no.spk.pensjon.faktura.tidsserie.core.GenererTidsserieCommand;
@@ -28,7 +28,6 @@ import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonspublikator;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
-import no.spk.pensjon.faktura.tidsserie.plugin.modus.DefaultTidsseriemodusLivssyklus;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistration;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
@@ -54,7 +53,8 @@ public class LiveTidsseriemodus implements Tidsseriemodus {
 
     @Override
     public void registerServices(ServiceRegistry serviceRegistry) {
-        serviceRegistry.registerService(TidsserieLivssyklus.class, new DefaultTidsseriemodusLivssyklus(kolonnenavn().collect(toList())));
+        final StorageBackend storage = lookup(serviceRegistry, StorageBackend.class);
+        serviceRegistry.registerService(AgentInitializer.class, kolonneskriver(storage));
 
         final Path tidsserieKatalog = lookup(serviceRegistry, Path.class, Katalog.UT.egenskap());
         serviceRegistry.registerService(TidsserieLivssyklus.class, new LiveTidsserieAvslutter(tidsserieKatalog));
@@ -154,5 +154,13 @@ public class LiveTidsseriemodus implements Tidsseriemodus {
 
     private void lagre(final StorageBackend publikator, final String line, final long serienummer) {
         publikator.lagre(event -> event.serienummer(serienummer).buffer.append(line).append("\n"));
+    }
+
+    private AgentInitializer kolonneskriver(StorageBackend storage) {
+        return serienummer -> storage.lagre(event -> event.serienummer(serienummer)
+                .buffer
+                .append(kolonnenavn().collect(joining(";")))
+                .append('\n')
+        );
     }
 }
