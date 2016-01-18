@@ -156,11 +156,8 @@ public class Stillingsforholdprognosemodus implements Tidsseriemodus {
         final TidsserieBackendService tidsserieService = lookup(registry, TidsserieBackendService.class);
 
         final GenererTidsserieCommand command = new BehandleMedlemCommand(tidsserieFactory, storage, this);
-        final ServiceRegistration<GenererTidsserieCommand> commandRegistration = registry.registerService(GenererTidsserieCommand.class, command);
-        final Map<String, Integer> result = tidsserieService.lagTidsserie();
-        commandRegistration.unregister();
-
-        return result;
+        registry.registerService(GenererTidsserieCommand.class, command);
+        return tidsserieService.lagTidsserie();
     }
 
     private AgentInitializer kolonneskriver(StorageBackend storage) {
