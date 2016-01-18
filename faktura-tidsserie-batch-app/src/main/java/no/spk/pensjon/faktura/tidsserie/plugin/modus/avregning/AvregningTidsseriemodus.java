@@ -2,20 +2,24 @@ package no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning;
 
 import static java.time.LocalDate.now;
 import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
+import static no.spk.pensjon.faktura.tidsserie.util.Services.lookup;
 
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import no.spk.pensjon.faktura.tidsserie.batch.upload.TidsserieBackendService;
+import no.spk.pensjon.faktura.tidsserie.core.BehandleMedlemCommand;
 import no.spk.pensjon.faktura.tidsserie.core.CSVFormat;
+import no.spk.pensjon.faktura.tidsserie.core.GenererTidsserieCommand;
 import no.spk.pensjon.faktura.tidsserie.core.StorageBackend;
 import no.spk.pensjon.faktura.tidsserie.core.TidsperiodeFactory;
-import no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklus;
+import no.spk.pensjon.faktura.tidsserie.core.TidsserieFactory;
 import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.core.Tidsserienummer;
 import no.spk.pensjon.faktura.tidsserie.domain.avregning.AvregningsRegelsett;
@@ -34,6 +38,7 @@ import no.spk.pensjon.faktura.tidsserie.storage.GrunnlagsdataRepository;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.AvregningsavtaleperiodeOversetter;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.AvregningsperiodeOversetter;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.CSVInput;
+import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistration;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**
@@ -57,12 +62,6 @@ public class AvregningTidsseriemodus implements Tidsseriemodus {
     private final Tidsserienummer nummer = Tidsserienummer.genererForDato(now());
 
     private Optional<Set<AvtaleId>> avtaler = Optional.empty();
-
-    @Override
-    public void registerServices(ServiceRegistry serviceRegistry) {
-        final Kolonnenavnskriver kolonnenavnskriver = new Kolonnenavnskriver(kolonnenavn().collect(toList()));
-        serviceRegistry.registerService(TidsserieLivssyklus.class, kolonnenavnskriver);
-    }
 
     @Override
     public Stream<Tidsperiode<?>> referansedata(final TidsperiodeFactory perioder) {
@@ -99,6 +98,11 @@ public class AvregningTidsseriemodus implements Tidsseriemodus {
         if (!directory.resolve(file).toFile().exists()) {
             throw new IllegalStateException(file + " finnes ikke i " + directory);
         }
+    }
+
+    @Override
+    public void registerServices(ServiceRegistry serviceRegistry) {
+        //noop
     }
 
     /**
@@ -195,5 +199,26 @@ public class AvregningTidsseriemodus implements Tidsseriemodus {
                 .isPresent();
     }
 
+    @Override
+    public Map<String, Integer> lagTidsserie(ServiceRegistry registry) {
+        final StorageBackend storage = lookup(registry, StorageBackend.class);
+        final TidsserieFactory tidsserieFactory = lookup(registry, TidsserieFactory.class);
+        final TidsserieBackendService tidsserieService = lookup(registry, TidsserieBackendService.class);
+
+        skrivKolonneoverskrifter(storage);
+
+        final GenererTidsserieCommand command = new BehandleMedlemCommand(tidsserieFactory, storage, this);
+        final ServiceRegistration<GenererTidsserieCommand> commandRegistration = registry.registerService(GenererTidsserieCommand.class, command);
+        final Map<String, Integer> result = tidsserieService.lagTidsserie();
+        commandRegistration.unregister();
+
+        return result;
+    }
+
+    private void skrivKolonneoverskrifter(StorageBackend storage) {
+        storage.lagre(event -> event.buffer
+                .append(kolonnenavn().collect(joining(";")))
+                .append('\n'));
+    }
 
 }

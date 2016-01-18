@@ -3,7 +3,6 @@ package no.spk.pensjon.faktura.tidsserie.plugin.modus.underlagsperioder;
 import static java.time.LocalDate.now;
 import static java.util.Optional.of;
 import static no.spk.pensjon.faktura.tidsserie.util.Services.lookupAll;
-import static no.spk.pensjon.faktura.tidsserie.util.Services.registrer;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.file.Path;
@@ -39,7 +38,7 @@ public class LiveTidsseriemodusTest {
     @Before
     public void setUp() throws Exception {
         modus = new LiveTidsseriemodus();
-        registrer(services.registry(), Path.class, Paths.get("."), Katalog.UT.egenskap());
+        services.registry().registerService(Path.class, Paths.get("."), Katalog.UT.egenskap());
     }
 
     @Test

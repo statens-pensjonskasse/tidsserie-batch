@@ -1,10 +1,8 @@
 package no.spk.pensjon.faktura.tidsserie.util;
 
-import java.util.Properties;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tjenesteregister.ServiceReference;
-import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistration;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**
@@ -76,41 +74,6 @@ public final class Services {
                 .stream()
                 .map(registry::getService)
                 .flatMap(Optionals::stream);
-    }
-
-    /**
-     * Registrerer {@code tjeneste} i tjenesteregisteret under typen {@code type} med ein eller fleire valgfrie {@code
-     * egenskapar}.
-     *
-     * @param registry registeret tjenesten skal registreres hos
-     * @param <T> tjenestetypen
-     * @param type tjenestetypen tjenesta skal registrerast under i tjenesteregisteret
-     * @param tjeneste tjenesteinstansen som skal registrerast
-     * @param egenskapar 0 eller fleire egenskapar på formatet egenskap=verdi
-     * @return registreringa for tjenesta
-     */
-    public static <T> ServiceRegistration<T> registrer(final ServiceRegistry registry, final Class<T> type, final T tjeneste, final String... egenskapar) {
-        return registry.registerService(
-                type,
-                tjeneste,
-                Stream.of(egenskapar)
-                        .map(egenskap -> {
-                            final int index = egenskap.indexOf("=");
-                            return new String[]{egenskap.substring(0, index), egenskap.substring(index + 1)};
-                        })
-                        .reduce(
-                                new Properties(),
-                                (Properties props, String[] egenskap) -> {
-                                    props.setProperty(egenskap[0], egenskap[1]);
-                                    return props;
-                                },
-                                (a, b) -> {
-                                    final Properties c = new Properties(a);
-                                    c.putAll(b);
-                                    return c;
-                                }
-                        )
-        );
     }
 
 }

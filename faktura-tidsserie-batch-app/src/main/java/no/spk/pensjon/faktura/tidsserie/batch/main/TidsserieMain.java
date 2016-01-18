@@ -6,6 +6,7 @@ import static java.time.LocalDateTime.now;
 import static java.util.concurrent.Executors.newCachedThreadPool;
 import static no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchIdConstants.TIDSSERIE_PREFIX;
 import static no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklus.onStop;
+import static no.spk.pensjon.faktura.tidsserie.util.Services.lookupAll;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,7 +26,6 @@ import no.spk.pensjon.faktura.tidsserie.batch.main.input.TidsserieArgumentsFacto
 import no.spk.pensjon.faktura.tidsserie.batch.storage.disruptor.LmaxDisruptorPublisher;
 import no.spk.pensjon.faktura.tidsserie.batch.upload.FileTemplate;
 import no.spk.pensjon.faktura.tidsserie.batch.upload.TidsserieBackendService;
-import no.spk.pensjon.faktura.tidsserie.core.GenererTidsserieCommand;
 import no.spk.pensjon.faktura.tidsserie.core.Katalog;
 import no.spk.pensjon.faktura.tidsserie.core.StorageBackend;
 import no.spk.pensjon.faktura.tidsserie.core.TidsperiodeFactory;
@@ -34,6 +34,7 @@ import no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklus;
 import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 import no.spk.pensjon.faktura.tidsserie.storage.GrunnlagsdataRepository;
+import no.spk.pensjon.faktura.tidsserie.util.Services;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistration;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
@@ -115,9 +116,6 @@ public class TidsserieMain {
             registrer(StorageBackend.class, disruptor);
             registrer(TidsserieLivssyklus.class, disruptor);
 
-            final GenererTidsserieCommand genereringskommando = modus.createTidsserieCommand(overfoering, disruptor);
-            registrer(GenererTidsserieCommand.class, genereringskommando);
-
             modus.registerServices(registry);
 
             final LocalDateTime started = now();
@@ -128,7 +126,8 @@ public class TidsserieMain {
             all(TidsserieLivssyklus.class).forEach((l -> l.start(registry)));
 
             controller.lagTidsserie(
-                    backend,
+                    registry,
+                    modus,
                     arguments.observasjonsperiode()
             );
 
@@ -161,7 +160,7 @@ public class TidsserieMain {
     }
 
     private <T> ServiceRegistration<T> registrer(final Class<T> type, final T tjeneste, final String... egenskapar) {
-        return Services.registrer(registry, type, tjeneste, egenskapar);
+        return registry.registerService(type, tjeneste, egenskapar);
     }
 
     private DirectoryCleaner createDirectoryCleaner(int slettEldreEnn, Path logKatalog, Path dataKatalog) throws HousekeepingException {

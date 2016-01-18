@@ -1,14 +1,20 @@
 package no.spk.pensjon.faktura.tidsserie.plugin.modus.prognoseobservasjonar;
 
 import static java.util.stream.Collectors.toList;
+import static no.spk.pensjon.faktura.tidsserie.util.Services.lookup;
 
 import java.text.NumberFormat;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import no.spk.pensjon.faktura.tidsserie.batch.upload.TidsserieBackendService;
+import no.spk.pensjon.faktura.tidsserie.core.BehandleMedlemCommand;
+import no.spk.pensjon.faktura.tidsserie.core.GenererTidsserieCommand;
 import no.spk.pensjon.faktura.tidsserie.core.StorageBackend;
+import no.spk.pensjon.faktura.tidsserie.core.TidsserieFactory;
 import no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklus;
 import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Aarsverk;
@@ -20,6 +26,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonspublikator;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieObservasjon;
 import no.spk.pensjon.faktura.tidsserie.plugin.modus.DefaultTidsseriemodusLivssyklus;
+import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistration;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**
@@ -143,5 +150,20 @@ public class Stillingsforholdprognosemodus implements Tidsseriemodus {
             this.format.set(format);
         }
         return format;
+    }
+
+
+    @Override
+    public Map<String, Integer> lagTidsserie(ServiceRegistry registry) {
+        final StorageBackend storage = lookup(registry, StorageBackend.class);
+        final TidsserieFactory tidsserieFactory = lookup(registry, TidsserieFactory.class);
+        final TidsserieBackendService tidsserieService = lookup(registry, TidsserieBackendService.class);
+
+        final GenererTidsserieCommand command = new BehandleMedlemCommand(tidsserieFactory, storage, this);
+        final ServiceRegistration<GenererTidsserieCommand> commandRegistration = registry.registerService(GenererTidsserieCommand.class, command);
+        final Map<String, Integer> result = tidsserieService.lagTidsserie();
+        commandRegistration.unregister();
+
+        return result;
     }
 }

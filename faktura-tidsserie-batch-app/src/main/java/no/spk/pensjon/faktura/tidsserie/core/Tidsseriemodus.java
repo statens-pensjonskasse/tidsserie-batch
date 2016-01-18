@@ -1,16 +1,13 @@
 package no.spk.pensjon.faktura.tidsserie.core;
 
 import java.nio.file.Path;
-import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medlemsdata;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.Regelsett;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Tidsperiode;
-import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Feilhandtering;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonspublikator;
-import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 import no.spk.pensjon.faktura.tidsserie.storage.GrunnlagsdataRepository;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.CSVInput;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
@@ -30,8 +27,13 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 public interface Tidsseriemodus extends Medlemsbehandler {
 
     /**
-     * Metoden kalles før generering av tidsserie, slik at modusen kan utvide tjenesteregisteret med tjenster
+     * Metoden kalles før generering av tidsserie, slik at modusen kan legge til tjenesteregisteret med tjenster
      * den skal benytte senere.
+     * <br>
+     * Tjenester i tjenesteregisteret skal ikke brukes, da denne metoden blir kalt før tjenestene er initisialisert,
+     * men etter at de er registrert.
+     * Bruk av tjenestene bør tidligs skje først i {@link #lagTidsserie(ServiceRegistry)}  }
+     *
      * @param serviceRegistry tjenesteregistertet som blir benyttet
      */
     void registerServices(ServiceRegistry serviceRegistry);
@@ -50,6 +52,15 @@ public interface Tidsseriemodus extends Medlemsbehandler {
     Regelsett regelsett();
 
     /**
+     * Genererer ein ny tidsserie.
+     * <br>
+     * @return alle meldingar som har blitt generert i løpet av tidsseriegenereringa, gruppert på melding med antall
+     * gangar meldinga var generert som verdi
+     * @param registry
+     */
+    Map<String, Integer> lagTidsserie(ServiceRegistry registry);
+
+    /**
      * Oppretter eit nytt repository som les alt av grunnlagsdata frå ein bestemt katalog.
      *
      * @param directory katalogen som inneheld filene grunnlagsdata skal hentast frå
@@ -59,6 +70,7 @@ public interface Tidsseriemodus extends Medlemsbehandler {
     default GrunnlagsdataRepository repository(Path directory) {
         return new CSVInput(directory);
     }
+
 
     /**
      * {@inheritDoc}
@@ -77,20 +89,5 @@ public interface Tidsseriemodus extends Medlemsbehandler {
      */
     default boolean behandleMedlem(Medlemsdata medlemsdata) {
         return true;
-    }
-
-    /**
-     * Konstruerer ein ny kommando som koordinerer mot dei angitte tenestene når tidsseriar pr medlem blir generert
-     * av {@link GenererTidsserieCommand#generer(List, Observasjonsperiode, Feilhandtering, long)}.
-     *
-     * @param grunnlagsdata tenesta som gir tilgang til grunnlagsdata som ikkje er medlemsspesifikke
-     * @param lagring tenesta som lagrar observasjonane generert av
-     * {@link Tidsseriemodus#createPublikator(TidsserieFacade, long, StorageBackend)}
-     * @return GenererTidsserieCommand
-     * @see GenererTidsserieCommand
-     * @since 2.0.0
-     */
-    default GenererTidsserieCommand createTidsserieCommand(final TidsserieFactory grunnlagsdata, final StorageBackend lagring){
-        return new BehandleMedlemCommand(grunnlagsdata, lagring, this);
     }
 }
