@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 
 import no.spk.pensjon.faktura.tidsserie.batch.ServiceRegistryRule;
 import no.spk.pensjon.faktura.tjenesteregister.Constants;
-import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 import org.assertj.core.api.AbstractBooleanAssert;
 import org.junit.Before;

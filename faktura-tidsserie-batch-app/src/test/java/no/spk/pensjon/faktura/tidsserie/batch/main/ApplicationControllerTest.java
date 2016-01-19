@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 
 import no.spk.faktura.input.InvalidParameterException;
 import no.spk.faktura.input.UsageRequestedException;
+import no.spk.pensjon.faktura.tidsserie.batch.ServiceRegistryRule;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.StandardOutputAndError;
 import no.spk.pensjon.faktura.tidsserie.batch.upload.TidsserieBackendService;
@@ -33,13 +34,15 @@ public class ApplicationControllerTest {
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
+    @Rule
+    public final ServiceRegistryRule registry = new ServiceRegistryRule();
+
     ApplicationController controller;
-    ConsoleView view;
 
     @Before
     public void setUp() throws Exception {
-        view = new ConsoleView();
-        controller = new ApplicationController(view);
+        registry.registrer(View.class, new ConsoleView());
+        controller = new ApplicationController(registry.registry());
     }
 
     @Test
@@ -53,7 +56,8 @@ public class ApplicationControllerTest {
     @Test
     public void testValiderGrunnlagsdata() throws Exception {
         GrunnlagsdataDirectoryValidator validator = mock(GrunnlagsdataDirectoryValidator.class);
-        controller.validerGrunnlagsdata(validator);
+        registry.registrer(GrunnlagsdataDirectoryValidator.class, validator);
+        controller.validerGrunnlagsdata();
         verify(validator).validate();
         console.assertStandardOutput().contains("Validerer grunnlagsdata.");
     }

@@ -2,16 +2,16 @@ package no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast;
 
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
-import static no.spk.pensjon.faktura.tidsserie.util.Services.lookupAll;
 
 import java.util.List;
 import java.util.Map;
 
 import no.spk.pensjon.faktura.tidsserie.core.AgentInitializer;
+import no.spk.pensjon.faktura.tidsserie.core.Extensionpoint;
 import no.spk.pensjon.faktura.tidsserie.core.GenererTidsserieCommand;
+import no.spk.pensjon.faktura.tidsserie.core.ServiceLocator;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Feilhandtering;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
-import no.spk.pensjon.faktura.tidsserie.util.Services;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 import com.hazelcast.core.HazelcastInstance;
@@ -36,9 +36,11 @@ class Tidsserieagent
     public static final String MDC_SERIENUMMER = "serienummer";
 
     private transient GenererTidsserieCommand kommando;
+    private transient Extensionpoint<AgentInitializer> listeners;
+    private transient Observasjonsperiode periode;
+
     private transient IAtomicLong serienummerGenerator;
     private transient long serienummer;
-    private transient ServiceRegistry registry;
 
     @Override
     public void setHazelcastInstance(final HazelcastInstance hazelcast) {
@@ -47,16 +49,28 @@ class Tidsserieagent
     }
 
     void configure(final Map<String, Object> userContext) {
-        this.registry = lookup(userContext, ServiceRegistry.class);
-        this.kommando = Services.lookup(registry, GenererTidsserieCommand.class);
+        final ServiceRegistry registry = lookup(userContext, ServiceRegistry.class);
+        configure(registry);
+    }
+
+    void configure(final ServiceRegistry registry) {
+        final ServiceLocator services = new ServiceLocator(registry);
+        this.listeners = new Extensionpoint<>(AgentInitializer.class, registry);
+        this.kommando = services.firstMandatory(GenererTidsserieCommand.class);
+        this.periode = services.firstMandatory(Observasjonsperiode.class);
     }
 
     @Override
     public void initialize(final Context<String, Integer> context) {
         // Serienummeret for alle eventar som blir generert for medlemmar i gjeldande partisjon
         serienummer = serienummerGenerator.getAndIncrement();
+        notifyListeners(context);
+    }
+
+    void notifyListeners(final Context<String, Integer> context) {
         MDC.put(MDC_SERIENUMMER, "" + serienummer);
-        lookupAll(registry, AgentInitializer.class).forEach(i -> i.partitionInitialized(serienummer));
+        listeners.invokeAll(i -> i.partitionInitialized(serienummer))
+                .forEach(e -> emitError(context, e));
     }
 
     @Override
@@ -74,7 +88,7 @@ class Tidsserieagent
         try {
             kommando.generer(
                     value,
-                    Services.lookup(registry, Observasjonsperiode.class),
+                    periode,
                     feilhandtering,
                     serienummer
             );
@@ -100,7 +114,6 @@ class Tidsserieagent
         context.emit("errors_type_" + t.getClass().getSimpleName(), 1);
         context.emit("errors_message_" + (t.getMessage() != null ? t.getMessage() : "null"), 1);
     }
-
 
 
     static <T> T lookup(final Map<String, Object> userContext, final Class<T> serviceType) {

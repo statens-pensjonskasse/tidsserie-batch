@@ -1,13 +1,9 @@
 package no.spk.pensjon.faktura.tidsserie.batch.it;
 
-import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
-import java.util.Locale;
-import java.util.Map.Entry;
 
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.Modus;
 

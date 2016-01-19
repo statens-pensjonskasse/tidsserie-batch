@@ -7,7 +7,6 @@ import java.io.PrintStream;
 
 import org.assertj.core.api.AbstractBooleanAssert;
 import org.assertj.core.api.AbstractCharSequenceAssert;
-import org.assertj.core.api.Assertions;
 import org.junit.rules.ExternalResource;
 
 /**

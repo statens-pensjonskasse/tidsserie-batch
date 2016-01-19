@@ -2,7 +2,6 @@ package no.spk.pensjon.faktura.tidsserie.batch.storage.disruptor;
 
 import static java.util.Objects.requireNonNull;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;

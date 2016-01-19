@@ -1,13 +1,11 @@
 package no.spk.pensjon.faktura.tidsserie.core;
 
 import static java.util.Objects.requireNonNull;
-import static no.spk.pensjon.faktura.tidsserie.util.Optionals.stream;
 
-
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import no.spk.pensjon.faktura.tidsserie.util.Optionals;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**
@@ -75,7 +73,7 @@ public class Extensionpoint<T> {
                         .getServiceReferences(type)
                         .stream()
                         .map(registry::getService)
-                        .flatMap(Optionals::stream)
+                        .flatMap(Extensionpoint::stream)
         );
     }
 
@@ -108,5 +106,9 @@ public class Extensionpoint<T> {
                         (status, extension) -> status.invoke(operation, extension),
                         ExtensionpointStatus::merge
                 );
+    }
+
+    private static <T> Stream<T> stream(final Optional<T> o) {
+        return o.map(Stream::of).orElse(Stream.empty());
     }
 }

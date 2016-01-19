@@ -1,9 +1,8 @@
 package no.spk.pensjon.faktura.tidsserie.batch.it;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.io.File;
 
+import no.spk.pensjon.faktura.tidsserie.batch.main.ApplicationController;
 import no.spk.pensjon.faktura.tidsserie.batch.main.TidsserieMain;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.Modus;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.StandardOutputAndError;
@@ -29,7 +28,8 @@ class InMemoryBatchRunner {
     InMemoryBatchRunner(final ServiceRegistry registry) {
         this.batch = new TidsserieMain(
                 registry,
-                exitCode -> this.exitCode = exitCode
+                exitCode -> this.exitCode = exitCode,
+                new ApplicationController(registry)
         );
     }
 

@@ -2,7 +2,6 @@ package no.spk.pensjon.faktura.tidsserie.plugin.modus.underlagsperioder;
 
 import static java.time.LocalDate.now;
 import static java.util.Optional.of;
-import static no.spk.pensjon.faktura.tidsserie.util.Services.lookupAll;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -21,7 +20,6 @@ import no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklus;
 import no.spk.pensjon.faktura.tidsserie.core.Tidsserienummer;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonspublikator;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
-import no.spk.pensjon.faktura.tidsserie.util.Services;
 import no.spk.pensjon.faktura.tidsserie.util.TemporaryFolderWithDeleteVerification;
 
 import org.junit.Before;
@@ -63,11 +61,13 @@ public class LiveTidsseriemodusTest {
     public void skal_registrere_liveTidsserieAvslutter() {
         services.registrer(StorageBackend.class, mock(StorageBackend.class));
         modus.registerServices(services.registry());
+
+        services.assertFirstService(TidsserieLivssyklus.class).isPresent();
+
         assertThat(
-                lookupAll(services.registry(), TidsserieLivssyklus.class)
-                        .filter(l -> l instanceof LiveTidsserieAvslutter)
-                        .findAny()
-        ).isPresent();
+                services.firstService(TidsserieLivssyklus.class).get()
+        )
+                .isInstanceOf(LiveTidsserieAvslutter.class);
     }
 
     @Test
@@ -76,8 +76,7 @@ public class LiveTidsseriemodusTest {
 
         modus.registerServices(services.registry());
 
-        assertThat(Services.lookupAll(services.registry(), AgentInitializer.class)
-                .findAny()
-        ).isPresent();
+        services.assertFirstService(AgentInitializer.class);
     }
+
 }

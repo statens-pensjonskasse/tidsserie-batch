@@ -57,7 +57,8 @@ public class TidsserieMainTest {
     public void _before() {
         main = new TidsserieMain(
                 registry.registry(),
-                exitCode -> this.exitCode = exitCode
+                exitCode -> this.exitCode = exitCode,
+                controller
         );
         registry.registrer(TidsserieLivssyklus.class, a);
         registry.registrer(TidsserieLivssyklus.class, b);

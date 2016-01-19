@@ -3,7 +3,6 @@ package no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning;
 import static java.time.LocalDate.now;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toSet;
-import static no.spk.pensjon.faktura.tidsserie.util.Services.lookup;
 
 import java.nio.file.Path;
 import java.util.Map;
@@ -17,6 +16,7 @@ import no.spk.pensjon.faktura.tidsserie.batch.upload.TidsserieBackendService;
 import no.spk.pensjon.faktura.tidsserie.core.BehandleMedlemCommand;
 import no.spk.pensjon.faktura.tidsserie.core.CSVFormat;
 import no.spk.pensjon.faktura.tidsserie.core.GenererTidsserieCommand;
+import no.spk.pensjon.faktura.tidsserie.core.ServiceLocator;
 import no.spk.pensjon.faktura.tidsserie.core.StorageBackend;
 import no.spk.pensjon.faktura.tidsserie.core.TidsperiodeFactory;
 import no.spk.pensjon.faktura.tidsserie.core.TidsserieFactory;
@@ -38,7 +38,6 @@ import no.spk.pensjon.faktura.tidsserie.storage.GrunnlagsdataRepository;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.AvregningsavtaleperiodeOversetter;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.AvregningsperiodeOversetter;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.CSVInput;
-import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistration;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**
@@ -201,9 +200,10 @@ public class AvregningTidsseriemodus implements Tidsseriemodus {
 
     @Override
     public Map<String, Integer> lagTidsserie(ServiceRegistry registry) {
-        final StorageBackend storage = lookup(registry, StorageBackend.class);
-        final TidsserieFactory tidsserieFactory = lookup(registry, TidsserieFactory.class);
-        final TidsserieBackendService tidsserieService = lookup(registry, TidsserieBackendService.class);
+        final ServiceLocator services = new ServiceLocator(registry);
+        final StorageBackend storage = services.firstMandatory(StorageBackend.class);
+        final TidsserieFactory tidsserieFactory = services.firstMandatory(TidsserieFactory.class);
+        final TidsserieBackendService tidsserieService = services.firstMandatory(TidsserieBackendService.class);
 
         skrivKolonneoverskrifter(storage);
 
