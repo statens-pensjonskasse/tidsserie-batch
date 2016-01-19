@@ -104,8 +104,9 @@ public class TidsserieMain {
             final Tidsseriemodus modus = arguments.modus();
             registrer(Tidsseriemodus.class, modus);
 
-            final TidsserieBackendService backend = new HazelcastBackend(registry, arguments.getNodes());
+            final HazelcastBackend backend = new HazelcastBackend(registry, arguments.getNodes());
             registrer(TidsserieBackendService.class, backend);
+            registrer(TidsserieLivssyklus.class, backend);
 
             final GrunnlagsdataRepository input = modus.repository(arguments.getInnkatalog().resolve(arguments.getGrunnlagsdataBatchId()));
             registrer(GrunnlagsdataRepository.class, input);
