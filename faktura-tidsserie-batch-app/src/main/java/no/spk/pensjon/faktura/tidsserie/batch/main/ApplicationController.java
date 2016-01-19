@@ -60,7 +60,7 @@ public class ApplicationController {
         view.informerOmOppstart(argumenter);
     }
 
-    public void validerGrunnlagsdata(GrunnlagsdataDirectoryValidator validator){
+    public void validerGrunnlagsdata(final GrunnlagsdataDirectoryValidator validator){
         view.informerOmGrunnlagsdataValidering();
         validator.validate();
     }

@@ -99,8 +99,7 @@ public class TidsserieMain {
             controller.ryddOpp(directoryCleaner);
             Files.createDirectories(utKatalog);
 
-            final GrunnlagsdataDirectoryValidator grunnlagsdataValidator = new GrunnlagsdataDirectoryValidator(arguments.getGrunnlagsdataBatchKatalog());
-            registrer(GrunnlagsdataDirectoryValidator.class, grunnlagsdataValidator);
+            registrer(GrunnlagsdataDirectoryValidator.class, new ChecksumValideringAvGrunnlagsdata(arguments.getGrunnlagsdataBatchKatalog()));
 
             final Tidsseriemodus modus = arguments.modus();
             registrer(Tidsseriemodus.class, modus);
@@ -135,7 +134,7 @@ public class TidsserieMain {
             modus.registerServices(registry);
 
             final LocalDateTime started = now();
-            controller.validerGrunnlagsdata(grunnlagsdataValidator);
+            controller.validerGrunnlagsdata(Services.lookup(registry, GrunnlagsdataDirectoryValidator.class));
             controller.startBackend(backend);
             controller.lastOpp(overfoering);
 
