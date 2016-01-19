@@ -14,7 +14,7 @@ import no.spk.pensjon.faktura.tidsserie.plugin.modus.underlagsperioder.LiveTidss
  * {@link Modus} representerer dei forskjellige modusane som brukaren
  * kan velge mellom for å styre output-formatet på CSV-filene batchen genererer.
  */
-enum Modus {
+public enum Modus {
     LIVE_TIDSSERIE("live_tidsserie", new LiveTidsseriemodus()),
     STILLINGSFORHOLD_OBSERVASJONAR("stillingsforholdobservasjonar", new Stillingsforholdprognosemodus()),
     AVREGNING_TIDSSERIE("avregning_tidsserie", new AvregningTidsseriemodus());
@@ -40,11 +40,11 @@ enum Modus {
                 .findFirst();
     }
 
-    static Stream<Modus> stream() {
+    public static Stream<Modus> stream() {
         return asList(values()).stream();
     }
 
-    String kode() {
+    public String kode() {
         return kode;
     }
 
