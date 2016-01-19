@@ -3,11 +3,24 @@ package no.spk.pensjon.faktura.tidsserie.core;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**
- * Callback-interface for tenestetilbydarar som ønskjer å bli notifisert rett før generering av tidsserie startar
+ * Extension-interface for tenestetilbydarar som ønskjer å agere før generering av tidsserie startar
  * og/eller rett etter den avsluttar.
  * <br>
  * Merk at registrering av nye livssyklustenester ikkje bør skje som en del av start elle stopp ettersom det vil kunne
  * gi udeterministisk oppførsel med tanke på om dei nye livssyklusane blir kalla eller ikkje.
+ * <br>
+ * Extensionpointet for livssyklusane gir følgjande garantiar til tjenester som implementerer det når det gjeld handtering
+ * av feil som oppstår i tjenestene eller mellom kall til {@link #start(ServiceRegistry)} og {@link #stop(ServiceRegistry)}:
+ * <ol>
+ * <li>Alle tjenester kan anta at {@link #start(ServiceRegistry)} vil bli kalla sjølv om andre livssyklusar feilar på
+ * kall til start</li>
+ * <li>Alle tjenester kan anta at {@link #stop(ServiceRegistry)} vil bli kalla dersom  {@link #start(ServiceRegistry)} har blitt
+ * kalla</li>
+ * <li>Uforventa feil som oppstår i {@link #start(ServiceRegistry)} vil avbryte tidsseriegenereringa etter at dei to
+ * første garantiane er oppfyllt</li>
+ * <li>Uforventa feil som oppstår i {@link #stop(ServiceRegistry)} vil medføre at batchen blir markert som feila,
+ * sjølv om tidsserien har blitt generert uten sjølv å feile</li>
+ * </ol>
  *
  * @author Tarjei Skorgenes
  */

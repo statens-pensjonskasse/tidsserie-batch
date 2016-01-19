@@ -7,7 +7,6 @@ import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.Executors.newCachedThreadPool;
 import static no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchIdConstants.TIDSSERIE_PREFIX;
 import static no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklus.onStop;
-import static no.spk.pensjon.faktura.tidsserie.util.Services.lookupAll;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -28,11 +27,13 @@ import no.spk.pensjon.faktura.tidsserie.batch.main.input.TidsserieArgumentsFacto
 import no.spk.pensjon.faktura.tidsserie.batch.storage.disruptor.LmaxDisruptorPublisher;
 import no.spk.pensjon.faktura.tidsserie.batch.upload.FileTemplate;
 import no.spk.pensjon.faktura.tidsserie.batch.upload.TidsserieBackendService;
+import no.spk.pensjon.faktura.tidsserie.core.Extensionpoint;
 import no.spk.pensjon.faktura.tidsserie.core.Katalog;
 import no.spk.pensjon.faktura.tidsserie.core.StorageBackend;
 import no.spk.pensjon.faktura.tidsserie.core.TidsperiodeFactory;
 import no.spk.pensjon.faktura.tidsserie.core.TidsserieFactory;
 import no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklus;
+import no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklusException;
 import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 import no.spk.pensjon.faktura.tidsserie.storage.GrunnlagsdataRepository;
@@ -52,6 +53,7 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
  * @author Tarjei Skorgenes
  */
 public class TidsserieMain {
+    private final Extensionpoint<TidsserieLivssyklus> livssyklus;
     private final ServiceRegistry registry;
     private final Consumer<Integer> exiter;
 
@@ -70,6 +72,8 @@ public class TidsserieMain {
     public TidsserieMain(final ServiceRegistry registry, final Consumer<Integer> exiter) {
         this.registry = requireNonNull(registry, "registry er påkrevd, men var null");
         this.exiter = requireNonNull(exiter, "exiter er påkrevd, men var null");
+
+        this.livssyklus = new Extensionpoint<>(TidsserieLivssyklus.class, registry);
     }
 
     public void run(final String... args) {
@@ -139,15 +143,7 @@ public class TidsserieMain {
             controller.startBackend(backend);
             controller.lastOpp(overfoering);
 
-            all(TidsserieLivssyklus.class).forEach((l -> l.start(registry)));
-
-            controller.lagTidsserie(
-                    registry,
-                    modus,
-                    arguments.observasjonsperiode()
-            );
-
-            all(TidsserieLivssyklus.class).forEach((l -> l.stop(registry)));
+            lagTidsserie(controller, modus, arguments.observasjonsperiode());
 
             controller.opprettMetadata(metaDataWriter, arguments, batchId, between(started, now()));
 
@@ -167,8 +163,24 @@ public class TidsserieMain {
         shutdown();
     }
 
-    private <T> Stream<T> all(Class<T> type) {
-        return lookupAll(registry, type);
+    void lagTidsserie(final ApplicationController controller, final Tidsseriemodus modus,
+                      final Observasjonsperiode periode) {
+        try {
+            livssyklus
+                    .invokeAll(l -> l.start(registry))
+                    .orElseThrow(TidsserieMain::livssyklusStartFeila);
+
+            controller.lagTidsserie(
+                    registry,
+                    modus,
+                    periode
+            );
+        } finally {
+            // Unngå at feil ved stop sluker eventuelle feil som boblar ut av tidsseriegenereringa
+            livssyklus
+                    .invokeAll(l -> l.stop(registry))
+                    .forEach(controller::informerOmUkjentFeil);
+        }
     }
 
     public static void main(String[] args) {
@@ -213,4 +225,11 @@ public class TidsserieMain {
         return new BatchTimeout(arguments.getKjoeretid(), arguments.getSluttidspunkt()).start();
     }
 
+    private static TidsserieLivssyklusException livssyklusStartFeila(final Stream<Exception> errors) {
+        return new TidsserieLivssyklusException("start", errors);
+    }
+
+    private static TidsserieLivssyklusException livssyklusStopFeila(final Stream<Exception> errors) {
+        return new TidsserieLivssyklusException("stop", errors);
+    }
 }
