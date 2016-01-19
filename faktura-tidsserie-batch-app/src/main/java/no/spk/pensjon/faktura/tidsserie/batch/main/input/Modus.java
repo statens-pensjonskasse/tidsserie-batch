@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning.AvregningTidsseriemodus;
+import no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag.Avtaleunderlagmodus;
 import no.spk.pensjon.faktura.tidsserie.plugin.modus.prognoseobservasjonar.Stillingsforholdprognosemodus;
 import no.spk.pensjon.faktura.tidsserie.plugin.modus.underlagsperioder.LiveTidsseriemodus;
 
@@ -17,7 +18,8 @@ import no.spk.pensjon.faktura.tidsserie.plugin.modus.underlagsperioder.LiveTidss
 public enum Modus {
     LIVE_TIDSSERIE("live_tidsserie", new LiveTidsseriemodus()),
     STILLINGSFORHOLD_OBSERVASJONAR("stillingsforholdobservasjonar", new Stillingsforholdprognosemodus()),
-    AVREGNING_TIDSSERIE("avregning_tidsserie", new AvregningTidsseriemodus());
+    AVREGNING_TIDSSERIE("avregning_tidsserie", new AvregningTidsseriemodus()),
+    AVTALEUNDERLAG("avtaleunderlag", new Avtaleunderlagmodus());
 
     private final String kode;
 
