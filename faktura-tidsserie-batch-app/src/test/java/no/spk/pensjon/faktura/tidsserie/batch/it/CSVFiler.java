@@ -41,7 +41,7 @@ class CSVFiler {
         return files
                 .map(p -> {
                     try {
-                        return Files.readAllLines(p, Charset.forName("CP1252"));
+                        return Files.readAllLines(p, Charset.defaultCharset());
                     } catch (final IOException e) {
                         throw new UncheckedIOException(e);
                     }
