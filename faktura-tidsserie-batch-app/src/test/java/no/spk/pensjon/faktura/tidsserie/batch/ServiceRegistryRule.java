@@ -2,7 +2,6 @@ package no.spk.pensjon.faktura.tidsserie.batch;
 
 import java.util.ServiceLoader;
 
-import no.spk.pensjon.faktura.tidsserie.core.TidsserieFactory;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistration;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
@@ -20,7 +19,7 @@ public class ServiceRegistryRule extends ExternalResource {
         return registry;
     }
 
-    public <T> ServiceRegistration<T> registrer(final Class<T> type, final T tjeneste) {
-        return registry.registerService(type, tjeneste);
+    public <T> ServiceRegistration<T> registrer(final Class<T> type, final T tjeneste, final String... egenskapar) {
+        return registry.registerService(type, tjeneste, egenskapar);
     }
 }

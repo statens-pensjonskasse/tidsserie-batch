@@ -2,6 +2,7 @@ package no.spk.pensjon.faktura.tidsserie.util;
 
 import java.util.stream.Stream;
 
+import no.spk.pensjon.faktura.tidsserie.core.ServiceLocator;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceReference;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
@@ -9,6 +10,8 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
  * Hjelpemetoder for å jobbe med {@link ServiceRegistry}.
  */
 public final class Services {
+    private  static final String[] MATCH_ANY = new String[0];
+
     private Services(){
         // no instances
     }
@@ -23,16 +26,8 @@ public final class Services {
      * @see ServiceRegistry#getServiceReference(Class)
      * @see ServiceRegistry#getService(ServiceReference)
      */
-    public static  <T> T lookup(ServiceRegistry registry, final Class<T> type) {
-        return registry
-                .getServiceReference(type)
-                .flatMap(registry::getService)
-                .orElseThrow(() -> new IllegalStateException(
-                                "Ingen teneste av type " +
-                                        type.getSimpleName()
-                                        + " er registrert i tenesteregisteret."
-                        )
-                );
+    public static <T> T lookup(ServiceRegistry registry, final Class<T> type) {
+        return lookup(registry, type, MATCH_ANY);
     }
 
     /**
@@ -46,10 +41,9 @@ public final class Services {
      * @see ServiceRegistry#getServiceReference(Class, String...)
      * @see ServiceRegistry#getService(ServiceReference)
      */
-    public static  <T> T lookup(ServiceRegistry registry, final Class<T> type, final String egenskap) {
-        return registry
-                .getServiceReference(type, egenskap)
-                .flatMap(registry::getService)
+    public static <T> T lookup(ServiceRegistry registry, final Class<T> type, final String... egenskap) {
+        return new ServiceLocator(registry)
+                .firstService(type, egenskap)
                 .orElseThrow(() -> new IllegalStateException(
                                 "Ingen teneste av type " +
                                         type.getSimpleName()
