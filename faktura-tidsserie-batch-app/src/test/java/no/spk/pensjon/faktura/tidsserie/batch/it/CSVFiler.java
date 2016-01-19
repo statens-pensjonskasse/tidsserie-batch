@@ -5,6 +5,7 @@ import static java.util.stream.Collectors.toList;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -40,7 +41,7 @@ class CSVFiler {
         return files
                 .map(p -> {
                     try {
-                        return Files.readAllLines(p);
+                        return Files.readAllLines(p, Charset.forName("CP1252"));
                     } catch (final IOException e) {
                         throw new UncheckedIOException(e);
                     }

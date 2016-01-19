@@ -9,11 +9,13 @@ import java.time.LocalDateTime;
 import java.util.ServiceLoader;
 
 import no.spk.faktura.input.BatchId;
+import no.spk.pensjon.faktura.tidsserie.batch.main.GrunnlagsdataDirectoryValidator;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchIdConstants;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.Modus;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
+import no.spk.pensjon.faktura.tjenesteregister.Constants;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 import cucumber.api.DataTable;
@@ -130,6 +132,9 @@ public class EndeTilEndeModusDefinisjon implements No {
         this.batch = new InMemoryBatchRunner(registry);
 
         this.tidsseriefiler = new Tidsseriefiler(utKatalog);
+
+        // Vi tar ikkje bryet med å generere gyldige sjekksummer for grunnlagsdatane, overstyrer derfor valideringen
+        registry.registerService(GrunnlagsdataDirectoryValidator.class, this::noop, Constants.SERVICE_RANKING + "=1000");
     }
 
     @After
