@@ -30,6 +30,7 @@ public class LiveTidsserieAvslutter implements TidsserieLivssyklus{
     /**
      * Finner alle tidsserie*.csv filer i utkatalog, og fordeler filnavmeme i ti filer: FFF_FILLISTE_[1-10].txt.
      * Filliste-filene brukes slik at Datavarehus kan bruke faste filnavn for å paralellisere innlesingen av csv-filene.
+     * @return this for chaning
      */
     public LiveTidsserieAvslutter lagCsvGruppefiler() {
         new CsvFileGroupWriter().createCsvGroupFiles(tidserieKatalog);
@@ -38,6 +39,7 @@ public class LiveTidsserieAvslutter implements TidsserieLivssyklus{
 
     /**
      * Oppretter ok.trg i tidsseriekatalogen.
+     * @return this for chaning
      */
     public LiveTidsserieAvslutter lagTriggerfil() {
         Path resolve = tidserieKatalog.resolve("ok.trg");

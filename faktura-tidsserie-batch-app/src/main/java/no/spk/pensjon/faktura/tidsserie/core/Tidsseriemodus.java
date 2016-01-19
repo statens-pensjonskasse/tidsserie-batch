@@ -56,7 +56,7 @@ public interface Tidsseriemodus extends Medlemsbehandler {
      * <br>
      * @return alle meldingar som har blitt generert i løpet av tidsseriegenereringa, gruppert på melding med antall
      * gangar meldinga var generert som verdi
-     * @param registry
+     * @param registry tjenesteregister som benyttes for kjøringen
      */
     Map<String, Integer> lagTidsserie(ServiceRegistry registry);
 

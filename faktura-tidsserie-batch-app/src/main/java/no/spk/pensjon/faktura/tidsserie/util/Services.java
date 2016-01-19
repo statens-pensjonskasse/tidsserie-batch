@@ -43,7 +43,7 @@ public final class Services {
      * @param egenskap på tjenesten
      * @return instans av angitt tjenestetype
      * @throws IllegalStateException dersom det ikke finnes en tjeneste av angitt type i registeret
-     * @see ServiceRegistry#getServiceReference(Class, String)
+     * @see ServiceRegistry#getServiceReference(Class, String...)
      * @see ServiceRegistry#getService(ServiceReference)
      */
     public static  <T> T lookup(ServiceRegistry registry, final Class<T> type, final String egenskap) {
@@ -65,7 +65,7 @@ public final class Services {
      * @param <T> typen tjeneste
      * @return strøm av instanser av angitt tjenestetype
      * @throws IllegalStateException dersom det ikke finnes en tjeneste av angitt type i registeret
-     * @see ServiceRegistry#getServiceReference(Class, String)
+     * @see ServiceRegistry#getServiceReference(Class, String...)
      * @see ServiceRegistry#getService(ServiceReference)
      */
     public static  <T> Stream<T> lookupAll(ServiceRegistry registry, final Class<T> type) {

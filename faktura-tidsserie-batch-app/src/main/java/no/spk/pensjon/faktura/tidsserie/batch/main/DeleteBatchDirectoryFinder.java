@@ -48,6 +48,8 @@ public class DeleteBatchDirectoryFinder {
      * Finner alle under-kataloger i log-katalogen som har navn på samme format som {@link BatchId} og som basert på id'en har kjørt tidligere enn
      * [{@code midnatt for &lt;i morgen&gt; - olderThanDays}]. Returnerer alltid dataDirectory.
      * @param olderThanDays alle batch-kataloger som er eldre enn [{@code midnatt for &lt;i morgen&gt; - olderThanDays}] i {@code workdirectory} vil bli slettet
+     * @return sti til kataloger som kan slettes
+     * @throws HousekeepingException dersom filoperasjoner feiler
      */
     public Path[] findDeletableBatchDirectories(int olderThanDays) throws HousekeepingException{
         List<Path> deleteDirectories = new ArrayList<>();
