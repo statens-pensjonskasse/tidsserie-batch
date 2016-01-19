@@ -23,7 +23,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <faktura.prognose.tidsserie.version>2.0.4-SNAPSHOT</faktura.prognose.tidsserie.version>
+        <faktura.prognose.tidsserie.version>2.1.0-SNAPSHOT</faktura.prognose.tidsserie.version>
         <faktura-bootstrap-lib>1.0.15</faktura-bootstrap-lib>
         <slf4j.version>1.7.12</slf4j.version>
     </properties>
