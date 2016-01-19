@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import no.spk.pensjon.faktura.tidsserie.batch.ServiceRegistryRule;
+import no.spk.pensjon.faktura.tidsserie.batch.main.input.StandardOutputAndError;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.LifecycleEvent;
@@ -23,6 +24,10 @@ import org.junit.Test;
 public class MultiNodeSingleJVMBackendIT {
     @Rule
     public final ServiceRegistryRule registry = new ServiceRegistryRule();
+
+    @Rule
+    public final StandardOutputAndError ignorerLogging = new StandardOutputAndError();
+
     private MultiNodeSingleJVMBackend server;
 
     @Before

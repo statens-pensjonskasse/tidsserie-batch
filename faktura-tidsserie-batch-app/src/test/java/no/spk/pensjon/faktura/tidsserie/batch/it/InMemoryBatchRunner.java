@@ -2,12 +2,11 @@ package no.spk.pensjon.faktura.tidsserie.batch.it;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.PrintStream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.main.TidsserieMain;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.Modus;
+import no.spk.pensjon.faktura.tidsserie.batch.main.input.StandardOutputAndError;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
@@ -21,6 +20,8 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
  * @author Tarjei Skorgenes
  */
 class InMemoryBatchRunner {
+    private final StandardOutputAndError outputAndError = new StandardOutputAndError();
+
     private final TidsserieMain batch;
 
     private int exitCode;
@@ -33,13 +34,9 @@ class InMemoryBatchRunner {
     }
 
     void run(final File innKatalog, final File utKatalog, final Observasjonsperiode periode, final Modus modus) {
-        final PrintStream oldOut = System.out;
-        final PrintStream oldError = System.err;
-        final ByteArrayOutputStream output = new ByteArrayOutputStream();
-        final ByteArrayOutputStream error = new ByteArrayOutputStream();
+
         try {
-            System.setErr(new PrintStream(error));
-            System.setOut(new PrintStream(output));
+            outputAndError.before();
             batch.run(
                     "-i", innKatalog.toString(),
                     "-o", utKatalog.getPath(),
@@ -51,17 +48,8 @@ class InMemoryBatchRunner {
                     "-n", "1" // Speedar opp køyringa astronomisk mykje sidan vi ikkje ønskjer å vente på slave-shutdown med failover og partisjons-rebalansering
             );
         } finally {
-            System.setOut(oldOut);
-            System.setErr(oldError);
+            outputAndError.after();
+            outputAndError.assertBoolean("Har batchen avslutta OK?", exitCode == 0f).isTrue();
         }
-        assertThat(
-                exitCode == 0
-        )
-                .as("Har batchen avslutta OK?\n"
-                        + "Exit code: " + exitCode
-                        + "\nStandard output:\n" + output
-                        + "\nStandard error:\n" + error
-                )
-                .isTrue();
     }
 }

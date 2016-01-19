@@ -1,7 +1,6 @@
 package no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast;
 
 import static com.hazelcast.instance.HazelcastInstanceFactory.newHazelcastInstance;
-import static java.lang.System.setProperty;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
@@ -52,7 +51,6 @@ import org.slf4j.LoggerFactory;
  */
 class MultiNodeSingleJVMBackend implements Server {
     private final Logger logger = LoggerFactory.getLogger(MultiNodeSingleJVMBackend.class);
-    ;
 
     private final Set<HazelcastInstance> slavar = new HashSet<>();
 
@@ -105,8 +103,9 @@ class MultiNodeSingleJVMBackend implements Server {
     }
 
     private Config buildConfig() {
+        System.setProperty(GroupProperties.PROP_LOGGING_TYPE, "slf4j");
+
         final Config config = new XmlConfigBuilder().build();
-        config.setProperty(GroupProperties.PROP_LOGGING_TYPE, "slf4j");
         config.setProperty(GroupProperties.PROP_INITIAL_MIN_CLUSTER_SIZE, "1");
         config.setProperty(GroupProperties.PROP_SOCKET_BIND_ANY, "false");
         config.getGroupConfig().setName("faktura-prognose-tidsserie-" + UUID.randomUUID().toString());
