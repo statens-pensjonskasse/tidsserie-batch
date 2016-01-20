@@ -128,16 +128,9 @@ class AvtaleunderlagFactory {
 
     private void annoterArbeidsgiverdata(Underlagsperiode periode) {
         periode.koblingAvType(Avtaleperiode.class).ifPresent(ap -> {
-            final ArbeidsgiverId arbeidsgiverid = ap.arbeidsgiverId();
-            periode.annoter(ArbeidsgiverId.class, arbeidsgiverid);
+            periode.annoter(ArbeidsgiverId.class, ap.arbeidsgiverId());
 
-            periode.koblingarAvType(Arbeidsgiverdataperiode.class)
-                    .filter(arbeidsgiverperiode -> arbeidsgiverperiode.tilhoeyrer(arbeidsgiverid))
-                    .reduce((a, b) -> {
-                        throw new IllegalStateException(periode +
-                                " med arbeidsgiverid" + arbeidsgiverid +
-                                " overlapper flere arbeidsperioder med samme arbeidsgiverid.");
-                    })
+            periode.koblingAvType(Arbeidsgiverdataperiode.class)
                     .ifPresent(arbeidsgiverperiode -> arbeidsgiverperiode.annoter(periode));
         });
     }
