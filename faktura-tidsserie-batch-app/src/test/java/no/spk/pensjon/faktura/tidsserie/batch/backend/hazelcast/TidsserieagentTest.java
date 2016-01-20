@@ -84,7 +84,6 @@ public class TidsserieagentTest {
         final RuntimeException expected = new RuntimeException("You no take candle");
         doThrow(expected).when(listener).partitionInitialized(anyInt());
 
-
         agent.notifyListeners(context);
 
         verify(context, times(3)).emit(anyString(), eq(1));

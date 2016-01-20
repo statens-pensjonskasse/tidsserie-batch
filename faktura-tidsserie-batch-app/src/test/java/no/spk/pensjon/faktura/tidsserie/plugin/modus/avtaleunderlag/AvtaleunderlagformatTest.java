@@ -15,6 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import java.util.UUID;
 
+import no.spk.pensjon.faktura.tidsserie.core.Tidsserienummer;
 import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Arbeidsgiverdataperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleprodukt;
@@ -105,12 +106,14 @@ public class AvtaleunderlagformatTest {
                 .collect(joining());
 
         final UUID uuid = underlag.stream().flatMap(Underlag::stream).map(Underlagsperiode::id).findAny().get();
+        final Tidsserienummer tidsserienummer = underlag.stream().flatMap(Underlag::stream).map(p -> p.annotasjonFor(Tidsserienummer.class)).findAny().get();
 
         assertThat(result).isEqualTo(
                 "2015|2015-01-01|2015-12-31|" +
                         "1|2016-01-01|" +
                         uuid + "|" +
-                        "0|20160119|" +
+                        "0|" +
+                        tidsserienummer + "|" +
                         "1.00000000|365|365|" +
                         "3010|1234|999888222|" +
                         "AAO-01|FAS|" +
@@ -188,4 +191,5 @@ public class AvtaleunderlagformatTest {
         );
 
     }
+
 }

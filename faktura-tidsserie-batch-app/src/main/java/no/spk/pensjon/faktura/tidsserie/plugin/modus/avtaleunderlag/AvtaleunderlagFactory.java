@@ -50,7 +50,7 @@ public class AvtaleunderlagFactory {
      * @param uttrekksdato dato for når grunnlagsdata ble hentet fra Kasper
      * @return en strøm med underlagene basert på grunnlagsdata
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked"})
     public Stream<Underlag> lagAvtaleunderlag(Observasjonsperiode observasjonsperiode, Uttrekksdato uttrekksdato) {
         Tidsserienummer tidsserienummer = Tidsserienummer.genererForDato(now());
 
@@ -60,7 +60,7 @@ public class AvtaleunderlagFactory {
                 grunnlagsdata.perioderAvType(Avtaleprodukt.class)
         )
                 .flatMap(Function.identity())
-                .map(Avtalerelatertperiode.class::cast)
+                .map(p -> (Avtalerelatertperiode<?>) p)
                 .collect(
                         groupingBy(Avtalerelatertperiode::avtale))
                 .entrySet()

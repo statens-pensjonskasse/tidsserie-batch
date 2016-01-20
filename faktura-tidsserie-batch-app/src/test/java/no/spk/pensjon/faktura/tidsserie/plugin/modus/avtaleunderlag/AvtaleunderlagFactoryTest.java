@@ -77,7 +77,8 @@ public class AvtaleunderlagFactoryTest {
                 new Avtaleperiode(dato("2015.01.01"),
                         empty(),
                         avtaleId,
-                        ArbeidsgiverId.valueOf(2))
+                        ArbeidsgiverId.valueOf(2),
+                        empty())
         );
 
         underlagsperioder()
@@ -173,7 +174,8 @@ public class AvtaleunderlagFactoryTest {
         return new Avtaleperiode(dato("2015.01.01"),
                 empty(),
                 avtaleId(1L),
-                ArbeidsgiverId.valueOf(2));
+                ArbeidsgiverId.valueOf(2),
+                empty());
     }
 
 

@@ -129,12 +129,9 @@ public class TidsserieMain {
             registrer(ExecutorService.class, executors);
             registrer(TidsserieLivssyklus.class, onStop(executors::shutdown));
 
-            final FileTemplate filetemplate = new FileTemplate(utKatalog, "tidsserie", ".csv");
-            registrer(FileTemplate.class, filetemplate);
-
             final LmaxDisruptorPublisher disruptor = new LmaxDisruptorPublisher(
                     executors,
-                    filetemplate
+                    new FileTemplate(utKatalog, "tidsserie", ".csv")
             );
             registrer(StorageBackend.class, disruptor);
             registrer(TidsserieLivssyklus.class, disruptor);
@@ -161,7 +158,6 @@ public class TidsserieMain {
             controller.informerOmFeiletOpprydding();
         } catch (final Exception e) {
             controller.informerOmUkjentFeil(e);
-            e.printStackTrace();
         }
 
         shutdown();

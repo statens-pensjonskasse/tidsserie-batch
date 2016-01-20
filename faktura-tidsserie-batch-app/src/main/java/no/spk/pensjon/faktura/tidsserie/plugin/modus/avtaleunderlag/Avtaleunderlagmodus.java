@@ -1,7 +1,7 @@
 package no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag;
 
+import static no.spk.faktura.input.BatchId.fromString;
 import static no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchIdConstants.GRUNNLAGSDATA_PREFIX;
-import static no.spk.pensjon.faktura.tidsserie.util.Services.lookup;
 
 import java.nio.file.Path;
 import java.time.LocalDate;
@@ -10,11 +10,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import no.spk.faktura.input.BatchId;
-import no.spk.pensjon.faktura.tidsserie.batch.main.GrunnlagsdataService;
-import no.spk.pensjon.faktura.tidsserie.batch.upload.FileTemplate;
 import no.spk.pensjon.faktura.tidsserie.core.CSVFormat;
 import no.spk.pensjon.faktura.tidsserie.core.Katalog;
+import no.spk.pensjon.faktura.tidsserie.core.ServiceLocator;
 import no.spk.pensjon.faktura.tidsserie.core.StorageBackend;
 import no.spk.pensjon.faktura.tidsserie.core.TidsperiodeFactory;
 import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
@@ -28,6 +26,7 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**
  * Avtaleunderlagmodus lager underlagsperioder for avtaler.
+ *
  * @author Snorre E. Brekke - Computas
  */
 public class Avtaleunderlagmodus implements Tidsseriemodus {
@@ -35,13 +34,11 @@ public class Avtaleunderlagmodus implements Tidsseriemodus {
     private final CSVFormat outputFormat = new Avtaleunderlagformat();
     private final Regelsett regler = new AvtaleunderlagRegelsett();
 
-    private Optional<Avtaleunderlagskriver> avtaleunderlagskriver = Optional.empty();
+    private Optional<Underlagskriver> avtaleunderlagskriver = Optional.empty();
 
     @Override
     public void registerServices(ServiceRegistry serviceRegistry) {
-        final GrunnlagsdataService grunnlagsdata = lookup(serviceRegistry, GrunnlagsdataService.class);
-        final AvtaleunderlagFactory underlagFactory = new AvtaleunderlagFactory(grunnlagsdata, regelsett());
-        serviceRegistry.registerService(AvtaleunderlagFactory.class, underlagFactory);
+        //noop
     }
 
     @Override
@@ -66,32 +63,35 @@ public class Avtaleunderlagmodus implements Tidsseriemodus {
 
     @Override
     public Map<String, Integer> lagTidsserie(ServiceRegistry registry) {
-        final Observasjonsperiode observasjonsperiode = lookup(registry, Observasjonsperiode.class);
-        final AvtaleunderlagFactory factory = lookup(registry, AvtaleunderlagFactory.class);
-        final FileTemplate fileTemplate = lookup(registry, FileTemplate.class);
+        final ServiceLocator locator = new ServiceLocator(registry);
 
-        final Stream<Underlag> underlag = factory.lagAvtaleunderlag(observasjonsperiode, uttrekksdato(registry));
+        final Observasjonsperiode observasjonsperiode = locator.firstMandatory(Observasjonsperiode.class);
+        final StorageBackend storage = locator.firstMandatory(StorageBackend.class);
+        final Path grunnlagsdata = locator.firstMandatory(Path.class, Katalog.GRUNNLAGSDATA.egenskap());
+        final TidsperiodeFactory tidsperieodeFactory = locator.firstMandatory(TidsperiodeFactory.class);
 
-        lagreUnderlag(fileTemplate, underlag);
+        final AvtaleunderlagFactory factory = new AvtaleunderlagFactory(tidsperieodeFactory, regelsett());
+        final Stream<Underlag> underlag = factory.lagAvtaleunderlag(observasjonsperiode, uttrekksdato(grunnlagsdata));
+        lagreUnderlag(storage, underlag);
 
         return new HashMap<>();
     }
 
-    private Uttrekksdato uttrekksdato(ServiceRegistry registry) {
-        final Path grunnlagsdata = lookup(registry, Path.class, Katalog.GRUNNLAGSDATA.egenskap());
-        final LocalDate untrekksdato = BatchId.fromString(GRUNNLAGSDATA_PREFIX, grunnlagsdata.getFileName().toString())
-                .asLocalDateTime()
-                .toLocalDate();
+    private Uttrekksdato uttrekksdato(final Path grunnlagsdata) {
+        final LocalDate untrekksdato =
+                fromString(GRUNNLAGSDATA_PREFIX, grunnlagsdata.getFileName().toString())
+                        .asLocalDateTime()
+                        .toLocalDate();
         return new Uttrekksdato(untrekksdato);
     }
 
-    private void lagreUnderlag(FileTemplate fileTemplate, Stream<Underlag> underlag) {
+    private void lagreUnderlag(StorageBackend storage, Stream<Underlag> underlag) {
         avtaleunderlagskriver
-                .orElse(new Avtaleunderlagskriver(fileTemplate, outputFormat))
-                .skrivAvtaleunderlag(underlag);
+                .orElse(new Underlagskriver(storage, outputFormat))
+                .lagreUnderlag(underlag);
     }
 
-    void avtaleunderlagsskriver(Avtaleunderlagskriver avtaleunderlagskriver) {
+    void avtaleunderlagsskriver(Underlagskriver avtaleunderlagskriver) {
         this.avtaleunderlagskriver = Optional.of(avtaleunderlagskriver);
     }
 
