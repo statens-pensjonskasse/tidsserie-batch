@@ -125,10 +125,15 @@ public class AvtaleunderlagFactoryTest {
     @Test
     public void skal_annotere_uttrekksdato() throws Exception {
         tidsperiodeFactory.addPerioder(enAvtalepriode());
+        final Uttrekksdato uttrekksdato = new Uttrekksdato(dato("2016.01.01"));
 
-        underlagsperioder()
+        final List<Uttrekksdato> uttrekksdatoer = underlagFactory
+                .lagAvtaleunderlag(observasjonsperiode, uttrekksdato)
+                .flatMap(Underlag::stream)
                 .map(p -> p.annotasjonFor(Uttrekksdato.class))
-                .forEach(uttrekksdato -> assertThat(uttrekksdato).isEqualTo(new Uttrekksdato(dato("2016.01.01"))));
+                .collect(toList());
+
+        assertThat(uttrekksdatoer).containsExactly(uttrekksdato);
     }
 
 
