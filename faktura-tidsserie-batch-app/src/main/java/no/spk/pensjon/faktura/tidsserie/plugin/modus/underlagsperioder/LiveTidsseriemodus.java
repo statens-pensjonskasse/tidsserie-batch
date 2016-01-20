@@ -2,7 +2,6 @@ package no.spk.pensjon.faktura.tidsserie.plugin.modus.underlagsperioder;
 
 import static java.time.LocalDate.now;
 import static java.util.stream.Collectors.joining;
-import static no.spk.pensjon.faktura.tidsserie.util.Services.lookup;
 
 import java.nio.file.Path;
 import java.util.Map;
@@ -16,6 +15,7 @@ import no.spk.pensjon.faktura.tidsserie.core.BehandleMedlemCommand;
 import no.spk.pensjon.faktura.tidsserie.core.CSVFormat;
 import no.spk.pensjon.faktura.tidsserie.core.GenererTidsserieCommand;
 import no.spk.pensjon.faktura.tidsserie.core.Katalog;
+import no.spk.pensjon.faktura.tidsserie.core.ServiceLocator;
 import no.spk.pensjon.faktura.tidsserie.core.StorageBackend;
 import no.spk.pensjon.faktura.tidsserie.core.TidsserieFactory;
 import no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklus;
@@ -28,7 +28,6 @@ import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonspublikator;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
-import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistration;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**
@@ -53,10 +52,11 @@ public class LiveTidsseriemodus implements Tidsseriemodus {
 
     @Override
     public void registerServices(ServiceRegistry serviceRegistry) {
-        final StorageBackend storage = lookup(serviceRegistry, StorageBackend.class);
+        final ServiceLocator services = new ServiceLocator(serviceRegistry);
+        final StorageBackend storage = services.firstMandatory(StorageBackend.class);
         serviceRegistry.registerService(AgentInitializer.class, kolonneskriver(storage));
 
-        final Path tidsserieKatalog = lookup(serviceRegistry, Path.class, Katalog.UT.egenskap());
+        final Path tidsserieKatalog = services.firstMandatory(Path.class, Katalog.UT.egenskap());
         serviceRegistry.registerService(TidsserieLivssyklus.class, new LiveTidsserieAvslutter(tidsserieKatalog));
     }
 
@@ -84,9 +84,10 @@ public class LiveTidsseriemodus implements Tidsseriemodus {
 
     @Override
     public Map<String, Integer> lagTidsserie(ServiceRegistry registry) {
-        final StorageBackend storage = lookup(registry, StorageBackend.class);
-        final TidsserieFactory tidsserieFactory = lookup(registry, TidsserieFactory.class);
-        final TidsserieBackendService tidsserieService = lookup(registry, TidsserieBackendService.class);
+        final ServiceLocator services = new ServiceLocator(registry);
+        final StorageBackend storage = services.firstMandatory(StorageBackend.class);
+        final TidsserieFactory tidsserieFactory = services.firstMandatory(TidsserieFactory.class);
+        final TidsserieBackendService tidsserieService = services.firstMandatory(TidsserieBackendService.class);
 
         final GenererTidsserieCommand command = new BehandleMedlemCommand(tidsserieFactory, storage, this);
         registry.registerService(GenererTidsserieCommand.class, command);

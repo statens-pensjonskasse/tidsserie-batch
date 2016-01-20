@@ -9,10 +9,11 @@ import java.time.LocalDateTime;
 import java.util.ServiceLoader;
 
 import no.spk.faktura.input.BatchId;
+import no.spk.pensjon.faktura.tidsserie.batch.main.ConsoleView;
 import no.spk.pensjon.faktura.tidsserie.batch.main.GrunnlagsdataDirectoryValidator;
+import no.spk.pensjon.faktura.tidsserie.batch.main.View;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchIdConstants;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.Modus;
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 import no.spk.pensjon.faktura.tjenesteregister.Constants;
@@ -129,6 +130,8 @@ public class EndeTilEndeModusDefinisjon implements No {
                 .load(ServiceRegistry.class)
                 .iterator()
                 .next();
+        registry.registerService(View.class, new ConsoleView());
+
         this.batch = new InMemoryBatchRunner(registry);
 
         this.tidsseriefiler = new Tidsseriefiler(utKatalog);

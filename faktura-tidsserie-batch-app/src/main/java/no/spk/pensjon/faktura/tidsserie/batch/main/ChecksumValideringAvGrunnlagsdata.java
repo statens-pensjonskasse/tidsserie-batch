@@ -7,7 +7,6 @@ import static no.spk.pensjon.faktura.tidsserie.core.Validators.require;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;

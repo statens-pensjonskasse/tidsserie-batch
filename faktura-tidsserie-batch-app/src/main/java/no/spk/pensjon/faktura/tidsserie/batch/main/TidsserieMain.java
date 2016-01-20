@@ -7,7 +7,6 @@ import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.Executors.newCachedThreadPool;
 import static no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchIdConstants.TIDSSERIE_PREFIX;
 import static no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklus.onStop;
-import static no.spk.pensjon.faktura.tidsserie.util.Services.lookupAll;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -28,15 +27,16 @@ import no.spk.pensjon.faktura.tidsserie.batch.main.input.TidsserieArgumentsFacto
 import no.spk.pensjon.faktura.tidsserie.batch.storage.disruptor.LmaxDisruptorPublisher;
 import no.spk.pensjon.faktura.tidsserie.batch.upload.FileTemplate;
 import no.spk.pensjon.faktura.tidsserie.batch.upload.TidsserieBackendService;
+import no.spk.pensjon.faktura.tidsserie.core.Extensionpoint;
 import no.spk.pensjon.faktura.tidsserie.core.Katalog;
 import no.spk.pensjon.faktura.tidsserie.core.StorageBackend;
 import no.spk.pensjon.faktura.tidsserie.core.TidsperiodeFactory;
 import no.spk.pensjon.faktura.tidsserie.core.TidsserieFactory;
 import no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklus;
+import no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklusException;
 import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 import no.spk.pensjon.faktura.tidsserie.storage.GrunnlagsdataRepository;
-import no.spk.pensjon.faktura.tidsserie.util.Services;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistration;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
@@ -52,6 +52,7 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
  * @author Tarjei Skorgenes
  */
 public class TidsserieMain {
+    private final Extensionpoint<TidsserieLivssyklus> livssyklus;
     private final ServiceRegistry registry;
     private final Consumer<Integer> exiter;
 
@@ -60,21 +61,24 @@ public class TidsserieMain {
     /**
      * Konstruerer ein ny instans av main-klassa som skal brukast til å eksekvere batchen.
      * <br>
-     * For å støtte direkte kall til batchen frå integrasjonstestar er {@code exiter} lagt til som eit parameter ved konstruksjon. Dette for å unngå
+     * For å støtte direkte kall til batchen frå integrasjonstestar er {@code exiter}
+     * lagt til som eit parameter ved konstruksjon. Dette for å unngå
      * direkte kall til {@link System#exit(int)} som dreper test-JVMen.
      *
      * @param registry tjenesteregisteret som alle tjenester brukt av batchen skal registrerast i og hentast frå
      * @param exiter konsument som tar seg av å avslutte batchkøyringa ved kall til {@link #shutdown()}
+     * @param controller kontrolleren som tar seg av å informere brukaren, logging og handtering av exitkode
      * @throws NullPointerException dersom nokon av parameterverdiane er lik {@code null}
      */
-    public TidsserieMain(final ServiceRegistry registry, final Consumer<Integer> exiter) {
+    public TidsserieMain(final ServiceRegistry registry, final Consumer<Integer> exiter,
+                         final ApplicationController controller) {
         this.registry = requireNonNull(registry, "registry er påkrevd, men var null");
         this.exiter = requireNonNull(exiter, "exiter er påkrevd, men var null");
+        this.controller = requireNonNull(controller, "controller er påkrevd, men var null");
+        this.livssyklus = new Extensionpoint<>(TidsserieLivssyklus.class, registry);
     }
 
     public void run(final String... args) {
-        controller = new ApplicationController(new ConsoleView());
-
         try {
             ProgramArguments arguments = new TidsserieArgumentsFactory().create(args);
             startBatchTimeout(arguments);
@@ -135,19 +139,11 @@ public class TidsserieMain {
             modus.registerServices(registry);
 
             final LocalDateTime started = now();
-            controller.validerGrunnlagsdata(Services.lookup(registry, GrunnlagsdataDirectoryValidator.class));
+            controller.validerGrunnlagsdata();
             controller.startBackend(backend);
             controller.lastOpp(overfoering);
 
-            all(TidsserieLivssyklus.class).forEach((l -> l.start(registry)));
-
-            controller.lagTidsserie(
-                    registry,
-                    modus,
-                    arguments.observasjonsperiode()
-            );
-
-            all(TidsserieLivssyklus.class).forEach((l -> l.stop(registry)));
+            lagTidsserie(controller, modus, arguments.observasjonsperiode());
 
             controller.opprettMetadata(metaDataWriter, arguments, batchId, between(started, now()));
 
@@ -167,17 +163,33 @@ public class TidsserieMain {
         shutdown();
     }
 
-    private <T> Stream<T> all(Class<T> type) {
-        return lookupAll(registry, type);
+    void lagTidsserie(final ApplicationController controller, final Tidsseriemodus modus,
+                      final Observasjonsperiode periode) {
+        try {
+            livssyklus
+                    .invokeAll(l -> l.start(registry))
+                    .orElseThrow(TidsserieMain::livssyklusStartFeila);
+
+            controller.lagTidsserie(
+                    registry,
+                    modus,
+                    periode
+            );
+        } finally {
+            // Unngå at feil ved stop sluker eventuelle feil som boblar ut av tidsseriegenereringa
+            livssyklus
+                    .invokeAll(l -> l.stop(registry))
+                    .forEachFailure(controller::informerOmUkjentFeil);
+        }
     }
 
     public static void main(String[] args) {
-        final Consumer<Integer> exiter = System::exit;
+        final ServiceRegistry registry = ServiceLoader.load(ServiceRegistry.class).iterator().next();
+        registry.registerService(View.class, new ConsoleView());
+
         new TidsserieMain(
-                ServiceLoader.load(ServiceRegistry.class)
-                        .iterator()
-                        .next(),
-                exiter
+                registry,
+                System::exit, new ApplicationController(registry)
         )
                 .run(args);
     }
@@ -213,4 +225,7 @@ public class TidsserieMain {
         return new BatchTimeout(arguments.getKjoeretid(), arguments.getSluttidspunkt()).start();
     }
 
+    private static TidsserieLivssyklusException livssyklusStartFeila(final Stream<RuntimeException> errors) {
+        return new TidsserieLivssyklusException("start", errors);
+    }
 }

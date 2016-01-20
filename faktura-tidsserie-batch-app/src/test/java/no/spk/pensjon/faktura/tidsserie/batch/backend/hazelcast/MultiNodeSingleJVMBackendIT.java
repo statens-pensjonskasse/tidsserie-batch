@@ -13,7 +13,6 @@ import no.spk.pensjon.faktura.tidsserie.batch.main.input.StandardOutputAndError;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.LifecycleEvent;
 import com.hazelcast.core.LifecycleEvent.LifecycleState;
-import com.hazelcast.core.LifecycleListener;
 import com.hazelcast.instance.GroupProperties;
 import org.assertj.core.api.AbstractBooleanAssert;
 import org.junit.After;

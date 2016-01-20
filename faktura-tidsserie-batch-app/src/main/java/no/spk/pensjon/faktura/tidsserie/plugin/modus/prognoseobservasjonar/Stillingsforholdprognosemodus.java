@@ -1,7 +1,6 @@
 package no.spk.pensjon.faktura.tidsserie.plugin.modus.prognoseobservasjonar;
 
 import static java.util.stream.Collectors.joining;
-import static no.spk.pensjon.faktura.tidsserie.util.Services.lookup;
 
 import java.text.NumberFormat;
 import java.util.Locale;
@@ -14,6 +13,7 @@ import no.spk.pensjon.faktura.tidsserie.batch.upload.TidsserieBackendService;
 import no.spk.pensjon.faktura.tidsserie.core.AgentInitializer;
 import no.spk.pensjon.faktura.tidsserie.core.BehandleMedlemCommand;
 import no.spk.pensjon.faktura.tidsserie.core.GenererTidsserieCommand;
+import no.spk.pensjon.faktura.tidsserie.core.ServiceLocator;
 import no.spk.pensjon.faktura.tidsserie.core.StorageBackend;
 import no.spk.pensjon.faktura.tidsserie.core.TidsserieFactory;
 import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
@@ -25,7 +25,6 @@ import no.spk.pensjon.faktura.tidsserie.domain.reglar.Regelsett;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonspublikator;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieObservasjon;
-import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistration;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**
@@ -43,8 +42,9 @@ public class Stillingsforholdprognosemodus implements Tidsseriemodus {
     private final ThreadLocal<NumberFormat> format = new ThreadLocal<>();
 
     @Override
-    public void registerServices(ServiceRegistry serviceRegistry) {
-        final StorageBackend storage = lookup(serviceRegistry, StorageBackend.class);
+    public void registerServices(final ServiceRegistry serviceRegistry) {
+        final ServiceLocator services = new ServiceLocator(serviceRegistry);
+        final StorageBackend storage = services.firstMandatory(StorageBackend.class);
         serviceRegistry.registerService(AgentInitializer.class, kolonneskriver(storage));
     }
 
@@ -114,10 +114,10 @@ public class Stillingsforholdprognosemodus implements Tidsseriemodus {
                         .append(o.premiestatus().map(Premiestatus::kode).orElse("UKJENT"))
                         .append(';')
                         .append(Optional.of(o.aarsverk())
-                                        .map(Aarsverk::tilProsent)
-                                        .map(Prosent::toDouble)
-                                        .map(aarsverkformat()::format)
-                                        .orElse("0.0")
+                                .map(Aarsverk::tilProsent)
+                                .map(Prosent::toDouble)
+                                .map(aarsverkformat()::format)
+                                .orElse("0.0")
                         )
                         .append(';')
                         .append("MISSING")
@@ -151,9 +151,10 @@ public class Stillingsforholdprognosemodus implements Tidsseriemodus {
 
     @Override
     public Map<String, Integer> lagTidsserie(ServiceRegistry registry) {
-        final StorageBackend storage = lookup(registry, StorageBackend.class);
-        final TidsserieFactory tidsserieFactory = lookup(registry, TidsserieFactory.class);
-        final TidsserieBackendService tidsserieService = lookup(registry, TidsserieBackendService.class);
+        final ServiceLocator services = new ServiceLocator(registry);
+        final StorageBackend storage = services.firstMandatory(StorageBackend.class);
+        final TidsserieFactory tidsserieFactory = services.firstMandatory(TidsserieFactory.class);
+        final TidsserieBackendService tidsserieService = services.firstMandatory(TidsserieBackendService.class);
 
         final GenererTidsserieCommand command = new BehandleMedlemCommand(tidsserieFactory, storage, this);
         registry.registerService(GenererTidsserieCommand.class, command);
