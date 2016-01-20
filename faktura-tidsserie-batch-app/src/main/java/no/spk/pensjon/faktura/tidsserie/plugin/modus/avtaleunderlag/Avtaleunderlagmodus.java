@@ -1,13 +1,16 @@
 package no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag;
 
+import static java.util.stream.Collectors.toList;
 import static no.spk.faktura.input.BatchId.fromString;
 import static no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchIdConstants.GRUNNLAGSDATA_PREFIX;
 
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.core.CSVFormat;
@@ -16,12 +19,15 @@ import no.spk.pensjon.faktura.tidsserie.core.ServiceLocator;
 import no.spk.pensjon.faktura.tidsserie.core.StorageBackend;
 import no.spk.pensjon.faktura.tidsserie.core.TidsperiodeFactory;
 import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
+import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.Regelsett;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Tidsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonspublikator;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
+import no.spk.pensjon.faktura.tidsserie.storage.GrunnlagsdataRepository;
+import no.spk.pensjon.faktura.tidsserie.storage.csv.CSVInput;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**
@@ -39,6 +45,16 @@ public class Avtaleunderlagmodus implements Tidsseriemodus {
     @Override
     public void registerServices(ServiceRegistry serviceRegistry) {
         //noop
+    }
+
+    @Override
+    public GrunnlagsdataRepository repository(Path directory) {
+        return new CSVInput(directory){
+            @Override
+            public Stream<List<String>> medlemsdata() {
+                return Stream.empty();
+            }
+        };
     }
 
     @Override
@@ -71,10 +87,28 @@ public class Avtaleunderlagmodus implements Tidsseriemodus {
         final TidsperiodeFactory tidsperieodeFactory = locator.firstMandatory(TidsperiodeFactory.class);
 
         final AvtaleunderlagFactory factory = new AvtaleunderlagFactory(tidsperieodeFactory, regelsett());
-        final Stream<Underlag> underlag = factory.lagAvtaleunderlag(observasjonsperiode, uttrekksdato(grunnlagsdata));
-        lagreUnderlag(storage, underlag);
+        final List<Underlag> underlag = factory.lagAvtaleunderlag(observasjonsperiode, uttrekksdato(grunnlagsdata)).collect(toList());
+        lagreUnderlag(storage, underlag.stream());
 
-        return new HashMap<>();
+        return resultat(underlag);
+    }
+
+    private HashMap<String, Integer> resultat(final List<Underlag> underlag) {
+        return new HashMap<String, Integer>() {
+            {
+                put("avtaler", antallAvtaler(underlag));
+            }
+        };
+    }
+
+    private int antallAvtaler(List<Underlag> underlag) {
+        return (int) underlag
+                .stream()
+                .map(u -> u.valgfriAnnotasjonFor(AvtaleId.class))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .distinct()
+                .count();
     }
 
     private Uttrekksdato uttrekksdato(final Path grunnlagsdata) {
