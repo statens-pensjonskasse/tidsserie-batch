@@ -29,7 +29,7 @@ public class UnderlagskriverTest {
 
         final AvtaleId avtaleId = avtaleId(1L);
         tidsperiodeFactory.addPerioder(
-                new Avtaleperiode(dato("2015.01.01"), empty(), avtaleId, ArbeidsgiverId.valueOf(2))
+                new Avtaleperiode(dato("2015.01.01"), empty(), avtaleId, ArbeidsgiverId.valueOf(2), empty())
         );
 
         final Stream<Underlag> underlag = factory.lagAvtaleunderlag(
