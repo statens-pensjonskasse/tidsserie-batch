@@ -2,7 +2,10 @@ package no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag;
 
 import static java.time.LocalDate.now;
 import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
 
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -20,8 +23,11 @@ import no.spk.pensjon.faktura.tidsserie.domain.reglar.Regelperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.Regelsett;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aar;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
+import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.AbstractTidsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Tidsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.AvtaleFactory;
+import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.AvtaleinformasjonRepository;
+import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.StandardAvtaleInformasjonRepository;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.UnderlagFactory;
@@ -53,18 +59,13 @@ class AvtaleunderlagFactory {
     public Stream<Underlag> lagAvtaleunderlag(Observasjonsperiode observasjonsperiode, Uttrekksdato uttrekksdato) {
         Tidsserienummer tidsserienummer = Tidsserienummer.genererForDato(now());
 
-        return Stream.of(
-                grunnlagsdata.perioderAvType(Avtaleperiode.class),
-                grunnlagsdata.perioderAvType(Avtaleversjon.class),
-                grunnlagsdata.perioderAvType(Avtaleprodukt.class)
-        )
-                .flatMap(Function.identity())
-                .map(p -> (Avtalerelatertperiode<?>) p)
-                .collect(
-                        groupingBy(Avtalerelatertperiode::avtale))
-                .entrySet()
-                .stream()
-                .map(e -> new UnderlagFactory(
+        final List<? extends Tidsperiode<?>> grunnlag = grunnlag();
+        AvtaleinformasjonRepository avtalerepo = new StandardAvtaleInformasjonRepository(
+                grunnlag.stream().collect(groupingBy(Object::getClass))
+        );
+
+        return avtaler(grunnlag)
+                .map(avtale -> new UnderlagFactory(
                                 observasjonsperiode
                         )
                                 .addPerioder(
@@ -73,14 +74,10 @@ class AvtaleunderlagFactory {
                                 .addPerioder(
                                         regelsett.reglar()
                                 )
-                                .addPerioder(
-                                        e.getValue()
-                                                .stream()
-                                                .map(p -> (Tidsperiode<?>) p)
+                                .addPerioder(avtalerepo.finn(avtale)
                                 )
-                                .addPerioder(grunnlagsdata.perioderAvType(Arbeidsgiverdataperiode.class))
                                 .periodiser()
-                                .annoter(AvtaleId.class, e.getKey())
+                                .annoter(AvtaleId.class, avtale)
                                 .annoter(Uttrekksdato.class, uttrekksdato)
                                 .annoter(Tidsserienummer.class, tidsserienummer)
                 )
@@ -92,13 +89,32 @@ class AvtaleunderlagFactory {
                 );
     }
 
+    private List<AbstractTidsperiode<? extends AbstractTidsperiode<?>>> grunnlag() {
+        return Stream.of(
+                grunnlagsdata.perioderAvType(Avtaleperiode.class),
+                grunnlagsdata.perioderAvType(Avtaleversjon.class),
+                grunnlagsdata.perioderAvType(Avtaleprodukt.class),
+                grunnlagsdata.perioderAvType(Arbeidsgiverdataperiode.class)
+        )
+                .flatMap(Function.identity()).collect(toList());
+    }
+
+    private Stream<AvtaleId> avtaler(List<? extends Tidsperiode<?>> grunnlag) {
+        return grunnlag
+                .stream()
+                .filter(p -> p instanceof Avtalerelatertperiode)
+                .map(p -> (Avtalerelatertperiode<?>) p)
+                .map(Avtalerelatertperiode::avtale)
+                .distinct();
+    }
+
     private boolean erKobletTilAvtale(Underlagsperiode p) {
         return p.koblingAvType(Avtaleperiode.class).isPresent() ||
                 p.koblingAvType(Avtaleversjon.class).isPresent() ||
                 p.koblingAvType(Avtaleprodukt.class).isPresent();
     }
 
-    @SuppressWarnings({"unchecked"})
+    @SuppressWarnings({ "unchecked" })
     private void annoter(Underlag underlag, Underlagsperiode p) {
         p.koblingAvType(Aar.class).ifPresent(a -> p.annoter(Aarstall.class, a.aarstall()));
 

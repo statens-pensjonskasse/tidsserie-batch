@@ -5,21 +5,25 @@ import static java.time.LocalDate.now;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import static no.spk.pensjon.faktura.tidsserie.Datoar.dato;
 import static no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleversjon.avtaleversjon;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId.avtaleId;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.core.Tidsserienummer;
+import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Arbeidsgiverdataperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleprodukt;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.ArbeidsgiverId;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Avtale;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId;
+import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Orgnummer;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Premiekategori;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Premiesats;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Premiestatus;
@@ -223,12 +227,61 @@ public class AvtaleunderlagFactoryTest {
         assertPremiestatus(underlagsperioder.get(2)).contains(Premiestatus.AAO_01);
     }
 
+
+    @Test
+    public void skal_hente_orgnummer_fra_arbeidsgiverperiode_via_arbeidsgiverid_i_avtaleperiode() throws Exception {
+        final AvtaleId avtaleId = avtaleId(1L);
+        final ArbeidsgiverId arbeidsgiverId = ArbeidsgiverId.valueOf(2);
+        final AvtaleId avtaleUtenArbeidsgiverperiode = AvtaleId.avtaleId(2L);
+        tidsperiodeFactory.addPerioder(
+                new Avtaleperiode(
+                        dato("2015.01.01"),
+                        empty(),
+                        avtaleId,
+                        arbeidsgiverId,
+                        empty()
+                ),
+                new Avtaleperiode(
+                        dato("2015.01.01"),
+                        empty(),
+                        avtaleUtenArbeidsgiverperiode,
+                        ArbeidsgiverId.valueOf(50),
+                        empty()
+                ),
+                new Arbeidsgiverdataperiode(
+                        dato("2015.01.01"),
+                        empty(),
+                        Orgnummer.valueOf("999222111"),
+                        arbeidsgiverId
+                )
+        );
+
+        final Map<AvtaleId, List<Underlagsperiode>> avtaleunderlag = underlagFactory
+                .lagAvtaleunderlag(observasjonsperiode, new Uttrekksdato(dato("2016.01.01")))
+                .collect(toMap(
+                        u -> u.annotasjonFor(AvtaleId.class),
+                        u -> u.stream().collect(toList())
+                        )
+                );
+
+        assertThat(avtaleunderlag).hasSize(2);
+        assertThat(avtaleunderlag.get(avtaleId)).hasSize(1);
+        assertThat(avtaleunderlag.get(avtaleUtenArbeidsgiverperiode)).hasSize(1);
+
+        assertOrgnummer(avtaleunderlag.get(avtaleId).get(0)).isPresent();
+        assertOrgnummer(avtaleunderlag.get(avtaleUtenArbeidsgiverperiode).get(0)).isEmpty();
+    }
+
     private OptionalAssert<Premiestatus> assertPremiestatus(Underlagsperiode underlagsperiode) {
         return assertThat(underlagsperiode.valgfriAnnotasjonFor(Avtale.class).map(Avtale::premiestatus));
     }
 
     private OptionalAssert<ArbeidsgiverId> assertArbeidsgiverid(Underlagsperiode underlagsperiode) {
         return assertThat(underlagsperiode.valgfriAnnotasjonFor(ArbeidsgiverId.class));
+    }
+
+    private OptionalAssert<Orgnummer> assertOrgnummer(Underlagsperiode underlagsperiode) {
+        return assertThat(underlagsperiode.valgfriAnnotasjonFor(Orgnummer.class));
     }
 
     private OptionalAssert<Premiesats> assertPremiesats(Underlagsperiode underlagsperiode, Produkt produkt) {
