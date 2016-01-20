@@ -50,7 +50,6 @@ class AvtaleunderlagFactory {
      * @param uttrekksdato dato for når grunnlagsdata ble hentet fra Kasper
      * @return en strøm med underlagene basert på grunnlagsdata
      */
-    @SuppressWarnings({"unchecked"})
     public Stream<Underlag> lagAvtaleunderlag(Observasjonsperiode observasjonsperiode, Uttrekksdato uttrekksdato) {
         Tidsserienummer tidsserienummer = Tidsserienummer.genererForDato(now());
 
@@ -82,24 +81,33 @@ class AvtaleunderlagFactory {
                                 .addPerioder(grunnlagsdata.perioderAvType(Arbeidsgiverdataperiode.class))
                                 .periodiser()
                                 .annoter(AvtaleId.class, e.getKey())
+                                .annoter(Uttrekksdato.class, uttrekksdato)
+                                .annoter(Tidsserienummer.class, tidsserienummer)
                 )
-                .map(u -> new Underlag(
-                                u.stream().filter(this::erKobletTilAvtale)
-                        )
-                                .annoterFra(u)
-                )
+                .map(u -> u.restrict(this::erKobletTilAvtale))
                 .filter(u -> !u.toList().isEmpty())
                 .peek(u -> u
                         .stream()
-                        .peek(p -> p.koblingAvType(Aar.class).ifPresent(a -> p.annoter(Aarstall.class, a.aarstall())))
-                        .peek(p -> p.annoter(Avtale.class, avtaleFactory.lagAvtale(p, u.annotasjonFor(AvtaleId.class))))
-                        .peek(p -> p.koblingAvType(Avtaleversjon.class).ifPresent(av -> av.annoter(p)))
-                        .peek(p -> p.koblingarAvType(Regelperiode.class).forEach(r -> r.annoter(p)))
-                        .peek(p -> p.annoter(Uttrekksdato.class, uttrekksdato))
-                        .peek(p -> p.annoter(Tidsserienummer.class, tidsserienummer))
-                        .peek(this::annoterArbeidsgiverdata)
-                        .count()
+                        .forEach(p -> annoter(u, p))
                 );
+    }
+
+    private boolean erKobletTilAvtale(Underlagsperiode p) {
+        return p.koblingAvType(Avtaleperiode.class).isPresent() ||
+                p.koblingAvType(Avtaleversjon.class).isPresent() ||
+                p.koblingAvType(Avtaleprodukt.class).isPresent();
+    }
+
+    @SuppressWarnings({"unchecked"})
+    private void annoter(Underlag underlag, Underlagsperiode p) {
+        p.koblingAvType(Aar.class).ifPresent(a -> p.annoter(Aarstall.class, a.aarstall()));
+
+        p.annoter(Avtale.class, avtaleFactory.lagAvtale(p, underlag.annotasjonFor(AvtaleId.class)));
+
+        p.koblingAvType(Avtaleversjon.class).ifPresent(av -> av.annoter(p));
+        p.koblingarAvType(Regelperiode.class).forEach(r -> r.annoter(p));
+
+        annoterArbeidsgiverdata(p);
     }
 
     private void annoterArbeidsgiverdata(Underlagsperiode periode) {
@@ -118,9 +126,4 @@ class AvtaleunderlagFactory {
         });
     }
 
-    private boolean erKobletTilAvtale(Underlagsperiode p) {
-        return p.koblingAvType(Avtaleperiode.class).isPresent() ||
-                p.koblingAvType(Avtaleversjon.class).isPresent() ||
-                p.koblingAvType(Avtaleprodukt.class).isPresent();
-    }
 }

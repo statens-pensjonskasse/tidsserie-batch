@@ -129,8 +129,7 @@ public class AvtaleunderlagFactoryTest {
 
         final List<Uttrekksdato> uttrekksdatoer = underlagFactory
                 .lagAvtaleunderlag(observasjonsperiode, uttrekksdato)
-                .flatMap(Underlag::stream)
-                .map(p -> p.annotasjonFor(Uttrekksdato.class))
+                .map(u -> u.annotasjonFor(Uttrekksdato.class))
                 .collect(toList());
 
         assertThat(uttrekksdatoer).containsExactly(uttrekksdato);
@@ -138,14 +137,16 @@ public class AvtaleunderlagFactoryTest {
 
 
     @Test
-    public void skal_annotere_tidsserienummer() throws Exception {
+    public void skal_annotere_tidsserienummer_paa_underlaget() throws Exception {
         tidsperiodeFactory.addPerioder(enAvtalepriode());
 
         Tidsserienummer tidsserienummer = Tidsserienummer.genererForDato(now());
 
-        underlagsperioder()
-                .map(p -> p.annotasjonFor(Tidsserienummer.class))
-                .forEach(avtale -> assertThat(avtale).isEqualTo(tidsserienummer));
+        final List<Tidsserienummer> tidsserienummerFraUnderlag = underlagFactory
+                .lagAvtaleunderlag(observasjonsperiode, new Uttrekksdato(dato("2016.01.01")))
+                .map(u -> u.annotasjonFor(Tidsserienummer.class))
+                .collect(toList());
+        assertThat(tidsserienummerFraUnderlag).containsExactly(tidsserienummer);
     }
 
     @Test
