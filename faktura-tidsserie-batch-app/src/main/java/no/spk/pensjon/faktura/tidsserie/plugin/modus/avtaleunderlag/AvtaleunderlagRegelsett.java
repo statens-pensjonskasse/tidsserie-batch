@@ -27,7 +27,7 @@ public class AvtaleunderlagRegelsett implements Regelsett {
     }
 
     private Regelperiode<?> prognoseperiode(final BeregningsRegel<?> regel) {
-        return new Regelperiode<>(dato("2000.01.01"), empty(), regel);
+        return new Regelperiode<>(dato("1917.01.01"), empty(), regel);
     }
 
 }

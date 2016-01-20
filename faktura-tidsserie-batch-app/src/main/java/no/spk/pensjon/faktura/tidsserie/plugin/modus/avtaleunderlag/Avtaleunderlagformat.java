@@ -34,10 +34,11 @@ import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
  * <br>
  * Ny kolonner skal alltid legges til på slutten av eksisterende kolonne i formatet. Endringer i formatering bør gjøres med
  * omhu, da DVH skal benytte filene.
- *
+ * <br>
+ * Wiki-dokumentasjon av formatet finnes på: http://wiki/confluence/display/dok/Systemdokumentasjon+-+PU_FAK_BA_10+-+Avtaleunderlag
  * @author Snorre E. Brekke - Computas
  */
-public class Avtaleunderlagformat implements CSVFormat {
+class Avtaleunderlagformat implements CSVFormat {
     private static final int PROSENT_DESIMALER = 2;
     private static final int AARSFAKTOR_DESIMALER = 8;
     private final Desimaltallformatering desimaltall = new Desimaltallformatering();

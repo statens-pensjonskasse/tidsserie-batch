@@ -16,7 +16,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
  *
  * @author Snorre E. Brekke - Computas
  */
-public class Underlagskriver {
+class Underlagskriver {
     private final CSVFormat outputFormat;
     private final StorageBackend storage;
 

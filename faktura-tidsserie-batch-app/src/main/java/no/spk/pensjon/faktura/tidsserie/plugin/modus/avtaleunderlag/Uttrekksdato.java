@@ -8,7 +8,7 @@ import java.time.LocalDate;
  * Representerer dato grunnlagsdata for avtalegrunnlaget ble hentet fra Kasper.
  * @author Snorre E. Brekke - Computas
  */
-public final class Uttrekksdato {
+final class Uttrekksdato {
 
     private final LocalDate uttrekksdato;
 

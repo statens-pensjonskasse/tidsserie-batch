@@ -32,7 +32,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
  *
  * @author Snorre E. Brekke - Computas
  */
-public class AvtaleunderlagFactory {
+class AvtaleunderlagFactory {
     private final TidsperiodeFactory grunnlagsdata;
     private final AvtaleFactory avtaleFactory;
     private final Regelsett regelsett;
