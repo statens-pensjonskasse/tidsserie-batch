@@ -11,6 +11,7 @@ import java.util.concurrent.ExecutionException;
 
 import no.spk.pensjon.faktura.tidsserie.batch.upload.MedlemsdataUploader;
 import no.spk.pensjon.faktura.tidsserie.batch.upload.TidsserieBackendService;
+import no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklus;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 import com.hazelcast.core.HazelcastInstance;
@@ -40,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * -verbose:gc
  * </pre>
  */
-public class HazelcastBackend implements TidsserieBackendService {
+public class HazelcastBackend implements TidsserieBackendService, TidsserieLivssyklus {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private final Server server;
@@ -60,6 +61,11 @@ public class HazelcastBackend implements TidsserieBackendService {
 
     HazelcastBackend(final Server server) {
         this.server = requireNonNull(server, "server er påkrevd, men var null");
+    }
+
+    @Override
+    public void stop(final ServiceRegistry registry) {
+        server.stop();
     }
 
     @Override

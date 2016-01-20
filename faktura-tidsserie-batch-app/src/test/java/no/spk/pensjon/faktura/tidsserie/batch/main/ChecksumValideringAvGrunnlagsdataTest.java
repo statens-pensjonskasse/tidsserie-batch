@@ -1,12 +1,11 @@
 package no.spk.pensjon.faktura.tidsserie.batch.main;
 
 
-import static no.spk.pensjon.faktura.tidsserie.batch.main.GrunnlagsdataDirectoryValidator.MD5_CHECKSUMS_FILENAME;
+import static no.spk.pensjon.faktura.tidsserie.batch.main.ChecksumValideringAvGrunnlagsdata.MD5_CHECKSUMS_FILENAME;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,7 +22,7 @@ import org.junit.rules.TestName;
 /**
  * @author Snorre E. Brekke - Computas
  */
-public class GrunnlagsdataDirectoryValidatorTest {
+public class ChecksumValideringAvGrunnlagsdataTest {
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
@@ -38,7 +37,7 @@ public class GrunnlagsdataDirectoryValidatorTest {
     public void testMissingChecksumfileThrowsException() throws Exception {
         File grunnlagsdataBatchKatalog = testFolder.newFolder(name.getMethodName());
 
-        GrunnlagsdataDirectoryValidator validator = new GrunnlagsdataDirectoryValidator(grunnlagsdataBatchKatalog.toPath());
+        ChecksumValideringAvGrunnlagsdata validator = new ChecksumValideringAvGrunnlagsdata(grunnlagsdataBatchKatalog.toPath());
 
         exception.expect(GrunnlagsdataException.class);
         exception.expectMessage(MD5_CHECKSUMS_FILENAME + " mangler i katalogen");
@@ -51,7 +50,7 @@ public class GrunnlagsdataDirectoryValidatorTest {
         File grunnlagsdataBatchKatalog = testFolder.newFolder(name.getMethodName());
         grunnlagsdataBatchKatalog.toPath().resolve(MD5_CHECKSUMS_FILENAME).toFile().createNewFile();
 
-        GrunnlagsdataDirectoryValidator validator = new GrunnlagsdataDirectoryValidator(grunnlagsdataBatchKatalog.toPath());
+        ChecksumValideringAvGrunnlagsdata validator = new ChecksumValideringAvGrunnlagsdata(grunnlagsdataBatchKatalog.toPath());
 
         exception.expect(GrunnlagsdataException.class);
         exception.expectMessage(MD5_CHECKSUMS_FILENAME +" er tom.");
@@ -67,7 +66,7 @@ public class GrunnlagsdataDirectoryValidatorTest {
 
         write("invalid md5", file);
 
-        GrunnlagsdataDirectoryValidator validator = new GrunnlagsdataDirectoryValidator(grunnlagsdataBatchKatalog.toPath());
+        ChecksumValideringAvGrunnlagsdata validator = new ChecksumValideringAvGrunnlagsdata(grunnlagsdataBatchKatalog.toPath());
 
         exception.expect(GrunnlagsdataException.class);
         exception.expectMessage(MD5_CHECKSUMS_FILENAME +" er korrupt.");
@@ -82,7 +81,7 @@ public class GrunnlagsdataDirectoryValidatorTest {
         checksumFile.createNewFile();
         write("123 *123.txt", checksumFile);
 
-        GrunnlagsdataDirectoryValidator validator = new GrunnlagsdataDirectoryValidator(grunnlagsdataBatchKatalog.toPath());
+        ChecksumValideringAvGrunnlagsdata validator = new ChecksumValideringAvGrunnlagsdata(grunnlagsdataBatchKatalog.toPath());
 
         exception.expect(GrunnlagsdataException.class);
         exception.expectMessage("Følgende filer er oppført i " + MD5_CHECKSUMS_FILENAME + " men finnes ikke i ");
@@ -104,7 +103,7 @@ public class GrunnlagsdataDirectoryValidatorTest {
         String corruptMd5Checksum = "123";
         write(corruptMd5Checksum + " *" + fileToCheck.getName(), checksumFile);
 
-        GrunnlagsdataDirectoryValidator validator = new GrunnlagsdataDirectoryValidator(grunnlagsdataBatchKatalog.toPath());
+        ChecksumValideringAvGrunnlagsdata validator = new ChecksumValideringAvGrunnlagsdata(grunnlagsdataBatchKatalog.toPath());
 
         exception.expect(GrunnlagsdataException.class);
         exception.expectMessage("Følgende filer har en annen m5d-sjekksum enn oppgitt");
@@ -124,7 +123,7 @@ public class GrunnlagsdataDirectoryValidatorTest {
 
         write(getMd5Checksum(fileToCheck) + " *" + fileToCheck.getName(), checksumFile);
 
-        GrunnlagsdataDirectoryValidator validator = new GrunnlagsdataDirectoryValidator(grunnlagsdataBatchKatalog.toPath());
+        ChecksumValideringAvGrunnlagsdata validator = new ChecksumValideringAvGrunnlagsdata(grunnlagsdataBatchKatalog.toPath());
 
         validator.validate();
     }

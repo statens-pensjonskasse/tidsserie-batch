@@ -9,7 +9,7 @@ import com.hazelcast.core.HazelcastInstance;
  *
  * @author Tarjei Skorgenes
  */
-public interface Server {
+interface Server {
     /**
      * Startar opp master- og slavenodene.
      * <br>
@@ -19,4 +19,11 @@ public interface Server {
      * @return masternoda
      */
     HazelcastInstance start();
+
+    /**
+     * Terminerer master- og slavenodene umiddelbart.
+     * <br>
+     * Etter at metoda returnerer skal alt av Hazelcast-noder, trådar og andre ressursar ha blitt lukka.
+     */
+    void stop();
 }

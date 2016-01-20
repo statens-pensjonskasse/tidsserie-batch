@@ -1,7 +1,6 @@
 package no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast;
 
 import static com.hazelcast.instance.HazelcastInstanceFactory.newHazelcastInstance;
-import static java.lang.System.setProperty;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
@@ -21,6 +20,7 @@ import com.hazelcast.config.InMemoryFormat;
 import com.hazelcast.config.SerializerConfig;
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.LifecycleService;
 import com.hazelcast.instance.DefaultNodeContext;
 import com.hazelcast.instance.GroupProperties;
 import org.slf4j.Logger;
@@ -51,7 +51,6 @@ import org.slf4j.LoggerFactory;
  */
 class MultiNodeSingleJVMBackend implements Server {
     private final Logger logger = LoggerFactory.getLogger(MultiNodeSingleJVMBackend.class);
-    ;
 
     private final Set<HazelcastInstance> slavar = new HashSet<>();
 
@@ -60,10 +59,22 @@ class MultiNodeSingleJVMBackend implements Server {
     private final int antallNoder;
 
     private Optional<HazelcastInstance> master = empty();
+    private Config config;
 
     public MultiNodeSingleJVMBackend(final ServiceRegistry registry, int antallNoder) {
         this.registry = requireNonNull(registry, "registry er påkrevd, men var null");
         this.antallNoder = antallNoder;
+
+        this.config = buildConfig();
+    }
+
+    /**
+     * Terminerer master- og alle slavenodene umiddelbart.
+     */
+    @Override
+    public void stop() {
+        master.map(HazelcastInstance::getLifecycleService).ifPresent(LifecycleService::terminate);
+        slavar.stream().map(HazelcastInstance::getLifecycleService).forEach(LifecycleService::terminate);
     }
 
     /**
@@ -76,7 +87,23 @@ class MultiNodeSingleJVMBackend implements Server {
      */
     @Override
     public HazelcastInstance start() {
-        setProperty("hazelcast.logging.type", "slf4j");
+        logger.info("Startar masternoda...");
+        master = of(startInstance(config, 1));
+
+        logger.info("Startar sekundærnoder...");
+        slavar.addAll(
+                IntStream
+                        .rangeClosed(2, antallNoder)
+                        .parallel()
+                        .mapToObj(threadNr -> startInstance(config, threadNr))
+                        .collect(toSet())
+        );
+        logger.info("Alle beregningsnoder har starta");
+        return master.get();
+    }
+
+    private Config buildConfig() {
+        System.setProperty(GroupProperties.PROP_LOGGING_TYPE, "slf4j");
 
         final Config config = new XmlConfigBuilder().build();
         config.setProperty(GroupProperties.PROP_INITIAL_MIN_CLUSTER_SIZE, "1");
@@ -98,21 +125,7 @@ class MultiNodeSingleJVMBackend implements Server {
         config.getNetworkConfig().getJoin().getTcpIpConfig().setEnabled(true);
         config.getNetworkConfig().getJoin().getTcpIpConfig().addMember("127.0.0.1");
         config.getNetworkConfig().getInterfaces().addInterface("127.0.0.1");
-
-
-        logger.info("Startar masternoda...");
-        master = of(startInstance(config, 1));
-
-        logger.info("Startar sekundærnoder...");
-        slavar.addAll(
-                IntStream
-                        .rangeClosed(2, antallNoder)
-                        .parallel()
-                        .mapToObj(threadNr -> startInstance(config, threadNr))
-                        .collect(toSet())
-        );
-        logger.info("Alle beregningsnoder har starta");
-        return master.get();
+        return config;
     }
 
     private HazelcastInstance startInstance(final Config config, final int instanceNr) {
@@ -123,5 +136,9 @@ class MultiNodeSingleJVMBackend implements Server {
         );
         instance.getUserContext().put(ServiceRegistry.class.getSimpleName(), registry);
         return instance;
+    }
+
+    void setProperty(final String key, final String value) {
+        config.setProperty(key, value);
     }
 }

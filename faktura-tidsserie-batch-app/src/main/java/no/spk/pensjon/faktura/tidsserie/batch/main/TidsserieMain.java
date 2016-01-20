@@ -3,6 +3,7 @@ package no.spk.pensjon.faktura.tidsserie.batch.main;
 import static java.time.Duration.between;
 import static java.time.Duration.ofMinutes;
 import static java.time.LocalDateTime.now;
+import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.Executors.newCachedThreadPool;
 import static no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchIdConstants.TIDSSERIE_PREFIX;
 import static no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklus.onStop;
@@ -13,6 +14,7 @@ import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.ServiceLoader;
 import java.util.concurrent.ExecutorService;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import no.spk.faktura.input.BatchId;
@@ -50,13 +52,27 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
  * @author Tarjei Skorgenes
  */
 public class TidsserieMain {
-    private final ServiceRegistry registry = ServiceLoader.load(ServiceRegistry.class)
-            .iterator()
-            .next();
+    private final ServiceRegistry registry;
+    private final Consumer<Integer> exiter;
 
     private ApplicationController controller;
 
-    public void run(String[] args) {
+    /**
+     * Konstruerer ein ny instans av main-klassa som skal brukast til å eksekvere batchen.
+     * <br>
+     * For å støtte direkte kall til batchen frå integrasjonstestar er {@code exiter} lagt til som eit parameter ved konstruksjon. Dette for å unngå
+     * direkte kall til {@link System#exit(int)} som dreper test-JVMen.
+     *
+     * @param registry tjenesteregisteret som alle tjenester brukt av batchen skal registrerast i og hentast frå
+     * @param exiter konsument som tar seg av å avslutte batchkøyringa ved kall til {@link #shutdown()}
+     * @throws NullPointerException dersom nokon av parameterverdiane er lik {@code null}
+     */
+    public TidsserieMain(final ServiceRegistry registry, final Consumer<Integer> exiter) {
+        this.registry = requireNonNull(registry, "registry er påkrevd, men var null");
+        this.exiter = requireNonNull(exiter, "exiter er påkrevd, men var null");
+    }
+
+    public void run(final String... args) {
         controller = new ApplicationController(new ConsoleView());
 
         try {
@@ -83,14 +99,14 @@ public class TidsserieMain {
             controller.ryddOpp(directoryCleaner);
             Files.createDirectories(utKatalog);
 
-            final GrunnlagsdataDirectoryValidator grunnlagsdataValidator = new GrunnlagsdataDirectoryValidator(arguments.getGrunnlagsdataBatchKatalog());
-            registrer(GrunnlagsdataDirectoryValidator.class, grunnlagsdataValidator);
+            registrer(GrunnlagsdataDirectoryValidator.class, new ChecksumValideringAvGrunnlagsdata(arguments.getGrunnlagsdataBatchKatalog()));
 
             final Tidsseriemodus modus = arguments.modus();
             registrer(Tidsseriemodus.class, modus);
 
-            final TidsserieBackendService backend = new HazelcastBackend(registry, arguments.getNodes());
+            final HazelcastBackend backend = new HazelcastBackend(registry, arguments.getNodes());
             registrer(TidsserieBackendService.class, backend);
+            registrer(TidsserieLivssyklus.class, backend);
 
             final GrunnlagsdataRepository input = modus.repository(arguments.getInnkatalog().resolve(arguments.getGrunnlagsdataBatchId()));
             registrer(GrunnlagsdataRepository.class, input);
@@ -119,7 +135,7 @@ public class TidsserieMain {
             modus.registerServices(registry);
 
             final LocalDateTime started = now();
-            controller.validerGrunnlagsdata(grunnlagsdataValidator);
+            controller.validerGrunnlagsdata(Services.lookup(registry, GrunnlagsdataDirectoryValidator.class));
             controller.startBackend(backend);
             controller.lastOpp(overfoering);
 
@@ -155,8 +171,15 @@ public class TidsserieMain {
         return lookupAll(registry, type);
     }
 
-    public static void main(String[] args){
-        new TidsserieMain().run(args);
+    public static void main(String[] args) {
+        final Consumer<Integer> exiter = System::exit;
+        new TidsserieMain(
+                ServiceLoader.load(ServiceRegistry.class)
+                        .iterator()
+                        .next(),
+                exiter
+        )
+                .run(args);
     }
 
     private <T> ServiceRegistration<T> registrer(final Class<T> type, final T tjeneste, final String... egenskapar) {
@@ -171,7 +194,7 @@ public class TidsserieMain {
 
     private void shutdown() {
         controller.logExit();
-        System.exit(controller.exitCode());
+        exiter.accept(controller.exitCode());
     }
 
     private void startBatchTimeout(ProgramArguments arguments) {
