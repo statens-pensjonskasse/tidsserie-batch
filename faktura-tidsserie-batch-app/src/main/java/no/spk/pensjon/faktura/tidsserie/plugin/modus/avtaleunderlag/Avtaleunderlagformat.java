@@ -54,7 +54,7 @@ class Avtaleunderlagformat implements CSVFormat {
             kolonne("antallFeil", (u, p) -> antallFeil()).obligatorisk();
             kolonne("tidsserienummer", (u, p) -> u.annotasjonFor(Tidsserienummer.class)).obligatorisk();
 
-            kolonne("regel_aarsfaktor", (u, p) -> prosentSomDesimal(of(p.beregn(AarsfaktorRegel.class)).map(Aarsfaktor::tilProsent), AARSFAKTOR_DESIMALER));
+            kolonne("regel_aarsfaktor", (u, p) -> prosent(of(p.beregn(AarsfaktorRegel.class)).map(Aarsfaktor::tilProsent), AARSFAKTOR_DESIMALER));
             kolonne("regel_aarslengde", (u, p) -> kode(of(p.beregn(AarsLengdeRegel.class)).map(AntallDagar::verdi)));
             kolonne("regel_antalldager", (u, p) -> kode(of(p.beregn(AntallDagarRegel.class)).map(AntallDagar::verdi)));
 

@@ -94,14 +94,6 @@ abstract class FormatSpesifikasjon {
         return desimaltall.formater(verdi.toDouble() * 100d, antallDesimaler);
     }
 
-    protected String prosentSomDesimal(final Optional<Prosent> verdi, final int antallDesimaler) {
-        return verdi.map(p -> prosentSomDesimal(p, antallDesimaler)).orElse("");
-    }
-
-    protected String prosentSomDesimal(final Prosent verdi, final int antallDesimaler) {
-        return desimaltall.formater(verdi.toDouble(), antallDesimaler);
-    }
-
     protected static Optional<Avtale> avtale(final Underlagsperiode up) {
         return up.valgfriAnnotasjonFor(Avtale.class);
     }
