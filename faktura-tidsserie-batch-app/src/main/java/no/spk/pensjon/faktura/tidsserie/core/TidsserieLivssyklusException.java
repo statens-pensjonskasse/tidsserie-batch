@@ -21,7 +21,7 @@ public class TidsserieLivssyklusException extends RuntimeException {
      * @param operasjon livssyklusoperasjonen som feila
      * @param errors    feila som oppstod
      */
-    public TidsserieLivssyklusException(final String operasjon, final Stream<Exception> errors) {
+    public TidsserieLivssyklusException(final String operasjon, final Stream<RuntimeException> errors) {
         this.operasjon = operasjon;
         errors.forEach(this::addSuppressed);
     }

@@ -179,7 +179,7 @@ public class TidsserieMain {
             // Unngå at feil ved stop sluker eventuelle feil som boblar ut av tidsseriegenereringa
             livssyklus
                     .invokeAll(l -> l.stop(registry))
-                    .forEach(controller::informerOmUkjentFeil);
+                    .forEachFailure(controller::informerOmUkjentFeil);
         }
     }
 
@@ -225,11 +225,7 @@ public class TidsserieMain {
         return new BatchTimeout(arguments.getKjoeretid(), arguments.getSluttidspunkt()).start();
     }
 
-    private static TidsserieLivssyklusException livssyklusStartFeila(final Stream<Exception> errors) {
+    private static TidsserieLivssyklusException livssyklusStartFeila(final Stream<RuntimeException> errors) {
         return new TidsserieLivssyklusException("start", errors);
-    }
-
-    private static TidsserieLivssyklusException livssyklusStopFeila(final Stream<Exception> errors) {
-        return new TidsserieLivssyklusException("stop", errors);
     }
 }

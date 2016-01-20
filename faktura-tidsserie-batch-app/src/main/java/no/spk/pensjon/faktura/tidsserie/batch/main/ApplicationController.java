@@ -69,7 +69,7 @@ public class ApplicationController {
     public void validerGrunnlagsdata() {
         view.informerOmGrunnlagsdataValidering();
         validator.invokeFirst(GrunnlagsdataDirectoryValidator::validate)
-                .orElseThrow(this::valideringFeila);
+                .orElseRethrowFirstFailure();
     }
 
     public void ryddOpp(DirectoryCleaner directoryCleaner) throws HousekeepingException {
@@ -182,13 +182,5 @@ public class ApplicationController {
         }
         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
         loggerContext.stop();
-    }
-
-    private GrunnlagsdataException valideringFeila(final Stream<Exception> e) {
-        final Exception error = e.findFirst().get();
-        if (error instanceof GrunnlagsdataException) {
-            return (GrunnlagsdataException) error;
-        }
-        return new GrunnlagsdataException(error);
     }
 }

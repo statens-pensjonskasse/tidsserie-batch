@@ -63,6 +63,21 @@ public class ApplicationControllerTest {
     }
 
     @Test
+    public void skal_rekaste_opprinnelig_feil_ved_validering_av_grunnlagsdata() {
+        final GrunnlagsdataDirectoryValidator validator = mock(GrunnlagsdataDirectoryValidator.class);
+        registry.registrer(GrunnlagsdataDirectoryValidator.class, validator);
+
+        final GrunnlagsdataException expected = new GrunnlagsdataException("I WAN't BETTER GRUNNLAGSDATA");
+        doThrow(expected).when(validator).validate();
+
+        try {
+            controller.validerGrunnlagsdata();
+        } catch (final GrunnlagsdataException e) {
+            assertThat(e).isSameAs(expected);
+        }
+    }
+
+    @Test
     public void testRyddOpp() throws Exception {
         DirectoryCleaner cleaner = mock(DirectoryCleaner.class);
         controller.ryddOpp(cleaner);

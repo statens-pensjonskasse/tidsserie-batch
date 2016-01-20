@@ -22,13 +22,13 @@ import java.util.stream.Stream;
  * @since 2.1.0
  */
 public class ExtensionpointStatus {
-    private final List<Exception> results = new ArrayList<>();
+    private final List<RuntimeException> results = new ArrayList<>();
 
     static ExtensionpointStatus ok() {
         return new ExtensionpointStatus(Stream.empty());
     }
 
-    private ExtensionpointStatus(final Stream<Exception> results) {
+    private ExtensionpointStatus(final Stream<RuntimeException> results) {
         results.forEach(this.results::add);
     }
 
@@ -44,7 +44,7 @@ public class ExtensionpointStatus {
     <T> ExtensionpointStatus invoke(final Consumer<T> operation, T extension) {
         try {
             operation.accept(extension);
-        } catch (final Exception t) {
+        } catch (final RuntimeException t) {
             results.add(t);
         }
         return this;
@@ -67,7 +67,7 @@ public class ExtensionpointStatus {
      *
      * @return ein straum med alle feil som vart fanga av {@link Extensionpoint#invokeAll(Consumer)}
      */
-    public Stream<Exception> stream() {
+    public Stream<RuntimeException> stream() {
         return results.stream();
     }
 
@@ -76,7 +76,7 @@ public class ExtensionpointStatus {
      *
      * @param failure callbacken som får tilsendt kvar av feila statusen inneheld
      */
-    public void forEach(final Consumer<Exception> failure) {
+    public void forEachFailure(final Consumer<RuntimeException> failure) {
         results.forEach(failure);
     }
 
@@ -86,15 +86,28 @@ public class ExtensionpointStatus {
      * Dersom statusen er ok og ikkje inneheld nokon feil returnerer metoda utan å kaste ein exception.
      *
      * @param creator ein funksjon som tar inn lista med alle feil som oppstod under kallet til
-     *                {@link Extensionpoint#invokeAll(Consumer)} og returnerer ein exception som
-     *                beskriv kva som har feila
-     * @param <X>     feiltypen som skal bli kasta
+     * {@link Extensionpoint#invokeAll(Consumer)} og returnerer ein exception som
+     * beskriv kva som har feila
+     * @param <X> feiltypen som skal bli kasta
      * @throws X dersom {@link #hasFailed} indikerer at kallet har feila
      */
-    public <X extends Throwable> void orElseThrow(final Function<Stream<Exception>, X> creator) throws X {
+    public <X extends Throwable> void orElseThrow(final Function<Stream<RuntimeException>, X> creator) throws X {
         if (hasFailed()) {
             throw creator.apply(results.stream());
         }
+    }
+
+    /**
+     * Re-kastar den første feilen som statusen inneheld, uten nokon wrapper-exception rundt.
+     * <br>
+     * Dersom statusen ikkje {@link #hasFailed() har feila} vil ingen feil bli kasta.
+     *
+     * @throws RuntimeException den første feilen som statusen inneheld
+     */
+    public void orElseRethrowFirstFailure() {
+        results.stream().findFirst().ifPresent(e -> {
+            throw e;
+        });
     }
 
     @Override

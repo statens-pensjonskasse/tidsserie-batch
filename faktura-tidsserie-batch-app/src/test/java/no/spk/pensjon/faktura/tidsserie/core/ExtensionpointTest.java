@@ -2,6 +2,7 @@ package no.spk.pensjon.faktura.tidsserie.core;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 
 import no.spk.pensjon.faktura.tidsserie.batch.ServiceRegistryRule;
 import no.spk.pensjon.faktura.tjenesteregister.Constants;
+import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 import org.assertj.core.api.AbstractBooleanAssert;
 import org.junit.Before;
@@ -144,6 +146,62 @@ public class ExtensionpointTest {
         assertHasFailed(status).isTrue();
 
         assertThat(status.stream().collect(Collectors.toList())).containsOnly(first, second);
+    }
+
+    @Test
+    public void skal_ikkje_fange_non_runtime_exceptions() {
+        class SneakyThrowingLivssyklus implements TidsserieLivssyklus {
+
+            private final Exception expected;
+
+            private SneakyThrowingLivssyklus(final Exception expected) {
+                this.expected = expected;
+            }
+
+            @Override
+            public void start(final ServiceRegistry registry) {
+                sneakyThrow(expected);
+            }
+
+            @SuppressWarnings("unchecked")
+            private <T extends Throwable> void sneakyThrow(final Throwable t) throws T {
+                throw (T) t;
+            }
+        }
+        final Exception expected = new Exception("SKYTE MEG SJØLV I FOTEN? JA TAKK!");
+        registry.registrer(TidsserieLivssyklus.class, new SneakyThrowingLivssyklus(expected));
+        try {
+            invokeAll();
+            fail("Her skulle Extensionpoint ha feila brutalt umiddelbart uten å fange feilen");
+        } catch (final Exception e) {
+            assertThat(e).isSameAs(expected);
+        }
+    }
+
+    @Test
+    public void skal_ikkje_fange_errors() {
+        final Error expected = new Error("OH GOD, MY LEG, MY LEG!");
+        doThrow(expected).when(a).start(any());
+
+        try {
+            invokeAll();
+            fail("Her skulle Extensionpoint ha feila brutalt umiddelbart uten å fange feilen");
+        } catch (final Error e) {
+            assertThat(e).isSameAs(expected);
+        }
+    }
+
+    @Test
+    public void skal_rethrowe_foerste_feil_as_is() {
+        final RuntimeException expected = new RuntimeException("DEN FYRSTE FEIL EG HØYRA FEKK VAR RUNTIMEEXCEPTION I VOGGA");
+        doThrow(expected).when(a).start(any());
+
+        try {
+            invokeAll().orElseRethrowFirstFailure();
+            fail("Her skulle den første feilen ha blitt rekasta");
+        } catch (final RuntimeException e) {
+            assertThat(e).isSameAs(expected);
+        }
     }
 
     @Before

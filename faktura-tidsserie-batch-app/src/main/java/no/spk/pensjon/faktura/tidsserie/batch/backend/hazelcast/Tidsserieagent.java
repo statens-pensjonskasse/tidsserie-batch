@@ -70,7 +70,7 @@ class Tidsserieagent
     void notifyListeners(final Context<String, Integer> context) {
         MDC.put(MDC_SERIENUMMER, "" + serienummer);
         listeners.invokeAll(i -> i.partitionInitialized(serienummer))
-                .forEach(e -> emitError(context, e));
+                .forEachFailure(e -> emitError(context, e));
     }
 
     @Override

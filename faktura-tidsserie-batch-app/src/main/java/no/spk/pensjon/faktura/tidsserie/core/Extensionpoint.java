@@ -23,12 +23,12 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
  * ettersom desse blir slått opp dynamisk ved kall til {@link #invokeAll(Consumer)} og {@link #invokeFirst(Consumer)}.
  * <br>
  * Ein siste sentral tanke med Extensionpoint-mekanisma er å gjere feilhandtering til ein sentral del av
- * standardplatformas oppførsel. Ved å fange alle feil som oppstår ved kall ut av standardplatforma og til tjenester
- * plugga inn frå klientar og plugins, står standardplatforma sjøl ansvarlig for å definere i kvar tjenestetype som
- * den kallar ut til,kva som er forventa oppførsel ved feil. Standardplatforma kan f.eks. velge å ignorere heilt,
- * ignorere men logge eller feile i etterkant av at alle innplugga tjenester har blitt kalla. Dette i motsetning
- * til at den feilar umiddelbart når første tjeneste feilar, utan å kalle påfølgjande tjenester og dermed fråta dei
- * muligheita til å agere på tjenestekallet som er utført.
+ * standardplatformas oppførsel. Ved å fange alle {@link RuntimeException}s som oppstår ved kall ut av standardplatforma
+ * og til tjenester plugga inn frå klientar og plugins, står platforma sjøl ansvarlig for å definere i kvar tjenestetype
+ * som den kallar ut til, kva som er forventa oppførsel ved feil. Standardplatforma kan f.eks. velge å ignorere heilt,
+ * ignorere men logge, rethrowe eller feile med ein annan feiltype enn opprinnelig, i etterkant av at alle innplugga
+ * tjenester har blitt kalla. Dette i motsetning til at den feilar umiddelbart når første tjeneste feilar, utan å kalle
+ * påfølgjande tjenester og dermed fråta dei muligheita til å agere på tjenestekallet som blir utført.
  * <br>
  * I første utgåve er Extensionpoint-mekanisma reindyrka i forhold til å kun støtte kommandoar, dvs operasjonar uten
  * returverdi. For tjenester som har returverdi må eventuelt {@link ServiceLocator} benyttast for å kommunisere
@@ -46,7 +46,7 @@ public class Extensionpoint<T> {
      * Konstruerer eit nytt extensionpoint som støttar tjenester av angitt {@code type}
      * og som er registrert i tjenesteregisteret.
      *
-     * @param type     tjenestetypen som skal kunne bli kalla via extension pointet
+     * @param type tjenestetypen som skal kunne bli kalla via extension pointet
      * @param registry tjenesteregisteret tjenestene vil bli slått opp via
      * @throws NullPointerException dersom nokon av argumenta er lik {@code null}
      */
