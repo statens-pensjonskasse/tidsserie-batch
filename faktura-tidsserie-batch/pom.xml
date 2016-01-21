@@ -189,6 +189,12 @@
     <profiles>
         <profile>
             <id>exe</id>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                    <value>true</value>
+                </property>
+            </activation>
             <dependencies>
                 <dependency>
                     <groupId>com.oracle</groupId>
