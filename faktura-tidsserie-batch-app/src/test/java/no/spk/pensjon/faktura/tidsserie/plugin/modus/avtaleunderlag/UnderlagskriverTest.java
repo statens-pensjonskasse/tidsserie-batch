@@ -1,16 +1,15 @@
 package no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag;
 
 
-import static java.util.Optional.empty;
 import static java.util.stream.Collectors.joining;
 import static no.spk.pensjon.faktura.tidsserie.Datoar.dato;
+import static no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleperiode.avtaleperiode;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId.avtaleId;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.core.ObservasjonsEvent;
-import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.ArbeidsgiverId;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
@@ -29,7 +28,10 @@ public class UnderlagskriverTest {
 
         final AvtaleId avtaleId = avtaleId(1L);
         tidsperiodeFactory.addPerioder(
-                new Avtaleperiode(dato("2015.01.01"), empty(), avtaleId, ArbeidsgiverId.valueOf(2), empty())
+                avtaleperiode(avtaleId)
+                        .fraOgMed(dato("2015.01.01"))
+                        .arbeidsgiverId(ArbeidsgiverId.valueOf(2))
+                        .bygg()
         );
 
         final Stream<Underlag> underlag = factory.lagAvtaleunderlag(

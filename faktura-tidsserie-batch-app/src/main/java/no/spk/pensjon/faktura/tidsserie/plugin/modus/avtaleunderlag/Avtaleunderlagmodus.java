@@ -93,12 +93,10 @@ public class Avtaleunderlagmodus implements Tidsseriemodus {
         return resultat(underlag);
     }
 
-    private HashMap<String, Integer> resultat(final List<Underlag> underlag) {
-        return new HashMap<String, Integer>() {
-            {
-                put("avtaler", antallAvtaler(underlag));
-            }
-        };
+    private Map<String, Integer> resultat(final List<Underlag> underlag) {
+        Map<String, Integer> result = new HashMap<>();
+        result.put("avtaler", antallAvtaler(underlag));
+        return result;
     }
 
     private int antallAvtaler(List<Underlag> underlag) {

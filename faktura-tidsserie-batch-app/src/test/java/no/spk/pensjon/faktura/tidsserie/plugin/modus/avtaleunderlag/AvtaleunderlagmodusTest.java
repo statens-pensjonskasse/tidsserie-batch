@@ -1,8 +1,7 @@
 package no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag;
 
-import static java.util.Optional.empty;
 import static no.spk.pensjon.faktura.tidsserie.Datoar.dato;
-import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId.avtaleId;
+import static no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleperiode.avtaleperiode;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -79,11 +78,11 @@ public class AvtaleunderlagmodusTest {
         assertThat(resultat.get("avtaler")).isEqualTo(2);
     }
 
+
     private Avtaleperiode enAvtalepriode(AvtaleId avtaleId) {
-        return new Avtaleperiode(dato("2015.01.01"),
-                empty(),
-                avtaleId,
-                ArbeidsgiverId.valueOf(2),
-                empty());
+        return avtaleperiode(avtaleId)
+                .fraOgMed(dato("2015.01.01"))
+                .arbeidsgiverId(ArbeidsgiverId.valueOf(2))
+                .bygg();
     }
 }

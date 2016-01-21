@@ -1,5 +1,7 @@
 package no.spk.pensjon.faktura.tidsserie.storage.csv;
 
+import static no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleperiode.avtaleperiode;
+
 import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.ArbeidsgiverId;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId;
@@ -15,12 +17,11 @@ public class AvtaleperiodeOversetter extends ReflectiveCsvOversetter<AvtaleCsv, 
 
     @Override
     protected Avtaleperiode transformer(AvtaleCsv csvRad) {
-        return new Avtaleperiode(
-                support.tilDato(csvRad.fraOgMed).get(),
-                support.tilDato(csvRad.tilOgMed),
-                csvRad.avtaleId.map(AvtaleId::valueOf).get(),
-                csvRad.arbeidsgiverId.map(ArbeidsgiverId::valueOf).get(),
-                csvRad.ordning.map(Ordning::valueOf)
-        );
+        return avtaleperiode(csvRad.avtaleId.map(AvtaleId::valueOf).get())
+                .fraOgMed(support.tilDato(csvRad.fraOgMed).get())
+                .tilOgMed(support.tilDato(csvRad.tilOgMed))
+                .arbeidsgiverId(csvRad.arbeidsgiverId.map(ArbeidsgiverId::valueOf).get())
+                .ordning(csvRad.ordning.map(Ordning::valueOf))
+                .bygg();
     }
 }

@@ -7,6 +7,7 @@ import static java.util.Optional.of;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static no.spk.pensjon.faktura.tidsserie.Datoar.dato;
+import static no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleperiode.avtaleperiode;
 import static no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleversjon.avtaleversjon;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId.avtaleId;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -82,11 +83,10 @@ public class AvtaleunderlagFactoryTest {
     public void skal_annotere_avtale() throws Exception {
         final AvtaleId avtaleId = avtaleId(1L);
         tidsperiodeFactory.addPerioder(
-                new Avtaleperiode(dato("2015.01.01"),
-                        empty(),
-                        avtaleId,
-                        ArbeidsgiverId.valueOf(2),
-                        empty())
+                avtaleperiode(avtaleId)
+                        .fraOgMed(dato("2015.01.01"))
+                        .arbeidsgiverId(ArbeidsgiverId.valueOf(2))
+                        .bygg()
         );
 
         underlagsperioder()
@@ -188,13 +188,11 @@ public class AvtaleunderlagFactoryTest {
     public void skal_lage_underlag_selv_om_avtaleperioder_ikke_overlapper() throws Exception {
         final AvtaleId avtaleId = avtaleId(1L);
         tidsperiodeFactory.addPerioder(
-                new Avtaleperiode(
-                        dato("2015.01.01"),
-                        of(dato("2015.01.31")),
-                        avtaleId,
-                        ArbeidsgiverId.valueOf(2),
-                        empty()
-                ),
+                avtaleperiode(avtaleId)
+                        .fraOgMed(dato("2015.01.01"))
+                        .tilOgMed(dato("2015.01.31"))
+                        .arbeidsgiverId(ArbeidsgiverId.valueOf(2))
+                        .bygg(),
                 new Avtaleprodukt(
                         dato("2015.02.01"),
                         of(dato("2015.02.28")),
@@ -234,20 +232,14 @@ public class AvtaleunderlagFactoryTest {
         final ArbeidsgiverId arbeidsgiverId = ArbeidsgiverId.valueOf(2);
         final AvtaleId avtaleUtenArbeidsgiverperiode = AvtaleId.avtaleId(2L);
         tidsperiodeFactory.addPerioder(
-                new Avtaleperiode(
-                        dato("2015.01.01"),
-                        empty(),
-                        avtaleId,
-                        arbeidsgiverId,
-                        empty()
-                ),
-                new Avtaleperiode(
-                        dato("2015.01.01"),
-                        empty(),
-                        avtaleUtenArbeidsgiverperiode,
-                        ArbeidsgiverId.valueOf(50),
-                        empty()
-                ),
+                avtaleperiode(avtaleId)
+                        .fraOgMed(dato("2015.01.01"))
+                        .arbeidsgiverId(arbeidsgiverId)
+                        .bygg(),
+                avtaleperiode(avtaleUtenArbeidsgiverperiode)
+                        .fraOgMed(dato("2015.01.01"))
+                        .arbeidsgiverId(ArbeidsgiverId.valueOf(50))
+                        .bygg(),
                 new Arbeidsgiverdataperiode(
                         dato("2015.01.01"),
                         empty(),
@@ -290,11 +282,10 @@ public class AvtaleunderlagFactoryTest {
     }
 
     private Avtaleperiode enAvtalepriode() {
-        return new Avtaleperiode(dato("2015.01.01"),
-                empty(),
-                avtaleId(1L),
-                ArbeidsgiverId.valueOf(2),
-                empty());
+        return avtaleperiode(avtaleId(1L))
+                .fraOgMed(dato("2015.01.01"))
+                .arbeidsgiverId(ArbeidsgiverId.valueOf(2))
+                .bygg();
     }
 
 

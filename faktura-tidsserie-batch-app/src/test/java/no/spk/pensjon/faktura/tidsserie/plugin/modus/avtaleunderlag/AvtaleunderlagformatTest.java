@@ -6,6 +6,7 @@ import static java.util.Optional.of;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static no.spk.pensjon.faktura.tidsserie.Datoar.dato;
+import static no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleperiode.avtaleperiode;
 import static no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleversjon.avtaleversjon;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId.avtaleId;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Kroner.kroner;
@@ -17,7 +18,6 @@ import java.util.UUID;
 
 import no.spk.pensjon.faktura.tidsserie.core.Tidsserienummer;
 import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Arbeidsgiverdataperiode;
-import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleprodukt;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.ArbeidsgiverId;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId;
@@ -60,7 +60,12 @@ public class AvtaleunderlagformatTest {
         final Orgnummer orgnummer = Orgnummer.valueOf("999888222");
 
         tidsperiodeFactory.addPerioder(
-                new Avtaleperiode(dato("2015.01.01"), empty(), avtaleId, arbeidsgiverId, of(Ordning.SPK)),
+                avtaleperiode(avtaleId)
+                        .fraOgMed(dato("2015.01.01"))
+                        .tilOgMed(empty())
+                        .arbeidsgiverId(arbeidsgiverId)
+                        .ordning(of(Ordning.SPK))
+                        .bygg(),
                 new Arbeidsgiverdataperiode(dato("2015.01.01"), empty(), orgnummer, arbeidsgiverId),
                 avtaleversjon(avtaleId)
                         .fraOgMed(dato("2015.01.01"))
