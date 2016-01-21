@@ -2,6 +2,7 @@ package no.spk.pensjon.faktura.tidsserie.batch.main.input;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assume.assumeFalse;
 
 import java.io.File;
 import java.io.IOException;
@@ -182,5 +183,29 @@ public class TidsserieArgumentsFactoryTest {
 
     }
 
+    @Test
+    public void skalGodtaReadonlyGrunnlagsdata() throws Exception {
+        assumeFalse(isWindowsOs());
+        Path path = testFolder.newFolder(name.getMethodName()).toPath();
 
+        String expectedBatchFolder = "grunnlagsdata_2015-01-01_01-00-00-01";
+        path.resolve("grunnlagsdata_2015-01-01_01-00-00-00").toFile().mkdir();
+        path.resolve(expectedBatchFolder).toFile().mkdir();
+
+        assertThat(path.toFile().setWritable(false)).isTrue();
+
+        ProgramArguments programArguments = new TidsserieArgumentsFactory().create(
+                "-b", "Test readonly grunnlagsdata",
+                "-i", path.toAbsolutePath().toString(),
+                "-log", path.toAbsolutePath().toString(),
+                "-id", expectedBatchFolder,
+                "-o", path.toAbsolutePath().toString());
+
+        assertThat(programArguments.getGrunnlagsdataBatchId()).isEqualTo(expectedBatchFolder);
+
+    }
+
+    private boolean isWindowsOs(){
+        return System.getProperty( "os.name" ).startsWith( "Windows" );
+    }
 }
