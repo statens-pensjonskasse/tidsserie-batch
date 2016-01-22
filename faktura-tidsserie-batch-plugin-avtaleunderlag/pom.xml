@@ -12,6 +12,10 @@
     <dependencies>
         <dependency>
             <groupId>no.spk.pensjon.faktura</groupId>
+            <artifactId>faktura-bootstrap-lib</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.spk.pensjon.faktura</groupId>
             <artifactId>faktura-prognose-tidsserie</artifactId>
         </dependency>
         <dependency>

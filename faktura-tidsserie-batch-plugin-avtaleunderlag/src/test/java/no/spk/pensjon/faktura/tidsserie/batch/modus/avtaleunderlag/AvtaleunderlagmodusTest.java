@@ -1,9 +1,8 @@
-package no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag;
+package no.spk.pensjon.faktura.tidsserie.batch.modus.avtaleunderlag;
 
 import static java.util.Optional.of;
 import static no.spk.pensjon.faktura.tidsserie.Datoar.dato;
 import static no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleperiode.avtaleperiode;
-import static no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag.Avtaleunderlagmodus.ReferansedataCSVInput;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -23,7 +22,7 @@ import no.spk.pensjon.faktura.tidsserie.batch.core.GrunnlagsdataRepository;
 import no.spk.pensjon.faktura.tidsserie.batch.core.Katalog;
 import no.spk.pensjon.faktura.tidsserie.batch.core.StorageBackend;
 import no.spk.pensjon.faktura.tidsserie.batch.core.TidsperiodeFactory;
-import no.spk.pensjon.faktura.tidsserie.batch.main.GrunnlagsdataService;
+import no.spk.pensjon.faktura.tidsserie.batch.modus.avtaleunderlag.Avtaleunderlagmodus.ReferansedataCSVInput;
 import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.ArbeidsgiverId;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId;
@@ -54,7 +53,6 @@ public class AvtaleunderlagmodusTest {
         modus = new Avtaleunderlagmodus();
 
         services.registrer(Observasjonsperiode.class, new Observasjonsperiode(dato("2015.01.01"), dato("2015.01.01")));
-        services.registrer(GrunnlagsdataService.class, mock(GrunnlagsdataService.class));
         services.registrer(StorageBackend.class, mock(StorageBackend.class));
         innKatalog = temp.newFolder("grunnlagsdata_2016-01-01_01-01-01-01").toPath();
         services.registry().registerService(Path.class, innKatalog, Katalog.GRUNNLAGSDATA.egenskap()

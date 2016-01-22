@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag;
+package no.spk.pensjon.faktura.tidsserie.batch.modus.avtaleunderlag;
 
 import static java.util.Optional.of;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt.AFP;

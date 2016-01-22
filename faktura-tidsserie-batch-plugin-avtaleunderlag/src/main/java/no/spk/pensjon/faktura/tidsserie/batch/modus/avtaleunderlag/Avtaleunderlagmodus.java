@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag;
+package no.spk.pensjon.faktura.tidsserie.batch.modus.avtaleunderlag;
 
 import static java.util.stream.Collectors.toList;
 import static no.spk.faktura.input.BatchId.fromString;

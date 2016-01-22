@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag;
+package no.spk.pensjon.faktura.tidsserie.batch.modus.avtaleunderlag;
 
 import java.math.RoundingMode;
 import java.text.NumberFormat;

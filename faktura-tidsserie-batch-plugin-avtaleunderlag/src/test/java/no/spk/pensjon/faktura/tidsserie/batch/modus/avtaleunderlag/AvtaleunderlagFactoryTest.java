@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag;
+package no.spk.pensjon.faktura.tidsserie.batch.modus.avtaleunderlag;
 
 
 import static java.time.LocalDate.now;
@@ -38,6 +38,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
 
+import org.assertj.core.api.Assertions;
 import org.assertj.core.api.OptionalAssert;
 import org.junit.Before;
 import org.junit.Test;
@@ -136,7 +137,7 @@ public class AvtaleunderlagFactoryTest {
                 .map(u -> u.annotasjonFor(Uttrekksdato.class))
                 .collect(toList());
 
-        assertThat(uttrekksdatoer).containsExactly(uttrekksdato);
+        Assertions.assertThat(uttrekksdatoer).containsExactly(uttrekksdato);
     }
 
 
