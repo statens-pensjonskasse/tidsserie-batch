@@ -16,6 +16,10 @@
         </dependency>
         <dependency>
             <groupId>no.spk.pensjon.faktura</groupId>
+            <artifactId>faktura-tidsserie-batch-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.spk.pensjon.faktura</groupId>
             <artifactId>faktura-tidsserie-batch-input</artifactId>
         </dependency>
         <dependency>
