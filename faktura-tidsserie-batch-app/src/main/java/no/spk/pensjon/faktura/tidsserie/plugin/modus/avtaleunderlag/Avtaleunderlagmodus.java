@@ -42,6 +42,14 @@ public class Avtaleunderlagmodus implements Tidsseriemodus {
 
     private Optional<Underlagskriver> avtaleunderlagskriver = Optional.empty();
 
+    /**
+     * Modusen heiter {@code live_tidsserie}.
+     */
+    @Override
+    public String navn() {
+        return "avtaleunderlag";
+    }
+
     @Override
     public void registerServices(final ServiceRegistry serviceRegistry) {
         final ServiceLocator services = new ServiceLocator(serviceRegistry);

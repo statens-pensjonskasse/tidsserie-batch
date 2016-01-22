@@ -41,6 +41,14 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 public class Stillingsforholdprognosemodus implements Tidsseriemodus {
     private final ThreadLocal<NumberFormat> format = new ThreadLocal<>();
 
+    /**
+     * Modusen heiter {@code stillingsforholdobservasjonar}.
+     */
+    @Override
+    public String navn() {
+        return "stillingsforholdobservasjonar";
+    }
+
     @Override
     public void registerServices(final ServiceRegistry serviceRegistry) {
         final ServiceLocator services = new ServiceLocator(serviceRegistry);

@@ -64,6 +64,14 @@ public class AvregningTidsseriemodus implements Tidsseriemodus {
 
     private Optional<Set<AvtaleId>> avtaler = Optional.empty();
 
+    /**
+     * Modusen heiter {@code avregning_tidsserie}.
+     */
+    @Override
+    public String navn() {
+        return "avregning_tidsserie";
+    }
+
     @Override
     public Stream<Tidsperiode<?>> referansedata(final TidsperiodeFactory perioder) {
         return Stream.of(

@@ -75,4 +75,16 @@ public interface Tidsseriemodus extends Medlemsbehandler {
     default boolean behandleMedlem(Medlemsdata medlemsdata) {
         return true;
     }
+
+    /**
+     * Eit navn som unikt identifiserer modusen for å skille den frå andre modusar.
+     * <br>
+     * Blir brukt for å gi brukaren muligheit til å angi ønska modus for batchkøyringa på kommandolinja.
+     *
+     * @return ein streng som inneheld eit modusnavn som brukaren ønskjer å generere ein tidsserie med
+     * @since 2.1.0
+     */
+   default String navn() {
+       return "modus";
+   }
 }

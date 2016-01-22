@@ -83,9 +83,10 @@ public class ProgramArguments implements Arguments {
     @Parameter(names = { "-m" },
             description = "Modusen batchen skal bruke for oppbygging av og lagring av tidsserien.",
             validateWith = ModusValidator.class,
-            converter = ModusConverter.class
+            converter = ModusConverter.class,
+            required = true
     )
-    Modus modus = Modus.STILLINGSFORHOLD_OBSERVASJONAR;
+    Modus modus;
 
     @Parameter(names = "-kjoeretid",
             description = "Maks kjøretid på formatet HHmm.",

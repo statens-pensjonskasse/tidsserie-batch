@@ -50,6 +50,14 @@ public class LiveTidsseriemodus implements Tidsseriemodus {
 
     private final Tidsserienummer nummer = Tidsserienummer.genererForDato(now());
 
+    /**
+     * Modusen heiter {@code live_tidsserie}.
+     */
+    @Override
+    public String navn() {
+        return "live_tidsserie";
+    }
+
     @Override
     public void registerServices(ServiceRegistry serviceRegistry) {
         final ServiceLocator services = new ServiceLocator(serviceRegistry);

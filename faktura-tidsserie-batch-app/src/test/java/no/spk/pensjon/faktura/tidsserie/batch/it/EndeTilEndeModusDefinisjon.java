@@ -2,11 +2,14 @@ package no.spk.pensjon.faktura.tidsserie.batch.it;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.of;
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.ServiceLoader;
+import java.util.stream.Stream;
 
 import no.spk.faktura.input.BatchId;
 import no.spk.pensjon.faktura.tidsserie.batch.main.ConsoleView;
@@ -14,6 +17,7 @@ import no.spk.pensjon.faktura.tidsserie.batch.main.GrunnlagsdataDirectoryValidat
 import no.spk.pensjon.faktura.tidsserie.batch.main.View;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchIdConstants;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.Modus;
+import no.spk.pensjon.faktura.tidsserie.batch.main.input.ModusRule;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 import no.spk.pensjon.faktura.tjenesteregister.Constants;
@@ -45,6 +49,8 @@ import org.junit.rules.TemporaryFolder;
 public class EndeTilEndeModusDefinisjon implements No {
     private final MyTemporaryFolder temp = new MyTemporaryFolder();
 
+    private final ModusRule modusar = new ModusRule();
+
     private final CSVFiler lagring = new CSVFiler();
 
     private Observasjonsperiode periode;
@@ -63,7 +69,7 @@ public class EndeTilEndeModusDefinisjon implements No {
         /**
          * Fyllord for å gjere egenskapen meir lesbar når ein ønskjer å verifisere kva modusar som er tilgjengelig.
          */
-        Gitt("^at brukaren ønskjer å generere  ein tidsserie$", this::noop);
+        Gitt("^at brukaren ønskjer å generere ein tidsserie$", this::noop);
 
         Gitt("^følgjande innhold i ([^\\.]+\\.csv\\.gz):$", this::lagreLinjerTilFil);
         Gitt("^at modus er lik (.+)$", this::medModus);
@@ -71,6 +77,23 @@ public class EndeTilEndeModusDefinisjon implements No {
         Gitt("^følgjande kolonner blir ignorert fordi dei endrar verdi frå køyring til køyring:$", this::ignorerKolonner);
 
         Så("^skal CSV-fil(?:a|ene) som blir generert inneholde følgjande rader:$", this::genererOgVerifiserResultat);
+
+        Så("^skal følgjande modusar vere tilgjengelige for bruk:$", this::verifiserKvaModusarSomErTilgjengelige);
+    }
+
+    private void verifiserKvaModusarSomErTilgjengelige(final DataTable modusar) {
+        final List<String> actual = modusar.transpose().topCells();
+        actual.remove("Navn");
+        assertThat(
+                Modus
+                        .stream()
+                        .map(Modus::kode)
+                        .collect(toList())
+        )
+                .containsOnlyElementsOf(
+                        actual
+                )
+        ;
     }
 
     private void genererOgVerifiserResultat(final DataTable expected) {
@@ -96,7 +119,8 @@ public class EndeTilEndeModusDefinisjon implements No {
     }
 
     private void medModus(final String modus) {
-        this.modus = new ModusConverter().transform(modus);
+        this.modus = Modus.parse(modus)
+                .orElseThrow(() -> new AssertionError("Ukjent modus: " + modus));
     }
 
     private void noop() {
@@ -121,6 +145,10 @@ public class EndeTilEndeModusDefinisjon implements No {
     @Before
     public void _before() throws Throwable {
         temp.before();
+
+        // Vi må autodetektere kva modusar som er tilgjengelig på samme måte som main-klassa gjer det
+        modusar.autodetect();
+
         this.utKatalog = temp.getRoot();
 
         this.grunnlagsdata = new BatchId(BatchIdConstants.GRUNNLAGSDATA_PREFIX, LocalDateTime.now()).tilArbeidskatalog(temp.getRoot().toPath()).toFile();
@@ -143,6 +171,7 @@ public class EndeTilEndeModusDefinisjon implements No {
     @After
     public void _after() {
         temp.after();
+        modusar.after();
     }
 
     private Aarstall parse(final String fraOgMed) {
@@ -158,13 +187,6 @@ public class EndeTilEndeModusDefinisjon implements No {
         @Override
         public void after() {
             super.after();
-        }
-    }
-
-    public class ModusConverter extends Transformer<Modus> {
-        @Override
-        public Modus transform(final String value) {
-            return Modus.stream().filter(m -> value.equals(m.kode())).findFirst().get();
         }
     }
 }

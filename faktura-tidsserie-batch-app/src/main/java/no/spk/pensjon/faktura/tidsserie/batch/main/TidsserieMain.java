@@ -22,6 +22,7 @@ import no.spk.faktura.input.UsageRequestedException;
 import no.spk.faktura.timeout.BatchTimeout;
 import no.spk.faktura.timeout.BatchTimeoutTaskrunner;
 import no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast.HazelcastBackend;
+import no.spk.pensjon.faktura.tidsserie.batch.main.input.Modus;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.TidsserieArgumentsFactory;
 import no.spk.pensjon.faktura.tidsserie.batch.storage.disruptor.LmaxDisruptorPublisher;
@@ -188,6 +189,8 @@ public class TidsserieMain {
     }
 
     public static void main(String[] args) {
+        Modus.autodetect();
+
         final ServiceRegistry registry = ServiceLoader.load(ServiceRegistry.class).iterator().next();
         registry.registerService(View.class, new ConsoleView());
 
