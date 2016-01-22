@@ -236,7 +236,7 @@
             <dependency>
                 <groupId>no.spk.pensjon.faktura</groupId>
                 <artifactId>faktura-tjenesteregister-lib</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <version>1.0.0</version>
             </dependency>
             <dependency>
                 <groupId>info.cukes</groupId>
