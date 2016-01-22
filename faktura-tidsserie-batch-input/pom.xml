@@ -32,6 +32,10 @@
             <groupId>no.spk.pensjon.faktura</groupId>
             <artifactId>faktura-prognose-tidsserie</artifactId>
         </dependency>
+        <dependency>
+            <groupId>no.spk.pensjon.faktura</groupId>
+            <artifactId>faktura-tidsserie-batch-api</artifactId>
+        </dependency>
         <!-- test-->
         <dependency>
             <groupId>org.hamcrest</groupId>
