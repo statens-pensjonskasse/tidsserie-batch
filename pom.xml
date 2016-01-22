@@ -24,7 +24,6 @@
         <module>faktura-tidsserie-batch-plugin-stillingsforholdobservasjonar</module>
         <module>faktura-tidsserie-batch-plugin-live_tidsserie</module>
         <module>faktura-tidsserie-batch-plugin-avregning_tidsserie</module>
-        <module>faktura-tidsserie-batch-integrasjonstester</module>
     </modules>
 
     <properties>
