@@ -189,8 +189,10 @@ public class TidsserieArgumentsFactoryTest {
         Path path = testFolder.newFolder(name.getMethodName()).toPath();
 
         String expectedBatchFolder = "grunnlagsdata_2015-01-01_01-00-00-01";
-        path.resolve("grunnlagsdata_2015-01-01_01-00-00-00").toFile().mkdir();
-        path.resolve(expectedBatchFolder).toFile().mkdir();
+        final Path grunnlagsdata = path.resolve("grunnlagsdata_2015-01-01_01-00-00-00");
+        grunnlagsdata.toFile().mkdir();
+        final Path expectedPath = path.resolve(expectedBatchFolder);
+        expectedPath.toFile().mkdir();
 
         assertThat(path.toFile().setWritable(false)).isTrue();
 
@@ -204,6 +206,8 @@ public class TidsserieArgumentsFactoryTest {
         assertThat(programArguments.getGrunnlagsdataBatchId()).isEqualTo(expectedBatchFolder);
 
         assertThat(path.toFile().setWritable(true)).isTrue();
+        assertThat(grunnlagsdata.toFile().setWritable(true)).isTrue();
+        assertThat(expectedPath.toFile().setWritable(true)).isTrue();
     }
 
     private boolean isWindowsOs(){
