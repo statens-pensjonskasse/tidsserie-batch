@@ -37,6 +37,7 @@ import no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklusException;
 import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 import no.spk.pensjon.faktura.tidsserie.storage.GrunnlagsdataRepository;
+import no.spk.pensjon.faktura.tidsserie.storage.csv.CSVInput;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistration;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
@@ -84,12 +85,14 @@ public class TidsserieMain {
             startBatchTimeout(arguments);
 
             final BatchId batchId = new BatchId(TIDSSERIE_PREFIX, now());
-            Path logKatalog = batchId.tilArbeidskatalog(arguments.getLogkatalog());
-            Path utKatalog = arguments.getUtkatalog().resolve("tidsserie");
+
+            final Path logKatalog = batchId.tilArbeidskatalog(arguments.getLogkatalog());
+            final Path utKatalog = arguments.getUtkatalog().resolve("tidsserie");
+            final Path innKatalog = arguments.getGrunnlagsdataBatchKatalog();
 
             registrer(Path.class, logKatalog, Katalog.LOG.egenskap());
             registrer(Path.class, utKatalog, Katalog.UT.egenskap());
-            registrer(Path.class, arguments.getGrunnlagsdataBatchKatalog(), Katalog.GRUNNLAGSDATA.egenskap());
+            registrer(Path.class, innKatalog, Katalog.GRUNNLAGSDATA.egenskap());
 
             registrer(Observasjonsperiode.class, arguments.observasjonsperiode());
 
@@ -103,7 +106,7 @@ public class TidsserieMain {
             controller.ryddOpp(directoryCleaner);
             Files.createDirectories(utKatalog);
 
-            registrer(GrunnlagsdataDirectoryValidator.class, new ChecksumValideringAvGrunnlagsdata(arguments.getGrunnlagsdataBatchKatalog()));
+            registrer(GrunnlagsdataDirectoryValidator.class, new ChecksumValideringAvGrunnlagsdata(innKatalog));
 
             final Tidsseriemodus modus = arguments.modus();
             registrer(Tidsseriemodus.class, modus);
@@ -112,7 +115,7 @@ public class TidsserieMain {
             registrer(TidsserieBackendService.class, backend);
             registrer(TidsserieLivssyklus.class, backend);
 
-            final GrunnlagsdataRepository input = modus.repository(arguments.getInnkatalog().resolve(arguments.getGrunnlagsdataBatchId()));
+            final GrunnlagsdataRepository input = modus.repository(innKatalog);
             registrer(GrunnlagsdataRepository.class, input);
 
             final GrunnlagsdataService overfoering = new GrunnlagsdataService(backend, input);
