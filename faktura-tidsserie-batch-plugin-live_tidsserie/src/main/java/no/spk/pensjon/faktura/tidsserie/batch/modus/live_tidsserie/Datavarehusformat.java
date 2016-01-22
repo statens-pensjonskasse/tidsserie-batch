@@ -1,10 +1,11 @@
 package no.spk.pensjon.faktura.tidsserie.batch.modus.live_tidsserie;
 
-import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Aksjonskode.PERMISJON_UTAN_LOENN;
 import static no.spk.pensjon.faktura.tidsserie.batch.modus.live_tidsserie.Kolonnetyper.beloep;
+import static no.spk.pensjon.faktura.tidsserie.batch.modus.live_tidsserie.Kolonnetyper.dato;
 import static no.spk.pensjon.faktura.tidsserie.batch.modus.live_tidsserie.Kolonnetyper.flagg;
 import static no.spk.pensjon.faktura.tidsserie.batch.modus.live_tidsserie.Kolonnetyper.heiltall;
 import static no.spk.pensjon.faktura.tidsserie.batch.modus.live_tidsserie.Kolonnetyper.kode;
+import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Aksjonskode.PERMISJON_UTAN_LOENN;
 
 import java.util.Optional;
 import java.util.function.Function;
@@ -160,50 +161,50 @@ public class Datavarehusformat implements CSVFormat {
 
         final Stream.Builder<Object> builder = Stream
                 .builder()
-                .add(Kolonnetyper.dato(observasjonsunderlag.annotasjonFor(Observasjonsdato.class).dato()))
-                .add(Kolonnetyper.dato(p.fraOgMed()))
-                .add(Kolonnetyper.dato(p.tilOgMed().get()))
-                .add(Kolonnetyper.kode(p.annotasjonFor(Foedselsnummer.class).toString()))
-                .add(Kolonnetyper.heiltall(p.annotasjonFor(StillingsforholdId.class).id()))
-                .add(Kolonnetyper.heiltall(p.annotasjonFor(AvtaleId.class).id()));
+                .add(dato(observasjonsunderlag.annotasjonFor(Observasjonsdato.class).dato()))
+                .add(dato(p.fraOgMed()))
+                .add(dato(p.tilOgMed().get()))
+                .add(kode(p.annotasjonFor(Foedselsnummer.class).toString()))
+                .add(heiltall(p.annotasjonFor(StillingsforholdId.class).id()))
+                .add(heiltall(p.annotasjonFor(AvtaleId.class).id()));
 
-        detector.utfoer(builder, p, up -> Kolonnetyper.kode(up.valgfriAnnotasjonFor(Orgnummer.class).map(Orgnummer::id)))
-                .utfoer(builder, p, up -> Kolonnetyper.kode(up.valgfriAnnotasjonFor(Ordning.class).map(Ordning::kode)))
-                .utfoer(builder, p, up -> Kolonnetyper.kode(up.valgfriAnnotasjonFor(Premiestatus.class).map(Premiestatus::kode)))
-                .utfoer(builder, p, up -> Kolonnetyper.kode(up.valgfriAnnotasjonFor(Aksjonskode.class).map(Aksjonskode::kode)))
-                .utfoer(builder, p, up -> Kolonnetyper.kode(up.valgfriAnnotasjonFor(Stillingskode.class).map(Stillingskode::getKode)))
+        detector.utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Orgnummer.class).map(Orgnummer::id)))
+                .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Ordning.class).map(Ordning::kode)))
+                .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Premiestatus.class).map(Premiestatus::kode)))
+                .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Aksjonskode.class).map(Aksjonskode::kode)))
+                .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Stillingskode.class).map(Stillingskode::getKode)))
                 .utfoer(builder, p, up -> prosent(deltid.map(Stillingsprosent::prosent), 3))
-                .utfoer(builder, p, up -> Kolonnetyper.kode(up.valgfriAnnotasjonFor(Loennstrinn.class).map(Loennstrinn::trinn)))
-                .utfoer(builder, p, up -> Kolonnetyper.beloep(up.valgfriAnnotasjonFor(LoennstrinnBeloep.class).map(LoennstrinnBeloep::beloep)))
-                .utfoer(builder, p, up -> Kolonnetyper.beloep(up.valgfriAnnotasjonFor(DeltidsjustertLoenn.class).map(DeltidsjustertLoenn::beloep)))
-                .utfoer(builder, p, up -> Kolonnetyper.beloep(up.valgfriAnnotasjonFor(Fastetillegg.class).map(Fastetillegg::beloep)))
-                .utfoer(builder, p, up -> Kolonnetyper.beloep(up.valgfriAnnotasjonFor(Variabletillegg.class).map(Variabletillegg::beloep)))
-                .utfoer(builder, p, up -> Kolonnetyper.beloep(up.valgfriAnnotasjonFor(Funksjonstillegg.class).map(Funksjonstillegg::beloep)))
-                .utfoer(builder, p, up -> Kolonnetyper.beloep(up.valgfriAnnotasjonFor(Medregning.class).map(Medregning::beloep)))
-                .utfoer(builder, p, up -> Kolonnetyper.kode(up.valgfriAnnotasjonFor(Medregningskode.class).map(Medregningskode::kode)))
-                .utfoer(builder, p, up -> Kolonnetyper.beloep(up.valgfriAnnotasjonFor(Grunnbeloep.class).map(Grunnbeloep::beloep)))
+                .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Loennstrinn.class).map(Loennstrinn::trinn)))
+                .utfoer(builder, p, up -> beloep(up.valgfriAnnotasjonFor(LoennstrinnBeloep.class).map(LoennstrinnBeloep::beloep)))
+                .utfoer(builder, p, up -> beloep(up.valgfriAnnotasjonFor(DeltidsjustertLoenn.class).map(DeltidsjustertLoenn::beloep)))
+                .utfoer(builder, p, up -> beloep(up.valgfriAnnotasjonFor(Fastetillegg.class).map(Fastetillegg::beloep)))
+                .utfoer(builder, p, up -> beloep(up.valgfriAnnotasjonFor(Variabletillegg.class).map(Variabletillegg::beloep)))
+                .utfoer(builder, p, up -> beloep(up.valgfriAnnotasjonFor(Funksjonstillegg.class).map(Funksjonstillegg::beloep)))
+                .utfoer(builder, p, up -> beloep(up.valgfriAnnotasjonFor(Medregning.class).map(Medregning::beloep)))
+                .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Medregningskode.class).map(Medregningskode::kode)))
+                .utfoer(builder, p, up -> beloep(up.valgfriAnnotasjonFor(Grunnbeloep.class).map(Grunnbeloep::beloep)))
                 .utfoer(builder, p, up -> prosent(up.beregn(AarsfaktorRegel.class).tilProsent(), 8))
-                .utfoer(builder, p, up -> Kolonnetyper.heiltall(up.beregn(AarsLengdeRegel.class).verdi()))
+                .utfoer(builder, p, up -> heiltall(up.beregn(AarsLengdeRegel.class).verdi()))
                 .utfoer(builder, p, up -> prosent(up.beregn(AarsverkRegel.class).tilProsent(), 2))
-                .utfoer(builder, p, up -> Kolonnetyper.heiltall(up.beregn(AntallDagarRegel.class).verdi()))
-                .utfoer(builder, p, up -> Kolonnetyper.beloep(up.beregn(DeltidsjustertLoennRegel.class)))
-                .utfoer(builder, p, up -> Kolonnetyper.beloep(up.beregn(LoennstilleggRegel.class)))
-                .utfoer(builder, p, up -> Kolonnetyper.beloep(up.beregn(MaskineltGrunnlagRegel.class)))
-                .utfoer(builder, p, up -> Kolonnetyper.beloep(up.beregn(MedregningsRegel.class)))
+                .utfoer(builder, p, up -> heiltall(up.beregn(AntallDagarRegel.class).verdi()))
+                .utfoer(builder, p, up -> beloep(up.beregn(DeltidsjustertLoennRegel.class)))
+                .utfoer(builder, p, up -> beloep(up.beregn(LoennstilleggRegel.class)))
+                .utfoer(builder, p, up -> beloep(up.beregn(MaskineltGrunnlagRegel.class)))
+                .utfoer(builder, p, up -> beloep(up.beregn(MedregningsRegel.class)))
                 .utfoer(builder, p, up -> prosent(up.beregn(MinstegrenseRegel.class).grense(), 2))
-                .utfoer(builder, p, up -> Kolonnetyper.beloep(up.beregn(OevreLoennsgrenseRegel.class)))
+                .utfoer(builder, p, up -> beloep(up.beregn(OevreLoennsgrenseRegel.class)))
                 .utfoer(builder, p, up -> prosent(up.beregn(GruppelivsfaktureringRegel.class).andel(), 4))
                 .utfoer(builder, p, up -> prosent(up.beregn(YrkesskadefaktureringRegel.class).andel(), 4))
-                .utfoer(builder, p, up -> Kolonnetyper.flagg(up.valgfriAnnotasjonFor(Medregning.class).isPresent()))
-                .utfoer(builder, p, up -> Kolonnetyper.flagg(up.valgfriAnnotasjonFor(Aksjonskode.class).filter(kode -> kode.equals(PERMISJON_UTAN_LOENN)).isPresent()))
-                .utfoer(builder, p, up -> Kolonnetyper.flagg(deltid.map(d -> up.beregn(MinstegrenseRegel.class).erUnderMinstegrensa(d)).orElse(false)))
+                .utfoer(builder, p, up -> flagg(up.valgfriAnnotasjonFor(Medregning.class).isPresent()))
+                .utfoer(builder, p, up -> flagg(up.valgfriAnnotasjonFor(Aksjonskode.class).filter(kode -> kode.equals(PERMISJON_UTAN_LOENN)).isPresent()))
+                .utfoer(builder, p, up -> flagg(deltid.map(d -> up.beregn(MinstegrenseRegel.class).erUnderMinstegrensa(d)).orElse(false)))
 
                 .multiple(builder, p, premiesatsar(p, Produkt.PEN))
                 .multiple(builder, p, premiesatsar(p, Produkt.AFP))
                 .multiple(builder, p, premiesatsar(p, Produkt.TIP))
                 .multiple(builder, p, premiesatsar(p, Produkt.GRU))
                 .multiple(builder, p, premiesatsar(p, Produkt.YSK))
-                .utfoer(builder, p, up -> Kolonnetyper.kode(up.valgfriAnnotasjonFor(Avtale.class).flatMap(Avtale::risikoklasse)))
+                .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Avtale.class).flatMap(Avtale::risikoklasse)))
                 .utfoer(builder, p, up -> up.id().toString())
         ;
 
@@ -213,16 +214,16 @@ public class Datavarehusformat implements CSVFormat {
         final Object placeholder = new Object();
         builder.add(placeholder);
 
-        detector.utfoer(builder, p, up -> Kolonnetyper.kode(up.valgfriAnnotasjonFor(ArbeidsgiverId.class).map(ArbeidsgiverId::id)))
-                .utfoer(builder, p, up -> Kolonnetyper.kode(observasjonsunderlag.valgfriAnnotasjonFor(Tidsserienummer.class)))
-                .utfoer(builder, p, up -> Kolonnetyper.kode(up.beregn(TermintypeRegel.class).kode()))
-                .utfoer(builder, p, up -> Kolonnetyper.kode(up.valgfriAnnotasjonFor(Medlemslinjenummer.class)))
-                .utfoer(builder, p, up -> Kolonnetyper.kode(up.valgfriAnnotasjonFor(Premiekategori.class).map(Premiekategori::kode)))
+        detector.utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(ArbeidsgiverId.class).map(ArbeidsgiverId::id)))
+                .utfoer(builder, p, up -> kode(observasjonsunderlag.valgfriAnnotasjonFor(Tidsserienummer.class)))
+                .utfoer(builder, p, up -> kode(up.beregn(TermintypeRegel.class).kode()))
+                .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Medlemslinjenummer.class)))
+                .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Premiekategori.class).map(Premiekategori::kode)))
         ;
 
         // Må populere inn antall feil til slutt for å sikre at eventuelle feil som inntreffe etter at denne kolonna
         // blir lagt til builderen, blir med i tellinga
-        return builder.build().map(o -> o == placeholder ? Kolonnetyper.heiltall(detector.antallFeil) : o);
+        return builder.build().map(o -> o == placeholder ? heiltall(detector.antallFeil) : o);
     }
 
     private Stream<Function<Underlagsperiode, String>> premiesatsar(final Underlagsperiode p, final Produkt produkt) {
