@@ -50,7 +50,6 @@ import no.spk.pensjon.faktura.tidsserie.domain.underlag.Annoterbar;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
 import no.spk.pensjon.faktura.tidsserie.batch.core.GrunnlagsdataRepository;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.AvtalekoblingOversetter;
-import no.spk.pensjon.faktura.tidsserie.util.TemporaryFolderWithDeleteVerification;
 import no.spk.pensjon.faktura.tjenesteregister.Constants;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 import no.spk.pensjon.faktura.tjenesteregister.support.SimpleServiceRegistry;
