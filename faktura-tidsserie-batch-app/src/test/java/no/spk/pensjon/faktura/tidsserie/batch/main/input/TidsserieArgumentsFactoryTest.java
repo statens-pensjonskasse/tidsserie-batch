@@ -203,6 +203,7 @@ public class TidsserieArgumentsFactoryTest {
 
         assertThat(programArguments.getGrunnlagsdataBatchId()).isEqualTo(expectedBatchFolder);
 
+        assertThat(path.toFile().setWritable(true)).isTrue();
     }
 
     private boolean isWindowsOs(){
