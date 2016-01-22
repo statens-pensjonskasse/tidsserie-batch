@@ -19,7 +19,7 @@ import no.spk.pensjon.faktura.tidsserie.batch.ServiceRegistryRule;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.StandardOutputAndError;
 import no.spk.pensjon.faktura.tidsserie.batch.core.LastOppGrunnlagsdataKommando;
-import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieBackendService;
+import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 import no.spk.pensjon.faktura.tjenesteregister.Constants;
@@ -142,7 +142,7 @@ public class ApplicationControllerTest {
 
     @Test
     public void skal_starte_backend() {
-        final TidsserieBackendService backend = mock(TidsserieBackendService.class);
+        final MedlemsdataBackend backend = mock(MedlemsdataBackend.class);
         controller.startBackend(backend);
 
         verify(backend).start();

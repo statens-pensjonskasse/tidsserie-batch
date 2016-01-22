@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tidsserie.batch.core;
+package no.spk.pensjon.faktura.tidsserie.batch.core.medlem;
 
 import static java.util.Objects.requireNonNull;
 import static no.spk.pensjon.faktura.tidsserie.batch.core.Validators.require;

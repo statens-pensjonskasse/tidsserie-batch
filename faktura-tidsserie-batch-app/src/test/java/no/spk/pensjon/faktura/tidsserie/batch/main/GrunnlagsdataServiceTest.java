@@ -13,9 +13,9 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.ServiceRegistryRule;
-import no.spk.pensjon.faktura.tidsserie.batch.core.MedlemsdataUploader;
-import no.spk.pensjon.faktura.tidsserie.batch.core.Medlemslinje;
-import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieBackendService;
+import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.MedlemsdataUploader;
+import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.Medlemslinje;
+import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Avtalekoblingsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medregningsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Stillingsendring;
@@ -46,7 +46,7 @@ public class GrunnlagsdataServiceTest {
     public final ServiceRegistryRule registry = new ServiceRegistryRule();
 
     @Mock
-    private TidsserieBackendService backend;
+    private MedlemsdataBackend backend;
 
     @Mock
     private MedlemsdataUploader uploader;
@@ -63,7 +63,7 @@ public class GrunnlagsdataServiceTest {
         when(repository.referansedata()).thenReturn(Stream.empty());
         when(backend.uploader()).thenReturn(uploader);
 
-        registry.registrer(TidsserieBackendService.class, backend);
+        registry.registrer(MedlemsdataBackend.class, backend);
         registry.registrer(GrunnlagsdataRepository.class, repository);
     }
 

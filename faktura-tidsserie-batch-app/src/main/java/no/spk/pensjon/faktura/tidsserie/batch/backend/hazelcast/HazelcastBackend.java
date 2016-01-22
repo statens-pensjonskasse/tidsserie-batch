@@ -9,8 +9,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
-import no.spk.pensjon.faktura.tidsserie.batch.core.MedlemsdataUploader;
-import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieBackendService;
+import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.MedlemsdataUploader;
+import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieLivssyklus;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * -verbose:gc
  * </pre>
  */
-public class HazelcastBackend implements TidsserieBackendService, TidsserieLivssyklus {
+public class HazelcastBackend implements MedlemsdataBackend, TidsserieLivssyklus {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private final Server server;

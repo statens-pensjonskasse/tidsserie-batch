@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tidsserie.batch.core;
+package no.spk.pensjon.faktura.tidsserie.batch.core.medlem;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.joining;
@@ -6,6 +6,7 @@ import static java.util.stream.Collectors.toList;
 
 import java.util.List;
 
+import no.spk.pensjon.faktura.tidsserie.batch.core.Validators;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medlemsdata;
 
 /**

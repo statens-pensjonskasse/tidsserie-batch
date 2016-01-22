@@ -1,9 +1,12 @@
-package no.spk.pensjon.faktura.tidsserie.batch.core;
+package no.spk.pensjon.faktura.tidsserie.batch.core.medlem;
 
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
+import no.spk.pensjon.faktura.tidsserie.batch.core.StorageBackend;
+import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieFactory;
+import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medlemsdata;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.Regelsett;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Feilhandtering;

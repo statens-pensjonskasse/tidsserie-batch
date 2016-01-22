@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tidsserie.batch.core;
+package no.spk.pensjon.faktura.tidsserie.batch.core.medlem;
 
 import java.util.function.BinaryOperator;
 import java.util.stream.Stream;
@@ -13,7 +13,7 @@ import java.util.stream.Stream;
  * <p>
  *
  * @author Tarjei Skorgenes
- * @see TidsserieBackendService#uploader()
+ * @see MedlemsdataBackend#uploader()
  */
 public interface MedlemsdataUploader {
     /**

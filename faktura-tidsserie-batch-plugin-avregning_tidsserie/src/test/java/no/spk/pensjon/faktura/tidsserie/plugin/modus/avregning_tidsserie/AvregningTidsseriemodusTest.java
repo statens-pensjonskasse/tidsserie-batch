@@ -27,7 +27,7 @@ import java.util.stream.Stream;
 import java.util.zip.GZIPOutputStream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.core.Katalog;
-import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieBackendService;
+import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.pensjon.faktura.tidsserie.batch.core.ObservasjonsEvent;
 import no.spk.pensjon.faktura.tidsserie.batch.core.StorageBackend;
 import no.spk.pensjon.faktura.tidsserie.batch.core.TidsperiodeFactory;
@@ -289,7 +289,7 @@ public class AvregningTidsseriemodusTest {
 
         final ObservasjonsEvent event = new ObservasjonsEvent();
         serviceRegistry.registerService(StorageBackend.class, consumer -> consumer.accept(event));
-        serviceRegistry.registerService(TidsserieBackendService.class, mock(TidsserieBackendService.class));
+        serviceRegistry.registerService(MedlemsdataBackend.class, mock(MedlemsdataBackend.class));
         serviceRegistry.registerService(TidsserieFactory.class, mock(TidsserieFactory.class));
         modus.lagTidsserie(serviceRegistry);
 
