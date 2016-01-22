@@ -17,8 +17,8 @@
     <modules>
         <module>faktura-tidsserie-batch-input</module>
         <module>faktura-tidsserie-batch-app</module>
-        <module>faktura-tidsserie-batch</module>
-        <module>faktura-tidsserie-batch-overvaak</module>
+        <module>pu-fak-ba-10</module>
+        <module>pu-fak-ba-11</module>
         <module>faktura-tidsserie-batch-api</module>
         <module>faktura-tidsserie-batch-plugin-avtaleunderlag</module>
         <module>faktura-tidsserie-batch-plugin-stillingsforholdobservasjonar</module>
