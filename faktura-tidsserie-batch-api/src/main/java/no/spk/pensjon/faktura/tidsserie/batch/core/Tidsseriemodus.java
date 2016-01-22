@@ -84,7 +84,5 @@ public interface Tidsseriemodus extends Medlemsbehandler {
      * @return ein streng som inneheld eit modusnavn som brukaren ønskjer å generere ein tidsserie med
      * @since 2.1.0
      */
-   default String navn() {
-       return "modus";
-   }
+   String navn();
 }
