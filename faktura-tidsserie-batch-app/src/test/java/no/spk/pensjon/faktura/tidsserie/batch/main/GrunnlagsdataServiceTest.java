@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Stream;
 
+import no.spk.pensjon.faktura.tidsserie.batch.ServiceRegistryRule;
 import no.spk.pensjon.faktura.tidsserie.core.MedlemsdataUploader;
 import no.spk.pensjon.faktura.tidsserie.core.Medlemslinje;
 import no.spk.pensjon.faktura.tidsserie.core.TidsserieBackendService;
@@ -41,6 +42,9 @@ public class GrunnlagsdataServiceTest {
     @Rule
     public final MockitoRule mockito = MockitoJUnit.rule();
 
+    @Rule
+    public final ServiceRegistryRule registry = new ServiceRegistryRule();
+
     @Mock
     private TidsserieBackendService backend;
 
@@ -54,10 +58,13 @@ public class GrunnlagsdataServiceTest {
 
     @Before
     public void _before() throws IOException {
-        service = new GrunnlagsdataService(backend, repository);
+        service = new GrunnlagsdataService();
         when(repository.medlemsdata()).thenReturn(Stream.<List<String>>empty());
         when(repository.referansedata()).thenReturn(Stream.empty());
         when(backend.uploader()).thenReturn(uploader);
+
+        registry.registrer(TidsserieBackendService.class, backend);
+        registry.registrer(GrunnlagsdataRepository.class, repository);
     }
 
     @Test
@@ -80,7 +87,7 @@ public class GrunnlagsdataServiceTest {
                 ).stream()
         );
 
-        service.lastOpp();
+        lastOpp();
 
         final ArgumentCaptor<Medlemslinje> captor = forClass(Medlemslinje.class);
         verify(uploader, times(4)).append(captor.capture());
@@ -108,7 +115,7 @@ public class GrunnlagsdataServiceTest {
                 ).stream()
         );
 
-        service.lastOpp();
+        lastOpp();
 
         verify(uploader, times(2)).run();
     }
@@ -125,7 +132,7 @@ public class GrunnlagsdataServiceTest {
                 .onClose(closer);
         when(repository.referansedata()).thenReturn(referansedata);
 
-        service.lesInnReferansedata();
+        service.lesInnReferansedata(repository);
 
         verify(closer).run();
     }
@@ -142,7 +149,7 @@ public class GrunnlagsdataServiceTest {
                 .onClose(closer);
         when(repository.medlemsdata()).thenReturn(medlemsdata);
 
-        service.lastOpp();
+        lastOpp();
 
         verify(closer).run();
     }
@@ -159,5 +166,9 @@ public class GrunnlagsdataServiceTest {
         assertThat(service.perioderAvType(GenerellTidsperiode.class).count())
                 .as("antall perioder av type " + GenerellTidsperiode.class)
                 .isEqualTo(0);
+    }
+
+    private void lastOpp() {
+        service.lastOpp(registry.registry());
     }
 }

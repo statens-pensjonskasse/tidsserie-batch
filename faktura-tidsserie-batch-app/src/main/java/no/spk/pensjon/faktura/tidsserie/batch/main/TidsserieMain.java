@@ -26,6 +26,7 @@ import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.TidsserieArgumentsFactory;
 import no.spk.pensjon.faktura.tidsserie.batch.storage.disruptor.LmaxDisruptorPublisher;
 import no.spk.pensjon.faktura.tidsserie.batch.storage.disruptor.FileTemplate;
+import no.spk.pensjon.faktura.tidsserie.core.LastOppGrunnlagsdataKommando;
 import no.spk.pensjon.faktura.tidsserie.core.TidsserieBackendService;
 import no.spk.pensjon.faktura.tidsserie.core.Extensionpoint;
 import no.spk.pensjon.faktura.tidsserie.core.Katalog;
@@ -115,13 +116,13 @@ public class TidsserieMain {
             registrer(TidsserieBackendService.class, backend);
             registrer(TidsserieLivssyklus.class, backend);
 
-            final GrunnlagsdataRepository input = new CSVInput(innKatalog);
-            registrer(GrunnlagsdataRepository.class, input);
+            registrer(GrunnlagsdataRepository.class, new CSVInput(innKatalog));
 
-            final GrunnlagsdataService overfoering = new GrunnlagsdataService(backend, input);
+            final GrunnlagsdataService overfoering = new GrunnlagsdataService();
             registrer(GrunnlagsdataService.class, overfoering);
             registrer(TidsserieFactory.class, overfoering);
             registrer(TidsperiodeFactory.class, overfoering);
+            registrer(LastOppGrunnlagsdataKommando.class, overfoering);
 
             final MetaDataWriter metaDataWriter = new MetaDataWriter(TemplateConfigurationFactory.create(), logKatalog);
             registrer(MetaDataWriter.class, metaDataWriter);
@@ -144,7 +145,7 @@ public class TidsserieMain {
             final LocalDateTime started = now();
             controller.validerGrunnlagsdata();
             controller.startBackend(backend);
-            controller.lastOpp(overfoering);
+            controller.lastOpp();
 
             lagTidsserie(controller, modus, arguments.observasjonsperiode());
 
