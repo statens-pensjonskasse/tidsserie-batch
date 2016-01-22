@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import no.spk.pensjon.faktura.tidsserie.batch.ServiceRegistryRule;
-import no.spk.pensjon.faktura.tidsserie.batch.main.input.StandardOutputAndError;
+import no.spk.pensjon.faktura.tidsserie.batch.it.ServiceRegistryRule;
+import no.spk.pensjon.faktura.tidsserie.batch.it.StandardOutputAndError;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.LifecycleEvent;
