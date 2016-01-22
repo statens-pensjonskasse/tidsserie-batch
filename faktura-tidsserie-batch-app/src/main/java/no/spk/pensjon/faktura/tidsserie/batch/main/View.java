@@ -1,13 +1,12 @@
 package no.spk.pensjon.faktura.tidsserie.batch.main;
 
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.Map;
 
 import no.spk.faktura.input.InvalidParameterException;
 import no.spk.faktura.input.UsageRequestedException;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
-import no.spk.pensjon.faktura.tidsserie.batch.upload.FileTemplate;
-import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
 
 /**
  * TODO: Kva og korleis ønskjer vi å vise status for batchkøyringa når vi køyrer den for vår egen bruk?
@@ -20,7 +19,7 @@ public interface View {
 
     void opplastingFullfoert() ;
 
-    void startarTidsseriegenerering(FileTemplate malFilnavn, Aarstall fraOgMed, Aarstall tilOgMed) ;
+    void startarTidsseriegenerering(LocalDate fraOgMed, LocalDate tilOgMed) ;
 
     /**
      * Viser informasjon om kva kommandolinjeargument batchen støttar med forklaring av

@@ -14,7 +14,9 @@ import no.spk.faktura.input.LocalTimeValidator;
 import no.spk.faktura.input.PathStringValidator;
 import no.spk.faktura.input.ReadablePathValidator;
 import no.spk.faktura.input.WritableDirectoryValidator;
-import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
+import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsseriemodus;
+import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
+import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 
 import com.beust.jcommander.Parameter;
 
@@ -81,9 +83,10 @@ public class ProgramArguments implements Arguments {
     @Parameter(names = { "-m" },
             description = "Modusen batchen skal bruke for oppbygging av og lagring av tidsserien.",
             validateWith = ModusValidator.class,
-            converter = ModusConverter.class
+            converter = ModusConverter.class,
+            required = true
     )
-    Modus modus = Modus.STILLINGSFORHOLD_OBSERVASJONAR;
+    Modus modus;
 
     @Parameter(names = "-kjoeretid",
             description = "Maks kjøretid på formatet HHmm.",
@@ -170,5 +173,12 @@ public class ProgramArguments implements Arguments {
     @Override
     public boolean hjelp() {
         return hjelp;
+    }
+
+    public Observasjonsperiode observasjonsperiode() {
+        return new Observasjonsperiode(
+                new Aarstall(fraAar).atStartOfYear(),
+                new Aarstall(tilAar).atEndOfYear()
+        );
     }
 }

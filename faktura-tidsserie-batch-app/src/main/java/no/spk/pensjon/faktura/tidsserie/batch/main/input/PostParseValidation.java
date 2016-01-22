@@ -1,7 +1,7 @@
 package no.spk.pensjon.faktura.tidsserie.batch.main.input;
 
 import static java.util.Collections.reverseOrder;
-import static no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchIdConstants.GRUNNLAGSDATA_PATTERN;
+import static no.spk.pensjon.faktura.tidsserie.batch.core.BatchIdConstants.GRUNNLAGSDATA_PATTERN;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import no.spk.faktura.input.PostParseValidator;
+import no.spk.faktura.input.ReadablePathValidator;
 import no.spk.faktura.input.WritableDirectoryValidator;
 
 import com.beust.jcommander.ParameterException;
@@ -31,7 +32,7 @@ class PostParseValidation implements PostParseValidator<ProgramArguments>{
                     programArguments.fraAar + " > " + programArguments.tilAar + ")");
         }
 
-        new WritableDirectoryValidator().validate("Batch utkatalog", programArguments.getGrunnlagsdataBatchKatalog());
+        new ReadablePathValidator().validate("Batch utkatalog", programArguments.getGrunnlagsdataBatchKatalog());
     }
 
     private void setDefaultBatchId(ProgramArguments arguments) {

@@ -2,6 +2,7 @@ package no.spk.pensjon.faktura.tidsserie.batch.main.input;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assume.assumeFalse;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,6 +13,7 @@ import no.spk.faktura.input.InvalidParameterException;
 import no.spk.faktura.input.UsageRequestedException;
 import no.spk.pensjon.faktura.tidsserie.util.TemporaryFolderWithDeleteVerification;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -22,7 +24,6 @@ import org.junit.rules.TestName;
  * @author Snorre E. Brekke - Computas
  */
 public class TidsserieArgumentsFactoryTest {
-
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
@@ -32,22 +33,29 @@ public class TidsserieArgumentsFactoryTest {
     @Rule
     public final TestName name = new TestName();
 
-    private final TidsserieArgumentsFactory factory = new TidsserieArgumentsFactory();
+    @Rule
+    public final ModusRule modusar = new ModusRule();
+
+    private final String defaultModus = "modus";
+
+    @Before
+    public void _before() {
+        modusar.support(defaultModus);
+    }
 
     @Test
-    public void skalGodtaTidsserieModusParameter() throws IOException {
+    public void skal_kreve_verdi_for_modus_parameter() throws IOException {
+        exception.expect(InvalidParameterException.class);
+        exception.expectMessage("Følgende valg er påkrevd: -m");
+
         final String path = createTestFolders();
 
-        Modus.stream().forEach(modus -> {
-            final ProgramArguments args = new TidsserieArgumentsFactory().create(
-                    "-m", modus.kode(),
-                    "-i", path,
-                    "-o", path,
-                    "-log", path,
-                    "-b", name.getMethodName()
-            );
-            assertThat(args.modus()).isEqualTo(modus.modus());
-        });
+        new TidsserieArgumentsFactory().create(
+                "-i", path,
+                "-o", path,
+                "-log", path,
+                "-b", name.getMethodName()
+        );
     }
 
     @Test
@@ -56,8 +64,9 @@ public class TidsserieArgumentsFactoryTest {
         exception.expectMessage("Modus");
 
         final String path = createTestFolders();
-        factory.create(
+        new TidsserieArgumentsFactory().create(
                 "-m", "lol",
+                "-log", path,
                 "-i", path,
                 "-o", path,
                 "-b", name.getMethodName()
@@ -67,7 +76,7 @@ public class TidsserieArgumentsFactoryTest {
     @Test
     public void testBeskrivelseInputOutputRequired() throws Exception {
         exception.expect(InvalidParameterException.class);
-        exception.expectMessage("-log -o -i -b");
+        exception.expectMessage("Følgende valg er påkrevd: -log -o -i -m -b");
 
         new TidsserieArgumentsFactory().create();
     }
@@ -80,7 +89,15 @@ public class TidsserieArgumentsFactoryTest {
         exception.expectMessage("'-fraAar' kan ikke være større enn '-tilAar'");
         exception.expectMessage("2009 > 2008");
 
-        new TidsserieArgumentsFactory().create("-b", "test", "-o", path, "-i", path, "-log", path, "-fraAar", "2009", "-tilAar", "2008");
+        new TidsserieArgumentsFactory().create(
+                "-b", "test",
+                "-o", path,
+                "-i", path,
+                "-log", path,
+                "-m", defaultModus,
+                "-fraAar", "2009",
+                "-tilAar", "2008"
+        );
     }
 
     @Test
@@ -137,10 +154,13 @@ public class TidsserieArgumentsFactoryTest {
         exception.expect(InvalidParameterException.class);
         exception.expectMessage("Det finnes ingen batch-kataloger i ");
 
-        new TidsserieArgumentsFactory().create("-b", "Test batch id missing",
+        new TidsserieArgumentsFactory().create(
+                "-b", "Test batch id missing",
                 "-i", file.getAbsolutePath(),
                 "-o", file.getAbsolutePath(),
-                "-log", file.getAbsolutePath());
+                "-log", file.getAbsolutePath(),
+                "-m", defaultModus
+        );
     }
 
     @Test
@@ -155,11 +175,15 @@ public class TidsserieArgumentsFactoryTest {
                 "-b", "Test set default batch id",
                 "-i", path.toAbsolutePath().toString(),
                 "-log", path.toAbsolutePath().toString(),
-                "-o", path.toAbsolutePath().toString());
+                "-o", path.toAbsolutePath().toString(),
+                "-m", defaultModus
+        );
 
         assertThat(programArguments.getGrunnlagsdataBatchId()).isEqualTo(expectedBatchFolder);
 
     }
 
-
+    private boolean isWindowsOs(){
+        return System.getProperty( "os.name" ).startsWith( "Windows" );
+    }
 }

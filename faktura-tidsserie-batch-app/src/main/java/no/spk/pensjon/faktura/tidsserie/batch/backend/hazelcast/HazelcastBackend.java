@@ -3,21 +3,16 @@ package no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
-import static java.util.concurrent.Executors.newCachedThreadPool;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 
-import no.spk.pensjon.faktura.tidsserie.batch.storage.disruptor.LmaxDisruptorPublisher;
-import no.spk.pensjon.faktura.tidsserie.batch.upload.FileTemplate;
-import no.spk.pensjon.faktura.tidsserie.batch.upload.MedlemsdataUploader;
-import no.spk.pensjon.faktura.tidsserie.batch.upload.TidsserieBackendService;
-import no.spk.pensjon.faktura.tidsserie.core.StorageBackend;
-import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
-import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
+import no.spk.pensjon.faktura.tidsserie.batch.core.MedlemsdataUploader;
+import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieBackendService;
+import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieLivssyklus;
+import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IMap;
@@ -46,23 +41,31 @@ import org.slf4j.LoggerFactory;
  * -verbose:gc
  * </pre>
  */
-public class HazelcastBackend implements TidsserieBackendService {
+public class HazelcastBackend implements TidsserieBackendService, TidsserieLivssyklus {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private final Server server;
-    private final Tidsseriemodus modus;
 
     private Optional<IMap<String, List<List<String>>>> map = empty();
 
     private Optional<HazelcastInstance> instance = empty();
 
-    public HazelcastBackend(final int antallNoder, final Tidsseriemodus modus) {
-        this(new MultiNodeSingleJVMBackend(antallNoder), modus);
+    public HazelcastBackend(final ServiceRegistry registry, final int antallNoder) {
+        this(
+                new MultiNodeSingleJVMBackend(
+                        registry,
+                        antallNoder
+                )
+        );
     }
 
-    HazelcastBackend(final Server server, final Tidsseriemodus modus) {
+    HazelcastBackend(final Server server) {
         this.server = requireNonNull(server, "server er påkrevd, men var null");
-        this.modus = requireNonNull(modus, "tidsseriemodus er påkrevd, men var null");
+    }
+
+    @Override
+    public void stop(final ServiceRegistry registry) {
+        server.stop();
     }
 
     @Override
@@ -70,7 +73,6 @@ public class HazelcastBackend implements TidsserieBackendService {
         this.instance = of(server.start());
         this.map = instance.map(i -> i.getMap("medlemsdata"));
         instance.ifPresent(i -> i.getAtomicLong("serienummer").set(1L));
-        registrer(Tidsseriemodus.class, modus);
     }
 
     @Override
@@ -79,35 +81,8 @@ public class HazelcastBackend implements TidsserieBackendService {
     }
 
     @Override
-    public Map<String, Integer> lagTidsseriePaaStillingsforholdNivaa(
-            final FileTemplate outputFiles, final Aarstall fraOgMed, final Aarstall tilOgMed) {
-        final ExecutorService executors = newCachedThreadPool(
-                r -> new Thread(r, "lmax-disruptor-" + System.currentTimeMillis())
-        );
-        try (final LmaxDisruptorPublisher lager = openDisruptor(executors, outputFiles)) {
-            modus.initStorage(lager);
-
-            return submit(
-                    new Tidsserieagent(
-                            fraOgMed.atStartOfYear(),
-                            tilOgMed.atEndOfYear()
-                    )
-            );
-        } finally {
-            executors.shutdown();
-        }
-    }
-
-    @Override
-    public <T> void registrer(final Class<T> serviceType, final T service) {
-        server.registrer(serviceType, service);
-    }
-
-    private LmaxDisruptorPublisher openDisruptor(final ExecutorService executors, final FileTemplate fileTemplate) {
-        final LmaxDisruptorPublisher publisher = new LmaxDisruptorPublisher(executors, fileTemplate);
-        publisher.start();
-        registrer(StorageBackend.class, publisher);
-        return publisher;
+    public Map<String, Integer> lagTidsserie() {
+        return submit(new Tidsserieagent());
     }
 
     private Map<String, Integer> submit(

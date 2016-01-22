@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
+import org.assertj.core.api.AbstractBooleanAssert;
 import org.assertj.core.api.AbstractCharSequenceAssert;
 import org.junit.rules.ExternalResource;
 
@@ -22,7 +23,7 @@ public class StandardOutputAndError extends ExternalResource {
     private PrintStream oldStderror;
 
     @Override
-    protected void before() throws Throwable {
+    public void before() {
         oldStdout = System.out;
         oldStderror = System.err;
 
@@ -34,7 +35,7 @@ public class StandardOutputAndError extends ExternalResource {
     }
 
     @Override
-    protected void after() {
+    public void after() {
         System.setOut(oldStdout);
         System.setErr(oldStderror);
     }
@@ -65,5 +66,25 @@ public class StandardOutputAndError extends ExternalResource {
     public void clear() {
         stdout = new ByteArrayOutputStream();
         stderr = new ByteArrayOutputStream();
+    }
+
+    /**
+     * Lagar ein assertion med angitt melding som beskrivelse og angitt verdi som den som blir asserta.
+     * <br>
+     * I tillegg til {@code message} blir meldinga utvida med informasjon om kva som er skreve til standard output
+     * og standard error.
+     *
+     * @param message første linje i asserten sin beskrivelse
+     * @param value   verdien som skal assertast
+     * @return ein ny assert for verdien
+     */
+    public AbstractBooleanAssert<?> assertBoolean(final String message, final boolean value) {
+        return assertThat(value)
+                .as(
+                        message + "\n"
+                                + "\nStandard output:\n" + stdout
+                                + "\nStandard error:\n" + stderr
+                )
+                .isTrue();
     }
 }

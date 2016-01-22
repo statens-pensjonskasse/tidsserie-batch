@@ -1,7 +1,6 @@
 package no.spk.pensjon.faktura.tidsserie.batch.main;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.Mockito.mock;
@@ -13,16 +12,16 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Stream;
 
-import no.spk.pensjon.faktura.tidsserie.batch.upload.MedlemsdataUploader;
-import no.spk.pensjon.faktura.tidsserie.batch.upload.Medlemslinje;
-import no.spk.pensjon.faktura.tidsserie.batch.upload.TidsserieBackendService;
-import no.spk.pensjon.faktura.tidsserie.core.TidsserieFactory;
+import no.spk.pensjon.faktura.tidsserie.batch.ServiceRegistryRule;
+import no.spk.pensjon.faktura.tidsserie.batch.core.MedlemsdataUploader;
+import no.spk.pensjon.faktura.tidsserie.batch.core.Medlemslinje;
+import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieBackendService;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Avtalekoblingsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medregningsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Stillingsendring;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.GenerellTidsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Tidsperiode;
-import no.spk.pensjon.faktura.tidsserie.storage.GrunnlagsdataRepository;
+import no.spk.pensjon.faktura.tidsserie.batch.core.GrunnlagsdataRepository;
 import no.spk.pensjon.faktura.tidsserie.util.TemporaryFolderWithDeleteVerification;
 
 import org.junit.Before;
@@ -43,6 +42,9 @@ public class GrunnlagsdataServiceTest {
     @Rule
     public final MockitoRule mockito = MockitoJUnit.rule();
 
+    @Rule
+    public final ServiceRegistryRule registry = new ServiceRegistryRule();
+
     @Mock
     private TidsserieBackendService backend;
 
@@ -56,26 +58,19 @@ public class GrunnlagsdataServiceTest {
 
     @Before
     public void _before() throws IOException {
-        service = new GrunnlagsdataService(backend, repository);
+        service = new GrunnlagsdataService();
         when(repository.medlemsdata()).thenReturn(Stream.<List<String>>empty());
         when(repository.referansedata()).thenReturn(Stream.empty());
         when(backend.uploader()).thenReturn(uploader);
+
+        registry.registrer(TidsserieBackendService.class, backend);
+        registry.registrer(GrunnlagsdataRepository.class, repository);
     }
 
     @Test
     public void skalHaMedlemsdataOversetterForAlleStoettaMedlemsdatatyper() {
         assertThat(service.medlemsdataOversettere())
                 .containsKeys(Stillingsendring.class, Avtalekoblingsperiode.class, Medregningsperiode.class);
-    }
-
-    /**
-     * Verifiserer at backenden blir notifisert via uploaderen om at opplasting av alle data
-     * er fullført.
-     */
-    @Test
-    public void skalNotifisereBackendenOmAtLastingaErFullfoert() {
-        service.lastOpp();
-        verify(backend).registrer(TidsserieFactory.class, service);
     }
 
     /**
@@ -92,7 +87,7 @@ public class GrunnlagsdataServiceTest {
                 ).stream()
         );
 
-        service.lastOpp();
+        lastOpp();
 
         final ArgumentCaptor<Medlemslinje> captor = forClass(Medlemslinje.class);
         verify(uploader, times(4)).append(captor.capture());
@@ -120,7 +115,7 @@ public class GrunnlagsdataServiceTest {
                 ).stream()
         );
 
-        service.lastOpp();
+        lastOpp();
 
         verify(uploader, times(2)).run();
     }
@@ -137,7 +132,7 @@ public class GrunnlagsdataServiceTest {
                 .onClose(closer);
         when(repository.referansedata()).thenReturn(referansedata);
 
-        service.lesInnReferansedata();
+        service.lesInnReferansedata(repository);
 
         verify(closer).run();
     }
@@ -154,7 +149,7 @@ public class GrunnlagsdataServiceTest {
                 .onClose(closer);
         when(repository.medlemsdata()).thenReturn(medlemsdata);
 
-        service.lastOpp();
+        lastOpp();
 
         verify(closer).run();
     }
@@ -173,13 +168,7 @@ public class GrunnlagsdataServiceTest {
                 .isEqualTo(0);
     }
 
-    @Test
-    public void skalLukkeInputfiler() throws IOException {
-        when(backend.uploader()).thenReturn(uploader);
-        when(repository.medlemsdata()).thenReturn(singletonList(MEDLEMSDATA).stream());
-
-        service.lastOpp();
-
-        verify(backend).registrer(TidsserieFactory.class, service);
+    private void lastOpp() {
+        service.lastOpp(registry.registry());
     }
 }

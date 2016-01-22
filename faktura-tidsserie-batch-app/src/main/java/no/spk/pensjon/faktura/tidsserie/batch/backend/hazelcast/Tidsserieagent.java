@@ -3,16 +3,16 @@ package no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
-import no.spk.pensjon.faktura.tidsserie.core.GenererTidsserieCommand;
-import no.spk.pensjon.faktura.tidsserie.core.StorageBackend;
-import no.spk.pensjon.faktura.tidsserie.core.TidsserieFactory;
-import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
+import no.spk.pensjon.faktura.tidsserie.batch.core.AgentInitializer;
+import no.spk.pensjon.faktura.tidsserie.batch.core.Extensionpoint;
+import no.spk.pensjon.faktura.tidsserie.batch.core.GenererTidsserieCommand;
+import no.spk.pensjon.faktura.tidsserie.batch.core.ServiceLocator;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Feilhandtering;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
+import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.HazelcastInstanceAware;
@@ -34,19 +34,13 @@ class Tidsserieagent
     private final static long serialVersionUID = 1;
 
     public static final String MDC_SERIENUMMER = "serienummer";
-    private final LocalDate foerstedato;
-    private final LocalDate sistedato;
 
     private transient GenererTidsserieCommand kommando;
+    private transient Extensionpoint<AgentInitializer> listeners;
+    private transient Observasjonsperiode periode;
+
     private transient IAtomicLong serienummerGenerator;
     private transient long serienummer;
-    private transient StorageBackend publisher;
-    private transient Tidsseriemodus modus;
-
-    Tidsserieagent(final LocalDate foerstedato, final LocalDate sistedato) {
-        this.foerstedato = foerstedato;
-        this.sistedato = sistedato;
-    }
 
     @Override
     public void setHazelcastInstance(final HazelcastInstance hazelcast) {
@@ -55,18 +49,28 @@ class Tidsserieagent
     }
 
     void configure(final Map<String, Object> userContext) {
-        final TidsserieFactory grunnlagsdata = lookup(userContext, TidsserieFactory.class);
-        this.publisher = lookup(userContext, StorageBackend.class);
-        this.modus = lookup(userContext, Tidsseriemodus.class);
-        this.kommando = modus.createTidsserieCommand(grunnlagsdata, publisher);
+        final ServiceRegistry registry = lookup(userContext, ServiceRegistry.class);
+        configure(registry);
+    }
+
+    void configure(final ServiceRegistry registry) {
+        final ServiceLocator services = new ServiceLocator(registry);
+        this.listeners = new Extensionpoint<>(AgentInitializer.class, registry);
+        this.kommando = services.firstMandatory(GenererTidsserieCommand.class);
+        this.periode = services.firstMandatory(Observasjonsperiode.class);
     }
 
     @Override
     public void initialize(final Context<String, Integer> context) {
         // Serienummeret for alle eventar som blir generert for medlemmar i gjeldande partisjon
         serienummer = serienummerGenerator.getAndIncrement();
+        notifyListeners(context);
+    }
+
+    void notifyListeners(final Context<String, Integer> context) {
         MDC.put(MDC_SERIENUMMER, "" + serienummer);
-        modus.partitionInitialized(serienummer, publisher);
+        listeners.invokeAll(i -> i.partitionInitialized(serienummer))
+                .forEachFailure(e -> emitError(context, e));
     }
 
     @Override
@@ -84,7 +88,7 @@ class Tidsserieagent
         try {
             kommando.generer(
                     value,
-                    new Observasjonsperiode(foerstedato, sistedato),
+                    periode,
                     feilhandtering,
                     serienummer
             );
@@ -111,6 +115,7 @@ class Tidsserieagent
         context.emit("errors_message_" + (t.getMessage() != null ? t.getMessage() : "null"), 1);
     }
 
+
     static <T> T lookup(final Map<String, Object> userContext, final Class<T> serviceType) {
         return ofNullable(
                 userContext.get(serviceType.getSimpleName())
@@ -120,7 +125,7 @@ class Tidsserieagent
                 .orElseThrow(() -> new IllegalStateException(
                                 "Ingen teneste av type "
                                         + serviceType.getSimpleName()
-                                        + " er registrert i tenesteregisteret.\n"
+                                        + " er registrert i user contexten.\n"
                                         + "Tilgjengelig tenester:\n"
                                         + userContext
                                         .values()

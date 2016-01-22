@@ -1,17 +1,28 @@
 package no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast;
 
-import static no.spk.pensjon.faktura.tidsserie.Datoar.dato;
+import static java.time.LocalDate.now;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import no.spk.pensjon.faktura.tidsserie.core.StorageBackend;
-import no.spk.pensjon.faktura.tidsserie.core.TidsserieFactory;
-import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
+import no.spk.pensjon.faktura.tidsserie.batch.ServiceRegistryRule;
+import no.spk.pensjon.faktura.tidsserie.batch.core.AgentInitializer;
+import no.spk.pensjon.faktura.tidsserie.batch.core.GenererTidsserieCommand;
+import no.spk.pensjon.faktura.tidsserie.batch.core.StorageBackend;
+import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsseriemodus;
+import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
+import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
+import com.hazelcast.mapreduce.Context;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -27,8 +38,11 @@ public class TidsserieagentTest {
     @Rule
     public final ExpectedException e = ExpectedException.none();
 
+    @Rule
+    public final ServiceRegistryRule registry = new ServiceRegistryRule();
+
     @Mock
-    private TidsserieFactory grunnlagsdata;
+    private GenererTidsserieCommand command;
 
     @Mock
     private StorageBackend lagring;
@@ -36,46 +50,42 @@ public class TidsserieagentTest {
     @Mock
     private Tidsseriemodus modus;
 
-    private Map<String, Object> tenester = new HashMap<>();
+    @Mock
+    private Context<String, Integer> context;
 
-    private Tidsserieagent agent = new Tidsserieagent(dato("1970.01.01"), dato("1970.12.31"));
+    private Tidsserieagent agent = new Tidsserieagent();
 
     @Before
     public void _before() {
-        registrer(tenester, TidsserieFactory.class, grunnlagsdata);
-        registrer(tenester, StorageBackend.class, lagring);
-        registrer(tenester, Tidsseriemodus.class, modus);
+        registry.registrer(GenererTidsserieCommand.class, command);
+        registry.registrer(StorageBackend.class, lagring);
+        registry.registrer(Tidsseriemodus.class, modus);
+        registry.registrer(Observasjonsperiode.class, new Observasjonsperiode(now(), now()));
+
+        agent.configure(registry.registry());
     }
 
     @Test
-    public void skalFeilePaaOppslagAvTenester() {
-        e.expect(IllegalStateException.class);
-        e.expectMessage("Ingen teneste av type Object");
-        e.expectMessage("- Integer");
-        e.expectMessage("- String");
-
-        final Map<String, Object> tenester = new HashMap<>();
-        registrer(tenester, Integer.class, 1);
-        registrer(tenester, String.class, "yada yada");
-
-        Tidsserieagent.lookup(tenester, Object.class);
-    }
-
-    @Test
-    public void skalSlaaOppPaakrevdeTenester() {
+    public void skal_hente_tjenesteregisteret_fra_usercontexten() {
         final Map<String, Object> mock = spy(new HashMap<>());
-        when(mock.get(TidsserieFactory.class.getSimpleName())).thenReturn(grunnlagsdata);
-        when(mock.get(StorageBackend.class.getSimpleName())).thenReturn(lagring);
-        when(mock.get(Tidsseriemodus.class.getSimpleName())).thenReturn(modus);
+        when(mock.get(ServiceRegistry.class.getSimpleName())).thenReturn(registry.registry());
 
         agent.configure(mock);
 
-        verify(mock).get(TidsserieFactory.class.getSimpleName());
-        verify(mock).get(StorageBackend.class.getSimpleName());
-        verify(mock).get(Tidsseriemodus.class.getSimpleName());
+        verify(mock).get(ServiceRegistry.class.getSimpleName());
     }
 
-    private static <T> void registrer(final Map<String, T> tenester, Class<? extends T> type, T service) {
-        tenester.put(type.getSimpleName(), service);
+    @Test
+    @SuppressWarnings("unchecked")
+    public void skal_ikkje_feile_sjoelv_om_partisjons_listener_feilar() {
+        final AgentInitializer listener = mock(AgentInitializer.class);
+        registry.registrer(AgentInitializer.class, listener);
+
+        final RuntimeException expected = new RuntimeException("You no take candle");
+        doThrow(expected).when(listener).partitionInitialized(anyInt());
+
+        agent.notifyListeners(context);
+
+        verify(context, times(3)).emit(anyString(), eq(1));
     }
 }

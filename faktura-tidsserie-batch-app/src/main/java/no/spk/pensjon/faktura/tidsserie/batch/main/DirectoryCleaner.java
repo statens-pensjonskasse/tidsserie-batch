@@ -2,7 +2,7 @@ package no.spk.pensjon.faktura.tidsserie.batch.main;
 
 import static java.util.Arrays.stream;
 import static java.util.Objects.requireNonNull;
-import static no.spk.pensjon.faktura.tidsserie.core.Validators.require;
+import static no.spk.pensjon.faktura.tidsserie.batch.core.Validators.require;
 
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
@@ -48,7 +48,7 @@ public class DirectoryCleaner {
 
     /**
      * Sletter alle batch-kataloger generert av tidligere kjøringer av faktura-tidsserie-batch.
-     *
+     * @throws HousekeepingException dersom filoperasjoner feiler
      */
     public void deleteDirectories() throws HousekeepingException {
         logger.info("Sletter alle angitte kataloger.");
