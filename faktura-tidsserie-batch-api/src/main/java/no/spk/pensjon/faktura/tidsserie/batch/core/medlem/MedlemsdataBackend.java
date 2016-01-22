@@ -1,11 +1,12 @@
-package no.spk.pensjon.faktura.tidsserie.batch.core;
+package no.spk.pensjon.faktura.tidsserie.batch.core.medlem;
 
 import java.util.Map;
 
+import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 
 /**
- * {@link TidsserieBackendService} representerer backend-systemet som er ansvarlig for generering
+ * {@link MedlemsdataBackend} representerer backend-systemet som er ansvarlig for generering
  * av tidsseriar.
  * <br>
  * Backendsystemet lar klientar overføre medlemsdata til backenden for mellomlagring fram til klienten ønskjer
@@ -22,7 +23,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
  *
  * @author Tarjei Skorgenes
  */
-public interface TidsserieBackendService {
+public interface MedlemsdataBackend {
     /**
      * Startar opp og allokerer ressursar påkrevd for å motta medlemsdata frå klientar
      * for å kunne generere tidsseriar.

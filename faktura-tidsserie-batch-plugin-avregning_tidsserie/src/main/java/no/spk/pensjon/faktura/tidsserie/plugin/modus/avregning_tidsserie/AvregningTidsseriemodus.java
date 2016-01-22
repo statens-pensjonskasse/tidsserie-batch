@@ -13,10 +13,10 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.core.Katalog;
-import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieBackendService;
-import no.spk.pensjon.faktura.tidsserie.batch.core.BehandleMedlemCommand;
+import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.MedlemsdataBackend;
+import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.BehandleMedlemCommand;
 import no.spk.pensjon.faktura.tidsserie.batch.core.CSVFormat;
-import no.spk.pensjon.faktura.tidsserie.batch.core.GenererTidsserieCommand;
+import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.GenererTidsserieCommand;
 import no.spk.pensjon.faktura.tidsserie.batch.core.ServiceLocator;
 import no.spk.pensjon.faktura.tidsserie.batch.core.StorageBackend;
 import no.spk.pensjon.faktura.tidsserie.batch.core.TidsperiodeFactory;
@@ -217,7 +217,7 @@ public class AvregningTidsseriemodus implements Tidsseriemodus {
         final ServiceLocator services = new ServiceLocator(registry);
         final StorageBackend storage = services.firstMandatory(StorageBackend.class);
         final TidsserieFactory tidsserieFactory = services.firstMandatory(TidsserieFactory.class);
-        final TidsserieBackendService tidsserieService = services.firstMandatory(TidsserieBackendService.class);
+        final MedlemsdataBackend tidsserieService = services.firstMandatory(MedlemsdataBackend.class);
 
         skrivKolonneoverskrifter(storage);
 

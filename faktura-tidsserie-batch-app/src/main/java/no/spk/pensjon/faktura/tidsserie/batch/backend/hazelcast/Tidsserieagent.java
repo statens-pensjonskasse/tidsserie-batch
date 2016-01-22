@@ -8,7 +8,7 @@ import java.util.Map;
 
 import no.spk.pensjon.faktura.tidsserie.batch.core.AgentInitializer;
 import no.spk.pensjon.faktura.tidsserie.batch.core.Extensionpoint;
-import no.spk.pensjon.faktura.tidsserie.batch.core.GenererTidsserieCommand;
+import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.GenererTidsserieCommand;
 import no.spk.pensjon.faktura.tidsserie.batch.core.ServiceLocator;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Feilhandtering;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;

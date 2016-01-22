@@ -9,11 +9,11 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieBackendService;
+import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.pensjon.faktura.tidsserie.batch.core.AgentInitializer;
-import no.spk.pensjon.faktura.tidsserie.batch.core.BehandleMedlemCommand;
+import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.BehandleMedlemCommand;
 import no.spk.pensjon.faktura.tidsserie.batch.core.CSVFormat;
-import no.spk.pensjon.faktura.tidsserie.batch.core.GenererTidsserieCommand;
+import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.GenererTidsserieCommand;
 import no.spk.pensjon.faktura.tidsserie.batch.core.Katalog;
 import no.spk.pensjon.faktura.tidsserie.batch.core.ServiceLocator;
 import no.spk.pensjon.faktura.tidsserie.batch.core.StorageBackend;
@@ -95,7 +95,7 @@ public class LiveTidsseriemodus implements Tidsseriemodus {
         final ServiceLocator services = new ServiceLocator(registry);
         final StorageBackend storage = services.firstMandatory(StorageBackend.class);
         final TidsserieFactory tidsserieFactory = services.firstMandatory(TidsserieFactory.class);
-        final TidsserieBackendService tidsserieService = services.firstMandatory(TidsserieBackendService.class);
+        final MedlemsdataBackend tidsserieService = services.firstMandatory(MedlemsdataBackend.class);
 
         final GenererTidsserieCommand command = new BehandleMedlemCommand(tidsserieFactory, storage, this);
         registry.registerService(GenererTidsserieCommand.class, command);
