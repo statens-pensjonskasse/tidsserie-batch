@@ -12,9 +12,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Stream;
 
-import no.spk.pensjon.faktura.tidsserie.batch.upload.MedlemsdataUploader;
-import no.spk.pensjon.faktura.tidsserie.batch.upload.Medlemslinje;
-import no.spk.pensjon.faktura.tidsserie.batch.upload.TidsserieBackendService;
+import no.spk.pensjon.faktura.tidsserie.core.MedlemsdataUploader;
+import no.spk.pensjon.faktura.tidsserie.core.Medlemslinje;
+import no.spk.pensjon.faktura.tidsserie.core.TidsserieBackendService;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Avtalekoblingsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medregningsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Stillingsendring;

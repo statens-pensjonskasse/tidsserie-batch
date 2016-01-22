@@ -1,8 +1,7 @@
-package no.spk.pensjon.faktura.tidsserie.batch.upload;
+package no.spk.pensjon.faktura.tidsserie.core;
 
 import java.util.Map;
 
-import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 
 /**

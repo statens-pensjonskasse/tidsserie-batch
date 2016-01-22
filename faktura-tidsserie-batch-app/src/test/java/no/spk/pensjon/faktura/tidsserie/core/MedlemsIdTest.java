@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tidsserie.batch.upload;
+package no.spk.pensjon.faktura.tidsserie.core;
 
 import org.assertj.core.api.JUnitSoftAssertions;
 import org.junit.Rule;

@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tidsserie.batch.upload;
+package no.spk.pensjon.faktura.tidsserie.core;
 
 import java.util.function.BinaryOperator;
 import java.util.stream.Stream;

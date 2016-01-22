@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tidsserie.batch.upload;
+package no.spk.pensjon.faktura.tidsserie.core;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;

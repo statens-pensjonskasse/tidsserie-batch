@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tidsserie.batch.upload;
+package no.spk.pensjon.faktura.tidsserie.core;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.joining;
