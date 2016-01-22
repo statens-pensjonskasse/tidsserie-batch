@@ -2,7 +2,7 @@ package no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag;
 
 import static java.util.stream.Collectors.toList;
 import static no.spk.faktura.input.BatchId.fromString;
-import static no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchIdConstants.GRUNNLAGSDATA_PREFIX;
+import static no.spk.pensjon.faktura.tidsserie.batch.core.BatchIdConstants.GRUNNLAGSDATA_PREFIX;
 
 import java.nio.file.Path;
 import java.time.LocalDate;

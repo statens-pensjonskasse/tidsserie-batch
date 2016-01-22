@@ -1,10 +1,13 @@
-package no.spk.pensjon.faktura.tidsserie.batch.main.input;
+package no.spk.pensjon.faktura.tidsserie.batch.core;
 
 import java.util.regex.Pattern;
 
 import no.spk.faktura.input.BatchId;
 
 /**
+ * Ofte brukte konstantverdiar brukt i forbindelse med lokalisering av inn-katalog og log-katalog
+ * for batchen.
+ *
  * @author Snorre E. Brekke - Computas
  */
 public class BatchIdConstants {

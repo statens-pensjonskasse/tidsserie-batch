@@ -9,13 +9,12 @@ import java.io.File;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.ServiceLoader;
-import java.util.stream.Stream;
 
 import no.spk.faktura.input.BatchId;
 import no.spk.pensjon.faktura.tidsserie.batch.main.ConsoleView;
 import no.spk.pensjon.faktura.tidsserie.batch.main.GrunnlagsdataDirectoryValidator;
 import no.spk.pensjon.faktura.tidsserie.batch.main.View;
-import no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchIdConstants;
+import no.spk.pensjon.faktura.tidsserie.batch.core.BatchIdConstants;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.Modus;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.ModusRule;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
@@ -24,7 +23,6 @@ import no.spk.pensjon.faktura.tjenesteregister.Constants;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 import cucumber.api.DataTable;
-import cucumber.api.Transformer;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import cucumber.api.java8.No;

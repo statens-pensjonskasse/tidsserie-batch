@@ -1,8 +1,8 @@
 package no.spk.pensjon.faktura.tidsserie.batch.main;
 
 import static java.util.Objects.requireNonNull;
-import static no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchIdConstants.TIDSSERIE_PATTERN;
-import static no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchIdConstants.TIDSSERIE_PREFIX;
+import static no.spk.pensjon.faktura.tidsserie.batch.core.BatchIdConstants.TIDSSERIE_PATTERN;
+import static no.spk.pensjon.faktura.tidsserie.batch.core.BatchIdConstants.TIDSSERIE_PREFIX;
 
 import java.io.IOException;
 import java.nio.file.FileVisitResult;

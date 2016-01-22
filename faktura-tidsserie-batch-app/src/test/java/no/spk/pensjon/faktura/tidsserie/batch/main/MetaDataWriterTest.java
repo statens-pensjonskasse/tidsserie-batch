@@ -1,7 +1,7 @@
 package no.spk.pensjon.faktura.tidsserie.batch.main;
 
 
-import static no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchIdConstants.TIDSSERIE_PREFIX;
+import static no.spk.pensjon.faktura.tidsserie.batch.core.BatchIdConstants.TIDSSERIE_PREFIX;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;

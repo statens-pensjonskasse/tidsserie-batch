@@ -5,7 +5,7 @@ import static java.time.Duration.ofMinutes;
 import static java.time.LocalDateTime.now;
 import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.Executors.newCachedThreadPool;
-import static no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchIdConstants.TIDSSERIE_PREFIX;
+import static no.spk.pensjon.faktura.tidsserie.batch.core.BatchIdConstants.TIDSSERIE_PREFIX;
 import static no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieLivssyklus.onStop;
 
 import java.nio.file.Files;
