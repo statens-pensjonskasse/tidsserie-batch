@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Tidsperiode;
-import no.spk.pensjon.faktura.tidsserie.storage.GrunnlagsdataRepository;
+import no.spk.pensjon.faktura.tidsserie.core.GrunnlagsdataRepository;
 
 /**
  * Parameterobjekt som helde på kjennskapen til kvar datafilene som skal matast inn i tidsserien ligg tilgjengelig.

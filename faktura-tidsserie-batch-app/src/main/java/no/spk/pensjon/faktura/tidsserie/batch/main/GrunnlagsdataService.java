@@ -34,7 +34,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.AvtaleinformasjonReposi
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Feilhandtering;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.StandardAvtaleInformasjonRepository;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade;
-import no.spk.pensjon.faktura.tidsserie.storage.GrunnlagsdataRepository;
+import no.spk.pensjon.faktura.tidsserie.core.GrunnlagsdataRepository;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.AvtalekoblingOversetter;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.MedregningsOversetter;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.StillingsendringOversetter;

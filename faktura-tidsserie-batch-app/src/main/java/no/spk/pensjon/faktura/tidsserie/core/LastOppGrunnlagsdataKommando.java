@@ -2,7 +2,6 @@ package no.spk.pensjon.faktura.tidsserie.core;
 
 import java.io.UncheckedIOException;
 
-import no.spk.pensjon.faktura.tidsserie.storage.GrunnlagsdataRepository;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**

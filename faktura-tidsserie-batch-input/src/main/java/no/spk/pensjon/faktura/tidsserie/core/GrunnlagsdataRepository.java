@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tidsserie.storage;
+package no.spk.pensjon.faktura.tidsserie.core;
 
 import java.io.UncheckedIOException;
 import java.util.List;
