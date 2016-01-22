@@ -25,7 +25,7 @@ import no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast.HazelcastBackend
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.TidsserieArgumentsFactory;
 import no.spk.pensjon.faktura.tidsserie.batch.storage.disruptor.LmaxDisruptorPublisher;
-import no.spk.pensjon.faktura.tidsserie.batch.upload.FileTemplate;
+import no.spk.pensjon.faktura.tidsserie.batch.storage.disruptor.FileTemplate;
 import no.spk.pensjon.faktura.tidsserie.batch.upload.TidsserieBackendService;
 import no.spk.pensjon.faktura.tidsserie.core.Extensionpoint;
 import no.spk.pensjon.faktura.tidsserie.core.Katalog;

@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import no.spk.pensjon.faktura.tidsserie.batch.upload.FileTemplate;
 import no.spk.pensjon.faktura.tidsserie.core.ObservasjonsEvent;
 
 /**

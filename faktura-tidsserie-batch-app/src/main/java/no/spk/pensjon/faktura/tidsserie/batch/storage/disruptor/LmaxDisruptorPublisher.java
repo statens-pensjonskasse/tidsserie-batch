@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
-import no.spk.pensjon.faktura.tidsserie.batch.upload.FileTemplate;
 import no.spk.pensjon.faktura.tidsserie.core.ObservasjonsEvent;
 import no.spk.pensjon.faktura.tidsserie.core.StorageBackend;
 import no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklus;

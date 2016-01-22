@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tidsserie.batch.upload;
+package no.spk.pensjon.faktura.tidsserie.batch.storage.disruptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

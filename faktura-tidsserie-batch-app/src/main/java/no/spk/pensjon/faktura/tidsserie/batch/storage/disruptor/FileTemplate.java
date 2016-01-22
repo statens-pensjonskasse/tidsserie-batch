@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tidsserie.batch.upload;
+package no.spk.pensjon.faktura.tidsserie.batch.storage.disruptor;
 
 import java.io.File;
 import java.io.Serializable;

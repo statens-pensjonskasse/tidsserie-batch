@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 
-import no.spk.pensjon.faktura.tidsserie.batch.upload.FileTemplate;
 import no.spk.pensjon.faktura.tidsserie.core.ObservasjonsEvent;
 import no.spk.pensjon.faktura.tidsserie.util.TemporaryFolderWithDeleteVerification;
 
