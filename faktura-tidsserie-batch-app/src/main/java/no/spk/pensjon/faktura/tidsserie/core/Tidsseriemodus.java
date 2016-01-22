@@ -61,18 +61,6 @@ public interface Tidsseriemodus extends Medlemsbehandler {
     Map<String, Integer> lagTidsserie(ServiceRegistry registry);
 
     /**
-     * Oppretter eit nytt repository som les alt av grunnlagsdata frå ein bestemt katalog.
-     *
-     * @param directory katalogen som inneheld filene grunnlagsdata skal hentast frå
-     * @return eit nytt repository som les grunnlagsdata frå den angitte katalogen
-     * @since 1.2.0
-     */
-    default GrunnlagsdataRepository repository(Path directory) {
-        return new CSVInput(directory);
-    }
-
-
-    /**
      * {@inheritDoc}
      * @since 1.2.0
      */

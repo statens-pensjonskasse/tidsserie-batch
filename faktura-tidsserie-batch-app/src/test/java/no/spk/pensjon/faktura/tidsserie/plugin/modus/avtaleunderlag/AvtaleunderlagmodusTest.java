@@ -1,16 +1,26 @@
 package no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag;
 
+import static java.util.Optional.of;
 import static no.spk.pensjon.faktura.tidsserie.Datoar.dato;
 import static no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleperiode.avtaleperiode;
+import static no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag.Avtaleunderlagmodus.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.zip.GZIPOutputStream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.ServiceRegistryRule;
 import no.spk.pensjon.faktura.tidsserie.batch.main.GrunnlagsdataService;
@@ -21,20 +31,27 @@ import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.ArbeidsgiverId;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
+import no.spk.pensjon.faktura.tidsserie.storage.GrunnlagsdataRepository;
+import no.spk.pensjon.faktura.tjenesteregister.Constants;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 /**
  * @author Snorre E. Brekke - Computas
  */
 public class AvtaleunderlagmodusTest {
-
     @Rule
     public ServiceRegistryRule services = new ServiceRegistryRule();
 
+    @Rule
+    public final TemporaryFolder temp = new TemporaryFolder();
+
     private Avtaleunderlagmodus modus;
+
+    private Path innKatalog;
 
     @Before
     public void setUp() throws Exception {
@@ -43,8 +60,41 @@ public class AvtaleunderlagmodusTest {
         services.registrer(Observasjonsperiode.class, new Observasjonsperiode(dato("2015.01.01"), dato("2015.01.01")));
         services.registrer(GrunnlagsdataService.class, mock(GrunnlagsdataService.class));
         services.registrer(StorageBackend.class, mock(StorageBackend.class));
-        services.registry().registerService(Path.class, Paths.get("grunnlagsdata_2016-01-01_01-01-01-01"), Katalog.GRUNNLAGSDATA.egenskap());
+        innKatalog = temp.newFolder("grunnlagsdata_2016-01-01_01-01-01-01").toPath();
+        services.registry().registerService(Path.class, innKatalog, Katalog.GRUNNLAGSDATA.egenskap()
+        );
+    }
 
+    @Test
+    public void skal_overstyre_medlemsdata_lesing_av_ytelseshensyn() throws IOException {
+        writeAscii("medlemsdata.csv.gz", "YADA;YADA;YADA");
+
+        GrunnlagsdataRepository repository = modus.repository(innKatalog);
+        assertThat(repository).isInstanceOf(ReferansedataCSVInput.class);
+
+        assertThat(
+                repository
+                        .medlemsdata()
+                        .collect(Collectors.toList())
+        )
+                .isEmpty();
+    }
+
+    @Test
+    public void skal_registrere_repository_som_overstyrer_standardtenesta() throws IOException {
+        services.registrer(Path.class, temp.getRoot().toPath(), Katalog.GRUNNLAGSDATA.egenskap());
+
+        modus.registerServices(services.registry());
+
+        services.assertFirstService(GrunnlagsdataRepository.class).isPresent();
+
+        assertThat(
+                services
+                        .registry()
+                        .getServiceReference(GrunnlagsdataRepository.class)
+                        .flatMap(r -> r.getProperty(Constants.SERVICE_RANKING))
+        )
+                .isEqualTo(of("1000"));
     }
 
     @SuppressWarnings("unchecked")
@@ -84,5 +134,14 @@ public class AvtaleunderlagmodusTest {
                 .fraOgMed(dato("2015.01.01"))
                 .arbeidsgiverId(ArbeidsgiverId.valueOf(2))
                 .bygg();
+    }
+
+
+    private File writeAscii(String fileName, String innhold) throws IOException {
+        final File file = innKatalog.resolve(fileName).toFile();
+        try (final OutputStream output = new GZIPOutputStream(new FileOutputStream(file))) {
+            output.write(innhold.getBytes("ASCII"));
+        }
+        return file;
     }
 }

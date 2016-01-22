@@ -11,20 +11,30 @@ import static no.spk.pensjon.faktura.tidsserie.Datoar.dato;
 import static no.spk.pensjon.faktura.tidsserie.domain.avregning.Avregningsperiode.avregningsperiode;
 import static no.spk.pensjon.faktura.tidsserie.domain.avregning.Avregningsversjon.avregningsversjon;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 import java.util.zip.GZIPOutputStream;
 
+import no.spk.pensjon.faktura.tidsserie.batch.ServiceRegistryRule;
+import no.spk.pensjon.faktura.tidsserie.core.Katalog;
+import no.spk.pensjon.faktura.tidsserie.core.ServiceLocator;
 import no.spk.pensjon.faktura.tidsserie.core.TidsserieBackendService;
 import no.spk.pensjon.faktura.tidsserie.core.ObservasjonsEvent;
 import no.spk.pensjon.faktura.tidsserie.core.StorageBackend;
@@ -47,7 +57,10 @@ import no.spk.pensjon.faktura.tidsserie.domain.underlag.Annoterbar;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
 import no.spk.pensjon.faktura.tidsserie.storage.GrunnlagsdataRepository;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.AvtalekoblingOversetter;
+import no.spk.pensjon.faktura.tidsserie.storage.csv.CSVInput;
 import no.spk.pensjon.faktura.tidsserie.util.TemporaryFolderWithDeleteVerification;
+import no.spk.pensjon.faktura.tjenesteregister.Constants;
+import no.spk.pensjon.faktura.tjenesteregister.ServiceReference;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 import no.spk.pensjon.faktura.tjenesteregister.support.SimpleServiceRegistry;
 
@@ -55,6 +68,7 @@ import org.assertj.core.api.AbstractObjectArrayAssert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.TemporaryFolder;
 
 public class AvregningTidsseriemodusTest {
     @Rule
@@ -63,9 +77,42 @@ public class AvregningTidsseriemodusTest {
     @Rule
     public final ExpectedException exeption = ExpectedException.none();
 
+    @Rule
+    public final ServiceRegistryRule registry = new ServiceRegistryRule();
+
     private final TidsperiodeFactory factory = mock(TidsperiodeFactory.class);
 
     private final AvregningTidsseriemodus modus = new AvregningTidsseriemodus();
+
+    @Test
+    public void skal_feile_dersom_innkatalog_ikkje_er_registrert() {
+        exeption.expect(IllegalStateException.class);
+        exeption.expectMessage("Ingen teneste av type Path er registrert i tenesteregisteret");
+        exeption.expectMessage("filter");
+        exeption.expectMessage(Katalog.GRUNNLAGSDATA.egenskap());
+
+        modus.registerServices(registry.registry());
+    }
+
+    @Test
+    public void skal_registrere_repository_som_overstyrer_standardtenesta() throws IOException {
+        writeAscii("avregningsavtaler.csv.gz", "YADA YADA");
+        writeAscii("avregningsperioder.csv.gz", "YADA YADA");
+
+        registry.registrer(Path.class, temp.getRoot().toPath(), Katalog.GRUNNLAGSDATA.egenskap());
+
+        modus.registerServices(registry.registry());
+
+        registry.assertFirstService(GrunnlagsdataRepository.class).isPresent();
+
+        assertThat(
+                registry
+                        .registry()
+                        .getServiceReference(GrunnlagsdataRepository.class)
+                        .flatMap(r -> r.getProperty(Constants.SERVICE_RANKING))
+        )
+                .isEqualTo(of("1000"));
+    }
 
     @Test
     public void skal_inkludere_avregningsperiode_i_referansedata() {

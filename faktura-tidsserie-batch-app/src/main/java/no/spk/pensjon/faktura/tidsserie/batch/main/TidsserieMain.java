@@ -115,7 +115,7 @@ public class TidsserieMain {
             registrer(TidsserieBackendService.class, backend);
             registrer(TidsserieLivssyklus.class, backend);
 
-            final GrunnlagsdataRepository input = modus.repository(innKatalog);
+            final GrunnlagsdataRepository input = new CSVInput(innKatalog);
             registrer(GrunnlagsdataRepository.class, input);
 
             final GrunnlagsdataService overfoering = new GrunnlagsdataService(backend, input);

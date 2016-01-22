@@ -12,6 +12,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import no.spk.pensjon.faktura.tidsserie.core.Katalog;
 import no.spk.pensjon.faktura.tidsserie.core.TidsserieBackendService;
 import no.spk.pensjon.faktura.tidsserie.core.BehandleMedlemCommand;
 import no.spk.pensjon.faktura.tidsserie.core.CSVFormat;
@@ -38,6 +39,7 @@ import no.spk.pensjon.faktura.tidsserie.storage.GrunnlagsdataRepository;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.AvregningsavtaleperiodeOversetter;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.AvregningsperiodeOversetter;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.CSVInput;
+import no.spk.pensjon.faktura.tjenesteregister.Constants;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**
@@ -73,8 +75,7 @@ public class AvregningTidsseriemodus implements Tidsseriemodus {
                 .flatMap(s -> s);
     }
 
-    @Override
-    public GrunnlagsdataRepository repository(final Path directory) {
+    GrunnlagsdataRepository repository(final Path directory) {
         validerFilFinnes(directory, "avregningsperioder.csv.gz");
         validerFilFinnes(directory, "avregningsavtaler.csv.gz");
         final CSVInput grunnlag = new CSVInput(directory)
@@ -100,8 +101,13 @@ public class AvregningTidsseriemodus implements Tidsseriemodus {
     }
 
     @Override
-    public void registerServices(ServiceRegistry serviceRegistry) {
-        //noop
+    public void registerServices(final ServiceRegistry serviceRegistry) {
+        final Path innKatalog = new ServiceLocator(serviceRegistry).firstMandatory(Path.class, Katalog.GRUNNLAGSDATA.egenskap());
+        serviceRegistry.registerService(
+                GrunnlagsdataRepository.class,
+                repository(innKatalog),
+                Constants.SERVICE_RANKING + "=1000"
+        );
     }
 
     /**

@@ -28,6 +28,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
 import no.spk.pensjon.faktura.tidsserie.storage.GrunnlagsdataRepository;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.CSVInput;
+import no.spk.pensjon.faktura.tjenesteregister.Constants;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**
@@ -43,18 +44,19 @@ public class Avtaleunderlagmodus implements Tidsseriemodus {
     private Optional<Underlagskriver> avtaleunderlagskriver = Optional.empty();
 
     @Override
-    public void registerServices(ServiceRegistry serviceRegistry) {
-        //noop
+    public void registerServices(final ServiceRegistry serviceRegistry) {
+        final ServiceLocator services = new ServiceLocator(serviceRegistry);
+        serviceRegistry.registerService(
+                GrunnlagsdataRepository.class,
+                repository(
+                        services.firstMandatory(Path.class, Katalog.GRUNNLAGSDATA.egenskap())
+                ),
+                Constants.SERVICE_RANKING + "=1000"
+        );
     }
 
-    @Override
-    public GrunnlagsdataRepository repository(Path directory) {
-        return new CSVInput(directory){
-            @Override
-            public Stream<List<String>> medlemsdata() {
-                return Stream.empty();
-            }
-        };
+    GrunnlagsdataRepository repository(final Path directory) {
+        return new ReferansedataCSVInput(directory);
     }
 
     @Override
@@ -127,4 +129,14 @@ public class Avtaleunderlagmodus implements Tidsseriemodus {
         this.avtaleunderlagskriver = Optional.of(avtaleunderlagskriver);
     }
 
+    static class ReferansedataCSVInput extends CSVInput {
+        private ReferansedataCSVInput(final Path directory) {
+            super(directory);
+        }
+
+        @Override
+        public Stream<List<String>> medlemsdata() {
+            return Stream.empty();
+        }
+    }
 }
