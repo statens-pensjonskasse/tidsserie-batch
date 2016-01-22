@@ -6,10 +6,10 @@ import static java.util.stream.Collectors.joining;
 import java.util.List;
 import java.util.Map;
 
-import no.spk.pensjon.faktura.tidsserie.core.AgentInitializer;
-import no.spk.pensjon.faktura.tidsserie.core.Extensionpoint;
-import no.spk.pensjon.faktura.tidsserie.core.GenererTidsserieCommand;
-import no.spk.pensjon.faktura.tidsserie.core.ServiceLocator;
+import no.spk.pensjon.faktura.tidsserie.batch.core.AgentInitializer;
+import no.spk.pensjon.faktura.tidsserie.batch.core.Extensionpoint;
+import no.spk.pensjon.faktura.tidsserie.batch.core.GenererTidsserieCommand;
+import no.spk.pensjon.faktura.tidsserie.batch.core.ServiceLocator;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Feilhandtering;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;

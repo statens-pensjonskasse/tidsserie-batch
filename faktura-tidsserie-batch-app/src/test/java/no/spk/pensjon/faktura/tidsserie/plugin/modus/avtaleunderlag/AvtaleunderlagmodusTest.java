@@ -21,14 +21,14 @@ import java.util.zip.GZIPOutputStream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.ServiceRegistryRule;
 import no.spk.pensjon.faktura.tidsserie.batch.main.GrunnlagsdataService;
-import no.spk.pensjon.faktura.tidsserie.core.Katalog;
-import no.spk.pensjon.faktura.tidsserie.core.StorageBackend;
-import no.spk.pensjon.faktura.tidsserie.core.TidsperiodeFactory;
+import no.spk.pensjon.faktura.tidsserie.batch.core.Katalog;
+import no.spk.pensjon.faktura.tidsserie.batch.core.StorageBackend;
+import no.spk.pensjon.faktura.tidsserie.batch.core.TidsperiodeFactory;
 import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.ArbeidsgiverId;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
-import no.spk.pensjon.faktura.tidsserie.core.GrunnlagsdataRepository;
+import no.spk.pensjon.faktura.tidsserie.batch.core.GrunnlagsdataRepository;
 import no.spk.pensjon.faktura.tjenesteregister.Constants;
 
 import org.junit.Before;

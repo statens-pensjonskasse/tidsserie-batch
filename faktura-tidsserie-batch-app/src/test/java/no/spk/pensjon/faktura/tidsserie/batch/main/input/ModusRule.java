@@ -6,7 +6,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.stream.Stream;
 
-import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
+import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsseriemodus;
 
 import org.junit.rules.ExternalResource;
 

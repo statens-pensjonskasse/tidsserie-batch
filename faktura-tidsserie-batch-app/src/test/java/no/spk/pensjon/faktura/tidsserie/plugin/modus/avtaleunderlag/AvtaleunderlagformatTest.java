@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import java.util.UUID;
 
-import no.spk.pensjon.faktura.tidsserie.core.Tidsserienummer;
+import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsserienummer;
 import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Arbeidsgiverdataperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleprodukt;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.ArbeidsgiverId;

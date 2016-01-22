@@ -7,7 +7,7 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklus;
+import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieLivssyklus;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**

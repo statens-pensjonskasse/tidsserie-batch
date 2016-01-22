@@ -11,8 +11,8 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import no.spk.pensjon.faktura.tidsserie.core.CSVFormat;
-import no.spk.pensjon.faktura.tidsserie.core.Tidsserienummer;
+import no.spk.pensjon.faktura.tidsserie.batch.core.CSVFormat;
+import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsserienummer;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Aksjonskode;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.ArbeidsgiverId;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Avtale;

@@ -3,7 +3,7 @@ package no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning;
 import static java.util.Arrays.asList;
 import static java.util.Optional.of;
 import static no.spk.pensjon.faktura.tidsserie.Datoar.dato;
-import static no.spk.pensjon.faktura.tidsserie.core.Tidsserienummer.genererForDato;
+import static no.spk.pensjon.faktura.tidsserie.batch.core.Tidsserienummer.genererForDato;
 import static no.spk.pensjon.faktura.tidsserie.domain.avregning.Avregningsversjon.avregningsversjon;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Avtale.avtale;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId.avtaleId;
@@ -49,7 +49,7 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import no.spk.pensjon.faktura.tidsserie.core.Tidsserienummer;
+import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsserienummer;
 import no.spk.pensjon.faktura.tidsserie.domain.avregning.AvregningsRegelsett;
 import no.spk.pensjon.faktura.tidsserie.domain.avregning.Avregningsversjon;
 import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Termintype;

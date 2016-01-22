@@ -2,7 +2,7 @@ package no.spk.pensjon.faktura.tidsserie.batch.storage.disruptor;
 
 import java.io.IOException;
 
-import no.spk.pensjon.faktura.tidsserie.core.ObservasjonsEvent;
+import no.spk.pensjon.faktura.tidsserie.batch.core.ObservasjonsEvent;
 
 import com.lmax.disruptor.EventHandler;
 

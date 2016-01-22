@@ -13,11 +13,11 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.ServiceRegistryRule;
-import no.spk.pensjon.faktura.tidsserie.core.AgentInitializer;
-import no.spk.pensjon.faktura.tidsserie.core.Katalog;
-import no.spk.pensjon.faktura.tidsserie.core.StorageBackend;
-import no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklus;
-import no.spk.pensjon.faktura.tidsserie.core.Tidsserienummer;
+import no.spk.pensjon.faktura.tidsserie.batch.core.AgentInitializer;
+import no.spk.pensjon.faktura.tidsserie.batch.core.Katalog;
+import no.spk.pensjon.faktura.tidsserie.batch.core.StorageBackend;
+import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieLivssyklus;
+import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsserienummer;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonspublikator;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
 import no.spk.pensjon.faktura.tidsserie.util.TemporaryFolderWithDeleteVerification;

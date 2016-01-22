@@ -8,8 +8,8 @@ import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt.YSK;
 
 import java.util.stream.Stream;
 
-import no.spk.pensjon.faktura.tidsserie.core.CSVFormat;
-import no.spk.pensjon.faktura.tidsserie.core.Tidsserienummer;
+import no.spk.pensjon.faktura.tidsserie.batch.core.CSVFormat;
+import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsserienummer;
 import no.spk.pensjon.faktura.tidsserie.domain.avregning.AFPPremieRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.avregning.Avregningsversjon;
 import no.spk.pensjon.faktura.tidsserie.domain.avregning.GRUPremieRegel;

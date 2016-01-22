@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import no.spk.pensjon.faktura.tidsserie.core.ObservasjonsEvent;
+import no.spk.pensjon.faktura.tidsserie.batch.core.ObservasjonsEvent;
 
 /**
  * Fil-basert implementasjon av {@link ObservasjonsConsumer}.

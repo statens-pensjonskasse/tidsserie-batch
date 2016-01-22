@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import no.spk.pensjon.faktura.tidsserie.core.Tidsserienummer;
+import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsserienummer;
 import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Arbeidsgiverdataperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleprodukt;

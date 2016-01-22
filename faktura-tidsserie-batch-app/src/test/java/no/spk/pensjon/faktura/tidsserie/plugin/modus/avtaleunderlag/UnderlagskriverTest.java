@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.stream.Stream;
 
-import no.spk.pensjon.faktura.tidsserie.core.ObservasjonsEvent;
+import no.spk.pensjon.faktura.tidsserie.batch.core.ObservasjonsEvent;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.ArbeidsgiverId;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;

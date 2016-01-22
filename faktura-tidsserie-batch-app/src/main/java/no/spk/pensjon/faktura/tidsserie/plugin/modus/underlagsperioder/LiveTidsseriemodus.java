@@ -9,18 +9,18 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import no.spk.pensjon.faktura.tidsserie.core.TidsserieBackendService;
-import no.spk.pensjon.faktura.tidsserie.core.AgentInitializer;
-import no.spk.pensjon.faktura.tidsserie.core.BehandleMedlemCommand;
-import no.spk.pensjon.faktura.tidsserie.core.CSVFormat;
-import no.spk.pensjon.faktura.tidsserie.core.GenererTidsserieCommand;
-import no.spk.pensjon.faktura.tidsserie.core.Katalog;
-import no.spk.pensjon.faktura.tidsserie.core.ServiceLocator;
-import no.spk.pensjon.faktura.tidsserie.core.StorageBackend;
-import no.spk.pensjon.faktura.tidsserie.core.TidsserieFactory;
-import no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklus;
-import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
-import no.spk.pensjon.faktura.tidsserie.core.Tidsserienummer;
+import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieBackendService;
+import no.spk.pensjon.faktura.tidsserie.batch.core.AgentInitializer;
+import no.spk.pensjon.faktura.tidsserie.batch.core.BehandleMedlemCommand;
+import no.spk.pensjon.faktura.tidsserie.batch.core.CSVFormat;
+import no.spk.pensjon.faktura.tidsserie.batch.core.GenererTidsserieCommand;
+import no.spk.pensjon.faktura.tidsserie.batch.core.Katalog;
+import no.spk.pensjon.faktura.tidsserie.batch.core.ServiceLocator;
+import no.spk.pensjon.faktura.tidsserie.batch.core.StorageBackend;
+import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieFactory;
+import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieLivssyklus;
+import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsseriemodus;
+import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsserienummer;
 import no.spk.pensjon.faktura.tidsserie.domain.avregning.AvregningsRegelsett;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.PrognoseRegelsett;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.Regelsett;
@@ -128,7 +128,7 @@ public class LiveTidsseriemodus implements Tidsseriemodus {
      * Genererer ein ny publikator som ved hjelp av <code>mapper </code> mappar alle observasjonsunderlagas perioder om
      * til ei form som deretter blir lagra via <code>lagring</code>.
      * <br>
-     * Kvart observasjonsunderlag blir annotert med {@link no.spk.pensjon.faktura.tidsserie.core.Tidsserienummer}
+     * Kvart observasjonsunderlag blir annotert med {@link Tidsserienummer}
      * basert på dagens dato slik at mapperen unikt kan indikere at alle periodene tilhøyrer ein og samme tidsserie.
      *
      * @param mapper  serialiserer observasjonsunderlagas underlagsperioder til formatet <code>lagring</code> skal lagre på

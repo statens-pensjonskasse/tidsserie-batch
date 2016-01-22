@@ -1,12 +1,10 @@
 package no.spk.pensjon.faktura.tidsserie.batch.core;
 
 import static no.spk.pensjon.faktura.tidsserie.Datoar.dato;
-import static no.spk.pensjon.faktura.tidsserie.core.Tidsserienummer.genererForDato;
+import static no.spk.pensjon.faktura.tidsserie.batch.core.Tidsserienummer.genererForDato;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
-
-import no.spk.pensjon.faktura.tidsserie.core.Tidsserienummer;
 
 import org.assertj.core.api.AbstractCharSequenceAssert;
 import org.junit.Rule;

@@ -5,8 +5,8 @@ import static java.util.stream.Collectors.joining;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import no.spk.pensjon.faktura.tidsserie.core.CSVFormat;
-import no.spk.pensjon.faktura.tidsserie.core.StorageBackend;
+import no.spk.pensjon.faktura.tidsserie.batch.core.CSVFormat;
+import no.spk.pensjon.faktura.tidsserie.batch.core.StorageBackend;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
 
 /**

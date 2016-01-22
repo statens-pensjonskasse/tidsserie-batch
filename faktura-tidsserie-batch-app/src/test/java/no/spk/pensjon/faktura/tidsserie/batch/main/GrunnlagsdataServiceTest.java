@@ -13,15 +13,15 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.ServiceRegistryRule;
-import no.spk.pensjon.faktura.tidsserie.core.MedlemsdataUploader;
-import no.spk.pensjon.faktura.tidsserie.core.Medlemslinje;
-import no.spk.pensjon.faktura.tidsserie.core.TidsserieBackendService;
+import no.spk.pensjon.faktura.tidsserie.batch.core.MedlemsdataUploader;
+import no.spk.pensjon.faktura.tidsserie.batch.core.Medlemslinje;
+import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieBackendService;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Avtalekoblingsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medregningsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Stillingsendring;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.GenerellTidsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Tidsperiode;
-import no.spk.pensjon.faktura.tidsserie.core.GrunnlagsdataRepository;
+import no.spk.pensjon.faktura.tidsserie.batch.core.GrunnlagsdataRepository;
 import no.spk.pensjon.faktura.tidsserie.util.TemporaryFolderWithDeleteVerification;
 
 import org.junit.Before;

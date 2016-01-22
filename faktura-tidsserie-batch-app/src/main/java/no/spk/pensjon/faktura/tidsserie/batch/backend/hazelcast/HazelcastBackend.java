@@ -9,9 +9,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
-import no.spk.pensjon.faktura.tidsserie.core.MedlemsdataUploader;
-import no.spk.pensjon.faktura.tidsserie.core.TidsserieBackendService;
-import no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklus;
+import no.spk.pensjon.faktura.tidsserie.batch.core.MedlemsdataUploader;
+import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieBackendService;
+import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieLivssyklus;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 import com.hazelcast.core.HazelcastInstance;

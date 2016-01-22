@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import no.spk.pensjon.faktura.tidsserie.core.TidsperiodeFactory;
+import no.spk.pensjon.faktura.tidsserie.batch.core.TidsperiodeFactory;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Tidsperiode;
 
 /**

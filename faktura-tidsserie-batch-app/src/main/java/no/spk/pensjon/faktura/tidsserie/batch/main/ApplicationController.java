@@ -1,6 +1,5 @@
 package no.spk.pensjon.faktura.tidsserie.batch.main;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Map;
@@ -9,11 +8,11 @@ import no.spk.faktura.input.BatchId;
 import no.spk.faktura.input.InvalidParameterException;
 import no.spk.faktura.input.UsageRequestedException;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
-import no.spk.pensjon.faktura.tidsserie.core.LastOppGrunnlagsdataKommando;
-import no.spk.pensjon.faktura.tidsserie.core.TidsserieBackendService;
-import no.spk.pensjon.faktura.tidsserie.core.Extensionpoint;
-import no.spk.pensjon.faktura.tidsserie.core.ServiceLocator;
-import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
+import no.spk.pensjon.faktura.tidsserie.batch.core.LastOppGrunnlagsdataKommando;
+import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieBackendService;
+import no.spk.pensjon.faktura.tidsserie.batch.core.Extensionpoint;
+import no.spk.pensjon.faktura.tidsserie.batch.core.ServiceLocator;
+import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
