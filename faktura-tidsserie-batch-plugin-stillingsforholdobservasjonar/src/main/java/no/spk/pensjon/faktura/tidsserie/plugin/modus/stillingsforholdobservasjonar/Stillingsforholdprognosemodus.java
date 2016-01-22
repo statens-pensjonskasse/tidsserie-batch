@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tidsserie.plugin.modus.prognoseobservasjonar;
+package no.spk.pensjon.faktura.tidsserie.plugin.modus.stillingsforholdobservasjonar;
 
 import static java.util.stream.Collectors.joining;
 
