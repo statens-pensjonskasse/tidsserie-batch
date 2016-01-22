@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning;
+package no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie;
 
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Aarsverk;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Kroner;

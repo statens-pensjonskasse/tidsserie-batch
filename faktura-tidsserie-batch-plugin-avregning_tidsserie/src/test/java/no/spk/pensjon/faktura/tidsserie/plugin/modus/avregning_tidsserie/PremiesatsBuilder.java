@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning;
+package no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie;
 
 import static java.lang.Integer.parseInt;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Kroner.kroner;

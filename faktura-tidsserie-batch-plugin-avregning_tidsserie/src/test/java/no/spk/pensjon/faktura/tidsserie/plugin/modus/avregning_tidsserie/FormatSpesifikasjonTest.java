@@ -1,7 +1,8 @@
-package no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning;
+package no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -80,7 +81,7 @@ public class FormatSpesifikasjonTest {
                 kolonne(2, "myself", dummy());
             }
         };
-        assertThat(spesifikasjon.kolonnenavn().toArray()).containsExactly("me", "myself", "and irene");
+        Assertions.assertThat(spesifikasjon.kolonnenavn().toArray()).containsExactly("me", "myself", "and irene");
     }
 
     private static FormatSpesifikasjon.KolonneMapper dummy() {

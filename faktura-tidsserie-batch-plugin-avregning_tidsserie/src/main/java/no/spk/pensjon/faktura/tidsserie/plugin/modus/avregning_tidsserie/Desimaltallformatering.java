@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning;
+package no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie;
 
 import java.math.RoundingMode;
 import java.text.NumberFormat;

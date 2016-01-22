@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning;
+package no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie;
 
 import static java.time.LocalDate.now;
 import static java.util.Arrays.asList;
@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.stream.Stream;
 import java.util.zip.GZIPOutputStream;
 
-import no.spk.pensjon.faktura.tidsserie.batch.ServiceRegistryRule;
 import no.spk.pensjon.faktura.tidsserie.batch.core.Katalog;
 import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieBackendService;
 import no.spk.pensjon.faktura.tidsserie.batch.core.ObservasjonsEvent;
@@ -55,6 +54,7 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 import no.spk.pensjon.faktura.tjenesteregister.support.SimpleServiceRegistry;
 
 import org.assertj.core.api.AbstractObjectArrayAssert;
+import org.assertj.core.api.Assertions;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -201,7 +201,7 @@ public class AvregningTidsseriemodusTest {
                 }}
         );
 
-        assertThat(modus.behandleMedlem(medlemsdata)).isTrue();
+        Assertions.assertThat(modus.behandleMedlem(medlemsdata)).isTrue();
     }
 
     @Test
@@ -223,7 +223,7 @@ public class AvregningTidsseriemodusTest {
                 }}
         );
 
-        assertThat(modus.behandleMedlem(medlemsdata)).isFalse();
+        Assertions.assertThat(modus.behandleMedlem(medlemsdata)).isFalse();
     }
 
     @Test
@@ -280,7 +280,7 @@ public class AvregningTidsseriemodusTest {
 
     @Test
     public void skal_bruke_avregnings_regelsettet() {
-        assertThat(modus.regelsett()).isInstanceOf(AvregningsRegelsett.class);
+        Assertions.assertThat(modus.regelsett()).isInstanceOf(AvregningsRegelsett.class);
     }
 
     @Test
