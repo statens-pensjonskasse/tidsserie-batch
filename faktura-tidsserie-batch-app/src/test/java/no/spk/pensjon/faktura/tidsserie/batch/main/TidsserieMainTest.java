@@ -9,9 +9,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import no.spk.pensjon.faktura.tidsserie.batch.ServiceRegistryRule;
-import no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklus;
-import no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklusException;
-import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
+import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieLivssyklus;
+import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieLivssyklusException;
+import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 

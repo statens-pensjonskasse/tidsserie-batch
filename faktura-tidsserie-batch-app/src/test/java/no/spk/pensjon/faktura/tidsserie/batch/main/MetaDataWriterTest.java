@@ -1,7 +1,7 @@
 package no.spk.pensjon.faktura.tidsserie.batch.main;
 
 
-import static no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchIdConstants.TIDSSERIE_PREFIX;
+import static no.spk.pensjon.faktura.tidsserie.batch.core.BatchIdConstants.TIDSSERIE_PREFIX;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
@@ -15,6 +15,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 import no.spk.faktura.input.BatchId;
+import no.spk.pensjon.faktura.tidsserie.batch.main.input.ModusRule;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.TidsserieArgumentsFactory;
 
@@ -33,6 +34,9 @@ public class MetaDataWriterTest {
     @Rule
     public TemporaryFolder testFolder = new TemporaryFolder();
 
+    @Rule
+    public final ModusRule modus = new ModusRule();
+
     @Test
     public void testCreateMetadataFile() throws Exception {
         File writeFolder = createTestFolders();
@@ -50,8 +54,16 @@ public class MetaDataWriterTest {
     }
 
     private ProgramArguments getProgramArguments(File writeFolder) {
+        String navn = "modus";
+        this.modus.support(navn);
         String file = writeFolder.getAbsolutePath();
-        return new TidsserieArgumentsFactory().create("-b", "lager metadata", "-i", file, "-o", file, "-log", file);
+        return new TidsserieArgumentsFactory().create(
+                "-b", "lager metadata",
+                "-i", file,
+                "-o", file,
+                "-log", file,
+                "-m", navn
+        );
     }
 
     private MetaDataWriter getMetaDataWriter(File writeFolder) {

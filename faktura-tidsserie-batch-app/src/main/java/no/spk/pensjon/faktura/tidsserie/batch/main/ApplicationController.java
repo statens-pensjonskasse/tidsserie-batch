@@ -1,19 +1,18 @@
 package no.spk.pensjon.faktura.tidsserie.batch.main;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import no.spk.faktura.input.BatchId;
 import no.spk.faktura.input.InvalidParameterException;
 import no.spk.faktura.input.UsageRequestedException;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
-import no.spk.pensjon.faktura.tidsserie.batch.upload.TidsserieBackendService;
-import no.spk.pensjon.faktura.tidsserie.core.Extensionpoint;
-import no.spk.pensjon.faktura.tidsserie.core.ServiceLocator;
-import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
+import no.spk.pensjon.faktura.tidsserie.batch.core.LastOppGrunnlagsdataKommando;
+import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieBackendService;
+import no.spk.pensjon.faktura.tidsserie.batch.core.Extensionpoint;
+import no.spk.pensjon.faktura.tidsserie.batch.core.ServiceLocator;
+import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
@@ -40,6 +39,8 @@ public class ApplicationController {
     static final int EXIT_WARNING = 2;
 
     private final Extensionpoint<GrunnlagsdataDirectoryValidator> validator;
+    private final Extensionpoint<LastOppGrunnlagsdataKommando> opplasting;
+    private final ServiceRegistry registry;
 
     private int exitCode = EXIT_ERROR;
 
@@ -51,8 +52,10 @@ public class ApplicationController {
     private final View view;
 
     public ApplicationController(final ServiceRegistry registry) {
+        this.registry = registry;
         this.view = new ServiceLocator(registry).firstMandatory(View.class);
         this.validator = new Extensionpoint<>(GrunnlagsdataDirectoryValidator.class, registry);
+        this.opplasting = new Extensionpoint<>(LastOppGrunnlagsdataKommando.class, registry);
     }
 
     public void initialiserLogging(final BatchId id, final Path utKatalog) {
@@ -128,9 +131,12 @@ public class ApplicationController {
         backend.start();
     }
 
-    public void lastOpp(GrunnlagsdataService overfoering) throws IOException {
+    public void lastOpp() {
         view.startarOpplasting();
-        overfoering.lastOpp();
+        opplasting
+                .invokeFirst(kommando -> kommando.lastOpp(registry))
+                .orElseRethrowFirstFailure()
+        ;
         view.opplastingFullfoert();
     }
 
@@ -163,7 +169,8 @@ public class ApplicationController {
     }
 
     /**
-     * Logger exit-kode for tilstanden ApplicationController har nå. Denne metoden bør (skal) bare kalles når programmet avsluttes.
+     * Logger exit-kode for tilstanden ApplicationController har nå. Denne metoden bør (skal) bare kalles når programmet
+     * avsluttes.
      */
     public void logExit() {
         getLogger().info("Exit code: " + exitCode());

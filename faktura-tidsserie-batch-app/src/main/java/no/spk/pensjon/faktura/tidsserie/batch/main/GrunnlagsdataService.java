@@ -11,10 +11,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import no.spk.pensjon.faktura.tidsserie.batch.upload.MedlemsdataUploader;
-import no.spk.pensjon.faktura.tidsserie.batch.upload.Medlemslinje;
-import no.spk.pensjon.faktura.tidsserie.batch.upload.TidsserieBackendService;
-import no.spk.pensjon.faktura.tidsserie.core.TidsserieFactory;
+import no.spk.pensjon.faktura.tidsserie.batch.core.LastOppGrunnlagsdataKommando;
+import no.spk.pensjon.faktura.tidsserie.batch.core.MedlemsdataUploader;
+import no.spk.pensjon.faktura.tidsserie.batch.core.Medlemslinje;
+import no.spk.pensjon.faktura.tidsserie.batch.core.ServiceLocator;
+import no.spk.pensjon.faktura.tidsserie.batch.core.TidsperiodeFactory;
+import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieBackendService;
+import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieFactory;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Ordning;
 import no.spk.pensjon.faktura.tidsserie.domain.loennsdata.ApotekLoennstrinnperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.loennsdata.Loennstrinnperiode;
@@ -31,10 +34,11 @@ import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.AvtaleinformasjonReposi
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Feilhandtering;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.StandardAvtaleInformasjonRepository;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade;
-import no.spk.pensjon.faktura.tidsserie.storage.GrunnlagsdataRepository;
+import no.spk.pensjon.faktura.tidsserie.batch.core.GrunnlagsdataRepository;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.AvtalekoblingOversetter;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.MedregningsOversetter;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.StillingsendringOversetter;
+import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**
  * {@link GrunnlagsdataService} opptrer som bindeledd mellom
@@ -46,29 +50,17 @@ import no.spk.pensjon.faktura.tidsserie.storage.csv.StillingsendringOversetter;
  *
  * @author Tarjei Skorgenes
  */
-public class GrunnlagsdataService implements TidsserieFactory {
+public class GrunnlagsdataService implements TidsserieFactory, LastOppGrunnlagsdataKommando {
     private final Map<Class<?>, List<Tidsperiode<?>>> perioder = new HashMap<>();
 
     private AvtaleinformasjonRepository avtaleinformasjonRepository = (a) -> Stream.empty();
 
-    private final TidsserieBackendService backend;
-
-    private final GrunnlagsdataRepository input;
-
     private final Map<Class<?>, MedlemsdataOversetter<?>> medlemsdataOversetter = new HashMap<>();
 
     /**
-     * Konstruerer ei ny teneste som hentar grunnlagsdata via <code>repository</code> og gjer dei tilgjengelig via
-     * <code>backend</code>.
-     *
-     * @param backend    backenden som alle grunnlagsdatane blir lasta opp til eller gjort tilgjengelig via
-     * @param repository datalageret som gir oss tilgang til grunnlagsdatane generert av faktura-grunnlagsdata-batch
-     * @throws NullPointerException viss nokon argument er <code>null</code>
+     * Konstruerer ei ny teneste som lastar inn og koordinerer opplasting og tilgang til medlems- og referansedata.
      */
-    public GrunnlagsdataService(final TidsserieBackendService backend, final GrunnlagsdataRepository repository) {
-        this.backend = requireNonNull(backend, "backend er påkrevd, men var null");
-        this.input = requireNonNull(repository, "inputfiler er påkrevd, men var null");
-
+    public GrunnlagsdataService() {
         medlemsdataOversetter.put(Stillingsendring.class, new StillingsendringOversetter());
         medlemsdataOversetter.put(Avtalekoblingsperiode.class, new AvtalekoblingOversetter());
         medlemsdataOversetter.put(Medregningsperiode.class, new MedregningsOversetter());
@@ -104,13 +96,23 @@ public class GrunnlagsdataService implements TidsserieFactory {
     }
 
     /**
-     * Leser inn alle medlems-, avtale- og lønnsdata frå inputfilene og overfører dei til backenden.
+     * Leser inn alle medlemsdata og lastar dei opp til medlemsdatabackenden.
+     * <br>
+     * I tillegg blir alle referansedata lest inn og eagerly konvertert til tidsperioder for rask access via
+     * {@link TidsperiodeFactory}.
      *
-     * @throws UncheckedIOException dersom innlesinga av grunnlagsdata feilar på grunn av I/O-relaterte issues
+     * @param registry {@inheritDoc}
+     * @throws UncheckedIOException {@inheritDoc}
      */
-    public void lastOpp() {
-        final MedlemsdataUploader upload = backend.uploader();
-        try (final Stream<List<String>> lines = input.medlemsdata()) {
+    @Override
+    public void lastOpp(final ServiceRegistry registry) {
+        final ServiceLocator services = new ServiceLocator(registry);
+
+        final MedlemsdataUploader upload = services
+                .firstMandatory(TidsserieBackendService.class)
+                .uploader();
+        final GrunnlagsdataRepository repository = services.firstMandatory(GrunnlagsdataRepository.class);
+        try (final Stream<List<String>> lines = repository.medlemsdata()) {
             lines
                     .map(Medlemslinje::new)
                     .reduce((first, second) -> {
@@ -127,11 +129,11 @@ public class GrunnlagsdataService implements TidsserieFactory {
                     });
         }
 
-        lesInnReferansedata();
+        lesInnReferansedata(repository);
     }
 
-    void lesInnReferansedata() {
-        try (final Stream<Tidsperiode<?>> referansedata = input.referansedata()) {
+    void lesInnReferansedata(final GrunnlagsdataRepository repository) {
+        try (final Stream<Tidsperiode<?>> referansedata = repository.referansedata()) {
             perioder.putAll(referansedata.collect(groupingBy(Object::getClass)));
         }
         perioder.put(Loennstrinnperioder.class, grupperLoennstrinnperioder());

@@ -32,12 +32,11 @@
             <groupId>no.spk.pensjon.faktura</groupId>
             <artifactId>faktura-prognose-tidsserie</artifactId>
         </dependency>
-        <!-- test-->
         <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-core</artifactId>
-            <scope>test</scope>
+            <groupId>no.spk.pensjon.faktura</groupId>
+            <artifactId>faktura-tidsserie-batch-api</artifactId>
         </dependency>
+        <!-- test-->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>

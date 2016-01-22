@@ -8,6 +8,7 @@
         <artifactId>spk-root-pom</artifactId>
         <groupId>no.spk</groupId>
         <version>105</version>
+        <relativePath>../spk-root-pom</relativePath>
     </parent>
 
     <groupId>no.spk.pensjon.faktura</groupId>
@@ -19,6 +20,11 @@
         <module>faktura-tidsserie-batch-app</module>
         <module>faktura-tidsserie-batch</module>
         <module>faktura-tidsserie-batch-overvaak</module>
+        <module>faktura-tidsserie-batch-api</module>
+        <module>faktura-tidsserie-batch-plugin-avtaleunderlag</module>
+        <module>faktura-tidsserie-batch-plugin-stillingsforholdobservasjonar</module>
+        <module>faktura-tidsserie-batch-plugin-live_tidsserie</module>
+        <module>faktura-tidsserie-batch-plugin-avregning_tidsserie</module>
     </modules>
 
     <properties>
@@ -82,11 +88,64 @@
                     <pushReleases>false</pushReleases>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.10</version>
+                <executions>
+                    <execution>
+                        <id>analyze</id>
+                        <goals>
+                            <goal>analyze-only</goal>
+                        </goals>
+                        <phase>verify</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <failOnWarning>true</failOnWarning>
+                    <ignoreNonCompile>true</ignoreNonCompile>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>no.spk.pensjon.faktura</groupId>
+                <artifactId>faktura-tidsserie-batch-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.spk.pensjon.faktura</groupId>
+                <artifactId>faktura-tidsserie-batch-app</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.spk.pensjon.faktura</groupId>
+                <artifactId>faktura-tidsserie-batch-input</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.spk.pensjon.faktura</groupId>
+                <artifactId>faktura-tidsserie-batch-plugin-avtaleunderlag</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.spk.pensjon.faktura</groupId>
+                <artifactId>faktura-tidsserie-batch-plugin-avregning_tidsserie</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.spk.pensjon.faktura</groupId>
+                <artifactId>faktura-tidsserie-batch-plugin-live_tidsserie</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.spk.pensjon.faktura</groupId>
+                <artifactId>faktura-tidsserie-batch-plugin-stillingsforholdobservasjonar</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.lmax</groupId>
                 <artifactId>disruptor</artifactId>
@@ -178,6 +237,16 @@
                 <groupId>no.spk.pensjon.faktura</groupId>
                 <artifactId>faktura-tjenesteregister-lib</artifactId>
                 <version>1.0.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>info.cukes</groupId>
+                <artifactId>cucumber-core</artifactId>
+                <version>1.2.4</version>
+            </dependency>
+            <dependency>
+                <groupId>info.cukes</groupId>
+                <artifactId>cucumber-java</artifactId>
+                <version>1.2.4</version>
             </dependency>
             <dependency>
                 <groupId>info.cukes</groupId>

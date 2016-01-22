@@ -4,20 +4,25 @@ import static no.spk.pensjon.faktura.tidsserie.Datoar.dato;
 import static no.spk.pensjon.faktura.tidsserie.batch.main.ApplicationController.EXIT_ERROR;
 import static no.spk.pensjon.faktura.tidsserie.batch.main.ApplicationController.EXIT_SUCCESS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+
+import java.io.IOException;
+import java.io.UncheckedIOException;
 
 import no.spk.faktura.input.InvalidParameterException;
 import no.spk.faktura.input.UsageRequestedException;
 import no.spk.pensjon.faktura.tidsserie.batch.ServiceRegistryRule;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.StandardOutputAndError;
-import no.spk.pensjon.faktura.tidsserie.batch.upload.TidsserieBackendService;
-import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
+import no.spk.pensjon.faktura.tidsserie.batch.core.LastOppGrunnlagsdataKommando;
+import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieBackendService;
+import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
-import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
-import no.spk.pensjon.faktura.tjenesteregister.support.SimpleServiceRegistry;
+import no.spk.pensjon.faktura.tjenesteregister.Constants;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -126,24 +131,50 @@ public class ApplicationControllerTest {
     }
 
     @Test
-    public void testTidsserieGenerering() throws Exception {
-        ServiceRegistry registry = new SimpleServiceRegistry();
-        TidsserieBackendService backend = mock(TidsserieBackendService.class);
-        Tidsseriemodus modus = mock(Tidsseriemodus.class);
-        GrunnlagsdataService overfoering = mock(GrunnlagsdataService.class);
+    public void skal_delegere_tidsserie_generering_til_modus() {
+        final Tidsseriemodus modus = mock(Tidsseriemodus.class);
+        controller.lagTidsserie(registry.registry(), modus, new Observasjonsperiode(dato("1970.01.01"), dato("1980.12.31")));
 
-        controller.startBackend(backend);
-        controller.lastOpp(overfoering);
-        controller.lagTidsserie(registry, modus, new Observasjonsperiode(dato("1970.01.01"), dato("1980.12.31")));
-
-        verify(backend).start();
-        verify(overfoering).lastOpp();
-        verify(modus).lagTidsserie(registry);
-
-        console.assertStandardOutput().contains("Starter server.");
-        console.assertStandardOutput().contains("Starter lasting av grunnlagsdata...");
-        console.assertStandardOutput().contains("Grunnlagsdata lastet.");
+        verify(modus).lagTidsserie(registry.registry());
         console.assertStandardOutput().contains("Starter tidsserie-generering");
         console.assertStandardOutput().contains("Tidsseriegenerering fullført.");
+    }
+
+    @Test
+    public void skal_starte_backend() {
+        final TidsserieBackendService backend = mock(TidsserieBackendService.class);
+        controller.startBackend(backend);
+
+        verify(backend).start();
+        console.assertStandardOutput().contains("Starter server.");
+    }
+
+    @Test
+    public void skal_kalle_standard_grunnlagsdata_uploader_service() throws IOException {
+        final LastOppGrunnlagsdataKommando uploader1 = mock(LastOppGrunnlagsdataKommando.class);
+        registry.registrer(LastOppGrunnlagsdataKommando.class, uploader1, Constants.SERVICE_RANKING + "=0");
+
+        final LastOppGrunnlagsdataKommando uploader2 = mock(LastOppGrunnlagsdataKommando.class);
+        registry.registrer(LastOppGrunnlagsdataKommando.class, uploader2, Constants.SERVICE_RANKING + "=10");
+
+        controller.lastOpp();
+
+        verify(uploader1, times(0)).lastOpp(any());
+        verify(uploader2, times(1)).lastOpp(any());
+        console.assertStandardOutput().contains("Starter lasting av grunnlagsdata...");
+        console.assertStandardOutput().contains("Grunnlagsdata lastet.");
+    }
+
+    @Test
+    public void skal_rekaste_feil_ved_opplasting() {
+        exception.expect(UncheckedIOException.class);
+        exception.expectMessage("MY CSV TASTES FUNNAY");
+
+        final LastOppGrunnlagsdataKommando uploader = mock(LastOppGrunnlagsdataKommando.class);
+        doThrow(new UncheckedIOException(new IOException("MY CSV TASTES FUNNAY"))).when(uploader).lastOpp(any());
+
+        registry.registrer(LastOppGrunnlagsdataKommando.class, uploader);
+
+        controller.lastOpp();
     }
 }

@@ -1,7 +1,7 @@
 package no.spk.pensjon.faktura.tidsserie.batch.main.input;
 
 import static java.util.Collections.reverseOrder;
-import static no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchIdConstants.GRUNNLAGSDATA_PATTERN;
+import static no.spk.pensjon.faktura.tidsserie.batch.core.BatchIdConstants.GRUNNLAGSDATA_PATTERN;
 
 import java.io.IOException;
 import java.nio.file.Files;

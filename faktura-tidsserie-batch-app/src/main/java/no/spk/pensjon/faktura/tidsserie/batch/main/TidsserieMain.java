@@ -5,8 +5,8 @@ import static java.time.Duration.ofMinutes;
 import static java.time.LocalDateTime.now;
 import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.Executors.newCachedThreadPool;
-import static no.spk.pensjon.faktura.tidsserie.batch.main.input.BatchIdConstants.TIDSSERIE_PREFIX;
-import static no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklus.onStop;
+import static no.spk.pensjon.faktura.tidsserie.batch.core.BatchIdConstants.TIDSSERIE_PREFIX;
+import static no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieLivssyklus.onStop;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,21 +22,24 @@ import no.spk.faktura.input.UsageRequestedException;
 import no.spk.faktura.timeout.BatchTimeout;
 import no.spk.faktura.timeout.BatchTimeoutTaskrunner;
 import no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast.HazelcastBackend;
+import no.spk.pensjon.faktura.tidsserie.batch.main.input.Modus;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.TidsserieArgumentsFactory;
 import no.spk.pensjon.faktura.tidsserie.batch.storage.disruptor.LmaxDisruptorPublisher;
-import no.spk.pensjon.faktura.tidsserie.batch.upload.FileTemplate;
-import no.spk.pensjon.faktura.tidsserie.batch.upload.TidsserieBackendService;
-import no.spk.pensjon.faktura.tidsserie.core.Extensionpoint;
-import no.spk.pensjon.faktura.tidsserie.core.Katalog;
-import no.spk.pensjon.faktura.tidsserie.core.StorageBackend;
-import no.spk.pensjon.faktura.tidsserie.core.TidsperiodeFactory;
-import no.spk.pensjon.faktura.tidsserie.core.TidsserieFactory;
-import no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklus;
-import no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklusException;
-import no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus;
+import no.spk.pensjon.faktura.tidsserie.batch.storage.disruptor.FileTemplate;
+import no.spk.pensjon.faktura.tidsserie.batch.core.LastOppGrunnlagsdataKommando;
+import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieBackendService;
+import no.spk.pensjon.faktura.tidsserie.batch.core.Extensionpoint;
+import no.spk.pensjon.faktura.tidsserie.batch.core.Katalog;
+import no.spk.pensjon.faktura.tidsserie.batch.core.StorageBackend;
+import no.spk.pensjon.faktura.tidsserie.batch.core.TidsperiodeFactory;
+import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieFactory;
+import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieLivssyklus;
+import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieLivssyklusException;
+import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
-import no.spk.pensjon.faktura.tidsserie.storage.GrunnlagsdataRepository;
+import no.spk.pensjon.faktura.tidsserie.batch.core.GrunnlagsdataRepository;
+import no.spk.pensjon.faktura.tidsserie.storage.csv.CSVInput;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistration;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
@@ -84,12 +87,14 @@ public class TidsserieMain {
             startBatchTimeout(arguments);
 
             final BatchId batchId = new BatchId(TIDSSERIE_PREFIX, now());
-            Path logKatalog = batchId.tilArbeidskatalog(arguments.getLogkatalog());
-            Path utKatalog = arguments.getUtkatalog().resolve("tidsserie");
+
+            final Path logKatalog = batchId.tilArbeidskatalog(arguments.getLogkatalog());
+            final Path utKatalog = arguments.getUtkatalog().resolve("tidsserie");
+            final Path innKatalog = arguments.getGrunnlagsdataBatchKatalog();
 
             registrer(Path.class, logKatalog, Katalog.LOG.egenskap());
             registrer(Path.class, utKatalog, Katalog.UT.egenskap());
-            registrer(Path.class, arguments.getGrunnlagsdataBatchKatalog(), Katalog.GRUNNLAGSDATA.egenskap());
+            registrer(Path.class, innKatalog, Katalog.GRUNNLAGSDATA.egenskap());
 
             registrer(Observasjonsperiode.class, arguments.observasjonsperiode());
 
@@ -103,7 +108,7 @@ public class TidsserieMain {
             controller.ryddOpp(directoryCleaner);
             Files.createDirectories(utKatalog);
 
-            registrer(GrunnlagsdataDirectoryValidator.class, new ChecksumValideringAvGrunnlagsdata(arguments.getGrunnlagsdataBatchKatalog()));
+            registrer(GrunnlagsdataDirectoryValidator.class, new ChecksumValideringAvGrunnlagsdata(innKatalog));
 
             final Tidsseriemodus modus = arguments.modus();
             registrer(Tidsseriemodus.class, modus);
@@ -112,13 +117,13 @@ public class TidsserieMain {
             registrer(TidsserieBackendService.class, backend);
             registrer(TidsserieLivssyklus.class, backend);
 
-            final GrunnlagsdataRepository input = modus.repository(arguments.getInnkatalog().resolve(arguments.getGrunnlagsdataBatchId()));
-            registrer(GrunnlagsdataRepository.class, input);
+            registrer(GrunnlagsdataRepository.class, new CSVInput(innKatalog));
 
-            final GrunnlagsdataService overfoering = new GrunnlagsdataService(backend, input);
+            final GrunnlagsdataService overfoering = new GrunnlagsdataService();
             registrer(GrunnlagsdataService.class, overfoering);
             registrer(TidsserieFactory.class, overfoering);
             registrer(TidsperiodeFactory.class, overfoering);
+            registrer(LastOppGrunnlagsdataKommando.class, overfoering);
 
             final MetaDataWriter metaDataWriter = new MetaDataWriter(TemplateConfigurationFactory.create(), logKatalog);
             registrer(MetaDataWriter.class, metaDataWriter);
@@ -141,7 +146,7 @@ public class TidsserieMain {
             final LocalDateTime started = now();
             controller.validerGrunnlagsdata();
             controller.startBackend(backend);
-            controller.lastOpp(overfoering);
+            controller.lastOpp();
 
             lagTidsserie(controller, modus, arguments.observasjonsperiode());
 
@@ -184,6 +189,8 @@ public class TidsserieMain {
     }
 
     public static void main(String[] args) {
+        Modus.autodetect();
+
         final ServiceRegistry registry = ServiceLoader.load(ServiceRegistry.class).iterator().next();
         registry.registerService(View.class, new ConsoleView());
 
