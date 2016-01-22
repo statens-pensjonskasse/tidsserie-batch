@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tidsserie.plugin.modus.underlagsperioder;
+package no.spk.pensjon.faktura.tidsserie.batch.modus.live_tidsserie;
 
 import java.time.LocalDate;
 import java.util.Optional;

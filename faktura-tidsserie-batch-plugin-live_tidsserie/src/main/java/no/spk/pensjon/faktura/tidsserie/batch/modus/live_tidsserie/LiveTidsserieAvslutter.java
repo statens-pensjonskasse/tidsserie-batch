@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tidsserie.plugin.modus.underlagsperioder;
+package no.spk.pensjon.faktura.tidsserie.batch.modus.live_tidsserie;
 
 import static java.util.Objects.requireNonNull;
 

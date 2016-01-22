@@ -1,9 +1,9 @@
-package no.spk.pensjon.faktura.tidsserie.plugin.modus.underlagsperioder;
+package no.spk.pensjon.faktura.tidsserie.batch.modus.live_tidsserie;
 
 import static java.util.Arrays.asList;
-import static no.spk.pensjon.faktura.tidsserie.plugin.modus.underlagsperioder.Kolonnetyper.beloep;
-import static no.spk.pensjon.faktura.tidsserie.plugin.modus.underlagsperioder.Kolonnetyper.flagg;
-import static no.spk.pensjon.faktura.tidsserie.plugin.modus.underlagsperioder.Kolonnetyper.kode;
+import static no.spk.pensjon.faktura.tidsserie.batch.modus.live_tidsserie.Kolonnetyper.beloep;
+import static no.spk.pensjon.faktura.tidsserie.batch.modus.live_tidsserie.Kolonnetyper.flagg;
+import static no.spk.pensjon.faktura.tidsserie.batch.modus.live_tidsserie.Kolonnetyper.kode;
 
 import java.util.List;
 import java.util.Optional;
