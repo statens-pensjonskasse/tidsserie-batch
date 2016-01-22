@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-import no.spk.pensjon.faktura.tidsserie.batch.ServiceRegistryRule;
 import no.spk.pensjon.faktura.tidsserie.batch.core.AgentInitializer;
 import no.spk.pensjon.faktura.tidsserie.batch.core.Katalog;
 import no.spk.pensjon.faktura.tidsserie.batch.core.StorageBackend;
