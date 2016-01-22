@@ -3,7 +3,7 @@ package no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag;
 import static java.util.Optional.of;
 import static no.spk.pensjon.faktura.tidsserie.Datoar.dato;
 import static no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleperiode.avtaleperiode;
-import static no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag.Avtaleunderlagmodus.*;
+import static no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag.Avtaleunderlagmodus.ReferansedataCSVInput;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -19,16 +19,15 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.GZIPOutputStream;
 
-import no.spk.pensjon.faktura.tidsserie.batch.ServiceRegistryRule;
-import no.spk.pensjon.faktura.tidsserie.batch.main.GrunnlagsdataService;
+import no.spk.pensjon.faktura.tidsserie.batch.core.GrunnlagsdataRepository;
 import no.spk.pensjon.faktura.tidsserie.batch.core.Katalog;
 import no.spk.pensjon.faktura.tidsserie.batch.core.StorageBackend;
 import no.spk.pensjon.faktura.tidsserie.batch.core.TidsperiodeFactory;
+import no.spk.pensjon.faktura.tidsserie.batch.main.GrunnlagsdataService;
 import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.ArbeidsgiverId;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
-import no.spk.pensjon.faktura.tidsserie.batch.core.GrunnlagsdataRepository;
 import no.spk.pensjon.faktura.tjenesteregister.Constants;
 
 import org.junit.Before;
