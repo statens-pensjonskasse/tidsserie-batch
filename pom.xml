@@ -8,6 +8,7 @@
         <artifactId>spk-root-pom</artifactId>
         <groupId>no.spk</groupId>
         <version>105</version>
+        <relativePath>../spk-root-pom</relativePath>
     </parent>
 
     <groupId>no.spk.pensjon.faktura</groupId>
