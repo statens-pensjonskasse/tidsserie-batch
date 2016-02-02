@@ -12,7 +12,7 @@
 
     <groupId>no.spk.pensjon.faktura</groupId>
     <artifactId>faktura-tidsserie-batch-parent</artifactId>
-    <version>2.1.2-SNAPSHOT</version>
+    <version>2.1.2</version>
 
     <modules>
         <module>faktura-tidsserie-batch-input</module>
