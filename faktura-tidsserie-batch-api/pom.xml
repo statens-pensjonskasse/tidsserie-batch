@@ -3,7 +3,7 @@
     <parent>
         <artifactId>faktura-tidsserie-batch-parent</artifactId>
         <groupId>no.spk.pensjon.faktura</groupId>
-        <version>2.1.3-SNAPSHOT</version>
+        <version>3.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>faktura-tidsserie-batch-api</artifactId>
@@ -49,7 +49,7 @@
                             <artifactId>${project.artifactId}</artifactId>
                             <!-- NB: Ved binært-inkompatible endringar som fører til bump -->
                             <!-- i versjonsnummer på modulen må også den her bumpast opp -->
-                            <version>2.1.2-SNAPSHOT</version>
+                            <version>3.0.0-SNAPSHOT</version>
                         </dependency>
                     </oldVersion>
                     <newVersion>
@@ -58,10 +58,11 @@
                         </file>
                     </newVersion>
                     <parameter>
+                        <onlyModified>true</onlyModified>
                         <accessModifier>protected</accessModifier>
                         <breakBuildOnModifications>false</breakBuildOnModifications>
                         <breakBuildOnBinaryIncompatibleModifications>true</breakBuildOnBinaryIncompatibleModifications>
-                        <onlyBinaryIncompatible>true</onlyBinaryIncompatible>
+                        <onlyBinaryIncompatible>false</onlyBinaryIncompatible>
                         <includeSynthetic>false</includeSynthetic>
                         <ignoreMissingClasses>false</ignoreMissingClasses>
                         <skipPomModules>true</skipPomModules>
