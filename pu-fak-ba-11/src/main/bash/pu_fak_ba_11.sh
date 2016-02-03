@@ -47,8 +47,7 @@ FindLatestLog() {
     local last_batch_log=$(find ${PU_FAK_BA_10_LOGDIR} -maxdepth 2 -name "batch.log" | sort -r | head -n 1)
 
     if [[ ! -f ${last_batch_log} ]] ; then
-        ExitWithError 2 "Fant ikke batch.log i underkataloger av ${PU_FAK_BA_10_LOGDIR}."
-        exit 1
+        return 1
     fi
 
     echo ${last_batch_log}
@@ -159,7 +158,11 @@ CURRENT_IDE_SEKV_TORT901=$IDE_SEKV_TORT901
 
 # Finn alle tidsserie-batch-logkataloger i PU_FAK_BA_10_LOGDIR, sorter og hent ut første (nyeste kjøring)
 last_batch_log=$(FindLatestLog)
-
+if [[ $? -ne 0 ]]
+then
+    ExitWithError 2 "Fant ikke batch.log i underkataloger av ${PU_FAK_BA_10_LOGDIR}."
+    exit 1
+fi
 first_log_line=$(head -n 1 ${last_batch_log})
 
 batch_hostname=$(GetHostname "${first_log_line}")

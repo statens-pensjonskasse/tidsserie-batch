@@ -12,11 +12,11 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.core.LastOppGrunnlagsdataKommando;
-import no.spk.pensjon.faktura.tidsserie.batch.core.MedlemsdataUploader;
-import no.spk.pensjon.faktura.tidsserie.batch.core.Medlemslinje;
+import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.MedlemsdataUploader;
+import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.Medlemslinje;
 import no.spk.pensjon.faktura.tidsserie.batch.core.ServiceLocator;
 import no.spk.pensjon.faktura.tidsserie.batch.core.TidsperiodeFactory;
-import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieBackendService;
+import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieFactory;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Ordning;
 import no.spk.pensjon.faktura.tidsserie.domain.loennsdata.ApotekLoennstrinnperiode;
@@ -109,7 +109,7 @@ public class GrunnlagsdataService implements TidsserieFactory, LastOppGrunnlagsd
         final ServiceLocator services = new ServiceLocator(registry);
 
         final MedlemsdataUploader upload = services
-                .firstMandatory(TidsserieBackendService.class)
+                .firstMandatory(MedlemsdataBackend.class)
                 .uploader();
         final GrunnlagsdataRepository repository = services.firstMandatory(GrunnlagsdataRepository.class);
         try (final Stream<List<String>> lines = repository.medlemsdata()) {

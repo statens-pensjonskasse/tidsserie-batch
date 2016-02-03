@@ -9,7 +9,7 @@ import no.spk.faktura.input.InvalidParameterException;
 import no.spk.faktura.input.UsageRequestedException;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
 import no.spk.pensjon.faktura.tidsserie.batch.core.LastOppGrunnlagsdataKommando;
-import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieBackendService;
+import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.pensjon.faktura.tidsserie.batch.core.Extensionpoint;
 import no.spk.pensjon.faktura.tidsserie.batch.core.ServiceLocator;
 import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsseriemodus;
@@ -126,7 +126,7 @@ public class ApplicationController {
         exitCode = EXIT_ERROR;
     }
 
-    public void startBackend(TidsserieBackendService backend) {
+    public void startBackend(MedlemsdataBackend backend) {
         view.startarBackend();
         backend.start();
     }

@@ -3,6 +3,9 @@ package no.spk.pensjon.faktura.tidsserie.batch.core;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.MedlemsId;
+import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.Medlemslinje;
+
 import org.assertj.core.api.BooleanAssert;
 import org.assertj.core.api.JUnitSoftAssertions;
 import org.junit.Rule;

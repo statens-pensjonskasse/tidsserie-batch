@@ -28,7 +28,7 @@ import no.spk.pensjon.faktura.tidsserie.batch.main.input.TidsserieArgumentsFacto
 import no.spk.pensjon.faktura.tidsserie.batch.storage.disruptor.LmaxDisruptorPublisher;
 import no.spk.pensjon.faktura.tidsserie.batch.storage.disruptor.FileTemplate;
 import no.spk.pensjon.faktura.tidsserie.batch.core.LastOppGrunnlagsdataKommando;
-import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieBackendService;
+import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.pensjon.faktura.tidsserie.batch.core.Extensionpoint;
 import no.spk.pensjon.faktura.tidsserie.batch.core.Katalog;
 import no.spk.pensjon.faktura.tidsserie.batch.core.StorageBackend;
@@ -114,7 +114,7 @@ public class TidsserieMain {
             registrer(Tidsseriemodus.class, modus);
 
             final HazelcastBackend backend = new HazelcastBackend(registry, arguments.getNodes());
-            registrer(TidsserieBackendService.class, backend);
+            registrer(MedlemsdataBackend.class, backend);
             registrer(TidsserieLivssyklus.class, backend);
 
             registrer(GrunnlagsdataRepository.class, new CSVInput(innKatalog));

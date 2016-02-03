@@ -3,6 +3,7 @@ package no.spk.pensjon.faktura.tidsserie.batch.core;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.Medlemsbehandler;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medlemsdata;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.Regelsett;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Tidsperiode;

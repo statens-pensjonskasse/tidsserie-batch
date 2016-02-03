@@ -1,7 +1,10 @@
-package no.spk.pensjon.faktura.tidsserie.batch.core;
+package no.spk.pensjon.faktura.tidsserie.batch.core.medlem;
 
 import java.util.List;
 
+import no.spk.pensjon.faktura.tidsserie.batch.core.StorageBackend;
+import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieFactory;
+import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Feilhandtering;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
