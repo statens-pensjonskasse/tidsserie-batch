@@ -11,6 +11,10 @@
     <artifactId>pu-fak-ba-10</artifactId>
     <name>faktura-tidsserie-batch</name>
 
+    <properties>
+        <timestamp>${maven.build.timestamp}</timestamp>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>no.spk.pensjon.faktura</groupId>
