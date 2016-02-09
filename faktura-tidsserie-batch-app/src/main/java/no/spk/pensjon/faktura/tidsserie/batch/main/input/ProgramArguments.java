@@ -1,7 +1,10 @@
 package no.spk.pensjon.faktura.tidsserie.batch.main.input;
 
+import static java.time.LocalDate.now;
+
 import java.nio.file.Path;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Optional;
 
@@ -66,13 +69,13 @@ public class ProgramArguments implements Arguments {
             description="Tidsserien lages fra og med 01.01 i angitt år.",
             validateWith = IntegerValidator.class,
             validateValueWith = YearValidator.class)
-    int fraAar = 2015;
+    int fraAar = new StandardBatchperiode(now()).fraAar();
 
     @Parameter(names = {"-tilAar"},
             description="Tidsserien lages til og med 31.12 i angitt år.",
             validateWith = IntegerValidator.class,
             validateValueWith = YearValidator.class)
-    int tilAar = 2015;
+    int tilAar = new StandardBatchperiode(now()).tilAar();
 
     @Parameter(names = { "-n" },
             description = "Antall noder som skal brukes for å utgjøre grid for tidsserie-prossesering. Default er lik antall prosessorer på serveren minus 1.",
