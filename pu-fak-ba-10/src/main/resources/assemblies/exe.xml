@@ -13,6 +13,13 @@
             <outputDirectory>.</outputDirectory>
             <destName>${project.artifactId}.l4j.ini</destName>
         </file>
+        <file>
+            <fileMode>0444</fileMode>
+            <source>src/main/exe/version.txt</source>
+            <outputDirectory>.</outputDirectory>
+            <filtered>true</filtered>
+            <destName>version.txt</destName>
+        </file>
     </files>
     <fileSets>
         <fileSet>
@@ -21,6 +28,14 @@
             <outputDirectory>.</outputDirectory>
             <includes>
                 <include>${project.artifactId}.exe</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <fileMode>0444</fileMode>
+            <directory>${project.build.outputDirectory}</directory>
+            <outputDirectory>.</outputDirectory>
+            <includes>
+                <include>git.properties</include>
             </includes>
         </fileSet>
     </fileSets>
