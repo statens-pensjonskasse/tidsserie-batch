@@ -1,18 +1,21 @@
 package no.spk.pensjon.faktura.tidsserie.batch.main;
 
+import static no.spk.pensjon.faktura.tjenesteregister.Constants.SERVICE_RANKING;
+
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Map;
+import java.util.Optional;
 
 import no.spk.faktura.input.BatchId;
 import no.spk.faktura.input.InvalidParameterException;
 import no.spk.faktura.input.UsageRequestedException;
-import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
-import no.spk.pensjon.faktura.tidsserie.batch.core.LastOppGrunnlagsdataKommando;
-import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.pensjon.faktura.tidsserie.batch.core.Extensionpoint;
+import no.spk.pensjon.faktura.tidsserie.batch.core.LastOppGrunnlagsdataKommando;
 import no.spk.pensjon.faktura.tidsserie.batch.core.ServiceLocator;
 import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsseriemodus;
+import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.MedlemsdataBackend;
+import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
@@ -42,6 +45,7 @@ public class ApplicationController {
     private final Extensionpoint<LastOppGrunnlagsdataKommando> opplasting;
     private final ServiceRegistry registry;
 
+    private Optional<Logger> logger = Optional.empty();
     private int exitCode = EXIT_ERROR;
 
     /**
@@ -49,7 +53,7 @@ public class ApplicationController {
      *
      * @see System#out
      */
-    private final View view;
+    private View view;
 
     public ApplicationController(final ServiceRegistry registry) {
         this.registry = registry;
@@ -63,6 +67,10 @@ public class ApplicationController {
         System.setProperty(ContextInitializer.CONFIG_FILE_PROPERTY, "logback/logback.xml");
         MDC.put("batchId", id.toString());
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdownLogger, "Batch shutdown"));
+
+        logger = Optional.of(LoggerFactory.getLogger(ApplicationController.class));
+        view = new ConsoleView(logger.get());
+        registry.registerService(View.class, view, SERVICE_RANKING + "=100");
     }
 
     public void informerOmOppstart(final ProgramArguments argumenter) {
@@ -173,11 +181,11 @@ public class ApplicationController {
      * avsluttes.
      */
     public void logExit() {
-        getLogger().info("Exit code: " + exitCode());
+        logger.ifPresent(l -> l.info("Exit code: " + exitCode()));
     }
 
     private Logger getLogger() {
-        return LoggerFactory.getLogger(ApplicationController.class);
+        return logger.orElseThrow(() -> new IllegalStateException("Logger er ikke initialisert. Er #initialiserLogging blitt kjørt?"));
     }
 
     private void shutdownLogger() {
