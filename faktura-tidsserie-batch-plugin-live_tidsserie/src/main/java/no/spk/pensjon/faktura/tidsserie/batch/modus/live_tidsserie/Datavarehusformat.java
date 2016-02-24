@@ -130,8 +130,14 @@ public class Datavarehusformat implements CSVFormat {
 
         private void kolonnerForPremiesatser(Produkt produkt) {
             String[] kolonnenavn = kolonnenavnForProdukt(produkt);
+            PremiesatskolonneCache produktKolonner = new PremiesatskolonneCache(premiesatskolonner, produkt);
+
             IntStream.range(0, kolonnenavn.length)
-                    .forEach(i -> kolonne(kolonnenavn[i], premiesatsverdi(produkt, i)));
+                    .forEach(i -> kolonne(
+                            kolonnenavn[i],
+                            (u, up) -> produktKolonner.map(up, i)
+                            )
+                    );
         }
 
         private String[] kolonnenavnForProdukt(Produkt produkt) {
@@ -144,14 +150,6 @@ public class Datavarehusformat implements CSVFormat {
             };
         }
     });
-
-    private FormatSpesifikasjon.KolonneMapper premiesatsverdi(Produkt produkt, int index) {
-        return (u, up) -> premiesatskolonner.forProdukt(up, produkt)
-                .skip(index)
-                .limit(1)
-                .findAny()
-                .get().apply(up);
-    }
 
     @Override
     public Stream<String> kolonnenavn() {
