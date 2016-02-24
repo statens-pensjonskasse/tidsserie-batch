@@ -1,14 +1,9 @@
 package no.spk.pensjon.faktura.tidsserie.batch.modus.live_tidsserie;
 
-import static no.spk.pensjon.faktura.tidsserie.batch.modus.live_tidsserie.Kolonnetyper.beloep;
-import static no.spk.pensjon.faktura.tidsserie.batch.modus.live_tidsserie.Kolonnetyper.dato;
-import static no.spk.pensjon.faktura.tidsserie.batch.modus.live_tidsserie.Kolonnetyper.flagg;
-import static no.spk.pensjon.faktura.tidsserie.batch.modus.live_tidsserie.Kolonnetyper.heiltall;
-import static no.spk.pensjon.faktura.tidsserie.batch.modus.live_tidsserie.Kolonnetyper.kode;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Aksjonskode.PERMISJON_UTAN_LOENN;
 
-import java.util.Optional;
-import java.util.function.Function;
+import java.util.Set;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.core.CSVFormat;
@@ -32,7 +27,6 @@ import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Orgnummer;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Premiekategori;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Premiestatus;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt;
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Prosent;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.StillingsforholdId;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Stillingskode;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Stillingsprosent;
@@ -42,6 +36,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.reglar.AarsfaktorRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.AarsverkRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.AntallDagarRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.DeltidsjustertLoennRegel;
+import no.spk.pensjon.faktura.tidsserie.domain.reglar.ErUnderMinstegrensaRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.GruppelivsfaktureringRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.LoennstilleggRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.MaskineltGrunnlagRegel;
@@ -70,7 +65,8 @@ import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
  * sett kan ha verdiar som blir lenger enn det kontrakta tillater.
  * <br>
  * Kontrakta for utvekslingsformatet ligg tilgjengelig under
- * <a href="http://wiki/confluence/display/dok/faktura-tidsserie-batch+-+CSV-format+for+DVH+og+Qlikview">faktura-tidsserie-batch - CSV-format for DVH og Qlikview</a>
+ * <a href="http://wiki/confluence/display/dok/faktura-tidsserie-batch+-+CSV-format+for+DVH+og+Qlikview">faktura-tidsserie-batch - CSV-format for DVH og
+ * Qlikview</a>
  *
  * @author Tarjei Skorgenes
  */
@@ -79,162 +75,96 @@ public class Datavarehusformat implements CSVFormat {
 
     private final Premiesatskolonner premiesatskolonner = new Premiesatskolonner();
 
+    private final ThreadLocal<FormatSpesifikasjon> spesifikasjon = ThreadLocal.withInitial(() -> new FormatSpesifikasjon(desimaltall) {
+        protected void definer() {
+            kolonne("observasjonsdato", (u, up) -> dato(u.annotasjonFor(Observasjonsdato.class).dato()));
+            kolonne("fraOgMedDato", (u, up) -> dato(up.fraOgMed()));
+            kolonne("tilOgMedDato", (u, up) -> dato(up.tilOgMed().get()));
+            kolonne("medlem", (u, up) -> kode(up.annotasjonFor(Foedselsnummer.class).toString()));
+            kolonne("stillingsforhold", (u, up) -> heiltall(up.annotasjonFor(StillingsforholdId.class).id()));
+            kolonne("avtale", (u, up) -> heiltall(up.annotasjonFor(AvtaleId.class).id()));
+            kolonne("organisasjonsnummer", (u, up) -> kode(up.valgfriAnnotasjonFor(Orgnummer.class).map(Orgnummer::id)));
+            kolonne("ordning", (u, up) -> kode(up.valgfriAnnotasjonFor(Ordning.class).map(Ordning::kode)));
+            kolonne("premiestatus", (u, up) -> kode(up.valgfriAnnotasjonFor(Premiestatus.class).map(Premiestatus::kode)));
+            kolonne("aksjonskode", (u, up) -> kode(up.valgfriAnnotasjonFor(Aksjonskode.class).map(Aksjonskode::kode)));
+            kolonne("stillingskode", (u, up) -> kode(up.valgfriAnnotasjonFor(Stillingskode.class).map(Stillingskode::getKode)));
+            kolonne("stillingsprosent", (u, up) -> prosent(up.valgfriAnnotasjonFor(Stillingsprosent.class).map(Stillingsprosent::prosent), 3));
+            kolonne("loennstrinn", (u, up) -> kode(up.valgfriAnnotasjonFor(Loennstrinn.class).map(Loennstrinn::trinn)));
+            kolonne("loennstrinnBeloep", (u, up) -> beloep(up.valgfriAnnotasjonFor(LoennstrinnBeloep.class).map(LoennstrinnBeloep::beloep)));
+            kolonne("deltidsjustertLoenn", (u, up) -> beloep(up.valgfriAnnotasjonFor(DeltidsjustertLoenn.class).map(DeltidsjustertLoenn::beloep)));
+            kolonne("fasteTillegg", (u, up) -> beloep(up.valgfriAnnotasjonFor(Fastetillegg.class).map(Fastetillegg::beloep)));
+            kolonne("variableTillegg", (u, up) -> beloep(up.valgfriAnnotasjonFor(Variabletillegg.class).map(Variabletillegg::beloep)));
+            kolonne("funksjonsTillegg", (u, up) -> beloep(up.valgfriAnnotasjonFor(Funksjonstillegg.class).map(Funksjonstillegg::beloep)));
+            kolonne("medregning", (u, up) -> beloep(up.valgfriAnnotasjonFor(Medregning.class).map(Medregning::beloep)));
+            kolonne("medregningskode", (u, up) -> kode(up.valgfriAnnotasjonFor(Medregningskode.class).map(Medregningskode::kode)));
+            kolonne("grunnbeloep", (u, up) -> beloep(up.valgfriAnnotasjonFor(Grunnbeloep.class).map(Grunnbeloep::beloep)));
+            kolonne("regel_aarsfaktor", (u, up) -> prosent(up.beregn(AarsfaktorRegel.class).tilProsent(), 8));
+            kolonne("regel_aarslengde", (u, up) -> heiltall(up.beregn(AarsLengdeRegel.class).verdi()));
+            kolonne("regel_aarsverk", (u, up) -> prosent(up.beregn(AarsverkRegel.class).tilProsent(), 2));
+            kolonne("regel_antalldager", (u, up) -> heiltall(up.beregn(AntallDagarRegel.class).verdi()));
+            kolonne("regel_deltidsjustertloenn", (u, up) -> beloep(up.beregn(DeltidsjustertLoennRegel.class)));
+            kolonne("regel_loennstillegg", (u, up) -> beloep(up.beregn(LoennstilleggRegel.class)));
+            kolonne("regel_pensjonsgivende_loenn", (u, up) -> beloep(up.beregn(MaskineltGrunnlagRegel.class)));
+            kolonne("regel_medregning", (u, up) -> beloep(up.beregn(MedregningsRegel.class)));
+            kolonne("regel_minstegrense", (u, up) -> prosent(up.beregn(MinstegrenseRegel.class).grense(), 2));
+            kolonne("regel_oevreLoennsgrense", (u, up) -> beloep(up.beregn(OevreLoennsgrenseRegel.class)));
+            kolonne("regel_gruppelivsandel", (u, up) -> prosent(up.beregn(GruppelivsfaktureringRegel.class).andel(), 4));
+            kolonne("regel_yrkesskadeandel", (u, up) -> prosent(up.beregn(YrkesskadefaktureringRegel.class).andel(), 4));
+            kolonne("regel_erMedregning", (u, up) -> flagg(up.valgfriAnnotasjonFor(Medregning.class).isPresent()));
+            kolonne("regel_erPermisjonUtenLoenn", (u, up) -> flagg(up.valgfriAnnotasjonFor(Aksjonskode.class).filter(kode -> kode.equals(PERMISJON_UTAN_LOENN)).isPresent()));
+            kolonne("regel_erUnderMinstegrensen", (u, up) -> flagg(up.beregn(ErUnderMinstegrensaRegel.class)));
+            kolonnerForPremiesatser(Produkt.PEN);
+            kolonnerForPremiesatser(Produkt.AFP);
+            kolonnerForPremiesatser(Produkt.TIP);
+            kolonnerForPremiesatser(Produkt.GRU);
+            kolonnerForPremiesatser(Produkt.YSK);
+            kolonne("produkt_YSK_risikoklasse", (u, up) -> kode(up.valgfriAnnotasjonFor(Avtale.class).flatMap(Avtale::risikoklasse)));
+            kolonne("uuid", (u, up) -> up.id().toString());
+            kolonne("antallFeil", (u, up) -> ANTALL_FEIL_PLACEHOLDER);
+            kolonne("arbeidsgivernummer", (u, up) -> kode(up.valgfriAnnotasjonFor(ArbeidsgiverId.class).map(ArbeidsgiverId::id)));
+            kolonne("tidsserienummer", (u, up) -> kode(u.valgfriAnnotasjonFor(Tidsserienummer.class)));
+            kolonne("termintype", (u, up) -> kode(up.beregn(TermintypeRegel.class).kode()));
+            kolonne("linjenummer_historikk", (u, up) -> kode(up.valgfriAnnotasjonFor(Medlemslinjenummer.class)));
+            kolonne("premiekategori", (u, up) -> kode(up.valgfriAnnotasjonFor(Premiekategori.class).map(Premiekategori::kode)));
+        }
+
+        private void kolonnerForPremiesatser(Produkt produkt) {
+            String[] kolonnenavn = kolonnenavnForProdukt(produkt);
+            IntStream.range(0, kolonnenavn.length)
+                    .forEach(i -> kolonne(kolonnenavn[i], premiesatsverdi(produkt, i)));
+        }
+
+        private String[] kolonnenavnForProdukt(Produkt produkt) {
+            return new String[] {
+                    "produkt_" + produkt.kode(),
+                    "produkt_" + produkt.kode() + "_satsArbeidsgiver",
+                    "produkt_" + produkt.kode() + "_satsMedlem",
+                    "produkt_" + produkt.kode() + "_satsAdministrasjonsgebyr",
+                    "produkt_" + produkt.kode() + "_produktinfo"
+            };
+        }
+    });
+
+    private FormatSpesifikasjon.KolonneMapper premiesatsverdi(Produkt produkt, int index) {
+        return (u, up) -> premiesatskolonner.forProdukt(up, produkt)
+                .skip(index)
+                .limit(1)
+                .findAny()
+                .get().apply(up);
+    }
+
     @Override
     public Stream<String> kolonnenavn() {
-        return Stream.of(
-                "observasjonsdato",
-                "fraOgMedDato",
-                "tilOgMedDato",
-                "medlem",
-                "stillingsforhold",
-                "avtale",
-                "organisasjonsnummer",
-                "ordning",
-                "premiestatus",
-                "aksjonskode",
-                "stillingskode",
-                "stillingsprosent",
-                "loennstrinn",
-                "loennstrinnBeloep",
-                "deltidsjustertLoenn",
-                "fasteTillegg",
-                "variableTillegg",
-                "funksjonsTillegg",
-                "medregning",
-                "medregningskode",
-                "grunnbeloep",
-                "regel_aarsfaktor",
-                "regel_aarslengde",
-                "regel_aarsverk",
-                "regel_antalldager",
-                "regel_deltidsjustertloenn",
-                "regel_loennstillegg",
-                "regel_pensjonsgivende_loenn",
-                "regel_medregning",
-                "regel_minstegrense",
-                "regel_oevreLoennsgrense",
-                "regel_gruppelivsandel",
-                "regel_yrkesskadeandel",
-                "regel_erMedregning",
-                "regel_erPermisjonUtenLoenn",
-                "regel_erUnderMinstegrensen",
-                "produkt_PEN",
-                "produkt_PEN_satsArbeidsgiver",
-                "produkt_PEN_satsMedlem",
-                "produkt_PEN_satsAdministrasjonsgebyr",
-                "produkt_PEN_produktinfo",
-                "produkt_AFP",
-                "produkt_AFP_satsArbeidsgiver",
-                "produkt_AFP_satsMedlem",
-                "produkt_AFP_satsAdministrasjonsgebyr",
-                "produkt_AFP_produktinfo",
-                "produkt_TIP",
-                "produkt_TIP_satsArbeidsgiver",
-                "produkt_TIP_satsMedlem",
-                "produkt_TIP_satsAdministrasjonsgebyr",
-                "produkt_TIP_produktinfo",
-                "produkt_GRU",
-                "produkt_GRU_satsArbeidsgiver",
-                "produkt_GRU_satsMedlem",
-                "produkt_GRU_satsAdministrasjonsgebyr",
-                "produkt_GRU_produktinfo",
-                "produkt_YSK",
-                "produkt_YSK_satsArbeidsgiver",
-                "produkt_YSK_satsMedlem",
-                "produkt_YSK_satsAdministrasjonsgebyr",
-                "produkt_YSK_produktinfo",
-                "produkt_YSK_risikoklasse",
-                "uuid",
-                "antallFeil",
-                "arbeidsgivernummer",
-                "tidsserienummer",
-                "termintype",
-                "linjenummer_historikk",
-                "premiekategori"
-        );
+        return spesifikasjon.get().kolonnenavn();
     }
 
     @Override
     public Stream<Object> serialiser(final Underlag observasjonsunderlag, final Underlagsperiode p) {
-        final ErrorDetector detector = new ErrorDetector();
-        final Optional<Stillingsprosent> deltid = p.valgfriAnnotasjonFor(Stillingsprosent.class);
-
-        final Stream.Builder<Object> builder = Stream
-                .builder()
-                .add(dato(observasjonsunderlag.annotasjonFor(Observasjonsdato.class).dato()))
-                .add(dato(p.fraOgMed()))
-                .add(dato(p.tilOgMed().get()))
-                .add(kode(p.annotasjonFor(Foedselsnummer.class).toString()))
-                .add(heiltall(p.annotasjonFor(StillingsforholdId.class).id()))
-                .add(heiltall(p.annotasjonFor(AvtaleId.class).id()));
-
-        detector.utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Orgnummer.class).map(Orgnummer::id)))
-                .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Ordning.class).map(Ordning::kode)))
-                .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Premiestatus.class).map(Premiestatus::kode)))
-                .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Aksjonskode.class).map(Aksjonskode::kode)))
-                .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Stillingskode.class).map(Stillingskode::getKode)))
-                .utfoer(builder, p, up -> prosent(deltid.map(Stillingsprosent::prosent), 3))
-                .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Loennstrinn.class).map(Loennstrinn::trinn)))
-                .utfoer(builder, p, up -> beloep(up.valgfriAnnotasjonFor(LoennstrinnBeloep.class).map(LoennstrinnBeloep::beloep)))
-                .utfoer(builder, p, up -> beloep(up.valgfriAnnotasjonFor(DeltidsjustertLoenn.class).map(DeltidsjustertLoenn::beloep)))
-                .utfoer(builder, p, up -> beloep(up.valgfriAnnotasjonFor(Fastetillegg.class).map(Fastetillegg::beloep)))
-                .utfoer(builder, p, up -> beloep(up.valgfriAnnotasjonFor(Variabletillegg.class).map(Variabletillegg::beloep)))
-                .utfoer(builder, p, up -> beloep(up.valgfriAnnotasjonFor(Funksjonstillegg.class).map(Funksjonstillegg::beloep)))
-                .utfoer(builder, p, up -> beloep(up.valgfriAnnotasjonFor(Medregning.class).map(Medregning::beloep)))
-                .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Medregningskode.class).map(Medregningskode::kode)))
-                .utfoer(builder, p, up -> beloep(up.valgfriAnnotasjonFor(Grunnbeloep.class).map(Grunnbeloep::beloep)))
-                .utfoer(builder, p, up -> prosent(up.beregn(AarsfaktorRegel.class).tilProsent(), 8))
-                .utfoer(builder, p, up -> heiltall(up.beregn(AarsLengdeRegel.class).verdi()))
-                .utfoer(builder, p, up -> prosent(up.beregn(AarsverkRegel.class).tilProsent(), 2))
-                .utfoer(builder, p, up -> heiltall(up.beregn(AntallDagarRegel.class).verdi()))
-                .utfoer(builder, p, up -> beloep(up.beregn(DeltidsjustertLoennRegel.class)))
-                .utfoer(builder, p, up -> beloep(up.beregn(LoennstilleggRegel.class)))
-                .utfoer(builder, p, up -> beloep(up.beregn(MaskineltGrunnlagRegel.class)))
-                .utfoer(builder, p, up -> beloep(up.beregn(MedregningsRegel.class)))
-                .utfoer(builder, p, up -> prosent(up.beregn(MinstegrenseRegel.class).grense(), 2))
-                .utfoer(builder, p, up -> beloep(up.beregn(OevreLoennsgrenseRegel.class)))
-                .utfoer(builder, p, up -> prosent(up.beregn(GruppelivsfaktureringRegel.class).andel(), 4))
-                .utfoer(builder, p, up -> prosent(up.beregn(YrkesskadefaktureringRegel.class).andel(), 4))
-                .utfoer(builder, p, up -> flagg(up.valgfriAnnotasjonFor(Medregning.class).isPresent()))
-                .utfoer(builder, p, up -> flagg(up.valgfriAnnotasjonFor(Aksjonskode.class).filter(kode -> kode.equals(PERMISJON_UTAN_LOENN)).isPresent()))
-                .utfoer(builder, p, up -> flagg(deltid.map(d -> up.beregn(MinstegrenseRegel.class).erUnderMinstegrensa(d)).orElse(false)))
-
-                .multiple(builder, p, premiesatsar(p, Produkt.PEN))
-                .multiple(builder, p, premiesatsar(p, Produkt.AFP))
-                .multiple(builder, p, premiesatsar(p, Produkt.TIP))
-                .multiple(builder, p, premiesatsar(p, Produkt.GRU))
-                .multiple(builder, p, premiesatsar(p, Produkt.YSK))
-                .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Avtale.class).flatMap(Avtale::risikoklasse)))
-                .utfoer(builder, p, up -> up.id().toString())
-        ;
-
-        // Sidan kolonna for antall feil ikkje er siste kolonne i formatet, må det leggast inn ein
-        // midlertidig verdi her for å reservere kolonneposisjonen og sikre at seinare kolonner ikkje blir forskyvd
-        // ei kolonne fram
-        final Object placeholder = new Object();
-        builder.add(placeholder);
-
-        detector.utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(ArbeidsgiverId.class).map(ArbeidsgiverId::id)))
-                .utfoer(builder, p, up -> kode(observasjonsunderlag.valgfriAnnotasjonFor(Tidsserienummer.class)))
-                .utfoer(builder, p, up -> kode(up.beregn(TermintypeRegel.class).kode()))
-                .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Medlemslinjenummer.class)))
-                .utfoer(builder, p, up -> kode(up.valgfriAnnotasjonFor(Premiekategori.class).map(Premiekategori::kode)))
-        ;
-
-        // Må populere inn antall feil til slutt for å sikre at eventuelle feil som inntreffe etter at denne kolonna
-        // blir lagt til builderen, blir med i tellinga
-        return builder.build().map(o -> o == placeholder ? heiltall(detector.antallFeil) : o);
+        return spesifikasjon.get().serialiser(observasjonsunderlag, p, k -> true);
     }
 
-    private Stream<Function<Underlagsperiode, String>> premiesatsar(final Underlagsperiode p, final Produkt produkt) {
-        return premiesatskolonner.forProdukt(p, produkt);
-    }
-
-    private String prosent(final Optional<Prosent> verdi, final int antallDesimaler) {
-        return verdi.map(p -> prosent(p, antallDesimaler)).orElse("");
-    }
-
-    private String prosent(final Prosent verdi, final int antallDesimaler) {
-        return desimaltall.formater(verdi.toDouble() * 100d, antallDesimaler);
+    @Override
+    public Stream<Object> serialiser(Underlag observasjonsunderlag, Underlagsperiode periode, Set<String> kolonnenavnfilter) {
+        return spesifikasjon.get().serialiser(observasjonsunderlag, periode, k -> kolonnenavnfilter.contains(k.name()));
     }
 }

@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tidsserie.batch.modus.avtaleunderlag;
+package no.spk.pensjon.faktura.tidsserie.batch.modus.live_tidsserie;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -65,7 +65,7 @@ abstract class FormatSpesifikasjon {
      * @param up underlagsperioda som skal serialiserast til ei rad i CSV-fila spesifikasjonen definerer formatet til
      * @return ein straum av serialiserte verdiar for underlagsperioda i henhold til formatspesifikasjonen
      */
-    public Stream<Object> serialiser(final Underlag u, final Underlagsperiode up, Predicate<KolonneSpesifikasjon> filter) {
+    public Stream<Object> serialiser(final Underlag u, final Underlagsperiode up, final Predicate<KolonneSpesifikasjon> filter) {
         final ErrorDetector detector = new ErrorDetector();
         return kolonner
                 .stream()

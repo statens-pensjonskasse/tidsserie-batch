@@ -8,6 +8,7 @@ import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt.TIP;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt.YSK;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.core.CSVFormat;
@@ -116,7 +117,12 @@ class Avtaleunderlagformat implements CSVFormat {
 
     @Override
     public Stream<Object> serialiser(final Underlag observasjonsunderlag, final Underlagsperiode p) {
-        return s.get().serialiser(observasjonsunderlag, p);
+        return s.get().serialiser(observasjonsunderlag, p, k -> true);
+    }
+
+    @Override
+    public Stream<Object> serialiser(Underlag observasjonsunderlag, Underlagsperiode periode, Set<String> kolonnenavnfilter) {
+        return s.get().serialiser(observasjonsunderlag, periode, k-> kolonnenavnfilter.contains(k.name()));
     }
 
 }

@@ -1,11 +1,13 @@
 package no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie;
 
+import static java.util.stream.Collectors.toSet;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt.AFP;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt.GRU;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt.PEN;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt.TIP;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt.YSK;
 
+import java.util.Set;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.core.CSVFormat;
@@ -181,6 +183,11 @@ public class Avregningformat implements CSVFormat {
 
     @Override
     public Stream<Object> serialiser(final Underlag observasjonsunderlag, final Underlagsperiode p) {
-        return s.get().serialiser(observasjonsunderlag, p);
+        return s.get().serialiser(observasjonsunderlag, p, o -> true);
+    }
+
+    @Override
+    public Stream<Object> serialiser(final Underlag observasjonsunderlag, final Underlagsperiode p,  Set<String> kolonnenavnfilter) {
+        return s.get().serialiser(observasjonsunderlag, p, o -> kolonnenavnfilter.contains(o.name()));
     }
 }
