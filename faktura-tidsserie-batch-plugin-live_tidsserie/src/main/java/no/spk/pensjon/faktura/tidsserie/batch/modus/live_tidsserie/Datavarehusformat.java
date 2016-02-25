@@ -3,7 +3,6 @@ package no.spk.pensjon.faktura.tidsserie.batch.modus.live_tidsserie;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Aksjonskode.PERMISJON_UTAN_LOENN;
 
 import java.util.Set;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.core.CSVFormat;
@@ -129,25 +128,21 @@ public class Datavarehusformat implements CSVFormat {
         }
 
         private void kolonnerForPremiesatser(Produkt produkt) {
-            String[] kolonnenavn = kolonnenavnForProdukt(produkt);
-            PremiesatskolonneCache produktKolonner = new PremiesatskolonneCache(premiesatskolonner, produkt);
-
-            IntStream.range(0, kolonnenavn.length)
-                    .forEach(i -> kolonne(
-                            kolonnenavn[i],
-                            (u, up) -> produktKolonner.map(up, i)
-                            )
+            PremiesatskolonneIterator produktKolonner = new PremiesatskolonneIterator(premiesatskolonner, produkt);
+            kolonnenavnForProdukt(produkt)
+                    .forEach(
+                            kolonnenavn -> kolonne(kolonnenavn, (u, up) -> produktKolonner.nestePremiesatsverdiFor(up))
                     );
         }
 
-        private String[] kolonnenavnForProdukt(Produkt produkt) {
-            return new String[] {
+        private Stream<String> kolonnenavnForProdukt(Produkt produkt) {
+            return Stream.of(
                     "produkt_" + produkt.kode(),
                     "produkt_" + produkt.kode() + "_satsArbeidsgiver",
                     "produkt_" + produkt.kode() + "_satsMedlem",
                     "produkt_" + produkt.kode() + "_satsAdministrasjonsgebyr",
                     "produkt_" + produkt.kode() + "_produktinfo"
-            };
+            );
         }
     });
 

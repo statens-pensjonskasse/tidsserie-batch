@@ -5,6 +5,7 @@ import static no.spk.pensjon.faktura.tidsserie.batch.modus.live_tidsserie.Kolonn
 import static no.spk.pensjon.faktura.tidsserie.batch.modus.live_tidsserie.Kolonnetyper.flagg;
 import static no.spk.pensjon.faktura.tidsserie.batch.modus.live_tidsserie.Kolonnetyper.kode;
 
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,6 +31,9 @@ import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
  * @author Tarjei Skorgenes
  */
 class Premiesatskolonner {
+    private static final EnumSet<Produkt> PENSJONSPRODUKT = EnumSet.of(Produkt.PEN, Produkt.AFP, Produkt.TIP);
+    private static final EnumSet<Produkt> YSK_GRU_PRODUKT = EnumSet.of(Produkt.YSK, Produkt.GRU);
+
     /**
      * Returnerer ein straum av funksjonar som trekker ut verdiar for dei 5 kolonnene
      * som beskriv premiesatsinformasjon for det angitte produktet.
@@ -44,49 +48,55 @@ class Premiesatskolonner {
      * Dersom avtalen ikkje har produktet som blir forsøkt slått opp, blir det returnert 5 funksjonar som
      * genererer tomme-verdiar.
      *
-     * @param p
-     * @param produkt produktet som premiesats-funksjonar skal hentast ut for
+     * @param periode
+     * @param premiesats produktet som premiesats-funksjonar skal hentast ut for
      * @return ein straum med 5 funksjonar som trekker ut premiesats-informasjon frå ei underlagsperiode
      */
-    Stream<Function<Underlagsperiode, String>> forProdukt(final Underlagsperiode p, final Produkt produkt) {
-        Function<Premiesats, Stream<Function<Underlagsperiode, String>>> memento = premiesats -> Stream.empty();
-        if (produkt == Produkt.PEN || produkt == Produkt.AFP || produkt == Produkt.TIP) {
-            memento = premiesats -> {
-                List<Function<Underlagsperiode, String>> functions = premiesatsCache.computeIfAbsent(premiesats,
-                        key -> asList(
-                                new Memento(erFakturerbar(produkt).apply(p)),
-                                new Memento(arbeidsgiverprosent(produkt).apply(p)),
-                                new Memento(medlemsprosent(produkt).apply(p)),
-                                new Memento(administrasjonsgebyrprosent(produkt).apply(p)),
-                                new Memento(produktinfo(produkt).apply(p))
-                        )
-                );
-                return functions.stream();
-            };
-        } else if (produkt == Produkt.GRU || produkt == Produkt.YSK) {
-            memento = premiesats -> {
-                List<Function<Underlagsperiode, String>> functions = premiesatsCache.computeIfAbsent(premiesats,
-                        key -> asList(
-                                new Memento(erFakturerbar(produkt).apply(p)),
-                                new Memento(arbeidsgiverbeloep(produkt).apply(p)),
-                                new Memento(medlemsbeloep(produkt).apply(p)),
-                                new Memento(administrasjonsgebyrbeloep(produkt).apply(p)),
-                                new Memento(produktinfo(produkt).apply(p))
-                        )
-                );
-                return functions.stream();
-            };
-        }
-        return p.valgfriAnnotasjonFor(Avtale.class).map(a -> a.premiesatsFor(produkt)).filter(Optional::isPresent).map(Optional::get)
-                .map(memento)
+    Stream<Function<Underlagsperiode, String>> forPremiesats(final Underlagsperiode periode, final Optional<Premiesats> premiesats) {
+        return premiesats
+                .filter(s -> erPensjonsprodukt(s) || erYskEllerGru(s))
+                .map(s -> premiesatsverdier(s, periode))
                 .orElse(Stream.of(
-                                empty(),
-                                empty(),
-                                empty(),
-                                empty(),
-                                empty()
-                        )
-                );
+                        empty(),
+                        empty(),
+                        empty(),
+                        empty(),
+                        empty()
+                ));
+    }
+
+    private Stream<Function<Underlagsperiode, String>> premiesatsverdier(Premiesats premiesats, Underlagsperiode periode) {
+        if (erPensjonsprodukt(premiesats)) {
+            return premiesatsCache.computeIfAbsent(premiesats,
+                    key -> asList(
+                            new Memento(erFakturerbar(premiesats).apply(periode)),
+                            new Memento(arbeidsgiverprosent(premiesats).apply(periode)),
+                            new Memento(medlemsprosent(premiesats).apply(periode)),
+                            new Memento(administrasjonsgebyrprosent(premiesats).apply(periode)),
+                            new Memento(produktinfo(premiesats).apply(periode))
+                    )
+            ).stream();
+        } else if (erYskEllerGru(premiesats)) {
+            return premiesatsCache.computeIfAbsent(premiesats,
+                    key -> asList(
+                            new Memento(erFakturerbar(premiesats).apply(periode)),
+                            new Memento(arbeidsgiverbeloep(premiesats).apply(periode)),
+                            new Memento(medlemsbeloep(premiesats).apply(periode)),
+                            new Memento(administrasjonsgebyrbeloep(premiesats).apply(periode)),
+                            new Memento(produktinfo(premiesats).apply(periode))
+                    )
+            ).stream();
+        }
+
+        throw new IllegalArgumentException("Denne metoden kan kun benyttes for premiesatser som tilhører PEN, AFP, TIP, YSK og GRU.");
+    }
+
+    private boolean erYskEllerGru(Premiesats premiesats) {
+        return YSK_GRU_PRODUKT.contains(premiesats.produkt);
+    }
+
+    private boolean erPensjonsprodukt(Premiesats premiesats) {
+        return PENSJONSPRODUKT.contains(premiesats.produkt);
     }
 
     private final ConcurrentMap<Premiesats, List<Function<Underlagsperiode, String>>> premiesatsCache = new ConcurrentHashMap<>(200_000);
@@ -106,48 +116,48 @@ class Premiesatskolonner {
 
     private final Desimaltallformatering desimalar = new Desimaltallformatering();
 
-    private Function<Underlagsperiode, String> erFakturerbar(final Produkt produkt) {
-        return up -> flagg(premiesats(up, produkt).map(Premiesats::erFakturerbar));
+    private Function<Underlagsperiode, String> erFakturerbar(final Premiesats premiesats) {
+        return up -> flagg(premiesats.erFakturerbar());
     }
 
-    private Function<Underlagsperiode, String> arbeidsgiverbeloep(final Produkt produkt) {
-        return up -> beloepsatser(up, produkt, Satser::arbeidsgiverpremie);
+    private Function<Underlagsperiode, String> arbeidsgiverbeloep(final Premiesats premiesats) {
+        return up -> beloepsatser(premiesats, Satser::arbeidsgiverpremie);
     }
 
-    private Function<Underlagsperiode, String> medlemsbeloep(final Produkt produkt) {
-        return up -> beloepsatser(up, produkt, Satser::medlemspremie);
+    private Function<Underlagsperiode, String> medlemsbeloep(final Premiesats premiesats) {
+        return up -> beloepsatser(premiesats, Satser::medlemspremie);
     }
 
-    private Function<Underlagsperiode, String> administrasjonsgebyrbeloep(final Produkt produkt) {
-        return up -> beloepsatser(up, produkt, Satser::administrasjonsgebyr);
+    private Function<Underlagsperiode, String> administrasjonsgebyrbeloep(final Premiesats premiesats) {
+        return up -> beloepsatser(premiesats, Satser::administrasjonsgebyr);
     }
 
-    private Function<Underlagsperiode, String> arbeidsgiverprosent(final Produkt produkt) {
-        return up -> prosentsatser(up, produkt, Satser::arbeidsgiverpremie);
+    private Function<Underlagsperiode, String> arbeidsgiverprosent(final Premiesats premiesats) {
+        return up -> prosentsatser(premiesats, Satser::arbeidsgiverpremie);
     }
 
-    private Function<Underlagsperiode, String> medlemsprosent(final Produkt produkt) {
-        return up -> prosentsatser(up, produkt, Satser::medlemspremie);
+    private Function<Underlagsperiode, String> medlemsprosent(final Premiesats premiesats) {
+        return up -> prosentsatser(premiesats, Satser::medlemspremie);
     }
 
-    private Function<Underlagsperiode, String> administrasjonsgebyrprosent(final Produkt produkt) {
-        return up -> prosentsatser(up, produkt, Satser::administrasjonsgebyr);
+    private Function<Underlagsperiode, String> administrasjonsgebyrprosent(final Premiesats premiesats) {
+        return up -> prosentsatser(premiesats, Satser::administrasjonsgebyr);
     }
 
-    private Function<Underlagsperiode, String> produktinfo(final Produkt produkt) {
-        return up -> kode(premiesats(up, produkt).map(p -> p.produktinfo));
+    private Function<Underlagsperiode, String> produktinfo(final Premiesats premiesats) {
+        return up -> kode(premiesats.produktinfo.toString());
     }
 
     private Function<Underlagsperiode, String> empty() {
         return up -> "";
     }
 
-    private String beloepsatser(Underlagsperiode up, Produkt produkt, Function<Satser<Kroner>, Kroner> mapper) {
-        return beloep(premiesats(up, produkt).flatMap(Premiesats::beloepsatsar).map(mapper));
+    private String beloepsatser(Premiesats premiesats, Function<Satser<Kroner>, Kroner> mapper) {
+        return beloep(premiesats.beloepsatsar().map(mapper));
     }
 
-    private String prosentsatser(Underlagsperiode up, Produkt produkt, Function<Satser<Prosent>, Prosent> mapper) {
-        return prosent(premiesats(up, produkt).flatMap(Premiesats::prosentsatser).map(mapper), 2);
+    private String prosentsatser(Premiesats premiesats, Function<Satser<Prosent>, Prosent> mapper) {
+        return prosent(premiesats.prosentsatser().map(mapper), 2);
     }
 
     private String prosent(final Optional<Prosent> verdi, final int antallDesimaler) {

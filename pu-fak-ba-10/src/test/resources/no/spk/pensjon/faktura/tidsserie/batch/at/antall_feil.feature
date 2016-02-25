@@ -39,7 +39,7 @@ Egenskap: Antall feil for en underlagsperiode
       | FLG_REGEL_UNDER_MINSTEGRENSE | NUM_ANTALLFEIL |
       |                              | 1              |
 
-  Scenario: Avregningsformat: Hente en verdi fra underlagsperiode som ikke finnes i perioden, fører ikke til feil
+  Scenario: Avregningsformat: Hente en verdi som ikke finnes i underlagsperioden, fører ikke til feil
     Gitt en villkårlig underlagsperiode
     Når underlaget formateres med avregningsformat
     Og kun følgende kolonner beregnes:

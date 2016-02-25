@@ -1,6 +1,5 @@
 package no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie;
 
-import static java.util.stream.Collectors.toSet;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt.AFP;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt.GRU;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt.PEN;
