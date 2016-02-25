@@ -76,12 +76,12 @@ public class Datavarehusformat implements CSVFormat {
 
     private final ThreadLocal<FormatSpesifikasjon> spesifikasjon = ThreadLocal.withInitial(() -> new FormatSpesifikasjon(desimaltall) {
         protected void definer() {
-            kolonne("observasjonsdato", (u, up) -> dato(u.annotasjonFor(Observasjonsdato.class).dato()));
-            kolonne("fraOgMedDato", (u, up) -> dato(up.fraOgMed()));
-            kolonne("tilOgMedDato", (u, up) -> dato(up.tilOgMed().get()));
-            kolonne("medlem", (u, up) -> kode(up.annotasjonFor(Foedselsnummer.class).toString()));
-            kolonne("stillingsforhold", (u, up) -> heiltall(up.annotasjonFor(StillingsforholdId.class).id()));
-            kolonne("avtale", (u, up) -> heiltall(up.annotasjonFor(AvtaleId.class).id()));
+            kolonne("observasjonsdato", (u, up) -> dato(u.annotasjonFor(Observasjonsdato.class).dato())).obligatorisk();
+            kolonne("fraOgMedDato", (u, up) -> dato(up.fraOgMed())).obligatorisk();
+            kolonne("tilOgMedDato", (u, up) -> dato(up.tilOgMed().get())).obligatorisk();
+            kolonne("medlem", (u, up) -> kode(up.annotasjonFor(Foedselsnummer.class).toString())).obligatorisk();
+            kolonne("stillingsforhold", (u, up) -> heiltall(up.annotasjonFor(StillingsforholdId.class).id())).obligatorisk();
+            kolonne("avtale", (u, up) -> heiltall(up.annotasjonFor(AvtaleId.class).id())).obligatorisk();
             kolonne("organisasjonsnummer", (u, up) -> kode(up.valgfriAnnotasjonFor(Orgnummer.class).map(Orgnummer::id)));
             kolonne("ordning", (u, up) -> kode(up.valgfriAnnotasjonFor(Ordning.class).map(Ordning::kode)));
             kolonne("premiestatus", (u, up) -> kode(up.valgfriAnnotasjonFor(Premiestatus.class).map(Premiestatus::kode)));
@@ -119,7 +119,7 @@ public class Datavarehusformat implements CSVFormat {
             kolonnerForPremiesatser(Produkt.YSK);
             kolonne("produkt_YSK_risikoklasse", (u, up) -> kode(up.valgfriAnnotasjonFor(Avtale.class).flatMap(Avtale::risikoklasse)));
             kolonne("uuid", (u, up) -> up.id().toString());
-            kolonne("antallFeil", (u, up) -> ANTALL_FEIL_PLACEHOLDER);
+            kolonne("antallFeil", (u, up) -> ANTALL_FEIL_PLACEHOLDER).obligatorisk();
             kolonne("arbeidsgivernummer", (u, up) -> kode(up.valgfriAnnotasjonFor(ArbeidsgiverId.class).map(ArbeidsgiverId::id)));
             kolonne("tidsserienummer", (u, up) -> kode(u.valgfriAnnotasjonFor(Tidsserienummer.class)));
             kolonne("termintype", (u, up) -> kode(up.beregn(TermintypeRegel.class).kode()));

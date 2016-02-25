@@ -56,7 +56,7 @@ public class DatavarehusformatTest {
                 observasjonsdato(),
                 eiPeriodeMedKunObligatoriskeVerdiar(),
                 (ignorert, p) -> new Underlag(of(p))
-        );
+        ).collect(toList());
     }
 
     @Test
@@ -67,7 +67,7 @@ public class DatavarehusformatTest {
                 observasjonsdato(),
                 eiPeriodeMedKunObligatoriskeVerdiar()
                         .uten(Foedselsnummer.class)
-        );
+        ).collect(toList());
     }
 
     @Test
@@ -78,7 +78,7 @@ public class DatavarehusformatTest {
                 observasjonsdato(),
                 eiPeriodeMedKunObligatoriskeVerdiar()
                         .uten(StillingsforholdId.class)
-        );
+        ).collect(toList());;
     }
 
     @Test
@@ -89,7 +89,7 @@ public class DatavarehusformatTest {
                 observasjonsdato(),
                 eiPeriodeMedKunObligatoriskeVerdiar()
                         .uten(AvtaleId.class)
-        );
+        ).collect(toList());
     }
 
     private void forventPaakrevdAnnotasjonFeilForType(final Class<?> clazz) {
