@@ -33,7 +33,7 @@ public class PremiesatskolonneIteratorTest {
     @Before
     public void setUp() throws Exception {
         underlagsperiode = nyPeriode();
-        antallPremiesatsverdier = (int) new Premiesatskolonner().forPremiesats(underlagsperiode, empty()).count();
+        antallPremiesatsverdier = new Premiesatskolonner().forPremiesats(empty()).size();
         premiesatskolonner = spy(new Premiesatskolonner());
     }
 
@@ -48,7 +48,7 @@ public class PremiesatskolonneIteratorTest {
     public void skal_cache_verdier_for_produkt() throws Exception {
         PremiesatskolonneIterator cache = new PremiesatskolonneIterator(premiesatskolonner, Produkt.PEN);
         range(0, antallPremiesatsverdier).forEach(i -> cache.nestePremiesatsverdiFor(underlagsperiode));
-        verify(premiesatskolonner, times(1)).forPremiesats(any(), any());
+        verify(premiesatskolonner, times(1)).forPremiesats(any());
     }
 
     @Test
@@ -56,7 +56,7 @@ public class PremiesatskolonneIteratorTest {
         PremiesatskolonneIterator cache = new PremiesatskolonneIterator(premiesatskolonner, Produkt.PEN);
         range(0, antallPremiesatsverdier).forEach(i -> cache.nestePremiesatsverdiFor(underlagsperiode));
         cache.nestePremiesatsverdiFor(nyPeriode());
-        verify(premiesatskolonner, times(2)).forPremiesats(any(), any());
+        verify(premiesatskolonner, times(2)).forPremiesats(any());
     }
 
     @Test
