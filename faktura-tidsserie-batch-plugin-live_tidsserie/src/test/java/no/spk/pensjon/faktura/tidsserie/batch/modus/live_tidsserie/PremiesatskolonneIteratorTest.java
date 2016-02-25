@@ -52,9 +52,10 @@ public class PremiesatskolonneIteratorTest {
     }
 
     @Test
-    public void skal_oppdatere_cachen_naar_alle_premiesatsverdier_er_konsumert() throws Exception {
+    public void skal_oppdatere_cachen_naar_alle_premiesatsverdier_er_konsumert_og_ny_periode_behandles() throws Exception {
         PremiesatskolonneIterator cache = new PremiesatskolonneIterator(premiesatskolonner, Produkt.PEN);
-        range(0, antallPremiesatsverdier + 1).forEach(i -> cache.nestePremiesatsverdiFor(underlagsperiode));
+        range(0, antallPremiesatsverdier).forEach(i -> cache.nestePremiesatsverdiFor(underlagsperiode));
+        cache.nestePremiesatsverdiFor(nyPeriode());
         verify(premiesatskolonner, times(2)).forPremiesats(any(), any());
     }
 
