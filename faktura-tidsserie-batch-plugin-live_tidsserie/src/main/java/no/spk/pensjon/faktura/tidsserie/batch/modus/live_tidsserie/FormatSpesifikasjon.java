@@ -62,11 +62,7 @@ abstract class FormatSpesifikasjon {
      * @return ein straum av serialiserte verdiar for underlagsperioda i henhold til formatspesifikasjonen
      */
     public Stream<Object> serialiser(final Underlag u, final Underlagsperiode up) {
-        final ErrorDetector detector = new ErrorDetector();
-        return kolonner
-                .stream()
-                .map(s -> detector.utfoer(s, u, up))
-                .map(o -> o == ANTALL_FEIL_PLACEHOLDER ? heiltall(detector.antallFeil) : o);
+        return serialiser(kolonner.stream(), u, up);
     }
 
     /**
@@ -79,17 +75,18 @@ abstract class FormatSpesifikasjon {
      * @return ein straum av serialiserte verdiar for underlagsperioda i henhold til formatspesifikasjonen
      */
     public Stream<Object> serialiser(final Underlag u, final Underlagsperiode up, final Predicate<KolonneSpesifikasjon> filter) {
+        return serialiser(kolonner.stream().filter(filter), u, up);
+    }
+
+    private Stream<Object> serialiser(Stream<KolonneSpesifikasjon> kolonnestream, Underlag u, Underlagsperiode up) {
         final ErrorDetector detector = new ErrorDetector();
-        return kolonner
-                .stream()
-                .filter(filter)
+        return kolonnestream
                 .map(s -> detector.utfoer(s, u, up))
                 .map(o -> o == ANTALL_FEIL_PLACEHOLDER ? heiltall(detector.antallFeil) : o);
     }
 
     /**
-
-    /**
+     * /**
      * Spesifiserer kva kolonna på posisjon {@code kolonneNummer} heiter og korleis rader i formatet skal populere
      * kolonna med verdiar.
      *
