@@ -10,11 +10,7 @@ import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Avtale;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Kroner;
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Premiesats;
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt;
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produktinfo;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Prosent;
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Satser;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
 
@@ -65,6 +61,23 @@ abstract class FormatSpesifikasjon {
      * @param up underlagsperioda som skal serialiserast til ei rad i CSV-fila spesifikasjonen definerer formatet til
      * @return ein straum av serialiserte verdiar for underlagsperioda i henhold til formatspesifikasjonen
      */
+    public Stream<Object> serialiser(final Underlag u, final Underlagsperiode up) {
+        final ErrorDetector detector = new ErrorDetector();
+        return kolonner
+                .stream()
+                .map(s -> detector.utfoer(s, u, up))
+                .map(o -> o == ANTALL_FEIL_PLACEHOLDER ? heiltall(detector.antallFeil) : o);
+    }
+
+    /**
+     * Genererer ein straum av serialiserte verdiar utleda frå underlaget og underlagsperioda, for kvar kolonne
+     * definert i spesifikasjonen.
+     *
+     * @param u observasjonsunderlaget som underlagperioda tilhøyrer
+     * @param up underlagsperioda som skal serialiserast til ei rad i CSV-fila spesifikasjonen definerer formatet til
+     * @param filter benyttes for å styre hvilke kolonner som blir serialisert
+     * @return ein straum av serialiserte verdiar for underlagsperioda i henhold til formatspesifikasjonen
+     */
     public Stream<Object> serialiser(final Underlag u, final Underlagsperiode up, final Predicate<KolonneSpesifikasjon> filter) {
         final ErrorDetector detector = new ErrorDetector();
         return kolonner
@@ -73,6 +86,8 @@ abstract class FormatSpesifikasjon {
                 .map(s -> detector.utfoer(s, u, up))
                 .map(o -> o == ANTALL_FEIL_PLACEHOLDER ? heiltall(detector.antallFeil) : o);
     }
+
+    /**
 
     /**
      * Spesifiserer kva kolonna på posisjon {@code kolonneNummer} heiter og korleis rader i formatet skal populere
@@ -120,10 +135,6 @@ abstract class FormatSpesifikasjon {
         return value ? "1" : "0";
     }
 
-    protected static String flagg(final Optional<Boolean> value) {
-        return value.map(FormatSpesifikasjon::flagg).orElse("");
-    }
-
     protected static String kode(final String verdi) {
         return verdi;
     }
@@ -138,72 +149,6 @@ abstract class FormatSpesifikasjon {
 
     protected static String beloep(final Kroner beloep) {
         return Long.toString(beloep.verdi());
-    }
-
-    protected static Optional<Premiesats> premiesats(final Underlagsperiode up, final Produkt produkt) {
-        return avtale(up).flatMap(a -> a.premiesatsFor(produkt));
-    }
-
-    protected static Optional<Satser<Kroner>> beloepsatser(final Underlagsperiode up, final Produkt produkt) {
-        return premiesats(up, produkt).flatMap(Premiesats::beloepsatsar);
-    }
-
-    protected static Optional<Produktinfo> produktinfo(final Underlagsperiode up, final Produkt produkt) {
-        return premiesats(up, produkt).map(p -> p.produktinfo);
-    }
-
-    protected static Optional<Satser<Prosent>> prosentsatser(final Underlagsperiode up, final Produkt produkt) {
-        return premiesats(up, produkt).flatMap(Premiesats::prosentsatser);
-    }
-
-    protected static Optional<Boolean> erFakturerbar(final Underlagsperiode up, final Produkt produkt) {
-        return premiesats(up, produkt).map(Premiesats::erFakturerbar);
-    }
-
-    protected static Optional<Prosent> sumPremiesats(Underlagsperiode p, Produkt produkt) {
-        return prosentsatser(p, produkt).map(s -> s.arbeidsgiverpremie().plus(s.medlemspremie()).plus(s.administrasjonsgebyr()));
-    }
-
-    protected static Optional<Prosent> sumProsentsatsTotal(Underlagsperiode p) {
-        return Stream.of(
-                sumPremiesats(p, Produkt.PEN),
-                sumPremiesats(p, Produkt.AFP),
-                sumPremiesats(p, Produkt.TIP)
-        ).filter(Optional::isPresent)
-                .map(Optional::get)
-                .reduce(Prosent::plus);
-    }
-
-    protected static Optional<Kroner> sumPremiesatsBeloep(Underlagsperiode p, Produkt produkt) {
-        return beloepsatser(p, produkt).map(s -> s.arbeidsgiverpremie().plus(s.medlemspremie()).plus(s.administrasjonsgebyr()));
-    }
-
-    protected static Optional<Prosent> administrasjonsgebyr(Underlagsperiode p, Produkt produkt) {
-        return prosentsatser(p, produkt).map(Satser::administrasjonsgebyr);
-    }
-
-    protected Optional<Prosent> medlemspremie(Underlagsperiode p, Produkt produkt) {
-        return prosentsatser(p, produkt).map(Satser::medlemspremie);
-    }
-
-    protected Optional<Prosent> arbeidsgiverpremie(Underlagsperiode p, Produkt produkt) {
-        return prosentsatser(p, produkt).map(Satser::arbeidsgiverpremie);
-    }
-
-    protected static Optional<Kroner> administrasjonsBeloep(Underlagsperiode p, Produkt produkt) {
-        return beloepsatser(p, produkt).map(Satser::administrasjonsgebyr);
-    }
-
-    protected Optional<Kroner> medlemspremieBeloep(Underlagsperiode p, Produkt produkt) {
-        return beloepsatser(p, produkt).map(Satser::medlemspremie);
-    }
-
-    protected Optional<Kroner> arbeidsgiverpremieBeloep(Underlagsperiode p, Produkt produkt) {
-        return beloepsatser(p, produkt).map(Satser::arbeidsgiverpremie);
-    }
-
-    protected static Object antallFeil() {
-        return ANTALL_FEIL_PLACEHOLDER;
     }
 
     /**
@@ -282,7 +227,7 @@ abstract class FormatSpesifikasjon {
 
     /**
      * {@link KolonneMapper} representerer mappingstrategien for å populere ei kolonne definert via
-     * {@link FormatSpesifikasjon#kolonne(int, String, KolonneMapper)} med data henta frå eit underlag eller
+     * {@link FormatSpesifikasjon#kolonne(String, KolonneMapper)} med data henta frå eit underlag eller
      * ei underlagsperiode.
      *
      * @since 1.2.0

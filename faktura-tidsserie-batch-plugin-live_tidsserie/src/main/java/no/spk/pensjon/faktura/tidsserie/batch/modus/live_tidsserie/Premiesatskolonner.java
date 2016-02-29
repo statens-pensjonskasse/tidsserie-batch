@@ -6,20 +6,17 @@ import static no.spk.pensjon.faktura.tidsserie.batch.modus.live_tidsserie.Kolonn
 import static no.spk.pensjon.faktura.tidsserie.batch.modus.live_tidsserie.Kolonnetyper.kode;
 
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Avtale;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Kroner;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Premiesats;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Prosent;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Satser;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
 
 /**
  * {@link Premiesatskolonner} representerer uthentings- og formateringslogikken
@@ -31,8 +28,6 @@ import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
  * @author Tarjei Skorgenes
  */
 class Premiesatskolonner {
-    private static final EnumSet<Produkt> PENSJONSPRODUKT = EnumSet.of(Produkt.PEN, Produkt.AFP, Produkt.TIP);
-    private static final EnumSet<Produkt> YSK_GRU_PRODUKT = EnumSet.of(Produkt.YSK, Produkt.GRU);
 
     private static final String EMPTY_VALUE = "";
     private static final List<String> EMPTY_VALUES = immutableList(
@@ -42,6 +37,30 @@ class Premiesatskolonner {
             EMPTY_VALUE,
             EMPTY_VALUE
     );
+
+    private final ConcurrentMap<Premiesats, List<String>> premiesatsCache = new ConcurrentHashMap<>(200_000);
+    private final Desimaltallformatering desimalar = new Desimaltallformatering();
+
+    //Microoptimalisering: Pre-instansierte lambdaer
+    private Function<Premiesats, List<String>> prosentsatser;
+    private Function<Premiesats, List<String>> beloepsatser;
+
+    public Premiesatskolonner() {
+        this.prosentsatser = premiesats -> immutableList(
+                erFakturerbar(premiesats),
+                arbeidsgiverprosent(premiesats),
+                medlemsprosent(premiesats),
+                administrasjonsgebyrprosent(premiesats),
+                produktinfo(premiesats)
+        );
+        this.beloepsatser = premiesats -> immutableList(
+                erFakturerbar(premiesats),
+                arbeidsgiverbeloep(premiesats),
+                medlemsbeloep(premiesats),
+                administrasjonsgebyrbeloep(premiesats),
+                produktinfo(premiesats)
+        );
+    }
 
     /**
      * Returnerer ein liste med verdier for dei 5 kolonnene som beskriv premiesatsinformasjon for det angitte produktet.
@@ -61,52 +80,23 @@ class Premiesatskolonner {
      */
     List<String> forPremiesats(final Optional<Premiesats> premiesats) {
         return premiesats
-                .filter(s -> erPensjonsprodukt(s) || erYskEllerGru(s))
                 .map(this::premiesatsverdier)
                 .orElse(EMPTY_VALUES);
     }
 
     private List<String> premiesatsverdier(Premiesats premiesats) {
-        if (erPensjonsprodukt(premiesats)) {
-            return premiesatsCache.computeIfAbsent(premiesats,
-                    key -> immutableList(
-                            erFakturerbar(premiesats),
-                            arbeidsgiverprosent(premiesats),
-                            medlemsprosent(premiesats),
-                            administrasjonsgebyrprosent(premiesats),
-                            produktinfo(premiesats)
-                    )
-            );
-        } else if (erYskEllerGru(premiesats)) {
-            return premiesatsCache.computeIfAbsent(premiesats,
-                    key -> immutableList(
-                            erFakturerbar(premiesats),
-                            arbeidsgiverbeloep(premiesats),
-                            medlemsbeloep(premiesats),
-                            administrasjonsgebyrbeloep(premiesats),
-                            produktinfo(premiesats)
-                    )
-            );
+        final Produkt produkt = premiesats.produkt;
+        if (Produkt.YSK == produkt || Produkt.GRU == produkt) {
+            return premiesatsCache.computeIfAbsent(premiesats, beloepsatser);
+        } else if (Produkt.PEN == produkt || Produkt.AFP == produkt || Produkt.TIP == produkt) {
+            return premiesatsCache.computeIfAbsent(premiesats, prosentsatser);
         }
-
-        throw new IllegalArgumentException("Denne metoden kan kun benyttes for premiesatser som tilhører PEN, AFP, TIP, YSK og GRU.");
+        return EMPTY_VALUES;
     }
 
     private static List<String> immutableList(String... verdier) {
         return Collections.unmodifiableList(asList(verdier));
     }
-
-    private boolean erYskEllerGru(Premiesats premiesats) {
-        return YSK_GRU_PRODUKT.contains(premiesats.produkt);
-    }
-
-    private boolean erPensjonsprodukt(Premiesats premiesats) {
-        return PENSJONSPRODUKT.contains(premiesats.produkt);
-    }
-
-    private final ConcurrentMap<Premiesats, List<String>> premiesatsCache = new ConcurrentHashMap<>(200_000);
-
-    private final Desimaltallformatering desimalar = new Desimaltallformatering();
 
     private String erFakturerbar(final Premiesats premiesats) {
         return flagg(premiesats.erFakturerbar());

@@ -127,15 +127,15 @@ public class Datavarehusformat implements CSVFormat {
             kolonne("premiekategori", (u, up) -> kode(up.valgfriAnnotasjonFor(Premiekategori.class).map(Premiekategori::kode)));
         }
 
-        private void kolonnerForPremiesatser(Produkt produkt) {
-            PremiesatskolonneIterator produktKolonner = new PremiesatskolonneIterator(premiesatskolonner, produkt);
+        private void kolonnerForPremiesatser(final Produkt produkt) {
+            final PremiesatskolonneIterator produktKolonner = new PremiesatskolonneIterator(premiesatskolonner, produkt);
             kolonnenavnForProdukt(produkt)
                     .forEach(
                             kolonnenavn -> kolonne(kolonnenavn, (u, up) -> produktKolonner.nestePremiesatsverdiFor(up))
                     );
         }
 
-        private Stream<String> kolonnenavnForProdukt(Produkt produkt) {
+        private Stream<String> kolonnenavnForProdukt(final Produkt produkt) {
             return Stream.of(
                     "produkt_" + produkt.kode(),
                     "produkt_" + produkt.kode() + "_satsArbeidsgiver",
@@ -153,7 +153,7 @@ public class Datavarehusformat implements CSVFormat {
 
     @Override
     public Stream<Object> serialiser(final Underlag observasjonsunderlag, final Underlagsperiode p) {
-        return spesifikasjon.get().serialiser(observasjonsunderlag, p, k -> true);
+        return spesifikasjon.get().serialiser(observasjonsunderlag, p);
     }
 
     @Override
