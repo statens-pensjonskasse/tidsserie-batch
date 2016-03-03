@@ -1,6 +1,7 @@
 package no.spk.pensjon.faktura.tidsserie.batch.at;
 
 import static java.time.LocalDate.now;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -10,6 +11,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.core.CSVFormat;
@@ -48,7 +50,7 @@ public class FormatDefinisjonar implements No {
 
 
         Når("^kun følgende kolonner beregnes:$", (DataTable kolonnenavn) -> {
-            kolonner = new LinkedHashSet<>(kolonnenavn.asList(String.class));
+            kolonner = new LinkedHashSet<>(kolonnenavn.asList(String.class).stream().skip(1).collect(toList()));
         });
 
         Så("^blir resultatet med angitt format:$", (DataTable forventetResultat) -> {

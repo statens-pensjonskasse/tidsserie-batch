@@ -33,6 +33,7 @@ Egenskap: Antall feil for en underlagsperiode
     Gitt en villkårlig underlagsperiode
     Når underlaget formateres med avregningsformat
     Og kun følgende kolonner beregnes:
+      | Kolonnenavn                  |
       | FLG_REGEL_UNDER_MINSTEGRENSE |
       | NUM_ANTALLFEIL               |
     Så blir resultatet med angitt format:
@@ -43,6 +44,7 @@ Egenskap: Antall feil for en underlagsperiode
     Gitt en villkårlig underlagsperiode
     Når underlaget formateres med avregningsformat
     Og kun følgende kolonner beregnes:
+      | Kolonnenavn    |
       | IDE_PENS_ORD   |
       | NUM_ANTALLFEIL |
     Så blir resultatet med angitt format:
@@ -55,6 +57,7 @@ Egenskap: Antall feil for en underlagsperiode
     Gitt en villkårlig underlagsperiode
     Når underlaget formateres med live-tidsserieformat
     Og kun følgende kolonner beregnes:
+      | Kolonnenavn                |
       | regel_erUnderMinstegrensen |
       | antallFeil                 |
     Så blir resultatet med angitt format:
@@ -65,8 +68,9 @@ Egenskap: Antall feil for en underlagsperiode
     Gitt en villkårlig underlagsperiode
     Når underlaget formateres med live-tidsserieformat
     Og kun følgende kolonner beregnes:
-      | ordning    |
-      | antallFeil |
+      | Kolonnenavn |
+      | ordning     |
+      | antallFeil  |
     Så blir resultatet med angitt format:
       | ordning | antallFeil |
       |         | 0          |
