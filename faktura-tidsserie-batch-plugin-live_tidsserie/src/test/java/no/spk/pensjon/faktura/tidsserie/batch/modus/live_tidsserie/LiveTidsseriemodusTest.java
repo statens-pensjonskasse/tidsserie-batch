@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 import no.spk.pensjon.faktura.tidsserie.batch.core.AgentInitializer;
 import no.spk.pensjon.faktura.tidsserie.batch.core.Katalog;
 import no.spk.pensjon.faktura.tidsserie.batch.core.StorageBackend;
-import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieLivssyklus;
+import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieGenerertCallback;
 import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsserienummer;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonspublikator;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
@@ -60,10 +60,10 @@ public class LiveTidsseriemodusTest {
         services.registrer(StorageBackend.class, mock(StorageBackend.class));
         modus.registerServices(services.registry());
 
-        services.assertFirstService(TidsserieLivssyklus.class).isPresent();
+        services.assertFirstService(TidsserieGenerertCallback.class).isPresent();
 
         assertThat(
-                services.firstService(TidsserieLivssyklus.class).get()
+                services.firstService(TidsserieGenerertCallback.class).get()
         )
                 .isInstanceOf(LiveTidsserieAvslutter.class);
     }

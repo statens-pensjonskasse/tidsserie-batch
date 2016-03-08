@@ -1,14 +1,18 @@
 package no.spk.pensjon.faktura.tidsserie.batch.main;
 
+import static no.spk.pensjon.faktura.tjenesteregister.Constants.SERVICE_RANKING;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import no.spk.pensjon.faktura.tidsserie.batch.ServiceRegistryRule;
+import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieGenerertCallback;
+import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieGenerertException;
 import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieLivssyklus;
 import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieLivssyklusException;
 import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsseriemodus;
@@ -121,6 +125,37 @@ public class TidsserieMainTest {
     }
 
     @Test
+    public void skal_kalle_alle_generer_tidsserie_callback_selv_om_foerste_feilet() {
+        final RuntimeException expected = new RuntimeException("callback error");
+        final TidsserieGenerertCallback firstCallback = r -> {
+            throw expected;
+        };
+        registry.registrer(TidsserieGenerertCallback.class, firstCallback, SERVICE_RANKING + "=1000");
+
+        TidsserieGenerertCallback secondCallback = mock(TidsserieGenerertCallback.class);
+        registry.registrer(TidsserieGenerertCallback.class, secondCallback, SERVICE_RANKING + "=0");
+
+        lagTidsserieOgIgnorerFeil(expected);
+
+        verify(secondCallback).tidsserieGenerert(any());
+    }
+
+
+    @Test
+    public void skal_kalle_stop_paa_alle_livssyklusar_sjoelv_om_generer_tidsserie_callback_feila() {
+        final RuntimeException expected = new RuntimeException("callback error");
+        registry.registrer(TidsserieGenerertCallback.class, r -> {
+            throw expected;
+        });
+
+        lagTidsserieOgIgnorerFeil(expected);
+
+        verify(a).stop(any());
+        verify(b).stop(any());
+        verify(c).stop(any());
+    }
+
+    @Test
     public void skal_ikkje_kalle_kontrolleren_dersom_start_feila() {
         final RuntimeException expected = new RuntimeException("b says hello!");
         doThrow(expected).when(a).start(any());
@@ -183,7 +218,7 @@ public class TidsserieMainTest {
                     periode
             );
             fail("Skulle ha feila ettersom ein livssyklusane eller controlleren feila");
-        } catch (final TidsserieLivssyklusException e) {
+        } catch (final TidsserieLivssyklusException | TidsserieGenerertException e) {
             assertThat(e.getSuppressed()).contains(expected);
         }
     }
