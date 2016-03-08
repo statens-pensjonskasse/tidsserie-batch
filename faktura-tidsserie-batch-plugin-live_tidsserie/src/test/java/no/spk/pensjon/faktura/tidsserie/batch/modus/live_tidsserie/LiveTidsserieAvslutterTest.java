@@ -12,8 +12,6 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import no.spk.pensjon.faktura.tjenesteregister.support.SimpleServiceRegistry;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -30,14 +28,6 @@ public class LiveTidsserieAvslutterTest {
     public TemporaryFolder testFolder = new TemporaryFolder();
 
     @Test
-    public void testCreateTriggerFile() throws Exception {
-        File writeFolder = createTestFolders();
-        new LiveTidsserieAvslutter(writeFolder.toPath())
-                .lagTriggerfil();
-        assertThat(writeFolder.toPath().resolve("ok.trg")).exists();
-    }
-
-    @Test
     public void testCreateCsvGroupFilesFor271CsvFiles() throws Exception {
         testCreateCsvGroupFiles(271);
     }
@@ -50,14 +40,6 @@ public class LiveTidsserieAvslutterTest {
     @Test
     public void testCreateCsvGroupFilesFor0CsvFiles() throws Exception {
         testCreateCsvGroupFiles(0);
-    }
-
-
-    @Test
-    public void testStopLagerFiler() throws Exception {
-        File writeFolder = createTestFolders();
-        new LiveTidsserieAvslutter(writeFolder.toPath()).stop(new SimpleServiceRegistry());
-        assertThat(writeFolder.toPath().resolve("ok.trg")).exists();
     }
 
     private void testCreateCsvGroupFiles(int numberOfCsvFiles) throws IOException {

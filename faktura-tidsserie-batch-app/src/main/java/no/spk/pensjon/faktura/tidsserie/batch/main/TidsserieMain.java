@@ -7,6 +7,7 @@ import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.Executors.newCachedThreadPool;
 import static no.spk.pensjon.faktura.tidsserie.batch.core.BatchIdConstants.TIDSSERIE_PREFIX;
 import static no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieLivssyklus.onStop;
+import static no.spk.pensjon.faktura.tjenesteregister.Constants.SERVICE_RANKING;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,23 +23,25 @@ import no.spk.faktura.input.UsageRequestedException;
 import no.spk.faktura.timeout.BatchTimeout;
 import no.spk.faktura.timeout.BatchTimeoutTaskrunner;
 import no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast.HazelcastBackend;
-import no.spk.pensjon.faktura.tidsserie.batch.main.input.Modus;
-import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
-import no.spk.pensjon.faktura.tidsserie.batch.main.input.TidsserieArgumentsFactory;
-import no.spk.pensjon.faktura.tidsserie.batch.storage.disruptor.LmaxDisruptorPublisher;
-import no.spk.pensjon.faktura.tidsserie.batch.storage.disruptor.FileTemplate;
-import no.spk.pensjon.faktura.tidsserie.batch.core.LastOppGrunnlagsdataKommando;
-import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.pensjon.faktura.tidsserie.batch.core.Extensionpoint;
+import no.spk.pensjon.faktura.tidsserie.batch.core.GrunnlagsdataRepository;
 import no.spk.pensjon.faktura.tidsserie.batch.core.Katalog;
+import no.spk.pensjon.faktura.tidsserie.batch.core.LastOppGrunnlagsdataKommando;
 import no.spk.pensjon.faktura.tidsserie.batch.core.StorageBackend;
 import no.spk.pensjon.faktura.tidsserie.batch.core.TidsperiodeFactory;
 import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieFactory;
+import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieGenerertCallback;
+import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieGenerertException;
 import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieLivssyklus;
 import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieLivssyklusException;
 import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsseriemodus;
+import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.MedlemsdataBackend;
+import no.spk.pensjon.faktura.tidsserie.batch.main.input.Modus;
+import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
+import no.spk.pensjon.faktura.tidsserie.batch.main.input.TidsserieArgumentsFactory;
+import no.spk.pensjon.faktura.tidsserie.batch.storage.disruptor.FileTemplate;
+import no.spk.pensjon.faktura.tidsserie.batch.storage.disruptor.LmaxDisruptorPublisher;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
-import no.spk.pensjon.faktura.tidsserie.batch.core.GrunnlagsdataRepository;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.CSVInput;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistration;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
@@ -56,6 +59,7 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
  */
 public class TidsserieMain {
     private final Extensionpoint<TidsserieLivssyklus> livssyklus;
+    private final Extensionpoint<TidsserieGenerertCallback> generert;
     private final ServiceRegistry registry;
     private final Consumer<Integer> exiter;
 
@@ -79,6 +83,7 @@ public class TidsserieMain {
         this.exiter = requireNonNull(exiter, "exiter er påkrevd, men var null");
         this.controller = requireNonNull(controller, "controller er påkrevd, men var null");
         this.livssyklus = new Extensionpoint<>(TidsserieLivssyklus.class, registry);
+        this.generert = new Extensionpoint<>(TidsserieGenerertCallback.class, registry);
     }
 
     public void run(final String... args) {
@@ -142,6 +147,7 @@ public class TidsserieMain {
             registrer(TidsserieLivssyklus.class, disruptor);
 
             modus.registerServices(registry);
+            registrer(TidsserieGenerertCallback.class, new TriggerfileCreator(utKatalog), SERVICE_RANKING + "=-1000");
 
             final LocalDateTime started = now();
             controller.validerGrunnlagsdata();
@@ -180,6 +186,10 @@ public class TidsserieMain {
                     modus,
                     periode
             );
+
+            generert
+                    .invokeAll(g -> g.tidsserieGenerert(registry))
+                    .orElseThrow(TidsserieGenerertException::new);
         } finally {
             // Unngå at feil ved stop sluker eventuelle feil som boblar ut av tidsseriegenereringa
             livssyklus
