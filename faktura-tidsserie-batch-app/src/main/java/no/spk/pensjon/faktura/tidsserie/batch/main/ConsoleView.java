@@ -1,22 +1,36 @@
 package no.spk.pensjon.faktura.tidsserie.batch.main;
 
 import static java.time.LocalDateTime.now;
+import static java.util.Objects.requireNonNull;
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
 
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
+import java.util.Optional;
 
 import no.spk.faktura.input.ArgumentSummary;
 import no.spk.faktura.input.InvalidParameterException;
 import no.spk.faktura.input.UsageRequestedException;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
 
-/**
- * TODO: Kva og korleis ønskjer vi å vise status for batchkøyringa når vi køyrer den for vår egen bruk?
- */
+import org.slf4j.Logger;
+
 public class ConsoleView implements View{
     private final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd - HH:mm:ss");
+
+    private final Optional<Logger> logger;
+
+    public ConsoleView() {
+        logger = empty();
+    }
+
+    public ConsoleView(Logger logger) {
+        requireNonNull(logger, "logger kan ikke være null.");
+        this.logger = of(logger);
+    }
 
     public void startarBackend() {
         println("Starter server.");
@@ -112,6 +126,7 @@ public class ConsoleView implements View{
     }
 
     private void println(final String melding) {
+        logger.ifPresent(l -> l.info(melding));
         System.out.println(melding);
     }
 

@@ -2,6 +2,7 @@ package no.spk.pensjon.faktura.tidsserie.batch.modus.live_tidsserie;
 
 import static java.time.LocalDate.now;
 import static java.util.stream.Collectors.joining;
+import static no.spk.pensjon.faktura.tjenesteregister.Constants.SERVICE_RANKING;
 
 import java.nio.file.Path;
 import java.util.Map;
@@ -9,18 +10,18 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.pensjon.faktura.tidsserie.batch.core.AgentInitializer;
-import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.BehandleMedlemCommand;
 import no.spk.pensjon.faktura.tidsserie.batch.core.CSVFormat;
-import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.GenererTidsserieCommand;
 import no.spk.pensjon.faktura.tidsserie.batch.core.Katalog;
 import no.spk.pensjon.faktura.tidsserie.batch.core.ServiceLocator;
 import no.spk.pensjon.faktura.tidsserie.batch.core.StorageBackend;
 import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieFactory;
-import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieLivssyklus;
+import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieGenerertCallback;
 import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsserienummer;
+import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.BehandleMedlemCommand;
+import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.GenererTidsserieCommand;
+import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.pensjon.faktura.tidsserie.domain.avregning.AvregningsRegelsett;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.PrognoseRegelsett;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.Regelsett;
@@ -65,7 +66,10 @@ public class LiveTidsseriemodus implements Tidsseriemodus {
         serviceRegistry.registerService(AgentInitializer.class, kolonneskriver(storage));
 
         final Path tidsserieKatalog = services.firstMandatory(Path.class, Katalog.UT.egenskap());
-        serviceRegistry.registerService(TidsserieLivssyklus.class, new LiveTidsserieAvslutter(tidsserieKatalog));
+        serviceRegistry.registerService(TidsserieGenerertCallback.class,
+                new LiveTidsserieAvslutter(tidsserieKatalog),
+                SERVICE_RANKING + "=1000"
+        );
     }
 
     /**

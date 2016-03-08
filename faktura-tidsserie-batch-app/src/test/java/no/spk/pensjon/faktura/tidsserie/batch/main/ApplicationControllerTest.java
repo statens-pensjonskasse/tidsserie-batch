@@ -12,15 +12,17 @@ import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.time.LocalDateTime;
 
+import no.spk.faktura.input.BatchId;
 import no.spk.faktura.input.InvalidParameterException;
 import no.spk.faktura.input.UsageRequestedException;
 import no.spk.pensjon.faktura.tidsserie.batch.ServiceRegistryRule;
+import no.spk.pensjon.faktura.tidsserie.batch.core.LastOppGrunnlagsdataKommando;
+import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsseriemodus;
+import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.StandardOutputAndError;
-import no.spk.pensjon.faktura.tidsserie.batch.core.LastOppGrunnlagsdataKommando;
-import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.MedlemsdataBackend;
-import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 import no.spk.pensjon.faktura.tjenesteregister.Constants;
 
@@ -28,6 +30,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.TemporaryFolder;
 
 /**
  * @author Snorre E. Brekke - Computas
@@ -35,6 +38,12 @@ import org.junit.rules.ExpectedException;
 public class ApplicationControllerTest {
     @Rule
     public final StandardOutputAndError console = new StandardOutputAndError();
+
+    @Rule
+    public final LogbackVerifier logback = new LogbackVerifier();
+
+    @Rule
+    public final TemporaryFolder temp = new TemporaryFolder();
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
@@ -48,14 +57,15 @@ public class ApplicationControllerTest {
     public void setUp() throws Exception {
         registry.registrer(View.class, new ConsoleView());
         controller = new ApplicationController(registry.registry());
+        controller.initialiserLogging(new BatchId("x", LocalDateTime.now()), temp.newFolder().toPath());
     }
 
     @Test
     public void testInformerOmOppstart() throws Exception {
         ProgramArguments programArguments = new ProgramArguments();
         controller.informerOmOppstart(programArguments);
-        console.assertStandardOutput().contains("Tidsserie-batch startet ");
-        console.assertStandardOutput().contains("Følgende programargumenter blir brukt: ");
+        verifiserInformasjonsmelding("Tidsserie-batch startet ");
+        verifiserInformasjonsmelding("Følgende programargumenter blir brukt: ");
     }
 
     @Test
@@ -64,7 +74,7 @@ public class ApplicationControllerTest {
         registry.registrer(GrunnlagsdataDirectoryValidator.class, validator);
         controller.validerGrunnlagsdata();
         verify(validator).validate();
-        console.assertStandardOutput().contains("Validerer grunnlagsdata.");
+        verifiserInformasjonsmelding("Validerer grunnlagsdata.");
     }
 
     @Test
@@ -87,7 +97,7 @@ public class ApplicationControllerTest {
         DirectoryCleaner cleaner = mock(DirectoryCleaner.class);
         controller.ryddOpp(cleaner);
         verify(cleaner).deleteDirectories();
-        console.assertStandardOutput().contains("Sletter gamle filer.");
+        verifiserInformasjonsmelding("Sletter gamle filer.");
     }
 
     @Test
@@ -119,14 +129,14 @@ public class ApplicationControllerTest {
     @Test
     public void testInformerOmUkjentFeil() throws Exception {
         controller.informerOmUkjentFeil(new RuntimeException());
-        console.assertStandardOutput().contains("Tidsserie-batch feilet - se logfil for detaljer.");
+        verifiserInformasjonsmelding("Tidsserie-batch feilet - se logfil for detaljer.");
         assertThat(controller.exitCode()).isEqualTo(EXIT_ERROR);
     }
 
     @Test
     public void testInformerOmKorrupteGrunnlagsdata() throws Exception {
         controller.informerOmKorrupteGrunnlagsdata(new GrunnlagsdataException("Feil."));
-        console.assertStandardOutput().contains("Grunnlagsdata i inn-katalogen er korrupte - avbryter kjøringen.");
+        verifiserInformasjonsmelding("Grunnlagsdata i inn-katalogen er korrupte - avbryter kjøringen.");
         assertThat(controller.exitCode()).isEqualTo(EXIT_ERROR);
     }
 
@@ -136,8 +146,8 @@ public class ApplicationControllerTest {
         controller.lagTidsserie(registry.registry(), modus, new Observasjonsperiode(dato("1970.01.01"), dato("1980.12.31")));
 
         verify(modus).lagTidsserie(registry.registry());
-        console.assertStandardOutput().contains("Starter tidsserie-generering");
-        console.assertStandardOutput().contains("Tidsseriegenerering fullført.");
+        verifiserInformasjonsmelding("Starter tidsserie-generering");
+        verifiserInformasjonsmelding("Tidsseriegenerering fullført.");
     }
 
     @Test
@@ -146,7 +156,7 @@ public class ApplicationControllerTest {
         controller.startBackend(backend);
 
         verify(backend).start();
-        console.assertStandardOutput().contains("Starter server.");
+        verifiserInformasjonsmelding("Starter server.");
     }
 
     @Test
@@ -161,8 +171,8 @@ public class ApplicationControllerTest {
 
         verify(uploader1, times(0)).lastOpp(any());
         verify(uploader2, times(1)).lastOpp(any());
-        console.assertStandardOutput().contains("Starter lasting av grunnlagsdata...");
-        console.assertStandardOutput().contains("Grunnlagsdata lastet.");
+        verifiserInformasjonsmelding("Starter lasting av grunnlagsdata...");
+        verifiserInformasjonsmelding("Grunnlagsdata lastet.");
     }
 
     @Test
@@ -176,5 +186,10 @@ public class ApplicationControllerTest {
         registry.registrer(LastOppGrunnlagsdataKommando.class, uploader);
 
         controller.lastOpp();
+    }
+
+    private void verifiserInformasjonsmelding(String expectedMessage) {
+        console.assertStandardOutput().contains(expectedMessage);
+        logback.assertMessagesAsString().contains(expectedMessage);
     }
 }

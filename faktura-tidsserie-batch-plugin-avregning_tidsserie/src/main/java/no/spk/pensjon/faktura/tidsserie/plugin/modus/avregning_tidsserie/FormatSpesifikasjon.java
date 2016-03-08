@@ -1,13 +1,17 @@
 package no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie;
 
 import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toSet;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.domain.avregning.Premiebeloep;
@@ -114,10 +118,11 @@ abstract class FormatSpesifikasjon {
      * @param up underlagsperioda som skal serialiserast til ei rad i CSV-fila spesifikasjonen definerer formatet til
      * @return ein straum av serialiserte verdiar for underlagsperioda i henhold til formatspesifikasjonen
      */
-    public Stream<Object> serialiser(final Underlag u, final Underlagsperiode up) {
+    public Stream<Object> serialiser(final Underlag u, final Underlagsperiode up, Predicate<KolonneSpesifikasjon> filter) {
         final ErrorDetector detector = new ErrorDetector();
         return kolonner
                 .stream()
+                .filter(filter)
                 .map(s -> detector.utfoer(s, u, up))
                 .map(o -> o == ANTALL_FEIL_PLACEHOLDER ? heiltall(detector.antallFeil) : o);
     }
@@ -277,7 +282,7 @@ abstract class FormatSpesifikasjon {
             return obligatorisk;
         }
 
-        private String name() {
+        String name() {
             return name;
         }
 

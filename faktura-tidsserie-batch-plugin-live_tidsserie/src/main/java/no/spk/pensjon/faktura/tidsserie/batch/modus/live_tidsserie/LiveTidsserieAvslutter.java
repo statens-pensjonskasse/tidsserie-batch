@@ -2,12 +2,9 @@ package no.spk.pensjon.faktura.tidsserie.batch.modus.live_tidsserie;
 
 import static java.util.Objects.requireNonNull;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
-import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieLivssyklus;
+import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieGenerertCallback;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**
@@ -15,16 +12,17 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
  * Filene opprettes etter tidsserien er ferdig generert.
  * @author Snorre E. Brekke - Computas
  */
-public class LiveTidsserieAvslutter implements TidsserieLivssyklus{
+public class LiveTidsserieAvslutter implements TidsserieGenerertCallback {
     private final Path tidserieKatalog;
 
     public LiveTidsserieAvslutter(Path tidserieKatalog) {
         this.tidserieKatalog = requireNonNull(tidserieKatalog, "tidserieKatalog kan ikke være null.");
     }
 
+
     @Override
-    public void stop(ServiceRegistry serviceRegistry) {
-        lagCsvGruppefiler().lagTriggerfil();
+    public void tidsserieGenerert(ServiceRegistry serviceRegistry) {
+        lagCsvGruppefiler();
     }
 
     /**
@@ -34,20 +32,6 @@ public class LiveTidsserieAvslutter implements TidsserieLivssyklus{
      */
     public LiveTidsserieAvslutter lagCsvGruppefiler() {
         new CsvFileGroupWriter().createCsvGroupFiles(tidserieKatalog);
-        return this;
-    }
-
-    /**
-     * Oppretter ok.trg i tidsseriekatalogen.
-     * @return this for chaning
-     */
-    public LiveTidsserieAvslutter lagTriggerfil() {
-        Path resolve = tidserieKatalog.resolve("ok.trg");
-        try {
-            Files.createFile(resolve);
-        } catch (IOException e) {
-            throw new UncheckedIOException("Klarte ikke å opprette triggerfil.", e);
-        }
         return this;
     }
 }
