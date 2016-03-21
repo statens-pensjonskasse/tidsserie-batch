@@ -172,6 +172,11 @@ public class Avregningformat implements CSVFormat {
             kolonne(84, "BEL_YSK_PREMIE_MEDL", (u, up) -> premie(up.beregn(YSKPremieRegel.class).medlem()));
             kolonne(85, "BEL_YSK_PREMIE_ARBGIV", (u, up) -> premie(up.beregn(YSKPremieRegel.class).arbeidsgiver()));
             kolonne(86, "BEL_YSK_PREMIE_ADM_GEB", (u, up) -> premie(up.beregn(YSKPremieRegel.class).administrasjonsgebyr()));
+            kolonne(87, "KOD_TILGANGSGRUPPE", (u, up) ->  kode(up.valgfriAnnotasjonFor(null).map(null)));
+            kolonne(88, "NUM_ANTALLDAGSVERK_GRU", (u, up) ->  up.valgfriAnnotasjonFor(null).map(null));
+            kolonne(89, "NUM_ANTALLDAGSVERK_YSK", (u, up) ->  up.valgfriAnnotasjonFor(null).map(null));
+            kolonne(90, "KOD_KOMMENTAR_GRU", (u, up) ->  up.valgfriAnnotasjonFor(null).map(null));
+            kolonne(91, "KOD_KOMMENTAR_YSK", (u, up) ->  up.valgfriAnnotasjonFor(null).map(null));
         }
     });
 
