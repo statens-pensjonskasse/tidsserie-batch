@@ -48,14 +48,16 @@ import no.spk.pensjon.faktura.tidsserie.domain.reglar.DeltidsjustertLoennRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.ErMedregningRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.ErPermisjonUtanLoennRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.ErUnderMinstegrensaRegel;
-import no.spk.pensjon.faktura.tidsserie.domain.reglar.GruppelivsfaktureringRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.LoennstilleggRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.MaskineltGrunnlagRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.MedregningsRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.MinstegrenseRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.OevreLoennsgrenseRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.TermintypeRegel;
-import no.spk.pensjon.faktura.tidsserie.domain.reglar.YrkesskadefaktureringRegel;
+import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.BegrunnetGruppelivsfaktureringRegel;
+import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.BegrunnetYrkesskadefaktureringRegel;
+import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.FakturerbareDagsverkGRURegel;
+import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.FakturerbareDagsverkYSKRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonsdato;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
@@ -118,8 +120,8 @@ public class Avregningformat implements CSVFormat {
             kolonne(30, "BEL_REGEL_MEDREGNING", (u, up) -> beloep(up.beregn(MedregningsRegel.class)));
             kolonne(31, "RTE_REGEL_MINSTEGRENSE", (u, up) -> prosent(up.beregn(MinstegrenseRegel.class).grense(), 2));
             kolonne(32, "NUM_REGEL_OEVRE_LONNSGRENSE", (u, up) -> beloep(up.beregn(OevreLoennsgrenseRegel.class)));
-            kolonne(33, "RTE_REGEL_GRUPPELIV", (u, up) -> prosent(up.beregn(GruppelivsfaktureringRegel.class).andel(), 4));
-            kolonne(34, "RTE_REGEL_YRKESSKADE", (u, up) -> prosent(up.beregn(YrkesskadefaktureringRegel.class).andel(), 4));
+            kolonne(33, "RTE_REGEL_GRUPPELIV", (u, up) -> prosent(up.beregn(BegrunnetGruppelivsfaktureringRegel.class).andel(), 4));
+            kolonne(34, "RTE_REGEL_YRKESSKADE", (u, up) -> prosent(up.beregn(BegrunnetYrkesskadefaktureringRegel.class).andel(), 4));
             kolonne(35, "FLG_REGEL_MEDREGNING", (u, up) -> flagg(up.beregn(ErMedregningRegel.class)));
             kolonne(36, "FLG_REGEL_PERMISJON_UTEN_LONN", (u, up) -> flagg(up.beregn(ErPermisjonUtanLoennRegel.class)));
             kolonne(37, "FLG_REGEL_UNDER_MINSTEGRENSE", (u, up) -> flagg(up.beregn(ErUnderMinstegrensaRegel.class)));
@@ -172,11 +174,11 @@ public class Avregningformat implements CSVFormat {
             kolonne(84, "BEL_YSK_PREMIE_MEDL", (u, up) -> premie(up.beregn(YSKPremieRegel.class).medlem()));
             kolonne(85, "BEL_YSK_PREMIE_ARBGIV", (u, up) -> premie(up.beregn(YSKPremieRegel.class).arbeidsgiver()));
             kolonne(86, "BEL_YSK_PREMIE_ADM_GEB", (u, up) -> premie(up.beregn(YSKPremieRegel.class).administrasjonsgebyr()));
-            kolonne(87, "KOD_TILGANGSGRUPPE", (u, up) ->  kode(up.valgfriAnnotasjonFor(null).map(null)));
-            kolonne(88, "NUM_ANTALLDAGSVERK_GRU", (u, up) ->  up.valgfriAnnotasjonFor(null).map(null));
-            kolonne(89, "NUM_ANTALLDAGSVERK_YSK", (u, up) ->  up.valgfriAnnotasjonFor(null).map(null));
-            kolonne(90, "KOD_KOMMENTAR_GRU", (u, up) ->  up.valgfriAnnotasjonFor(null).map(null));
-            kolonne(91, "KOD_KOMMENTAR_YSK", (u, up) ->  up.valgfriAnnotasjonFor(null).map(null));
+            kolonne(87, "KOD_TILGANGSGRUPPE", (u, up) ->  "");
+            kolonne(88, "NUM_ANTALLDAGSVERK_GRU", (u, up) -> up.beregn(FakturerbareDagsverkGRURegel.class).toString());
+            kolonne(89, "NUM_ANTALLDAGSVERK_YSK", (u, up) -> up.beregn(FakturerbareDagsverkYSKRegel.class).toString());
+            kolonne(90, "KOD_FORDELINGSAARSAK_GRU", (u, up) -> kode(up.beregn(BegrunnetGruppelivsfaktureringRegel.class).fordelingsaarsk().kode()));
+            kolonne(91, "KOD_FORDELINGSAARSAK_YSK", (u, up) -> kode(up.beregn(BegrunnetYrkesskadefaktureringRegel.class).fordelingsaarsk().kode()));
         }
     });
 

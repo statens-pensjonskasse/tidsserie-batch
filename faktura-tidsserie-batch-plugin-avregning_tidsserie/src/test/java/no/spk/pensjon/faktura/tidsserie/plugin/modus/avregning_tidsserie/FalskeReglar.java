@@ -12,15 +12,15 @@ import no.spk.pensjon.faktura.tidsserie.domain.reglar.DeltidsjustertLoennRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.ErMedregningRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.ErPermisjonUtanLoennRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.ErUnderMinstegrensaRegel;
-import no.spk.pensjon.faktura.tidsserie.domain.reglar.FaktureringsandelStatus;
-import no.spk.pensjon.faktura.tidsserie.domain.reglar.GruppelivsfaktureringRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.LoennstilleggRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.MaskineltGrunnlagRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.MedregningsRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.Minstegrense;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.MinstegrenseRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.OevreLoennsgrenseRegel;
-import no.spk.pensjon.faktura.tidsserie.domain.reglar.YrkesskadefaktureringRegel;
+import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.BegrunnetFaktureringsandel;
+import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.BegrunnetGruppelivsfaktureringRegel;
+import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.BegrunnetYrkesskadefaktureringRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.AntallDagar;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Beregningsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.PaakrevdAnnotasjonManglarException;
@@ -125,19 +125,19 @@ class FalskeReglar {
         };
     }
 
-    static YrkesskadefaktureringRegel yrkesskadeFaktureringRegel(final FaktureringsandelStatus status) {
-        return new YrkesskadefaktureringRegel() {
+    static BegrunnetYrkesskadefaktureringRegel yrkesskadeFaktureringRegel(final BegrunnetFaktureringsandel status) {
+        return new BegrunnetYrkesskadefaktureringRegel() {
             @Override
-            public FaktureringsandelStatus beregn(final Beregningsperiode<?> periode) {
+            public BegrunnetFaktureringsandel beregn(final Beregningsperiode<?> periode) {
                 return status;
             }
         };
     }
 
-    static GruppelivsfaktureringRegel gruppelivsfaktureringRegel(final FaktureringsandelStatus status) {
-        return new GruppelivsfaktureringRegel() {
+    static BegrunnetGruppelivsfaktureringRegel gruppelivsfaktureringRegel(final BegrunnetFaktureringsandel status) {
+        return new BegrunnetGruppelivsfaktureringRegel() {
             @Override
-            public FaktureringsandelStatus beregn(final Beregningsperiode<?> periode) {
+            public BegrunnetFaktureringsandel beregn(final Beregningsperiode<?> periode) {
                 return status;
             }
         };

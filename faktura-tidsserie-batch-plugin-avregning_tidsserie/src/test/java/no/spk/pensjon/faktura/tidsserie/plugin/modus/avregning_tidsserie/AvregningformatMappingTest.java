@@ -1,6 +1,7 @@
 package no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie;
 
 import static java.util.Arrays.asList;
+import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static no.spk.pensjon.faktura.tidsserie.Datoar.dato;
 import static no.spk.pensjon.faktura.tidsserie.batch.core.Tidsserienummer.genererForDato;
@@ -20,6 +21,7 @@ import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt.YSK;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Prosent.prosent;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.StillingsforholdId.stillingsforhold;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Stillingsprosent.fulltid;
+import static no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.Fordelingsaarsak.ORDINAER;
 import static no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.AntallDagar.antallDagar;
 import static no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie.FalskeReglar.aarsfaktorRegel;
 import static no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie.FalskeReglar.aarslengdeRegel;
@@ -91,15 +93,15 @@ import no.spk.pensjon.faktura.tidsserie.domain.reglar.DeltidsjustertLoennRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.ErMedregningRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.ErPermisjonUtanLoennRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.ErUnderMinstegrensaRegel;
-import no.spk.pensjon.faktura.tidsserie.domain.reglar.FaktureringsandelStatus;
-import no.spk.pensjon.faktura.tidsserie.domain.reglar.GruppelivsfaktureringRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.LoennstilleggRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.MaskineltGrunnlagRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.MedregningsRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.Minstegrense;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.MinstegrenseRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.OevreLoennsgrenseRegel;
-import no.spk.pensjon.faktura.tidsserie.domain.reglar.YrkesskadefaktureringRegel;
+import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.BegrunnetFaktureringsandel;
+import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.BegrunnetGruppelivsfaktureringRegel;
+import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.BegrunnetYrkesskadefaktureringRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonsdato;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Beregningsperiode;
@@ -165,10 +167,10 @@ public class AvregningformatMappingTest {
                 instance(kolonne(30), MedregningsRegel.class, medregningsRegel(kroner(10_000)), forventa("10000")),
                 instance(kolonne(31), MinstegrenseRegel.class, minstegrenseRegel(new Minstegrense(prosent("99.01%"))), forventa("99.01")),
                 instance(kolonne(32), OevreLoennsgrenseRegel.class, oevreLoennsgrenseRegel(new Kroner(9999999999d)), forventa("9999999999")),
-                instance(kolonne(33), GruppelivsfaktureringRegel.class, gruppelivsfaktureringRegel(new FaktureringsandelStatus(stillingsforhold(1L), prosent("999.9999%"))), forventa("999.9999")),
-                instance(kolonne(33), GruppelivsfaktureringRegel.class, gruppelivsfaktureringRegel(new FaktureringsandelStatus(stillingsforhold(1L), prosent("0.0001%"))), forventa("0.0001")),
-                instance(kolonne(34), YrkesskadefaktureringRegel.class, yrkesskadeFaktureringRegel(new FaktureringsandelStatus(stillingsforhold(1L), prosent("0%"))), forventa("0.0000")),
-                instance(kolonne(34), YrkesskadefaktureringRegel.class, yrkesskadeFaktureringRegel(new FaktureringsandelStatus(stillingsforhold(1L), prosent("100.0001%"))), forventa("100.0001")),
+                instance(kolonne(33), BegrunnetGruppelivsfaktureringRegel.class, gruppelivsfaktureringRegel(new BegrunnetFaktureringsandel(stillingsforhold(1L), prosent("999.9999%"), ORDINAER)), forventa("999.9999")),
+                instance(kolonne(33), BegrunnetGruppelivsfaktureringRegel.class, gruppelivsfaktureringRegel(new BegrunnetFaktureringsandel(stillingsforhold(1L), prosent("0.0001%"), ORDINAER)), forventa("0.0001")),
+                instance(kolonne(34), BegrunnetYrkesskadefaktureringRegel.class, yrkesskadeFaktureringRegel(new BegrunnetFaktureringsandel(stillingsforhold(1L), prosent("0%"), ORDINAER)), forventa("0.0000")),
+                instance(kolonne(34), BegrunnetYrkesskadefaktureringRegel.class, yrkesskadeFaktureringRegel(new BegrunnetFaktureringsandel(stillingsforhold(1L), prosent("100.0001%"), ORDINAER)), forventa("100.0001")),
                 instance(kolonne(35), ErMedregningRegel.class, erMedregningRegel(false), forventa("0")),
                 instance(kolonne(36), ErPermisjonUtanLoennRegel.class, erPermisjonUtanLoenn(true), forventa("1")),
                 instance(kolonne(37), ErUnderMinstegrensaRegel.class, erUnderMinstegrensaRegel(false), forventa("0")),
@@ -334,12 +336,13 @@ public class AvregningformatMappingTest {
     }
 
     private static UnderlagsperiodeBuilder eiPeriode() {
+        final StillingsforholdId stillingsforhold = stillingsforhold(1L);
         final UnderlagsperiodeBuilder builder = new UnderlagsperiodeBuilder()
                 .fraOgMed(dato("2012.01.01"))
                 .tilOgMed(dato("2012.12.31"))
                 .med(avregningsversjon(21))
                 .med(new Foedselsnummer(foedselsdato(19800101), personnummer(1)))
-                .med(stillingsforhold(1L))
+                .med(stillingsforhold)
                 .med(avtaleId(223344L))
                 .med(Ordning.POA)
                 .med(Premiestatus.valueOf("AAO-12"))
@@ -357,7 +360,7 @@ public class AvregningformatMappingTest {
                 .med(new Grunnbeloep(kroner(88_370)))
                 .med(new Aarstall(2000))
                 .med(Month.JANUARY)
-                .med(AktiveStillingar.class, Stream::empty)
+                .med(AktiveStillingar.class, () -> Stream.of(new AktiveStillingar.AktivStilling(stillingsforhold, empty(), empty())))
                 .med(Medlemsavtalar.class, new Medlemsavtalar() {
                     @Override
                     public boolean betalarTilSPKFor(final StillingsforholdId stilling, final Produkt produkt) {
