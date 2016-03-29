@@ -21,6 +21,7 @@ import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt.YSK;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Prosent.prosent;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.StillingsforholdId.stillingsforhold;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Stillingsprosent.fulltid;
+import static no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.Fordelingsaarsak.AVKORTET;
 import static no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.Fordelingsaarsak.ORDINAER;
 import static no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.AntallDagar.antallDagar;
 import static no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie.FalskeReglar.aarsfaktorRegel;
@@ -31,6 +32,8 @@ import static no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie.
 import static no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie.FalskeReglar.erMedregningRegel;
 import static no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie.FalskeReglar.erPermisjonUtanLoenn;
 import static no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie.FalskeReglar.erUnderMinstegrensaRegel;
+import static no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie.FalskeReglar.fakturerbareDagsverkGRURegel;
+import static no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie.FalskeReglar.fakturerbareDagsverkYSKRegel;
 import static no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie.FalskeReglar.gruppelivsfaktureringRegel;
 import static no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie.FalskeReglar.loennstilleggRegel;
 import static no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie.FalskeReglar.maskineltGrunnlagRegel;
@@ -102,6 +105,10 @@ import no.spk.pensjon.faktura.tidsserie.domain.reglar.OevreLoennsgrenseRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.BegrunnetFaktureringsandel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.BegrunnetGruppelivsfaktureringRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.BegrunnetYrkesskadefaktureringRegel;
+import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.FakturerbareDagsverk;
+import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.FakturerbareDagsverkGRURegel;
+import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.FakturerbareDagsverkYSKRegel;
+import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.Fordelingsaarsak;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonsdato;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Beregningsperiode;
@@ -132,7 +139,7 @@ public class AvregningformatMappingTest {
 
     @Parameterized.Parameters(name = "kolonne={0},type={1}")
     public static List<Object[]> parameters() {
-        return Arrays.<Object[]>asList(
+        return Arrays.asList(
                 instance(kolonne(1), Observasjonsdato.class, new Observasjonsdato(dato("2015.04.30")), forventa("2015-04-30")),
                 instance(kolonne(2), FraOgMedDato.class, dato("2012.02.01"), forventa("2012-02-01")),
                 instance(kolonne(3), TilOgMedDato.class, dato("2012.02.29"), forventa("2012-02-29")),
@@ -229,6 +236,12 @@ public class AvregningformatMappingTest {
                 instance(kolonne(84), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitYSKprodukt().satser(premiesatsBuilder().arbeidsgiver("2000").medlem("200").administrasjonsgebyr("36").kronesatser())), forventa("0.00")),
                 instance(kolonne(85), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitYSKprodukt().satser(premiesatsBuilder().arbeidsgiver("2000").medlem("200").administrasjonsgebyr("36").kronesatser())), forventa("0.00")),
                 instance(kolonne(86), GrunnlagOgPremiesats.class, grunnlag(kroner(100)).og(eitYSKprodukt().satser(premiesatsBuilder().arbeidsgiver("2000").medlem("200").administrasjonsgebyr("36").kronesatser())), forventa("0.00")),
+
+                instance(kolonne(87), String.class, "", forventa("")),
+                instance(kolonne(88), FakturerbareDagsverkGRURegel.class, fakturerbareDagsverkGRURegel(new FakturerbareDagsverk(5)), forventa("5.00000")),
+                instance(kolonne(89), FakturerbareDagsverkYSKRegel.class, fakturerbareDagsverkYSKRegel(new FakturerbareDagsverk(5)), forventa("5.00000")),
+                instance(kolonne(90), BegrunnetGruppelivsfaktureringRegel.class, gruppelivsfaktureringRegel(new BegrunnetFaktureringsandel(stillingsforhold(1L), prosent("99.9999%"), ORDINAER)), forventa("ORD")),
+                instance(kolonne(91), BegrunnetYrkesskadefaktureringRegel.class, yrkesskadeFaktureringRegel(new BegrunnetFaktureringsandel(stillingsforhold(1L), prosent("9.9999%"), AVKORTET)), forventa("AVK")),
 
                 instance(
                         kolonne(73

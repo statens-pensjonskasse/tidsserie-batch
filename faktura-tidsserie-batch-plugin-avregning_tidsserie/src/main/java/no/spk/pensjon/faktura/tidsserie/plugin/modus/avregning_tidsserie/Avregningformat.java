@@ -177,8 +177,8 @@ public class Avregningformat implements CSVFormat {
             kolonne(87, "KOD_TILGANGSGRUPPE", (u, up) ->  "");
             kolonne(88, "NUM_ANTALLDAGSVERK_GRU", (u, up) -> up.beregn(FakturerbareDagsverkGRURegel.class).toString());
             kolonne(89, "NUM_ANTALLDAGSVERK_YSK", (u, up) -> up.beregn(FakturerbareDagsverkYSKRegel.class).toString());
-            kolonne(90, "KOD_FORDELINGSAARSAK_GRU", (u, up) -> kode(up.beregn(BegrunnetGruppelivsfaktureringRegel.class).fordelingsaarsk().kode()));
-            kolonne(91, "KOD_FORDELINGSAARSAK_YSK", (u, up) -> kode(up.beregn(BegrunnetYrkesskadefaktureringRegel.class).fordelingsaarsk().kode()));
+            kolonne(90, "KOD_FORDELINGSAARSAK_GRU", (u, up) -> kode(up.beregn(BegrunnetGruppelivsfaktureringRegel.class).fordelingsaarsak().kode()));
+            kolonne(91, "KOD_FORDELINGSAARSAK_YSK", (u, up) -> kode(up.beregn(BegrunnetYrkesskadefaktureringRegel.class).fordelingsaarsak().kode()));
         }
     });
 

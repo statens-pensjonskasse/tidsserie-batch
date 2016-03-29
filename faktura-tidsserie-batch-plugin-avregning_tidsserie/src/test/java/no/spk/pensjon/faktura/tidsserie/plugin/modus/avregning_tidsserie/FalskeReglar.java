@@ -21,6 +21,9 @@ import no.spk.pensjon.faktura.tidsserie.domain.reglar.OevreLoennsgrenseRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.BegrunnetFaktureringsandel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.BegrunnetGruppelivsfaktureringRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.BegrunnetYrkesskadefaktureringRegel;
+import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.FakturerbareDagsverk;
+import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.FakturerbareDagsverkGRURegel;
+import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.FakturerbareDagsverkYSKRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.AntallDagar;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Beregningsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.PaakrevdAnnotasjonManglarException;
@@ -166,6 +169,24 @@ class FalskeReglar {
             @Override
             public Boolean beregn(final Beregningsperiode<?> periode) {
                 return resultat;
+            }
+        };
+    }
+
+    static FakturerbareDagsverkYSKRegel fakturerbareDagsverkYSKRegel(final FakturerbareDagsverk dagsverk) {
+        return new FakturerbareDagsverkYSKRegel() {
+            @Override
+            public FakturerbareDagsverk beregn(final Beregningsperiode<?> periode) {
+                return dagsverk;
+            }
+        };
+    }
+
+    static FakturerbareDagsverkGRURegel fakturerbareDagsverkGRURegel(final FakturerbareDagsverk dagsverk) {
+        return new FakturerbareDagsverkGRURegel() {
+            @Override
+            public FakturerbareDagsverk beregn(final Beregningsperiode<?> periode) {
+                return dagsverk;
             }
         };
     }
