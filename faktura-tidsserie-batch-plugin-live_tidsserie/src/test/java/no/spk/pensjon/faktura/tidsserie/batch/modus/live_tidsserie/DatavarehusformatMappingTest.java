@@ -65,6 +65,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.StillingsforholdId;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Stillingskode;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Stillingsprosent;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Variabletillegg;
+import no.spk.pensjon.faktura.tidsserie.domain.reglar.PrognoseRegelsett;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonsdato;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
@@ -246,7 +247,7 @@ public class DatavarehusformatMappingTest {
 
     private Underlag eitUnderlag(UnderlagsperiodeBuilder builder) {
         final Underlagsperiode underlagsperiode = builder.bygg();
-        new AvregningsRegelsett().reglar().forEach(r -> r.annoter(underlagsperiode));
+        new PrognoseRegelsett().reglar().forEach(r -> r.annoter(underlagsperiode));
         final Underlag underlag = new Underlag(Stream.of(underlagsperiode));
         underlag.annoter(Observasjonsdato.class, new Observasjonsdato(dato("2015.12.31")));
         return underlag;
