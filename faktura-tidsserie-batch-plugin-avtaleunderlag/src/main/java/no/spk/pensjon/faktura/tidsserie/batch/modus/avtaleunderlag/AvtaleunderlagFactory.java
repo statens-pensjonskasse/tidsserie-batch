@@ -118,9 +118,9 @@ class AvtaleunderlagFactory {
     }
 
     private boolean erKobletTilAvtale(Underlagsperiode p) {
-        return p.koblingAvType(Avtaleperiode.class).isPresent() ||
-                p.koblingAvType(Avtaleversjon.class).isPresent() ||
-                p.koblingAvType(Avtaleprodukt.class).isPresent();
+        return p.koblingarAvType(Avtaleperiode.class).findAny().isPresent() ||
+                p.koblingarAvType(Avtaleversjon.class).findAny().isPresent() ||
+                p.koblingarAvType(Avtaleprodukt.class).findAny().isPresent();
     }
 
     @SuppressWarnings({ "unchecked" })
