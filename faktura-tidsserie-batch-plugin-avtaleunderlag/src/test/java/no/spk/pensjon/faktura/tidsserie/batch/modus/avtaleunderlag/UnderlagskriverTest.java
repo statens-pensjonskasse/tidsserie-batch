@@ -30,6 +30,7 @@ public class UnderlagskriverTest {
         tidsperiodeFactory.addPerioder(
                 avtaleperiode(avtaleId)
                         .fraOgMed(dato("2015.01.01"))
+                        .tilOgMed(dato("2015.01.31"))
                         .arbeidsgiverId(ArbeidsgiverId.valueOf(2))
                         .bygg()
         );
@@ -49,6 +50,6 @@ public class UnderlagskriverTest {
         final String[] outputlinjer = output.buffer.toString().split("\n");
         assertThat(outputlinjer).hasSize(2);
         assertThat(outputlinjer[0]).isEqualTo(avtaleformat.kolonnenavn().collect(joining(";")));
-        assertThat(outputlinjer[1]).startsWith("2015;2015-01-01;2015-12-31;1");
+        assertThat(outputlinjer[1]).startsWith("2015;2015-01-01;2015-01-31;1");
     }
 }

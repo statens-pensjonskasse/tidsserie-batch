@@ -20,16 +20,15 @@ Egenskap: Tidsseriar generert for kvar av modusane
     Og følgjande innhold i arbeidsgiverdata.csv.gz:
       | KUNDEDATA;28167;123454321;1917.01.01;2014.12.31;76269 |
     Og følgjande innhold i avtale.csv.gz:
-      | AVTALE;200000;1917.01.01;;3010;76269 |
+      | AVTALE;200000;2015.12.01;;3010;76269 |
     Og følgjande innhold i avtaleversjon.csv.gz:
-      | AVTALEVERSJON;200000;1917.01.01;2013.12.31;2014.05.09;FIK;FSA;4507291 |
-      | AVTALEVERSJON;200000;2014.01.01;;2014.05.09;AAO-01;FAS;4507292        |
+      | AVTALEVERSJON;200000;2015.12.01;;2014.05.09;AAO-01;FAS;4507292 |
     Og følgjande innhold i avtaleprodukt.csv.gz:
-      | AVTALEPRODUKT;200000;PEN;1917.01.01;;10;10.00;2.00;0.35;0.00;0.00;0.00;           |
-      | AVTALEPRODUKT;200000;AFP;1917.01.01;;41;02.00;0.00;0.00;0.00;0.00;0.00;           |
+      | AVTALEPRODUKT;200000;PEN;2015.12.01;;10;10.00;2.00;0.35;0.00;0.00;0.00;           |
+      | AVTALEPRODUKT;200000;AFP;2015.12.01;;41;02.00;0.00;0.00;0.00;0.00;0.00;           |
       | AVTALEPRODUKT;200000;TIP;1917.01.01;2014.12.31;94;20.00;0.00;0.00;0.00;0.00;0.00; |
-      | AVTALEPRODUKT;200000;GRU;1917.01.01;;35;0.00;0.00;0.00;0500.00;0.00;0.00;         |
-      | AVTALEPRODUKT;200000;YSK;1917.01.01;;71;0.00;0.00;0.00;2000.00;0.00;0.00;2,5      |
+      | AVTALEPRODUKT;200000;GRU;2015.12.01;;35;0.00;0.00;0.00;0500.00;0.00;0.00;         |
+      | AVTALEPRODUKT;200000;YSK;2015.12.01;;71;0.00;0.00;0.00;2000.00;0.00;0.00;2,5      |
     Og følgjande innhold i avregningsperioder.csv.gz:
       | AVREGNINGSPERIODE;2015;2015;1 |
     Og følgjande innhold i avregningsavtaler.csv.gz:
@@ -86,4 +85,4 @@ Egenskap: Tidsseriar generert for kvar av modusane
       | uttrekksdato    |
     Så skal CSV-filene som blir generert inneholde følgjande rader:
       | premieaar | fraOgMedDato | tilOgMedDato | avtale | antallFeil | regel_aarsfaktor | regel_aarslengde | regel_antalldager | ordning | arbeidsgivernummer | organisasjonsnummer | premiestatus | premiekategori | produkt_PEN | produkt_PEN_satsArbeidsgiver | produkt_PEN_satsMedlem | produkt_PEN_satsAdministrasjonsgebyr | produkt_PEN_satsTotal | produkt_PEN_produktinfo | produkt_AFP | produkt_AFP_satsArbeidsgiver | produkt_AFP_satsMedlem | produkt_AFP_satsAdministrasjonsgebyr | produkt_AFP_satsTotal | produkt_AFP_produktinfo | produkt_TIP | produkt_TIP_satsArbeidsgiver | produkt_TIP_satsMedlem | produkt_TIP_satsAdministrasjonsgebyr | produkt_TIP_satsTotal | produkt_TIP_produktinfo | produkt_prosent_satsTotal | produkt_GRU | produkt_GRU_satsArbeidsgiver | produkt_GRU_satsMedlem | produkt_GRU_satsAdministrasjonsgebyr | produkt_GRU_satsTotal | produkt_GRU_produktinfo | produkt_YSK | produkt_YSK_satsArbeidsgiver | produkt_YSK_satsMedlem | produkt_YSK_satsAdministrasjonsgebyr | produkt_YSK_satsTotal | produkt_YSK_produktinfo | produkt_YSK_risikoklasse |
-      | 2015      | 2015-01-01   | 2015-12-31   | 200000 | 0          | 100.00000000     | 365              | 365               | 3010    | 76269              |                     | AAO-01       | FAS            | 1           | 10.00                        | 2.00                   | 0.35                                 | 12.35                 | 10                      | 1           | 2.00                         | 0.00                   | 0.00                                 | 2.00                  | 41                      |             |                              |                        |                                      |                       |                         | 14.35                     | 1           | 500                          | 0                      | 0                                    | 500                   | 35                      | 1           | 2000                         | 0                      | 0                                    | 2000                  | 71                      | 2,5                      |
+      | 2015      | 2015-12-01   | 2015-12-31   | 200000 | 0          | 8.49315068       | 365              | 31                | 3010    | 76269              |                     | AAO-01       | FAS            | 1           | 10.00                        | 2.00                   | 0.35                                 | 12.35                 | 10                      | 1           | 2.00                         | 0.00                   | 0.00                                 | 2.00                  | 41                      |             |                              |                        |                                      |                       |                         | 14.35                     | 1           | 500                          | 0                      | 0                                    | 500                   | 35                      | 1           | 2000                         | 0                      | 0                                    | 2000                  | 71                      | 2,5                      |
