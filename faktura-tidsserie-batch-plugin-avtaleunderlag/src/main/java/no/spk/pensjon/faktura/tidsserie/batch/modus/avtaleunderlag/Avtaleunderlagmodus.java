@@ -18,6 +18,11 @@ import no.spk.pensjon.faktura.tidsserie.batch.core.ServiceLocator;
 import no.spk.pensjon.faktura.tidsserie.batch.core.StorageBackend;
 import no.spk.pensjon.faktura.tidsserie.batch.core.TidsperiodeFactory;
 import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsseriemodus;
+import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Arbeidsgiverdataperiode;
+import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Arbeidsgiverperiode;
+import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleperiode;
+import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleprodukt;
+import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleversjon;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.Regelsett;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Tidsperiode;
@@ -32,8 +37,13 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**
  * Avtaleunderlagmodus lager underlagsperioder for avtaler.
+ * <br>
+ * Se <a href="http://wiki.spk.no/display/dok/Systemdokumentasjon+-+PU_FAK_BA_10+-+Modus+-+Avtaleunderlag">systemdokumentasjonen</a> for mer informasjon
+ * om avtaleunderlagets oppbygging og hovedkunsomenter.
  *
  * @author Snorre E. Brekke - Computas
+ * @see AvtaleunderlagFactory
+ * @see Avtaleunderlagformat
  */
 public class Avtaleunderlagmodus implements Tidsseriemodus {
 
