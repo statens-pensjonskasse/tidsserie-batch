@@ -4,6 +4,7 @@ import static java.time.LocalDate.now;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
+import java.time.Month;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -23,6 +24,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.reglar.Regelsett;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aar;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.AbstractTidsperiode;
+import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Maaned;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Tidsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.AvtaleFactory;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.AvtaleinformasjonRepository;
@@ -68,12 +70,20 @@ class AvtaleunderlagFactory {
                                 observasjonsperiode
                         )
                                 .addPerioder(
-                                        observasjonsperiode.overlappendeAar().stream()
+                                        observasjonsperiode
+                                                .overlappendeAar()
+                                                .stream()
+                                                .flatMap(aar -> Stream.concat(
+                                                        Stream.of(aar),
+                                                        aar.maaneder()
+                                                        )
+                                                )
                                 )
                                 .addPerioder(
                                         regelsett.reglar()
                                 )
-                                .addPerioder(avtalerepo.finn(avtale)
+                                .addPerioder(
+                                        avtalerepo.finn(avtale)
                                 )
                                 .periodiser()
                                 .annoter(AvtaleId.class, avtale)
@@ -116,6 +126,7 @@ class AvtaleunderlagFactory {
     @SuppressWarnings({ "unchecked" })
     private void annoter(Underlag underlag, Underlagsperiode p) {
         p.koblingAvType(Aar.class).ifPresent(a -> p.annoter(Aarstall.class, a.aarstall()));
+        p.koblingAvType(Maaned.class).ifPresent(m -> p.annoter(Month.class, m.toMonth()));
 
         p.annoter(Avtale.class, avtaleFactory.lagAvtale(p, underlag.annotasjonFor(AvtaleId.class)));
 

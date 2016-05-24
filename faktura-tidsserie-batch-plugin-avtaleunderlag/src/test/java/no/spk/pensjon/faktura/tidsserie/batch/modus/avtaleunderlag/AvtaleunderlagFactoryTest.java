@@ -7,14 +7,19 @@ import static java.util.Optional.of;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static no.spk.pensjon.faktura.tidsserie.Datoar.dato;
+import static no.spk.pensjon.faktura.tidsserie.batch.modus.avtaleunderlag.Optionals.stream;
 import static no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleperiode.avtaleperiode;
 import static no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleversjon.avtaleversjon;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId.avtaleId;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.Year;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsserienummer;
@@ -34,6 +39,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Satser;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.AntallDagarRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.Regelperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
+import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Maaned;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
@@ -61,10 +67,11 @@ public class AvtaleunderlagFactoryTest {
 
     @Test
     public void skal_lage_tomt_underlag() throws Exception {
+        final LocalDate tilOgMed = dato("2015.12.31");
         final List<Underlag> underlag = underlagFactory
                 .lagAvtaleunderlag(
-                        observasjonsperiode,
-                        new Uttrekksdato(dato("2016.01.01"))
+                        new Observasjonsperiode(dato("2015.01.01"), tilOgMed),
+                        new Uttrekksdato(tilOgMed.plusDays(1))
                 )
                 .collect(toList());
         assertThat(underlag).isEmpty();
@@ -78,6 +85,29 @@ public class AvtaleunderlagFactoryTest {
         underlagsperioder()
                 .map(p -> p.annotasjonFor(Aarstall.class))
                 .forEach(aar -> assertThat(aar).isEqualTo(new Aarstall(2015)));
+    }
+
+    /**
+     * Verifiserer at avtaleunderlaget er splitta i perioder pr måned, ikkje kun pr år eller pr endring i avtale eller arbeidsgivar.
+     * <br>
+     * Hovedårsaka til at ein ønskjer å splitte avtaleunderlaget pr måned er at ein i saksbehandlerdashoardet til FFF skal kunne
+     * sammenstille avtaleunderlaget med live_tidsserien for å telle antall ansatte pr avtale pr siste dag i måned (f.eks.).
+     */
+    @Test
+    public void skal_splitte_perioder_paa_maaned_selv_om_ingenting_annet_endres() {
+        tidsperiodeFactory.addPerioder(
+                enAvtaleperiode()
+                        .fraOgMed(dato("2016.01.01"))
+                        .bygg()
+        );
+
+        assertThat(
+                underlagsperioder(observasjonsperiode(2016, 2016))
+                        .flatMap(up -> stream(up.valgfriAnnotasjonFor(Month.class)))
+        )
+                .containsExactly(
+                        Month.values()
+                );
     }
 
     @Test
@@ -181,8 +211,18 @@ public class AvtaleunderlagFactoryTest {
         tidsperiodeFactory.addPerioder(enAvtalepriode());
 
         underlagsperioder()
-                .map(p -> p.beregn(AntallDagarRegel.class))
-                .forEach(dager -> assertThat(dager.verdi()).isEqualTo(365));
+                .forEach(p ->
+                        assertThat(
+                                p.beregn(AntallDagarRegel.class)
+                                        .verdi()
+                        )
+                                .as("Resultat frå AntallDagarRegel for " + p)
+                                .isEqualTo(
+                                        p
+                                                .annotasjonFor(Month.class)
+                                                .length(p.fraOgMed().isLeapYear())
+                                )
+                );
     }
 
     @Test
@@ -204,6 +244,7 @@ public class AvtaleunderlagFactoryTest {
                 ),
                 avtaleversjon(avtaleId)
                         .fraOgMed(dato("2015.03.01"))
+                        .tilOgMed(of(dato("2015.03.31")))
                         .premiestatus(Premiestatus.AAO_01)
                         .premiekategori(Premiekategori.FASTSATS)
                         .bygg()
@@ -258,11 +299,17 @@ public class AvtaleunderlagFactoryTest {
                 );
 
         assertThat(avtaleunderlag).hasSize(2);
-        assertThat(avtaleunderlag.get(avtaleId)).hasSize(1);
-        assertThat(avtaleunderlag.get(avtaleUtenArbeidsgiverperiode)).hasSize(1);
+        assertThat(avtaleunderlag.get(avtaleId)).hasSize(12);
+        assertThat(avtaleunderlag.get(avtaleUtenArbeidsgiverperiode)).hasSize(12);
 
-        assertOrgnummer(avtaleunderlag.get(avtaleId).get(0)).isPresent();
-        assertOrgnummer(avtaleunderlag.get(avtaleUtenArbeidsgiverperiode).get(0)).isEmpty();
+        avtaleunderlag
+                .get(avtaleId)
+                .stream()
+                .forEach(up -> assertOrgnummer(up).isPresent());
+        avtaleunderlag
+                .get(avtaleUtenArbeidsgiverperiode)
+                .stream()
+                .forEach(up -> assertOrgnummer(up).isEmpty());
     }
 
     private OptionalAssert<Premiestatus> assertPremiestatus(Underlagsperiode underlagsperiode) {
@@ -283,14 +330,27 @@ public class AvtaleunderlagFactoryTest {
     }
 
     private Avtaleperiode enAvtalepriode() {
-        return avtaleperiode(avtaleId(1L))
-                .fraOgMed(dato("2015.01.01"))
-                .arbeidsgiverId(ArbeidsgiverId.valueOf(2))
-                .bygg();
+        return enAvtaleperiode().bygg();
     }
 
+    private static Avtaleperiode.AvtaleperiodeBuilder enAvtaleperiode() {
+        return avtaleperiode(avtaleId(1L))
+                .fraOgMed(dato("2015.01.01"))
+                .arbeidsgiverId(ArbeidsgiverId.valueOf(2));
+    }
+
+    private static Observasjonsperiode observasjonsperiode(final int fraAar, final int tilAar) {
+        return new Observasjonsperiode(
+                new Aarstall(fraAar).atStartOfYear(),
+                new Aarstall(tilAar).atEndOfYear()
+        );
+    }
 
     private Stream<Underlagsperiode> underlagsperioder() {
+        return underlagsperioder(this.observasjonsperiode);
+    }
+
+    private Stream<Underlagsperiode> underlagsperioder(final Observasjonsperiode observasjonsperiode) {
         final List<Underlagsperiode> perioder = underlagFactory
                 .lagAvtaleunderlag(observasjonsperiode, new Uttrekksdato(dato("2016.01.01")))
                 .flatMap(Underlag::stream)
@@ -300,6 +360,4 @@ public class AvtaleunderlagFactoryTest {
                 .isGreaterThan(0);
         return perioder.stream();
     }
-
-
 }
