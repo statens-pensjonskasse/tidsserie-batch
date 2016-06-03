@@ -12,38 +12,43 @@ import java.util.function.IntSupplier;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
+import no.spk.pensjon.faktura.tidsserie.batch.core.StorageBackend;
+
 /**
- * Finner alle tidsserie*.csv filer i utkatalog, og fordeler filnavmeme i ti filer: FFF_FILLISTE_[1-10].txt.
- * Filliste-filene brukes slik at Datavarehus kan bruke faste filnavn for å paralellisere innlesingen av csv-filene.
+ * Finner alle tidsserie*.csv filer i utkatalog, og lagrer filnavnene i 1 filliste-fil.
+ * <br>
+ * Fillisten navngis på formen {@code FFF_FILLISTE_1.txt}.
+ * <br>
+ * Ettersom samme type lagringsbackend benyttes både ved distribuert generering av tidsserie (stillingsforholdobservasjonar, live_tidsserie og avregning)
+ * og ved lokal generering av tidsserie (avtaleunderlag), blir tidsseriefiler dynamisk navngitt for å unngå navnekonflikter ved distribuert generering.
+ * <br>
+ * Formålet med fillisten er å la Datavarehus angi et fast filnavn i workflowene som skal lese inn avtaleunderlaget.
+ * <br>
+ * I motsetning til for live_tidsserie-modusen, vil det ikke bli opprettet noen dummy-fillister for avtaleunderlaget dersom antall tidsseriefiler
+ * er mindre enn minste mulige antall tidsseriefiler (1).
  *
  * @author Snorre E. Brekke - Computas
+ * @author Tarjei Skorgenes
  */
-public class CsvFileGroupWriter {
+class FillisteGenerator {
     final static Pattern CSV_PATTERN = Pattern.compile("^tidsserie.+\\.csv$");
-    private static final int GROUP_FILE_COUNT = 10;
 
-    public CsvFileGroupWriter() {
-    }
+    private static final int GROUP_FILE_COUNT = 1;
 
     /**
-     * Finner alle tidsserie*.csv filer i utkatalog, og fordeler filnavmeme i ti filer: FFF_FILLISTE_[1-10].txt.
-     * Filliste-filene brukes slik at Datavarehus kan bruke faste filnavn for å paralellisere innlesingen av csv-filene.
-     * <p>
-     * Dersom det er færre enn 10 tidsserie.*csv filer i dataKatalogen, vil det bli opprettet en {@code tidsserie_dummy_*.csv}-filer,
-     * som vil bli referert i resternede FFF_FILLISTE_ filer.
-     * Dette gjøres for å forenkle innlesingen for datavarehus.
-     * </p>
+     * Genererer filliste for avtaleunderlaget og lagrer fillisten i {@code utKatalog} under navnet {@code FFF_FILLISTE_1.txt}.
      *
-     * @param dataKatalog katalog med tidsserie*.csv filer. Katalogen vil inneholder 10 filer FFF_FILLISTE_[1-10].txt etter kjøring.
+     * @param utKatalog ut-katalogen batchen skriver den dynamisk navngitte CSV-filen som inneholder avtaleunderlaget, til.
+     * Fillisten blir også lagret til denne katalogen
      */
-    public void createCsvGroupFiles(Path dataKatalog) {
-        File[] csvFiles = dataKatalog.toFile()
+    void genererFilliste(final Path utKatalog) {
+        File[] csvFiles = utKatalog.toFile()
                 .listFiles(f -> CSV_PATTERN.matcher(f.getName()).matches());
 
-        IntSupplier fileNumberSupplier = createGroupFiles(dataKatalog, GROUP_FILE_COUNT);
+        IntSupplier fileNumberSupplier = createGroupFiles(utKatalog, GROUP_FILE_COUNT);
 
         for (File csvFile : csvFiles) {
-            appendCsvFilenameToGroup(dataKatalog, csvFile, fileNumberSupplier);
+            appendCsvFilenameToGroup(utKatalog, csvFile, fileNumberSupplier);
         }
 
         createDummyCsvFiles(dataKatalog, getDummyFileCount(csvFiles), fileNumberSupplier);
@@ -54,7 +59,7 @@ public class CsvFileGroupWriter {
         return max(0, GROUP_FILE_COUNT - csvFiles.length);
     }
 
-    private void appendCsvFilenameToGroup(Path dataKatalog , File csvFile, IntSupplier fileNumberSupplier) {
+    private void appendCsvFilenameToGroup(Path dataKatalog, File csvFile, IntSupplier fileNumberSupplier) {
         Path groupFile = dataKatalog.resolve(getGroupFileName(fileNumberSupplier.getAsInt()));
         appendCsvFilename(csvFile, groupFile);
     }
@@ -78,9 +83,10 @@ public class CsvFileGroupWriter {
         return dummyCsv;
     }
 
-    IntSupplier createGroupFiles(Path dataKatalog, int fileCount) {
+    private IntSupplier createGroupFiles(Path dataKatalog, int fileCount) {
         IntSupplier fileNumberSupplier = new IntSupplier() {
             int current = 0;
+
             public int getAsInt() {
                 return (current++ % fileCount) + 1;
             }
@@ -102,11 +108,11 @@ public class CsvFileGroupWriter {
         }
     }
 
-    String getGroupFileName(int fileNumber) {
+    private String getGroupFileName(int fileNumber) {
         return "FFF_FILLISTE_" + fileNumber + ".txt";
     }
 
-    void appendCsvFilename(File csvFile, Path groupFile) {
+    private void appendCsvFilename(File csvFile, Path groupFile) {
         try (FileWriter fileWriter = new FileWriter(groupFile.toFile(), true)) {
             fileWriter.append(csvFile.getName()).append("\n");
         } catch (IOException e) {

@@ -22,6 +22,7 @@ import no.spk.pensjon.faktura.tidsserie.batch.core.GrunnlagsdataRepository;
 import no.spk.pensjon.faktura.tidsserie.batch.core.Katalog;
 import no.spk.pensjon.faktura.tidsserie.batch.core.StorageBackend;
 import no.spk.pensjon.faktura.tidsserie.batch.core.TidsperiodeFactory;
+import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieGenerertCallback;
 import no.spk.pensjon.faktura.tidsserie.batch.modus.avtaleunderlag.Avtaleunderlagmodus.ReferansedataCSVInput;
 import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.ArbeidsgiverId;
@@ -55,7 +56,15 @@ public class AvtaleunderlagmodusTest {
         services.registrer(Observasjonsperiode.class, new Observasjonsperiode(dato("2015.01.01"), dato("2015.01.01")));
         services.registrer(StorageBackend.class, mock(StorageBackend.class));
         innKatalog = temp.newFolder("grunnlagsdata_2016-01-01_01-01-01-01").toPath();
-        services.registry().registerService(Path.class, innKatalog, Katalog.GRUNNLAGSDATA.egenskap()
+        services.registry().registerService(
+                Path.class,
+                innKatalog,
+                Katalog.GRUNNLAGSDATA.egenskap()
+        );
+        services.registry().registerService(
+                Path.class,
+                temp.newFolder("ut").toPath(),
+                Katalog.UT.egenskap()
         );
     }
 
@@ -122,6 +131,19 @@ public class AvtaleunderlagmodusTest {
         assertThat(resultat.get("avtaler")).isEqualTo(2);
     }
 
+    @Test
+    public void skal_registrere_liveTidsserieAvslutter() throws IOException {
+        services.registrer(StorageBackend.class, mock(StorageBackend.class));
+
+        modus.registerServices(services.registry());
+
+        services.assertFirstService(TidsserieGenerertCallback.class).isPresent();
+
+        assertThat(
+                services.firstService(TidsserieGenerertCallback.class).get()
+        )
+                .isInstanceOf(AvtaleunderlagAvslutter.class);
+    }
 
     private Avtaleperiode enAvtalepriode(AvtaleId avtaleId) {
         return avtaleperiode(avtaleId)

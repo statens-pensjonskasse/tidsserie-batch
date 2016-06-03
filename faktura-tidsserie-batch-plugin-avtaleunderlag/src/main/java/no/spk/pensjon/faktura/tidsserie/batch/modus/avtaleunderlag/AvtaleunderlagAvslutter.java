@@ -8,14 +8,15 @@ import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieGenerertCallback;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**
- * Klasse som lager filer som benyttes av datavarehus ved innlesing av livetidsserien.
- * Filene opprettes etter tidsserien er ferdig generert.
+ * Callback som genererer filliste for DVH etter at avtaleunderlaget har blitt generert ferdig.
+ *
  * @author Snorre E. Brekke - Computas
+ * @see FillisteGenerator
  */
-public class AvtaleunderlagAvslutter implements TidsserieGenerertCallback {
+class AvtaleunderlagAvslutter implements TidsserieGenerertCallback {
     private final Path tidserieKatalog;
 
-    public AvtaleunderlagAvslutter(Path tidserieKatalog) {
+    AvtaleunderlagAvslutter(final Path tidserieKatalog) {
         this.tidserieKatalog = requireNonNull(tidserieKatalog, "tidserieKatalog kan ikke være null.");
     }
 
@@ -26,12 +27,11 @@ public class AvtaleunderlagAvslutter implements TidsserieGenerertCallback {
     }
 
     /**
-     * Finner alle tidsserie*.csv filer i utkatalog, og fordeler filnavmeme i ti filer: FFF_FILLISTE_[1-10].txt.
-     * Filliste-filene brukes slik at Datavarehus kan bruke faste filnavn for å paralellisere innlesingen av csv-filene.
      * @return this for chaning
+     * @see FillisteGenerator#genererFilliste(Path)
      */
-    public AvtaleunderlagAvslutter lagCsvGruppefiler() {
-        new CsvFileGroupWriter().createCsvGroupFiles(tidserieKatalog);
+    private AvtaleunderlagAvslutter lagCsvGruppefiler() {
+        new FillisteGenerator().genererFilliste(tidserieKatalog);
         return this;
     }
 }
