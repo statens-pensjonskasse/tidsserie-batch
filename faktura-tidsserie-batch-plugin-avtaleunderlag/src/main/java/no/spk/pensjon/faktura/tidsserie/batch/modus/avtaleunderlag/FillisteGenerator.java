@@ -1,7 +1,5 @@
 package no.spk.pensjon.faktura.tidsserie.batch.modus.avtaleunderlag;
 
-import static java.lang.Math.max;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -50,37 +48,11 @@ class FillisteGenerator {
         for (File csvFile : csvFiles) {
             appendCsvFilenameToGroup(utKatalog, csvFile, fileNumberSupplier);
         }
-
-        createDummyCsvFiles(dataKatalog, getDummyFileCount(csvFiles), fileNumberSupplier);
-
-    }
-
-    private int getDummyFileCount(File[] csvFiles) {
-        return max(0, GROUP_FILE_COUNT - csvFiles.length);
     }
 
     private void appendCsvFilenameToGroup(Path dataKatalog, File csvFile, IntSupplier fileNumberSupplier) {
         Path groupFile = dataKatalog.resolve(getGroupFileName(fileNumberSupplier.getAsInt()));
         appendCsvFilename(csvFile, groupFile);
-    }
-
-    private void createDummyCsvFiles(Path dataKatalog, int dummyCsvFileCount, IntSupplier fileNumberSupplier) {
-        if (dummyCsvFileCount > 0) {
-            for (int i = 0; i < dummyCsvFileCount; i++) {
-                Path dummyCsv = createDummyCsvFile(dataKatalog, i);
-                appendCsvFilenameToGroup(dataKatalog, dummyCsv.toFile(), fileNumberSupplier);
-            }
-        }
-    }
-
-    private Path createDummyCsvFile(Path dataKatalog, int index) {
-        Path dummyCsv = dataKatalog.resolve("tidsserie_dummy_" + index + ".csv");
-        try {
-            Files.createFile(dummyCsv);
-        } catch (IOException e) {
-            throw new UncheckedIOException("Kunne ikke opprette " + dummyCsv.toString(), e);
-        }
-        return dummyCsv;
     }
 
     private IntSupplier createGroupFiles(Path dataKatalog, int fileCount) {
