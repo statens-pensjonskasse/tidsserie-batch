@@ -3,6 +3,7 @@ package no.spk.pensjon.faktura.tidsserie.batch.modus.avtaleunderlag;
 import static java.util.stream.Collectors.toList;
 import static no.spk.faktura.input.BatchId.fromString;
 import static no.spk.pensjon.faktura.tidsserie.batch.core.BatchIdConstants.GRUNNLAGSDATA_PREFIX;
+import static no.spk.pensjon.faktura.tjenesteregister.Constants.SERVICE_RANKING;
 
 import java.nio.file.Path;
 import java.time.LocalDate;
@@ -17,6 +18,7 @@ import no.spk.pensjon.faktura.tidsserie.batch.core.Katalog;
 import no.spk.pensjon.faktura.tidsserie.batch.core.ServiceLocator;
 import no.spk.pensjon.faktura.tidsserie.batch.core.StorageBackend;
 import no.spk.pensjon.faktura.tidsserie.batch.core.TidsperiodeFactory;
+import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieGenerertCallback;
 import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Arbeidsgiverdataperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Arbeidsgiverperiode;
@@ -69,6 +71,12 @@ public class Avtaleunderlagmodus implements Tidsseriemodus {
                         services.firstMandatory(Path.class, Katalog.GRUNNLAGSDATA.egenskap())
                 ),
                 Constants.SERVICE_RANKING + "=1000"
+        );
+
+        final Path tidsserieKatalog = services.firstMandatory(Path.class, Katalog.UT.egenskap());
+        serviceRegistry.registerService(TidsserieGenerertCallback.class,
+                new AvtaleunderlagAvslutter(tidsserieKatalog),
+                SERVICE_RANKING + "=1000"
         );
     }
 
