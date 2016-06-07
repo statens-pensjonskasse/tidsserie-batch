@@ -27,7 +27,7 @@ class AvtaleunderlagAvslutter implements TidsserieGenerertCallback {
     }
 
     /**
-     * @return this for chaning
+     * @return this for chaining
      * @see FillisteGenerator#genererFilliste(Path)
      */
     private AvtaleunderlagAvslutter lagCsvGruppefiler() {
