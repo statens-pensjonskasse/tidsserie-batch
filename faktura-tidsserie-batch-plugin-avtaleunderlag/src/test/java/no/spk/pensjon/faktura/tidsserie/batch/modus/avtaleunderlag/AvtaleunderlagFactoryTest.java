@@ -13,15 +13,13 @@ import static no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleversjon.a
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId.avtaleId;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Kroner.kroner;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.time.Year;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsserienummer;
@@ -41,7 +39,6 @@ import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Satser;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.AntallDagarRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.Regelperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
-import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Maaned;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
@@ -271,18 +268,18 @@ public class AvtaleunderlagFactoryTest {
 
 
     @Test
-    public void skal_lage_underlag_selv_om_flere_avtaleprodukter_ikke_har_overlappende_perioder() throws Exception {
+    public void skal_lage_underlag_selv_om_avtaleprodukter_ikke_har_andre_overlappende_perioder() throws Exception {
         final AvtaleId avtaleId = avtaleId(1L);
         tidsperiodeFactory.addPerioder(
                 new Avtaleprodukt(
-                        dato("2015.06.01"),
+                        dato("2015.12.01"),
                         empty(),
                         avtaleId(avtaleId.id()),
                         Produkt.GRU,
                         Produktinfo.GRU_35,
                         new Satser<>(kroner(2), kroner(20), kroner(200))),
                 new Avtaleprodukt(
-                        dato("2015.06.01"),
+                        dato("2015.12.01"),
                         empty(),
                         avtaleId(avtaleId.id()),
                         Produkt.YSK,
@@ -294,31 +291,51 @@ public class AvtaleunderlagFactoryTest {
     }
 
     @Test
-    public void skal_lage_underlag_selv_om_avtaler_feiler()  {
-        tidsperiodeFactory.addPerioder(enAvtalepriode());
-        List<Underlagsperiode> underlagsperioder = underlagsperioder().collect(toList());
-        try {
-            tidsperiodeFactory.addPerioder(
-                    avtaleperiode(avtaleId(1L))
-                            .fraOgMed(dato("2015.01.01"))
-                            .tilOgMed(dato("2015.01.31"))
-                            .arbeidsgiverId(ArbeidsgiverId.valueOf(2))
-                            .bygg(),
-                    avtaleperiode(avtaleId(1L))
-                            .fraOgMed(dato("2015.01.01"))
-                            .arbeidsgiverId(ArbeidsgiverId.valueOf(2))
-                            .bygg()
-            );
-            underlagsperioder();
-            fail("Skulle ha kastet exception.");
-        }
-        catch( final IllegalStateException e )
-        {
-            final String msg = "Underlagsperioda er kobla til meir enn ei tidsperiode av type Avtaleperiode, vi forventa berre 1 kobling av denne typen.";
-            assertThat(e.getMessage()).contains(msg);
-            assertThat(underlagsperioder).hasSize(1);
-            underlagsperioder.stream().forEach(p -> assertThat(p.valgfriAnnotasjonFor(Avtale.class)).isPresent());
-        }
+    public void skal_lage_underlag_selv_om_avtaler_feiler_pga_overlappende_perioder() {
+        List<Underlagsperiode> underlagsperioder = new ArrayList<>();
+        tidsperiodeFactory.addPerioder(
+                avtaleperiode(avtaleId(1L))
+                        .fraOgMed(dato("2015.01.01"))
+                        .tilOgMed(dato("2015.03.31"))
+                        .arbeidsgiverId(ArbeidsgiverId.valueOf(1))
+                        .bygg(),
+                avtaleperiode(avtaleId(2L))
+                        .fraOgMed(dato("2015.01.01"))
+                        .tilOgMed(dato("2015.03.31"))
+                        .arbeidsgiverId(ArbeidsgiverId.valueOf(2))
+                        .bygg(),
+                avtaleperiode(avtaleId(2L))
+                        .fraOgMed(dato("2015.01.01"))
+                        .tilOgMed(dato("2015.01.31"))
+                        .arbeidsgiverId(ArbeidsgiverId.valueOf(2))
+                        .bygg()
+        );
+        underlagsperioder = underlagsperioder().collect(toList());
+        assertThat(underlagsperioder).hasSize(3);
+    }
+
+    @Test
+    public void skal_lage_underlag_selv_om_avtaler_feiler_pga_gap_i_perioder() {
+        List<Underlagsperiode> underlagsperioder = new ArrayList<>();
+        tidsperiodeFactory.addPerioder(
+                avtaleperiode(avtaleId(1L))
+                        .fraOgMed(dato("2015.01.01"))
+                        .tilOgMed(dato("2015.03.31"))
+                        .arbeidsgiverId(ArbeidsgiverId.valueOf(1))
+                        .bygg(),
+                avtaleperiode(avtaleId(2L))
+                        .fraOgMed(dato("2015.01.01"))
+                        .tilOgMed(dato("2015.01.31"))
+                        .arbeidsgiverId(ArbeidsgiverId.valueOf(1))
+                        .bygg(),
+                avtaleperiode(avtaleId(2L))
+                        .fraOgMed(dato("2015.03.01"))
+                        .tilOgMed(dato("2015.03.31"))
+                        .arbeidsgiverId(ArbeidsgiverId.valueOf(2))
+                        .bygg()
+        );
+        underlagsperioder = underlagsperioder().collect(toList());
+        assertThat(underlagsperioder).hasSize(3);
     }
 
     @Test

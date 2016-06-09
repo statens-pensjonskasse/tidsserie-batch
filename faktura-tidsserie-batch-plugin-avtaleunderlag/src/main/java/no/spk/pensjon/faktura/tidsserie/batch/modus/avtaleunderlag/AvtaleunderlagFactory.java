@@ -64,38 +64,48 @@ class AvtaleunderlagFactory {
         AvtaleinformasjonRepository avtalerepo = new StandardAvtaleInformasjonRepository(
                 grunnlag.stream().collect(groupingBy(Object::getClass))
         );
-
         return avtaler(grunnlag)
-                .map(avtale -> new UnderlagFactory(
-                                observasjonsperiode
-                        )
-                                .addPerioder(
-                                        observasjonsperiode
-                                                .overlappendeAar()
-                                                .stream()
-                                                .flatMap(aar -> Stream.concat(
-                                                        Stream.of(aar),
-                                                        aar.maaneder()
-                                                        )
-                                                )
-                                )
-                                .addPerioder(
-                                        regelsett.reglar()
-                                )
-                                .addPerioder(
-                                        avtalerepo.finn(avtale)
-                                )
-                                .periodiser()
-                                .annoter(AvtaleId.class, avtale)
-                                .annoter(Uttrekksdato.class, uttrekksdato)
-                                .annoter(Tidsserienummer.class, tidsserienummer)
-                )
-                .map(u -> u.restrict(this::erKobletTilAvtale))
-                .filter(u -> !u.toList().isEmpty())
-                .peek(u -> u
+                .flatMap(avtale -> {
+                    return lagUnderlag(observasjonsperiode, uttrekksdato, tidsserienummer, avtalerepo, avtale);
+                });
+    }
+
+    private Stream<? extends Underlag> lagUnderlag(Observasjonsperiode observasjonsperiode, Uttrekksdato uttrekksdato, Tidsserienummer tidsserienummer, AvtaleinformasjonRepository avtalerepo, AvtaleId avtale) {
+        try {
+            Underlag underlag = new UnderlagFactory(
+                    observasjonsperiode
+            )
+                    .addPerioder(
+                            observasjonsperiode
+                                    .overlappendeAar()
+                                    .stream()
+                                    .flatMap(aar -> Stream.concat(
+                                            Stream.of(aar),
+                                            aar.maaneder()
+                                            )
+                                    )
+                    )
+                    .addPerioder(
+                            regelsett.reglar()
+                    )
+                    .addPerioder(
+                            avtalerepo.finn(avtale)
+                    )
+                    .periodiser()
+                    .annoter(AvtaleId.class, avtale)
+                    .annoter(Uttrekksdato.class, uttrekksdato)
+                    .annoter(Tidsserienummer.class, tidsserienummer)
+                    .restrict(this::erKobletTilAvtale);
+            if (!underlag.toList().isEmpty()) {
+                underlag
                         .stream()
-                        .forEach(p -> annoter(u, p))
-                );
+                        .forEach(p -> annoter(underlag, p));
+                return Stream.of(
+                        underlag);
+            }
+        } catch (RuntimeException | Error e) {
+        }
+        return Stream.empty();
     }
 
     private List<AbstractTidsperiode<? extends AbstractTidsperiode<?>>> grunnlag() {
