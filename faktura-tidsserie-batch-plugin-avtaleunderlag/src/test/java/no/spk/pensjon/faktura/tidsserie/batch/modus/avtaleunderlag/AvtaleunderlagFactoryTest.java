@@ -16,7 +16,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -266,7 +265,8 @@ public class AvtaleunderlagFactoryTest {
         assertPremiestatus(underlagsperioder.get(2)).contains(Premiestatus.AAO_01);
     }
 
-
+    /*  Verifiserer at avtaleunderlage genereres selv om en eller flere avtaleproduktperioder ikke har
+        andre overlappande avtaleversjoner eller avtaleperioder */
     @Test
     public void skal_lage_underlag_selv_om_avtaleprodukter_ikke_har_andre_overlappende_perioder() throws Exception {
         final AvtaleId avtaleId = avtaleId(1L);
@@ -286,13 +286,17 @@ public class AvtaleunderlagFactoryTest {
                         Produktinfo.YSK_79,
                         new Satser<>(kroner(0), kroner(0), kroner(0)))
         );
-        final List<Underlagsperiode> underlagsperioder = underlagsperioder().collect(toList());
-        assertThat(underlagsperioder).hasSize(1);
+        final List<Underlag> underlag = underlagFactory
+                .lagAvtaleunderlag(
+                        observasjonsperiode,
+                        new Uttrekksdato(dato("2016.01.01"))
+                )
+                .collect(toList());
+        assertThat(underlag).isNotEmpty();
     }
 
     @Test
     public void skal_lage_underlag_selv_om_avtaler_feiler_pga_overlappende_perioder() {
-        List<Underlagsperiode> underlagsperioder = new ArrayList<>();
         tidsperiodeFactory.addPerioder(
                 avtaleperiode(avtaleId(1L))
                         .fraOgMed(dato("2015.01.01"))
@@ -310,32 +314,51 @@ public class AvtaleunderlagFactoryTest {
                         .arbeidsgiverId(ArbeidsgiverId.valueOf(2))
                         .bygg()
         );
-        underlagsperioder = underlagsperioder().collect(toList());
-        assertThat(underlagsperioder).hasSize(3);
+        final List<Underlag> underlag = underlagFactory
+                .lagAvtaleunderlag(
+                        observasjonsperiode,
+                        new Uttrekksdato(dato("2016.01.01"))
+                )
+                .collect(toList());
+        assertThat(underlag).hasSize(1);
     }
 
     @Test
     public void skal_lage_underlag_selv_om_avtaler_feiler_pga_gap_i_perioder() {
-        List<Underlagsperiode> underlagsperioder = new ArrayList<>();
+        AvtaleId avtale1 = new AvtaleId(12345L);
+        AvtaleId avtale2 = new AvtaleId(12346L);
+        AvtaleId avtale3 = new AvtaleId(12347L);
         tidsperiodeFactory.addPerioder(
-                avtaleperiode(avtaleId(1L))
+                avtaleperiode(avtale1)
                         .fraOgMed(dato("2015.01.01"))
                         .tilOgMed(dato("2015.03.31"))
                         .arbeidsgiverId(ArbeidsgiverId.valueOf(1))
                         .bygg(),
-                avtaleperiode(avtaleId(2L))
+                avtaleperiode(avtale2)
                         .fraOgMed(dato("2015.01.01"))
                         .tilOgMed(dato("2015.01.31"))
                         .arbeidsgiverId(ArbeidsgiverId.valueOf(1))
                         .bygg(),
-                avtaleperiode(avtaleId(2L))
+                avtaleperiode(avtale2)
                         .fraOgMed(dato("2015.03.01"))
                         .tilOgMed(dato("2015.03.31"))
                         .arbeidsgiverId(ArbeidsgiverId.valueOf(2))
+                        .bygg(),
+                avtaleperiode(avtale3)
+                        .fraOgMed(dato("2015.01.01"))
+                        .tilOgMed(dato("2015.12.31"))
+                        .arbeidsgiverId(ArbeidsgiverId.valueOf(1))
                         .bygg()
-        );
-        underlagsperioder = underlagsperioder().collect(toList());
-        assertThat(underlagsperioder).hasSize(3);
+                );
+        final List<Underlag> underlag = underlagFactory
+                .lagAvtaleunderlag(
+                        observasjonsperiode,
+                        new Uttrekksdato(dato("2016.01.01"))
+                )
+                .collect(toList());
+        assertThat(underlag).hasSize(2);
+        assertThat(underlag.get(0).valgfriAnnotasjonFor(AvtaleId.class)).isEqualTo(of(avtale1));
+        assertThat(underlag.get(1).valgfriAnnotasjonFor(AvtaleId.class)).isEqualTo(of(avtale3));
     }
 
     @Test
