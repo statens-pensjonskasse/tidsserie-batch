@@ -8,8 +8,10 @@ import static java.util.Optional.of;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import no.spk.faktura.input.ArgumentSummary;
 import no.spk.faktura.input.InvalidParameterException;
@@ -102,6 +104,7 @@ public class ConsoleView implements View{
     @Override
     public void tidsseriegenereringFullfoert(Map<String, Integer> meldingar) {
         println("Tidsseriegenerering fullført.");
+        printMeldinger(meldingar);
     }
 
     @Override
@@ -130,5 +133,27 @@ public class ConsoleView implements View{
         System.out.println(melding);
     }
 
+    private void printMeldinger(Map<String, Integer> meldinger) {
+        Map<String, Integer> sorterteMeldinger = sortereMeldinger(meldinger);
 
+        System.out.println("Antall avtaler behandlet: " + sorterteMeldinger.get("avtaler"));
+
+        Integer antallFeil = sorterteMeldinger.entrySet()
+                .stream().filter(map -> map.getKey() == "errors")
+                .map(map -> map.getValue())
+                .reduce(0, Integer::sum);
+        System.out.println("Antall feil: " + antallFeil);
+
+        for(Map.Entry<String, Integer> entry : sorterteMeldinger.entrySet()) {
+            logger.ifPresent(l -> l.warn(entry.toString()));
+        }
+    }
+
+    private static Map<String, Integer> sortereMeldinger(Map<String, Integer> meldinger) {
+        Map<String, Integer> sortedMap = meldinger.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+                        (e1, e2) -> e2, LinkedHashMap::new));
+        return sortedMap;
+    }
 }

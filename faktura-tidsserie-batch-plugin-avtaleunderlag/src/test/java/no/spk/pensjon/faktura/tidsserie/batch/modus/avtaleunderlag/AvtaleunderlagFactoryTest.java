@@ -55,6 +55,7 @@ public class AvtaleunderlagFactoryTest {
     private PeriodeTypeTestFactory tidsperiodeFactory;
     private AvtaleunderlagFactory underlagFactory;
     private Observasjonsperiode observasjonsperiode;
+    private Context context = new Context();
 
     @Before
     public void setUp() throws Exception {
@@ -69,7 +70,8 @@ public class AvtaleunderlagFactoryTest {
         final List<Underlag> underlag = underlagFactory
                 .lagAvtaleunderlag(
                         new Observasjonsperiode(dato("2015.01.01"), tilOgMed),
-                        new Uttrekksdato(tilOgMed.plusDays(1))
+                        new Uttrekksdato(tilOgMed.plusDays(1)),
+                        context
                 )
                 .collect(toList());
         assertThat(underlag).isEmpty();
@@ -161,7 +163,7 @@ public class AvtaleunderlagFactoryTest {
         final Uttrekksdato uttrekksdato = new Uttrekksdato(dato("2016.01.01"));
 
         final List<Uttrekksdato> uttrekksdatoer = underlagFactory
-                .lagAvtaleunderlag(observasjonsperiode, uttrekksdato)
+                .lagAvtaleunderlag(observasjonsperiode, uttrekksdato, context)
                 .map(u -> u.annotasjonFor(Uttrekksdato.class))
                 .collect(toList());
 
@@ -176,7 +178,7 @@ public class AvtaleunderlagFactoryTest {
         Tidsserienummer tidsserienummer = Tidsserienummer.genererForDato(now());
 
         final List<Tidsserienummer> tidsserienummerFraUnderlag = underlagFactory
-                .lagAvtaleunderlag(observasjonsperiode, new Uttrekksdato(dato("2016.01.01")))
+                .lagAvtaleunderlag(observasjonsperiode, new Uttrekksdato(dato("2016.01.01")), context)
                 .map(u -> u.annotasjonFor(Tidsserienummer.class))
                 .collect(toList());
         assertThat(tidsserienummerFraUnderlag).containsExactly(tidsserienummer);
@@ -289,7 +291,8 @@ public class AvtaleunderlagFactoryTest {
         final List<Underlag> underlag = underlagFactory
                 .lagAvtaleunderlag(
                         observasjonsperiode,
-                        new Uttrekksdato(dato("2016.01.01"))
+                        new Uttrekksdato(dato("2016.01.01")),
+                        context
                 )
                 .collect(toList());
         assertThat(underlag).isNotEmpty();
@@ -317,7 +320,8 @@ public class AvtaleunderlagFactoryTest {
         final List<Underlag> underlag = underlagFactory
                 .lagAvtaleunderlag(
                         observasjonsperiode,
-                        new Uttrekksdato(dato("2016.01.01"))
+                        new Uttrekksdato(dato("2016.01.01")),
+                        context
                 )
                 .collect(toList());
         assertThat(underlag).hasSize(1);
@@ -353,7 +357,8 @@ public class AvtaleunderlagFactoryTest {
         final List<Underlag> underlag = underlagFactory
                 .lagAvtaleunderlag(
                         observasjonsperiode,
-                        new Uttrekksdato(dato("2016.01.01"))
+                        new Uttrekksdato(dato("2016.01.01")),
+                        context
                 )
                 .collect(toList());
         assertThat(underlag).hasSize(2);
@@ -384,7 +389,7 @@ public class AvtaleunderlagFactoryTest {
         );
 
         final Map<AvtaleId, List<Underlagsperiode>> avtaleunderlag = underlagFactory
-                .lagAvtaleunderlag(observasjonsperiode, new Uttrekksdato(dato("2016.01.01")))
+                .lagAvtaleunderlag(observasjonsperiode, new Uttrekksdato(dato("2016.01.01")), context)
                 .collect(toMap(
                         u -> u.annotasjonFor(AvtaleId.class),
                         u -> u.stream().collect(toList())
@@ -445,7 +450,7 @@ public class AvtaleunderlagFactoryTest {
 
     private Stream<Underlagsperiode> underlagsperioder(final Observasjonsperiode observasjonsperiode) {
         final List<Underlagsperiode> perioder = underlagFactory
-                .lagAvtaleunderlag(observasjonsperiode, new Uttrekksdato(dato("2016.01.01")))
+                .lagAvtaleunderlag(observasjonsperiode, new Uttrekksdato(dato("2016.01.01")), context)
                 .flatMap(Underlag::stream)
                 .collect(toList());
         assertThat(perioder.size())

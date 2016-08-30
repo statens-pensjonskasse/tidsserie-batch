@@ -7,32 +7,25 @@ import static no.spk.pensjon.faktura.tjenesteregister.Constants.SERVICE_RANKING;
 
 import java.nio.file.Path;
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.core.CSVFormat;
+import no.spk.pensjon.faktura.tidsserie.batch.core.GrunnlagsdataRepository;
 import no.spk.pensjon.faktura.tidsserie.batch.core.Katalog;
 import no.spk.pensjon.faktura.tidsserie.batch.core.ServiceLocator;
 import no.spk.pensjon.faktura.tidsserie.batch.core.StorageBackend;
 import no.spk.pensjon.faktura.tidsserie.batch.core.TidsperiodeFactory;
 import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieGenerertCallback;
 import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsseriemodus;
-import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Arbeidsgiverdataperiode;
-import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Arbeidsgiverperiode;
-import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleperiode;
-import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleprodukt;
-import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleversjon;
-import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.Regelsett;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Tidsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonspublikator;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
-import no.spk.pensjon.faktura.tidsserie.batch.core.GrunnlagsdataRepository;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.CSVInput;
 import no.spk.pensjon.faktura.tjenesteregister.Constants;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
@@ -55,7 +48,7 @@ public class Avtaleunderlagmodus implements Tidsseriemodus {
     private Optional<Underlagskriver> avtaleunderlagskriver = Optional.empty();
 
     /**
-     * Modusen heiter {@code live_tidsserie}.
+     * Modusen heiter {@code avtaleunderlag}.
      */
     @Override
     public String navn() {
@@ -112,28 +105,12 @@ public class Avtaleunderlagmodus implements Tidsseriemodus {
         final StorageBackend storage = locator.firstMandatory(StorageBackend.class);
         final Path grunnlagsdata = locator.firstMandatory(Path.class, Katalog.GRUNNLAGSDATA.egenskap());
         final TidsperiodeFactory tidsperieodeFactory = locator.firstMandatory(TidsperiodeFactory.class);
-
+        Context context = new Context();
         final AvtaleunderlagFactory factory = new AvtaleunderlagFactory(tidsperieodeFactory, regelsett());
-        final List<Underlag> underlag = factory.lagAvtaleunderlag(observasjonsperiode, uttrekksdato(grunnlagsdata)).collect(toList());
+        final List<Underlag> underlag = factory.lagAvtaleunderlag(observasjonsperiode, uttrekksdato(grunnlagsdata), context).collect(toList());
         lagreUnderlag(storage, underlag.stream());
 
-        return resultat(underlag);
-    }
-
-    private Map<String, Integer> resultat(final List<Underlag> underlag) {
-        Map<String, Integer> result = new HashMap<>();
-        result.put("avtaler", antallAvtaler(underlag));
-        return result;
-    }
-
-    private int antallAvtaler(List<Underlag> underlag) {
-        return (int) underlag
-                .stream()
-                .map(u -> u.valgfriAnnotasjonFor(AvtaleId.class))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .distinct()
-                .count();
+        return context.resultat();
     }
 
     private Uttrekksdato uttrekksdato(final Path grunnlagsdata) {

@@ -101,7 +101,6 @@ public class HazelcastBackend implements MedlemsdataBackend, TidsserieLivssyklus
         try {
 
             final Map<String, Integer> resultat = future.get();
-            log.info("Resultat av køyring: {}", resultat);
             return resultat;
         } catch (final InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);

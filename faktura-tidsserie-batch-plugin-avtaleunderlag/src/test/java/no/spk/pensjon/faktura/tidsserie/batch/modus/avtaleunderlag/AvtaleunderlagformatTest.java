@@ -1,7 +1,6 @@
 package no.spk.pensjon.faktura.tidsserie.batch.modus.avtaleunderlag;
 
 
-import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
@@ -60,6 +59,7 @@ public class AvtaleunderlagformatTest {
         final AvtaleId avtaleId = avtaleId(1L);
         final ArbeidsgiverId arbeidsgiverId = ArbeidsgiverId.valueOf(1234);
         final Orgnummer orgnummer = Orgnummer.valueOf("999888222");
+        Context context = new Context();
 
         final Optional<LocalDate> tilOgMed = of(dato("2015.01.31"));
         tidsperiodeFactory.addPerioder(
@@ -101,7 +101,8 @@ public class AvtaleunderlagformatTest {
 
         final List<Underlag> underlag = factory.lagAvtaleunderlag(
                 new Observasjonsperiode(dato("2015.01.01"), dato("2015.12.31")),
-                new Uttrekksdato(dato("2016.01.01"))
+                new Uttrekksdato(dato("2016.01.01")),
+                context
         ).collect(toList());
 
         final String result = underlag.stream()

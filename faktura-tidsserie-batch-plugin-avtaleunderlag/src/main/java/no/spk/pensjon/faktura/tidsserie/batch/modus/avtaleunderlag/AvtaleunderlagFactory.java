@@ -34,6 +34,9 @@ import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.UnderlagFactory;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Lager {@link Underlag} med {@link Underlagsperiode}'er basert på grunnlagsdata hentet fra {@link TidsperiodeFactory}.
  *
@@ -43,6 +46,8 @@ class AvtaleunderlagFactory {
     private final TidsperiodeFactory grunnlagsdata;
     private final AvtaleFactory avtaleFactory;
     private final Regelsett regelsett;
+
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     public AvtaleunderlagFactory(TidsperiodeFactory tidsperiodeFactory, Regelsett regelsett) {
         this.grunnlagsdata = tidsperiodeFactory;
@@ -57,7 +62,7 @@ class AvtaleunderlagFactory {
      * @param uttrekksdato dato for når grunnlagsdata ble hentet fra Kasper
      * @return en strøm med underlagene basert på grunnlagsdata
      */
-    public Stream<Underlag> lagAvtaleunderlag(Observasjonsperiode observasjonsperiode, Uttrekksdato uttrekksdato) {
+    public Stream<Underlag> lagAvtaleunderlag(Observasjonsperiode observasjonsperiode, Uttrekksdato uttrekksdato, Context context) {
         Tidsserienummer tidsserienummer = Tidsserienummer.genererForDato(now());
 
         final List<? extends Tidsperiode<?>> grunnlag = grunnlag();
@@ -66,11 +71,12 @@ class AvtaleunderlagFactory {
         );
         return avtaler(grunnlag)
                 .flatMap(avtale -> {
-                    return lagUnderlag(observasjonsperiode, uttrekksdato, tidsserienummer, avtalerepo, avtale);
+                    return lagUnderlag(observasjonsperiode, uttrekksdato, tidsserienummer, avtalerepo, avtale, context);
                 });
     }
 
-    private Stream<? extends Underlag> lagUnderlag(Observasjonsperiode observasjonsperiode, Uttrekksdato uttrekksdato, Tidsserienummer tidsserienummer, AvtaleinformasjonRepository avtalerepo, AvtaleId avtale) {
+    private Stream<? extends Underlag> lagUnderlag(Observasjonsperiode observasjonsperiode, Uttrekksdato uttrekksdato, Tidsserienummer tidsserienummer, AvtaleinformasjonRepository avtalerepo, AvtaleId avtale, Context context) {
+        context.emit("avtaler", 1);
         try {
             Underlag underlag = new UnderlagFactory(
                     observasjonsperiode
@@ -104,8 +110,17 @@ class AvtaleunderlagFactory {
                         underlag);
             }
         } catch (RuntimeException | Error e) {
+            log.warn("Generering av avtaleunderlag feilet for avtale " + avtale.id());
+            log.info("Feilkilde:", e);
+            emitError(context, e);
         }
         return Stream.empty();
+    }
+
+    private void emitError(Context context, Throwable t) {
+        context.emit("errors", 1);
+        context.emit("errors_type_" + t.getClass().getSimpleName(), 1);
+        context.emit("errors_message_" + (t.getMessage() != null ? t.getMessage() : "null"), 1);
     }
 
     private List<AbstractTidsperiode<? extends AbstractTidsperiode<?>>> grunnlag() {
