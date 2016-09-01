@@ -18,10 +18,10 @@ public class ContextTest {
         context.emit("error 1", 1);
         context.emit("error 1", 1);
         context.emit("error 2", 1);
-        assertThat(context.resultat().containsKey("error 1")).isTrue();
-        assertThat(context.resultat().containsKey("error 2")).isTrue();
-        assertThat(context.resultat().get("error 1")).isEqualTo(2);
-        assertThat(context.resultat().get("error 2")).isEqualTo(1);
+        assertThat(context.resultat()).containsKey("error 1");
+        assertThat(context.resultat()).containsKey("error 2");
+        assertThat(context.resultat()).containsEntry("error 1", 2);
+        assertThat(context.resultat()).containsEntry("error 2", 1);
     }
 
     @Test

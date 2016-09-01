@@ -102,9 +102,9 @@ public class ConsoleView implements View{
     }
 
     @Override
-    public void tidsseriegenereringFullfoert(Map<String, Integer> meldingar) {
+    public void tidsseriegenereringFullfoert(Map<String, Integer> meldingar, String modusnavn) {
         println("Tidsseriegenerering fullført.");
-        printMeldinger(meldingar);
+        printMeldinger(meldingar, requireNonNull(modusnavn, "modusnavnet er påkrevd, men var null"));
     }
 
     @Override
@@ -133,13 +133,13 @@ public class ConsoleView implements View{
         System.out.println(melding);
     }
 
-    private void printMeldinger(Map<String, Integer> meldinger) {
+    private void printMeldinger(Map<String, Integer> meldinger, String modusnavn) {
         Map<String, Integer> sorterteMeldinger = sortereMeldinger(meldinger);
-
-        System.out.println("Antall avtaler behandlet: " + sorterteMeldinger.get("avtaler"));
+        System.out.println(lageModusmelding(sorterteMeldinger, modusnavn));
 
         Integer antallFeil = sorterteMeldinger.entrySet()
-                .stream().filter(map -> map.getKey() == "errors")
+                .stream()
+                .filter(map -> map.getKey() == "errors")
                 .map(map -> map.getValue())
                 .reduce(0, Integer::sum);
         System.out.println("Antall feil: " + antallFeil);
@@ -155,5 +155,11 @@ public class ConsoleView implements View{
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
                         (e1, e2) -> e2, LinkedHashMap::new));
         return sortedMap;
+    }
+
+    private String lageModusmelding(Map<String, Integer> meldinger, String modusnavn) {
+        String avtaleunderlag = "Antall avtaler behandlet: " + meldinger.get("avtaler");
+        String andremoduser = "Antall medlemmer behandlet: " + meldinger.get("medlem");
+        return modusnavn.equals("avtaleunderlag") ? avtaleunderlag : andremoduser;
     }
 }

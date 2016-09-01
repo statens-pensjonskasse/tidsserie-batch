@@ -9,6 +9,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -142,7 +143,9 @@ public class ApplicationControllerTest {
 
     @Test
     public void skal_delegere_tidsserie_generering_til_modus() {
-        final Tidsseriemodus modus = mock(Tidsseriemodus.class);
+        final Tidsseriemodus modus = mock(Tidsseriemodus.class, "modus");
+        when(modus.navn()).thenReturn("modus");
+
         controller.lagTidsserie(registry.registry(), modus, new Observasjonsperiode(dato("1970.01.01"), dato("1980.12.31")));
 
         verify(modus).lagTidsserie(registry.registry());
