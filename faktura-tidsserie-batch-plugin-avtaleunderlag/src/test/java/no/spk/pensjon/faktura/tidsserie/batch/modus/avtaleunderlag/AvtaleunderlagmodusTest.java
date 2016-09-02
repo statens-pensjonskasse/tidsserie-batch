@@ -145,6 +145,26 @@ public class AvtaleunderlagmodusTest {
                 .isInstanceOf(AvtaleunderlagAvslutter.class);
     }
 
+    @Test
+    public void skal_lage_error_meldinger() {
+        PeriodeTypeTestFactory tidsperiodeFactory = new PeriodeTypeTestFactory();
+        services.registrer(TidsperiodeFactory.class, tidsperiodeFactory);
+
+        Underlagskriver skriver = mock(Underlagskriver.class);
+        modus.avtaleunderlagsskriver(skriver);
+
+        tidsperiodeFactory.addPerioder(
+                enAvtalepriode(AvtaleId.avtaleId(1L)),
+                enAvtalepriode(AvtaleId.avtaleId(1L))
+        );
+        final Map<String, Integer> resultat = modus.lagTidsserie(services.registry());
+
+        assertThat(resultat).containsKey("errors_message_Underlagsperioda er kobla til meir enn ei tidsperiode av type Avtaleperiode, vi forventa berre 1 kobling av denne typen.\n" +
+                "Koblingar:\n" +
+                "- Avtale[2015-01-01->,avtale 1,arbeidsgiver 2]\n" +
+                "- Avtale[2015-01-01->,avtale 1,arbeidsgiver 2]\n");
+    }
+
     private Avtaleperiode enAvtalepriode(AvtaleId avtaleId) {
         return avtaleperiode(avtaleId)
                 .fraOgMed(dato("2015.01.01"))

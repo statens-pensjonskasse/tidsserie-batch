@@ -151,7 +151,7 @@ public class ApplicationController {
     public void lagTidsserie(ServiceRegistry registry, Tidsseriemodus modus, final Observasjonsperiode periode) {
         view.startarTidsseriegenerering(periode.fraOgMed(), periode.tilOgMed().get());
         Map<String, Integer> meldingar = modus.lagTidsserie(registry);
-        view.tidsseriegenereringFullfoert(meldingar);
+        view.tidsseriegenereringFullfoert(meldingar, modus.navn());
     }
 
     public void opprettMetadata(MetaDataWriter metaDataWriter, ProgramArguments arguments, BatchId batchId, Duration duration) {
