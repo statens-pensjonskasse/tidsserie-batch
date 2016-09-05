@@ -25,6 +25,7 @@ public class UnderlagskriverTest {
     public void skal_skrive_underlag_til_storage() throws Exception {
         PeriodeTypeTestFactory tidsperiodeFactory = new PeriodeTypeTestFactory();
         AvtaleunderlagFactory factory = new AvtaleunderlagFactory(tidsperiodeFactory, new AvtaleunderlagRegelsett());
+        Context context = new Context();
 
         final AvtaleId avtaleId = avtaleId(1L);
         tidsperiodeFactory.addPerioder(
@@ -37,7 +38,8 @@ public class UnderlagskriverTest {
 
         final Stream<Underlag> underlag = factory.lagAvtaleunderlag(
                 new Observasjonsperiode(dato("2015.01.01"), dato("2015.12.31")),
-                new Uttrekksdato(dato("2016.01.01"))
+                new Uttrekksdato(dato("2016.01.01")),
+                context
         );
 
         final Avtaleunderlagformat avtaleformat = new Avtaleunderlagformat();

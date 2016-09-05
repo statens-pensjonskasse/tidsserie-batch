@@ -59,7 +59,7 @@ public interface View {
 
     void informerOmKorrupteGrunnlagsdata(GrunnlagsdataException e);
 
-    void tidsseriegenereringFullfoert(Map<String, Integer> meldingar);
+    void tidsseriegenereringFullfoert(Map<String, Integer> meldingar, String modusnavn);
 
     void informerOmGrunnlagsdataValidering();
 

@@ -11,15 +11,14 @@ import static no.spk.pensjon.faktura.tidsserie.batch.modus.avtaleunderlag.Option
 import static no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleperiode.avtaleperiode;
 import static no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleversjon.avtaleversjon;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId.avtaleId;
+import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Kroner.kroner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.time.Year;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsserienummer;
@@ -39,7 +38,6 @@ import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Satser;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.AntallDagarRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.Regelperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
-import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Maaned;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
@@ -57,6 +55,7 @@ public class AvtaleunderlagFactoryTest {
     private PeriodeTypeTestFactory tidsperiodeFactory;
     private AvtaleunderlagFactory underlagFactory;
     private Observasjonsperiode observasjonsperiode;
+    private Context context = new Context();
 
     @Before
     public void setUp() throws Exception {
@@ -71,7 +70,8 @@ public class AvtaleunderlagFactoryTest {
         final List<Underlag> underlag = underlagFactory
                 .lagAvtaleunderlag(
                         new Observasjonsperiode(dato("2015.01.01"), tilOgMed),
-                        new Uttrekksdato(tilOgMed.plusDays(1))
+                        new Uttrekksdato(tilOgMed.plusDays(1)),
+                        context
                 )
                 .collect(toList());
         assertThat(underlag).isEmpty();
@@ -163,7 +163,7 @@ public class AvtaleunderlagFactoryTest {
         final Uttrekksdato uttrekksdato = new Uttrekksdato(dato("2016.01.01"));
 
         final List<Uttrekksdato> uttrekksdatoer = underlagFactory
-                .lagAvtaleunderlag(observasjonsperiode, uttrekksdato)
+                .lagAvtaleunderlag(observasjonsperiode, uttrekksdato, context)
                 .map(u -> u.annotasjonFor(Uttrekksdato.class))
                 .collect(toList());
 
@@ -178,7 +178,7 @@ public class AvtaleunderlagFactoryTest {
         Tidsserienummer tidsserienummer = Tidsserienummer.genererForDato(now());
 
         final List<Tidsserienummer> tidsserienummerFraUnderlag = underlagFactory
-                .lagAvtaleunderlag(observasjonsperiode, new Uttrekksdato(dato("2016.01.01")))
+                .lagAvtaleunderlag(observasjonsperiode, new Uttrekksdato(dato("2016.01.01")), context)
                 .map(u -> u.annotasjonFor(Tidsserienummer.class))
                 .collect(toList());
         assertThat(tidsserienummerFraUnderlag).containsExactly(tidsserienummer);
@@ -267,6 +267,104 @@ public class AvtaleunderlagFactoryTest {
         assertPremiestatus(underlagsperioder.get(2)).contains(Premiestatus.AAO_01);
     }
 
+    /*  Verifiserer at avtaleunderlage genereres selv om en eller flere avtaleproduktperioder ikke har
+        andre overlappande avtaleversjoner eller avtaleperioder */
+    @Test
+    public void skal_lage_underlag_selv_om_avtaleprodukter_ikke_har_andre_overlappende_perioder() throws Exception {
+        final AvtaleId avtaleId = avtaleId(1L);
+        tidsperiodeFactory.addPerioder(
+                new Avtaleprodukt(
+                        dato("2015.12.01"),
+                        empty(),
+                        avtaleId(avtaleId.id()),
+                        Produkt.GRU,
+                        Produktinfo.GRU_35,
+                        new Satser<>(kroner(2), kroner(20), kroner(200))),
+                new Avtaleprodukt(
+                        dato("2015.12.01"),
+                        empty(),
+                        avtaleId(avtaleId.id()),
+                        Produkt.YSK,
+                        Produktinfo.YSK_79,
+                        new Satser<>(kroner(0), kroner(0), kroner(0)))
+        );
+        final List<Underlag> underlag = underlagFactory
+                .lagAvtaleunderlag(
+                        observasjonsperiode,
+                        new Uttrekksdato(dato("2016.01.01")),
+                        context
+                )
+                .collect(toList());
+        assertThat(underlag).isNotEmpty();
+    }
+
+    @Test
+    public void skal_lage_underlag_selv_om_avtaler_feiler_pga_overlappende_perioder() {
+        tidsperiodeFactory.addPerioder(
+                avtaleperiode(avtaleId(1L))
+                        .fraOgMed(dato("2015.01.01"))
+                        .tilOgMed(dato("2015.03.31"))
+                        .arbeidsgiverId(ArbeidsgiverId.valueOf(1))
+                        .bygg(),
+                avtaleperiode(avtaleId(2L))
+                        .fraOgMed(dato("2015.01.01"))
+                        .tilOgMed(dato("2015.03.31"))
+                        .arbeidsgiverId(ArbeidsgiverId.valueOf(2))
+                        .bygg(),
+                avtaleperiode(avtaleId(2L))
+                        .fraOgMed(dato("2015.01.01"))
+                        .tilOgMed(dato("2015.01.31"))
+                        .arbeidsgiverId(ArbeidsgiverId.valueOf(2))
+                        .bygg()
+        );
+        final List<Underlag> underlag = underlagFactory
+                .lagAvtaleunderlag(
+                        observasjonsperiode,
+                        new Uttrekksdato(dato("2016.01.01")),
+                        context
+                )
+                .collect(toList());
+        assertThat(underlag).hasSize(1);
+    }
+
+    @Test
+    public void skal_lage_underlag_selv_om_avtaler_feiler_pga_gap_i_perioder() {
+        AvtaleId avtale1 = new AvtaleId(12345L);
+        AvtaleId avtale2 = new AvtaleId(12346L);
+        AvtaleId avtale3 = new AvtaleId(12347L);
+        tidsperiodeFactory.addPerioder(
+                avtaleperiode(avtale1)
+                        .fraOgMed(dato("2015.01.01"))
+                        .tilOgMed(dato("2015.03.31"))
+                        .arbeidsgiverId(ArbeidsgiverId.valueOf(1))
+                        .bygg(),
+                avtaleperiode(avtale2)
+                        .fraOgMed(dato("2015.01.01"))
+                        .tilOgMed(dato("2015.01.31"))
+                        .arbeidsgiverId(ArbeidsgiverId.valueOf(1))
+                        .bygg(),
+                avtaleperiode(avtale2)
+                        .fraOgMed(dato("2015.03.01"))
+                        .tilOgMed(dato("2015.03.31"))
+                        .arbeidsgiverId(ArbeidsgiverId.valueOf(2))
+                        .bygg(),
+                avtaleperiode(avtale3)
+                        .fraOgMed(dato("2015.01.01"))
+                        .tilOgMed(dato("2015.12.31"))
+                        .arbeidsgiverId(ArbeidsgiverId.valueOf(1))
+                        .bygg()
+                );
+        final List<Underlag> underlag = underlagFactory
+                .lagAvtaleunderlag(
+                        observasjonsperiode,
+                        new Uttrekksdato(dato("2016.01.01")),
+                        context
+                )
+                .collect(toList());
+        assertThat(underlag).hasSize(2);
+        assertThat(underlag.get(0).valgfriAnnotasjonFor(AvtaleId.class)).isEqualTo(of(avtale1));
+        assertThat(underlag.get(1).valgfriAnnotasjonFor(AvtaleId.class)).isEqualTo(of(avtale3));
+    }
 
     @Test
     public void skal_hente_orgnummer_fra_arbeidsgiverperiode_via_arbeidsgiverid_i_avtaleperiode() throws Exception {
@@ -291,7 +389,7 @@ public class AvtaleunderlagFactoryTest {
         );
 
         final Map<AvtaleId, List<Underlagsperiode>> avtaleunderlag = underlagFactory
-                .lagAvtaleunderlag(observasjonsperiode, new Uttrekksdato(dato("2016.01.01")))
+                .lagAvtaleunderlag(observasjonsperiode, new Uttrekksdato(dato("2016.01.01")), context)
                 .collect(toMap(
                         u -> u.annotasjonFor(AvtaleId.class),
                         u -> u.stream().collect(toList())
@@ -352,7 +450,7 @@ public class AvtaleunderlagFactoryTest {
 
     private Stream<Underlagsperiode> underlagsperioder(final Observasjonsperiode observasjonsperiode) {
         final List<Underlagsperiode> perioder = underlagFactory
-                .lagAvtaleunderlag(observasjonsperiode, new Uttrekksdato(dato("2016.01.01")))
+                .lagAvtaleunderlag(observasjonsperiode, new Uttrekksdato(dato("2016.01.01")), context)
                 .flatMap(Underlag::stream)
                 .collect(toList());
         assertThat(perioder.size())
