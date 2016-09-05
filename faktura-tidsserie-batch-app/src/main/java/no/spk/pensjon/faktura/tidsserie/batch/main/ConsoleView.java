@@ -145,7 +145,7 @@ public class ConsoleView implements View{
         System.out.println("Antall feil: " + antallFeil);
 
         for(Map.Entry<String, Integer> entry : sorterteMeldinger.entrySet()) {
-            logger.ifPresent(l -> l.warn(entry.toString()));
+            logger.ifPresent(l -> l.info(entry.toString()));
         }
     }
 
