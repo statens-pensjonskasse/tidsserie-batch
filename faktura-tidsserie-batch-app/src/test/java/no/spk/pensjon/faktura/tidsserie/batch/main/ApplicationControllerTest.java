@@ -197,7 +197,7 @@ public class ApplicationControllerTest {
     @Test
     public void skal_vise_riktig_antall_feil() {
         Map<String, Integer> meldinger = new HashMap<>();
-        meldinger.put("errors", 12);
+        meldinger.put(new String("errors"), 12);
         lagerTidsserien("stillingsforholdunderlag", meldinger);
         console.assertStandardOutput().contains("Antall feil: 12");
     }
