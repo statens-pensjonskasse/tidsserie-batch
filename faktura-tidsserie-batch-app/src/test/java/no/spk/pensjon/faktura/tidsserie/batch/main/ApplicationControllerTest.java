@@ -14,6 +14,8 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 import no.spk.faktura.input.BatchId;
 import no.spk.faktura.input.InvalidParameterException;
@@ -26,6 +28,7 @@ import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.StandardOutputAndError;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 import no.spk.pensjon.faktura.tjenesteregister.Constants;
+import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -189,6 +192,42 @@ public class ApplicationControllerTest {
         registry.registrer(LastOppGrunnlagsdataKommando.class, uploader);
 
         controller.lastOpp();
+    }
+
+    @Test
+    public void skal_vise_riktig_antall_feil() {
+        Map<String, Integer> meldinger = new HashMap<>();
+        meldinger.put(new String("errors"), 12);
+        lagerTidsserien("stillingsforholdunderlag", meldinger);
+        console.assertStandardOutput().contains("Antall feil: 12");
+    }
+
+    @Test
+    public void skal_vise_riktig_antall_behandlede_avtaler() {
+        Map<String, Integer> meldinger = new HashMap<>();
+        meldinger.put("avtaler", 100);
+        lagerTidsserien("avtaleunderlag", meldinger);
+        console.assertStandardOutput().contains("Antall avtaler behandlet: 100");
+    }
+
+    @Test
+    public void skal_vise_riktig_antall_behandlede_medlemmer() {
+        Map<String, Integer> meldinger = new HashMap<>();
+        meldinger.put("medlem", 1000);
+        lagerTidsserien("live_tidsserie", meldinger);
+        console.assertStandardOutput().contains("Antall medlemmer behandlet: 1000");
+    }
+
+    private void lagerTidsserien(String modusnavn, Map<String, Integer> meldinger) {
+        final Tidsseriemodus modus = mock(Tidsseriemodus.class, "modus");
+        final ServiceRegistry register = this.registry.registry();
+
+        when(modus.navn()).thenReturn(modusnavn);
+        when(modus.lagTidsserie(register)).thenReturn(meldinger);
+
+        controller.lagTidsserie(register, modus, new Observasjonsperiode(dato("1970.01.01"), dato("1980.12.31")));
+        verify(modus).lagTidsserie(register);
+
     }
 
     private void verifiserInformasjonsmelding(String expectedMessage) {

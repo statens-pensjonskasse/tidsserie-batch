@@ -139,7 +139,7 @@ public class ConsoleView implements View{
 
         Integer antallFeil = sorterteMeldinger.entrySet()
                 .stream()
-                .filter(map -> map.getKey() == "errors")
+                .filter(map ->  "errors".equals(map.getKey()))
                 .map(map -> map.getValue())
                 .reduce(0, Integer::sum);
         System.out.println("Antall feil: " + antallFeil);
