@@ -10,7 +10,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.reglar.AarsfaktorRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.AntallDagarRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.Regelperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.Regelsett;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.BeregningsRegel;
+import no.spk.felles.tidsperiode.underlag.BeregningsRegel;
 
 /**
  * Aktuelle regler som skal benyttes av {@link Avtaleunderlagformat}

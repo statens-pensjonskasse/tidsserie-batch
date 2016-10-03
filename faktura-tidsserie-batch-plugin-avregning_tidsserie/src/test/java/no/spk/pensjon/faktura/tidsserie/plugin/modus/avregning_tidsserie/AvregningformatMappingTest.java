@@ -110,7 +110,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.Fakture
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.FakturerbareDagsverkYSKRegel;
 import no.spk.felles.tidsperiode.Aarstall;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonsdato;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Beregningsperiode;
+import no.spk.felles.tidsperiode.underlag.Beregningsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.UnderlagsperiodeBuilder;
 

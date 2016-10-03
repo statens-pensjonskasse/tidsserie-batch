@@ -3,7 +3,7 @@ package no.spk.pensjon.faktura.tidsserie.batch.core;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.BeregningsRegel;
+import no.spk.felles.tidsperiode.underlag.BeregningsRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
 

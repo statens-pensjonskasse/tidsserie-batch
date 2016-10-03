@@ -25,7 +25,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.Fakture
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.FakturerbareDagsverkGRURegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.FakturerbareDagsverkYSKRegel;
 import no.spk.felles.tidsperiode.AntallDagar;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Beregningsperiode;
+import no.spk.felles.tidsperiode.underlag.Beregningsperiode;
 import no.spk.felles.tidsperiode.underlag.PaakrevdAnnotasjonManglarException;
 
 /**
