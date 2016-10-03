@@ -6,6 +6,7 @@ import static java.util.stream.Collectors.toList;
 
 import java.time.Month;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -26,6 +27,7 @@ import no.spk.felles.tidsperiode.Aarstall;
 import no.spk.felles.tidsperiode.AbstractTidsperiode;
 import no.spk.felles.tidsperiode.Maaned;
 import no.spk.felles.tidsperiode.Tidsperiode;
+import no.spk.pensjon.faktura.tidsserie.domain.reglar.UUIDRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.AvtaleFactory;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.AvtaleinformasjonRepository;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.StandardAvtaleInformasjonRepository;
@@ -157,6 +159,8 @@ class AvtaleunderlagFactory {
 
         p.koblingAvType(Avtaleversjon.class).ifPresent(av -> av.annoter(p));
         p.koblingarAvType(Regelperiode.class).forEach(r -> r.annoter(p));
+
+        p.annoter(UUID.class, p.beregn(UUIDRegel.class));
 
         annoterArbeidsgiverdata(p);
     }

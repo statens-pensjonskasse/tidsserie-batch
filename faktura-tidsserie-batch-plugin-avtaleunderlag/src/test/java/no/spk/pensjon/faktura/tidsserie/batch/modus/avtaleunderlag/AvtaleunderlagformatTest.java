@@ -115,7 +115,7 @@ public class AvtaleunderlagformatTest {
                         .collect(joining("\n")))
                 .collect(joining());
 
-        final UUID uuid = underlag.stream().flatMap(Underlag::stream).map(Underlagsperiode::id).findAny().get();
+        final UUID uuid = underlag.stream().flatMap(Underlag::stream).map(up -> up.annotasjonFor(UUID.class)).findAny().get();
         final Tidsserienummer tidsserienummer = underlag.stream().map(p -> p.annotasjonFor(Tidsserienummer.class)).findAny().get();
 
         assertThat(result).isEqualTo(
