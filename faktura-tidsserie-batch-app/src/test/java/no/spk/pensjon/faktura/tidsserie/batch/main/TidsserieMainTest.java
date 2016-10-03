@@ -17,7 +17,7 @@ import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieLivssyklus;
 import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieLivssyklusException;
 import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.felles.tidsperiode.Aarstall;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
+import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
 
 import org.junit.Before;
 import org.junit.Rule;

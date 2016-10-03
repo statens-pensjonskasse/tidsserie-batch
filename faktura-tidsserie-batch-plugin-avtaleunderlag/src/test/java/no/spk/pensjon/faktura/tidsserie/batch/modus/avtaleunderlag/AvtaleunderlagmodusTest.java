@@ -27,7 +27,7 @@ import no.spk.pensjon.faktura.tidsserie.batch.modus.avtaleunderlag.Avtaleunderla
 import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.ArbeidsgiverId;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
+import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
 import no.spk.pensjon.faktura.tjenesteregister.Constants;
 
 import org.junit.Before;

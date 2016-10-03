@@ -26,7 +26,7 @@ import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.StandardOutputAndError;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
+import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
 import no.spk.pensjon.faktura.tjenesteregister.Constants;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 

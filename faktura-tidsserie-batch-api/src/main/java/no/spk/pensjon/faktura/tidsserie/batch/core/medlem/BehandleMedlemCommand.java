@@ -11,7 +11,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medlemsdata;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.Regelsett;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Feilhandtering;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
+import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
 
 public class BehandleMedlemCommand implements GenererTidsserieCommand {
     private final TidsserieFactory grunnlagsdata;

@@ -26,7 +26,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.Fakture
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.FakturerbareDagsverkYSKRegel;
 import no.spk.felles.tidsperiode.AntallDagar;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Beregningsperiode;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.PaakrevdAnnotasjonManglarException;
+import no.spk.felles.tidsperiode.underlag.PaakrevdAnnotasjonManglarException;
 
 /**
  * {@link FalskeReglar} implementerer falske versjonar av alle reglane som ikkje er spesifikke for avregning.

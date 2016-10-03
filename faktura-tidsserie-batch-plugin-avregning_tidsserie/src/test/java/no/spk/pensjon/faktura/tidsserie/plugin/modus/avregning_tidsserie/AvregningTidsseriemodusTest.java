@@ -45,7 +45,7 @@ import no.spk.felles.tidsperiode.GenerellTidsperiode;
 import no.spk.felles.tidsperiode.Tidsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonsdato;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonspublikator;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Annoterbar;
+import no.spk.felles.tidsperiode.underlag.Annoterbar;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
 import no.spk.pensjon.faktura.tidsserie.batch.core.GrunnlagsdataRepository;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.AvtalekoblingOversetter;

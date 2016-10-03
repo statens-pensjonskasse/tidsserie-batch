@@ -5,7 +5,7 @@ import java.io.File;
 import no.spk.pensjon.faktura.tidsserie.batch.main.ApplicationController;
 import no.spk.pensjon.faktura.tidsserie.batch.main.TidsserieMain;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.Modus;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
+import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**
