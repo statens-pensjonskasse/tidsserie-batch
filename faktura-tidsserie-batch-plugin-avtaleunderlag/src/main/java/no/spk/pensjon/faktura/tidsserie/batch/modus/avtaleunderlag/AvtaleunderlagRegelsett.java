@@ -8,8 +8,8 @@ import java.util.stream.Stream;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.AarsLengdeRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.AarsfaktorRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.AntallDagarRegel;
-import no.spk.pensjon.faktura.tidsserie.domain.reglar.Regelperiode;
-import no.spk.pensjon.faktura.tidsserie.domain.reglar.Regelsett;
+import no.spk.felles.tidsperiode.underlag.reglar.Regelperiode;
+import no.spk.felles.tidsperiode.underlag.reglar.Regelsett;
 import no.spk.felles.tidsperiode.underlag.BeregningsRegel;
 
 /**

@@ -28,7 +28,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.avregning.Avregningsavtaleperiode
 import no.spk.pensjon.faktura.tidsserie.domain.avregning.Avregningsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medlemsdata;
-import no.spk.pensjon.faktura.tidsserie.domain.reglar.Regelsett;
+import no.spk.felles.tidsperiode.underlag.reglar.Regelsett;
 import no.spk.felles.tidsperiode.Tidsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonsdato;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonspublikator;
