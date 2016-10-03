@@ -1,6 +1,6 @@
 package no.spk.pensjon.faktura.tidsserie.batch.modus.live_tidsserie;
 
-import static java.util.Arrays.asList;
+import static java.util.Arrays.stream;
 import static java.util.Optional.of;
 import static no.spk.pensjon.faktura.tidsserie.Datoar.dato;
 import static no.spk.pensjon.faktura.tidsserie.batch.core.Tidsserienummer.genererForDato;
@@ -146,7 +146,7 @@ public class DatavarehusformatMappingTest {
                 instance(kolonne(60), Avtale.class, einPremiesats(eitYSKprodukt().satser(new Satser<>(Kroner.ZERO, Kroner.ZERO, kroner(-45)))), forventa("-45")),
                 instance(kolonne(61), Avtale.class, einPremiesats(eitYSKprodukt().produktinfo(new Produktinfo(70))), forventa("70")),
                 instance(kolonne(62), Avtale.class, einAvtale(eitYSKprodukt()).risikoklasse(of(new Risikoklasse("1,5"))).bygg(), forventa("1,5")),
-                instance(kolonne(63), UUID.class, null, matches("^\\w{8}-\\w+{4}-\\w+{4}-\\w{4}-\\w{12}$")),
+                instance(kolonne(63), UUID.class, UUID.fromString("12345678-FEDC-BA09-8765-432101234567"), forventa("12345678-fedc-ba09-8765-432101234567")),
                 instance(kolonne(64), Feilantall.class, null, forventa("0")),
                 instance(kolonne(65), ArbeidsgiverId.class, new ArbeidsgiverId(100_000L), forventa("100000")),
                 instance(kolonne(66), Tidsserienummer.class, genererForDato(dato("2016.01.07")), forventa("20160107")),
@@ -287,6 +287,7 @@ public class DatavarehusformatMappingTest {
                         throw new UnsupportedOperationException();
                     }
                 })
+                .med(UUID.randomUUID())
                 ;
     }
 
@@ -298,14 +299,10 @@ public class DatavarehusformatMappingTest {
         return new Forventning(v -> v.equals(verdi)).as("is equal to " + verdi);
     }
 
-    private static Forventning matches(final String pattern) {
-        return new Forventning(v -> v instanceof String && ((String) v).matches(pattern)).as("regular expression " + pattern);
-    }
-
     private static Object[] instance(final Object... args) {
         if (args.length == 4) {
             return Stream.concat(
-                    asList(args).stream(),
+                    stream(args),
                     Stream.of(eiPeriode())
             ).toArray();
         }
