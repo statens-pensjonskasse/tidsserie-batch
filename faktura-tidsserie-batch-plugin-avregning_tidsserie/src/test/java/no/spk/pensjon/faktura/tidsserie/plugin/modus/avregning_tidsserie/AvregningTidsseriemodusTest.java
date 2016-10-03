@@ -40,7 +40,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Avtalekoblingsperiode
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medlemsdata;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.MedlemsdataOversetter;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.Regelperiode;
-import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
+import no.spk.felles.tidsperiode.Aarstall;
 import no.spk.felles.tidsperiode.GenerellTidsperiode;
 import no.spk.felles.tidsperiode.Tidsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonsdato;

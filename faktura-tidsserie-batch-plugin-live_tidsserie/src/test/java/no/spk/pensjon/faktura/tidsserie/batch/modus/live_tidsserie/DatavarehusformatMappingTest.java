@@ -32,7 +32,6 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsserienummer;
-import no.spk.pensjon.faktura.tidsserie.domain.avregning.AvregningsRegelsett;
 import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Termintype;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Aksjonskode;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AktiveStillingar;
@@ -66,7 +65,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Stillingskode;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Stillingsprosent;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Variabletillegg;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.PrognoseRegelsett;
-import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
+import no.spk.felles.tidsperiode.Aarstall;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonsdato;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;

@@ -16,7 +16,7 @@ import no.spk.pensjon.faktura.tidsserie.batch.main.GrunnlagsdataDirectoryValidat
 import no.spk.pensjon.faktura.tidsserie.batch.main.View;
 import no.spk.pensjon.faktura.tidsserie.batch.core.BatchIdConstants;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.Modus;
-import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
+import no.spk.felles.tidsperiode.Aarstall;
 import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 import no.spk.pensjon.faktura.tjenesteregister.Constants;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;

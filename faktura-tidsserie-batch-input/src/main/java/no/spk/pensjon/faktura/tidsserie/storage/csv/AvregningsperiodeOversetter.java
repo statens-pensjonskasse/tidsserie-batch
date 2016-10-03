@@ -4,7 +4,7 @@ import static no.spk.pensjon.faktura.tidsserie.domain.avregning.Avregningsperiod
 
 import no.spk.pensjon.faktura.tidsserie.domain.avregning.Avregningsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.avregning.Avregningsversjon;
-import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
+import no.spk.felles.tidsperiode.Aarstall;
 
 /**
  * Mapper for konvertering av rader fra CSV-filer for avregningsperioder til instanser av

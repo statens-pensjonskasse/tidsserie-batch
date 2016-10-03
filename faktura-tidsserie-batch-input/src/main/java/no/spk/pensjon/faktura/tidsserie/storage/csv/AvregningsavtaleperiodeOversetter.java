@@ -2,12 +2,10 @@ package no.spk.pensjon.faktura.tidsserie.storage.csv;
 
 import static no.spk.pensjon.faktura.tidsserie.domain.avregning.Avregningsavtaleperiode.avregningsavtaleperiode;
 
-import java.util.function.Consumer;
-
 import no.spk.pensjon.faktura.tidsserie.domain.avregning.Avregningsavtaleperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.avregning.Avregningsversjon;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId;
-import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
+import no.spk.felles.tidsperiode.Aarstall;
 
 /**
  * Mapper for konvertering av rader fra CSV-filer for avregningsavtaleperiode til instanser av
