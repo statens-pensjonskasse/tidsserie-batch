@@ -1,7 +1,6 @@
 package no.spk.pensjon.faktura.tidsserie.storage.csv;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
 import static java.util.Optional.of;
 import static no.spk.pensjon.faktura.tidsserie.Datoar.dato;
@@ -9,7 +8,7 @@ import static no.spk.pensjon.faktura.tidsserie.domain.avregning.Avregningsversjo
 import static org.assertj.core.api.Assertions.assertThat;
 
 import no.spk.pensjon.faktura.tidsserie.domain.avregning.Avregningsversjon;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
+import no.spk.felles.tidsperiode.underlag.Underlagsperiode;
 
 import org.junit.Test;
 

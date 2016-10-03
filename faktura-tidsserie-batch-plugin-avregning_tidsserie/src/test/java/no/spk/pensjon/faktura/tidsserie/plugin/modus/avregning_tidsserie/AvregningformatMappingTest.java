@@ -111,8 +111,8 @@ import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.Fakture
 import no.spk.felles.tidsperiode.Aarstall;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonsdato;
 import no.spk.felles.tidsperiode.underlag.Beregningsperiode;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.UnderlagsperiodeBuilder;
+import no.spk.felles.tidsperiode.underlag.Underlag;
+import no.spk.felles.tidsperiode.underlag.UnderlagsperiodeBuilder;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

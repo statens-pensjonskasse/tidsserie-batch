@@ -16,9 +16,9 @@ import java.util.stream.Stream;
 import no.spk.pensjon.faktura.tidsserie.batch.core.CSVFormat;
 import no.spk.pensjon.faktura.tidsserie.batch.modus.live_tidsserie.Datavarehusformat;
 import no.spk.felles.tidsperiode.Aarstall;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.UnderlagsperiodeBuilder;
+import no.spk.felles.tidsperiode.underlag.Underlag;
+import no.spk.felles.tidsperiode.underlag.Underlagsperiode;
+import no.spk.felles.tidsperiode.underlag.UnderlagsperiodeBuilder;
 import no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie.Avregningformat;
 
 import cucumber.api.DataTable;

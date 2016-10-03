@@ -13,7 +13,7 @@ import no.spk.pensjon.faktura.tidsserie.batch.core.ObservasjonsEvent;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.ArbeidsgiverId;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId;
 import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
+import no.spk.felles.tidsperiode.underlag.Underlag;
 
 import org.junit.Test;
 

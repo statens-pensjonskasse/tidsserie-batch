@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.core.CSVFormat;
 import no.spk.pensjon.faktura.tidsserie.batch.core.StorageBackend;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
+import no.spk.felles.tidsperiode.underlag.Underlag;
 
 /**
  * Har i oppgave å skrive resultatet av {@link AvtaleunderlagFactory} matet inn til

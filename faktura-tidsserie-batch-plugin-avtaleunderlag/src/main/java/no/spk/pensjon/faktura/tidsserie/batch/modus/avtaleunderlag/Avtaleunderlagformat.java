@@ -27,8 +27,8 @@ import no.spk.pensjon.faktura.tidsserie.domain.reglar.AarsfaktorRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.AntallDagarRegel;
 import no.spk.felles.tidsperiode.Aarstall;
 import no.spk.felles.tidsperiode.AntallDagar;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
+import no.spk.felles.tidsperiode.underlag.Underlag;
+import no.spk.felles.tidsperiode.underlag.Underlagsperiode;
 
 /**
  * {@link Avtaleunderlagformat} konverterer fra {@link Underlagsperiode}r til csv-formaterte rader,

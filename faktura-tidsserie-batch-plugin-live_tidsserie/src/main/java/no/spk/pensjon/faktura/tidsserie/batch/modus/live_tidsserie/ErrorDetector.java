@@ -4,7 +4,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
+import no.spk.felles.tidsperiode.underlag.Underlagsperiode;
 
 /**
  * {@link ErrorDetector} fangar feil og held oversikt over kor mange feil som har oppstått ved

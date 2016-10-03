@@ -30,9 +30,9 @@ import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.AvtaleFactory;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.AvtaleinformasjonRepository;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.StandardAvtaleInformasjonRepository;
 import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.UnderlagFactory;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
+import no.spk.felles.tidsperiode.underlag.Underlag;
+import no.spk.felles.tidsperiode.underlag.UnderlagFactory;
+import no.spk.felles.tidsperiode.underlag.Underlagsperiode;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
