@@ -2,7 +2,7 @@ package no.spk.pensjon.faktura.tidsserie.batch.core;
 
 import java.util.stream.Stream;
 
-import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Tidsperiode;
+import no.spk.felles.tidsperiode.Tidsperiode;
 
 /**
  * {@link TidsperiodeFactory} gir tilgang til alle tidsperioder frå grunnlagsdatane batchen har tilgang til.

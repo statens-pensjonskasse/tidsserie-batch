@@ -4,7 +4,7 @@ import java.io.UncheckedIOException;
 import java.util.List;
 import java.util.stream.Stream;
 
-import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Tidsperiode;
+import no.spk.felles.tidsperiode.Tidsperiode;
 
 /**
  * Datalager som styrer tilgang til grunnlagsdatane som tidligare køyringar av faktura-grunnlagsdata-batch har produsert.

@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.GenerellTidsperiode;
-import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Tidsperiode;
+import no.spk.felles.tidsperiode.Tidsperiode;
 
 class FakeOversetter implements CsvOversetter<Tidsperiode<?>> {
     @Override
