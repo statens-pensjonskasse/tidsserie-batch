@@ -208,7 +208,7 @@ public class AvregningformatMappingTest {
                 instance(kolonne(61), Avtale.class, einPremiesats(eitYSKprodukt().satser(premiesatsBuilder().arbeidsgiver("0").medlem("0").administrasjonsgebyr("-45").kronesatser())), forventa("-45")),
                 instance(kolonne(62), Avtale.class, einPremiesats(eitYSKprodukt().produktinfo(new Produktinfo(70))), forventa("70")),
                 instance(kolonne(63), Avtale.class, einAvtale(eitYSKprodukt()).risikoklasse(of(new Risikoklasse("1,5"))).bygg(), forventa("1,5")),
-                instance(kolonne(64), UUID.class, null, matches("^\\w{8}-\\w+{4}-\\w+{4}-\\w{4}-\\w{12}$")),
+                instance(kolonne(64), UUID.class, UUID.fromString("12345678-FEDC-BA09-8765-432101234567"), forventa("12345678-fedc-ba09-8765-432101234567")),
                 instance(kolonne(65), Feilantall.class, null, forventa("0")),
                 instance(kolonne(66), ArbeidsgiverId.class, new ArbeidsgiverId(100_000L), forventa("100000")),
                 instance(kolonne(67), Tidsserienummer.class, genererForDato(dato("2016.01.07")), forventa("20160107")),
@@ -384,7 +384,9 @@ public class AvregningformatMappingTest {
                         throw new UnsupportedOperationException();
                     }
                 })
-                .med(Avtale.class, avtale(avtaleId(210_400)).bygg());
+                .med(Avtale.class, avtale(avtaleId(210_400)).bygg())
+                .med(UUID.class, UUID.randomUUID())
+                ;
         new AvregningsRegelsett().reglar().forEach(p -> p.annoter(builder));
         return builder;
     }

@@ -7,6 +7,7 @@ import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt.TIP;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt.YSK;
 
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.core.CSVFormat;
@@ -54,6 +55,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.reglar.MedregningsRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.MinstegrenseRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.OevreLoennsgrenseRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.TermintypeRegel;
+import no.spk.pensjon.faktura.tidsserie.domain.reglar.UUIDRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.BegrunnetGruppelivsfaktureringRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.BegrunnetYrkesskadefaktureringRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.FakturerbareDagsverkGRURegel;
@@ -151,7 +153,7 @@ public class Avregningformat implements CSVFormat {
             kolonne(61, "BEL_YSK_ADMGEB", (u, up) -> beloep(beloepsatser(up, YSK).map(Satser::administrasjonsgebyr)));
             kolonne(62, "KOD_YSK_PRODUKTINFO", (u, up) -> kode(produktinfo(up, YSK)));
             kolonne(63, "KOD_YSK_RISIKO_KL", (u, up) -> kode(avtale(up).flatMap(Avtale::risikoklasse)));
-            kolonne(64, "IDE_UUID", (u, up) -> up.id().toString()).obligatorisk();
+            kolonne(64, "IDE_UUID", (u, up) -> up.annotasjonFor(UUID.class).toString()).obligatorisk();
             kolonne(65, "NUM_ANTALLFEIL", (u, up) -> antallFeil()).obligatorisk();
             kolonne(66, "IDE_SEKV_TORT129", (u, up) -> kode(up.valgfriAnnotasjonFor(ArbeidsgiverId.class).map(ArbeidsgiverId::id)));
             kolonne(67, "IDE_TIDSSERIENUMMER", (u, up) -> kode(u.valgfriAnnotasjonFor(Tidsserienummer.class)));
