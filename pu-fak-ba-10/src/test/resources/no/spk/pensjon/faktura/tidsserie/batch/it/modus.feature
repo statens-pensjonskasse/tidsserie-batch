@@ -33,6 +33,7 @@ Egenskap: Tidsseriar generert for kvar av modusane
       | AVREGNINGSPERIODE;2015;2015;1 |
     Og følgjande innhold i avregningsavtaler.csv.gz:
       | AVREGNINGSAVTALE;2015;2015;1;200000 |
+    Og batchen blir køyrt out-of-process
 
 
   Scenario: Tilgjengelig modusar
