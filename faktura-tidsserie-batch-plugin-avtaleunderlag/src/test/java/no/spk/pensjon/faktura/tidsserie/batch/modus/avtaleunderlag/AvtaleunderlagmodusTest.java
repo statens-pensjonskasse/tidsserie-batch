@@ -1,5 +1,7 @@
 package no.spk.pensjon.faktura.tidsserie.batch.modus.avtaleunderlag;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.*;
 import static java.util.Optional.of;
 import static no.spk.pensjon.faktura.tidsserie.Datoar.dato;
 import static no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Avtaleperiode.avtaleperiode;
@@ -13,6 +15,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,6 +33,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AvtaleId;
 import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
 import no.spk.pensjon.faktura.tjenesteregister.Constants;
 
+import ch.qos.logback.classic.Level;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -44,6 +48,9 @@ public class AvtaleunderlagmodusTest {
 
     @Rule
     public final TemporaryFolder temp = new TemporaryFolder();
+
+    @Rule
+    public final LogbackVerifier logback = new LogbackVerifier();
 
     private Avtaleunderlagmodus modus;
 
@@ -163,6 +170,16 @@ public class AvtaleunderlagmodusTest {
                 "Koblingar:\n" +
                 "- Avtale[2015-01-01->,avtale 1,arbeidsgiver 2]\n" +
                 "- Avtale[2015-01-01->,avtale 1,arbeidsgiver 2]\n");
+
+        logback.assertMessagesWithLevel(Level.WARN)
+                .hasSize(1)
+                .contains("Generering av avtaleunderlag feilet for avtale 1");
+
+        logback.assertMessagesForExceptions(
+                singletonList(IllegalStateException.class)
+        )
+                .hasSize(1)
+        ;
     }
 
     private Avtaleperiode enAvtalepriode(AvtaleId avtaleId) {

@@ -2,6 +2,7 @@ package no.spk.pensjon.faktura.tidsserie.batch.modus.avtaleunderlag;
 
 
 import static java.time.LocalDate.now;
+import static java.util.Collections.singletonList;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static java.util.stream.Collectors.toList;
@@ -45,15 +46,19 @@ import no.spk.felles.tidsperiode.underlag.Underlagsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.TreigUUIDRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.UUIDRegel;
 
+import ch.qos.logback.classic.Level;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.OptionalAssert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 /**
  * @author Snorre E. Brekke - Computas
  */
 public class AvtaleunderlagFactoryTest {
+    @Rule
+    public final LogbackVerifier logback = new LogbackVerifier();
 
     private PeriodeTypeTestFactory tidsperiodeFactory;
     private AvtaleunderlagFactory underlagFactory;
