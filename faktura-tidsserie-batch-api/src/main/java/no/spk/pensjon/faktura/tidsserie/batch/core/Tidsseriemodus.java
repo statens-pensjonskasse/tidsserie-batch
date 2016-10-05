@@ -3,6 +3,8 @@ package no.spk.pensjon.faktura.tidsserie.batch.core;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.BehandleMedlemCommand;
+import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.GenererTidsserieCommand;
 import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.Medlemsbehandler;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medlemsdata;
 import no.spk.felles.tidsperiode.underlag.reglar.Regelsett;
@@ -11,71 +13,58 @@ import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonspublikator;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**
- * {@link Tidsseriemodus} er ansvarlig for oppretting og koordinering av {@link Observasjonspublikator} og
- * {@link CSVFormat} som tar seg av formatering og publisering av målingar basert på tidsserien.
+ * {@link Tidsseriemodus} er integrasjonspunktet mellom tidsserieplatformen og den funksjonelle logikken som
+ * utfører selve generering av tidsserien.
  * <br>
- * Ettersom hensikta med målingane kan variere mellom forskjellige tidsseriar er modusen og ansvarlig
- * for kva {@link Regelsett} som skal benyttast ved oppbygging av tidsserien.
+ * Hver modus kan anta at platformen har startet opp, alle tjenester har blitt initialisert og startet opp og at alt av
+ * grunnlagsdata har blitt lest inn i minne innen {@link #lagTidsserie(ServiceRegistry)} blir kallet.
+ * <br>
+ * Modusen er ansvarlig for å velge om den har behov for distribuert prosessering på medlemsnivå eller om den
+ * ikkje trenger å operere på medlemsdata, og dermed ikke trenger å prosessere distribuert.
+ * <br>
+ * Modusen er kun ansvarlig for oppbyging av underlagene og -periodene som skal lagres og serialisering av periodene
+ * til CSV-linjer. Selve lagringen tas hånd om av platformen vha {@link StorageBackend}.
+ * <br>
+ * Modusen kan også overstyre flesteparten av standardtjenestene som platformen tilbyr, gjennom å registrere høyere
+ * rangerte implementasjoner av desse tjenestene i tjenesteregisteret (via {@link #registerServices(ServiceRegistry)}.
+ * De kan også plugge seg inn i livssyklushåndteringen til platformen (f.eks. via {@link TidsserieLivssyklus}).
  *
  * @author Tarjei Skorgenes
- * @see CSVFormat
- * @see Observasjonspublikator
- * @see Regelsett
+ * @see TidsserieGenerertCallback
+ * @see GenererTidsserieCommand
+ * @see TidsserieLivssyklus
+ * @see AgentInitializer
+ * @see StorageBackend
+ * @see Katalog
+ * @see TidsserieFactory
+ * @see TidsperiodeFactory
+ * @see GrunnlagsdataRepository
  */
-public interface Tidsseriemodus extends Medlemsbehandler {
+public interface Tidsseriemodus {
 
     /**
-     * Metoden kalles før generering av tidsserie, slik at modusen kan legge til tjenesteregisteret med tjenster
-     * den skal benytte senere.
+     * Metoden kalles før generering av tidsserie, slik at modusen kan registrere tjenester
+     * den skal benytte senere i tjenesteregisteret, eller for å overstyre tjenester levert som en del av
+     * platformen.
      * <br>
-     * Tjenester i tjenesteregisteret skal ikke brukes, da denne metoden blir kalt før tjenestene er initisialisert,
-     * men etter at de er registrert.
-     * Bruk av tjenestene bør tidligs skje først i {@link #lagTidsserie(ServiceRegistry)}  }
+     * Tjenester i tjenesteregisteret skal ikke kalles fra implementasjoner av denne metoden, da den blir kalt før
+     * tjenestene er initialisert, men etter at de er registrert.
+     * <br>
+     * Bruk av tjenestene kan kun skje innenfor {@link #lagTidsserie(ServiceRegistry)}
      *
-     * @param serviceRegistry tjenesteregistertet som blir benyttet
+     * @param serviceRegistry tjenesteregistertet som nye tjenester skal registreres i
      */
     void registerServices(ServiceRegistry serviceRegistry);
-    /**
-     * Returnerer ein straum med kolonnenavna som modusen vil generere verdiar for.
-     *
-     * @return output-formatet til tidsserien
-     */
-    Stream<String> kolonnenavn();
-
-    /**
-     * Beregningsreglane som tidsserien skal anvende seg av.
-     *
-     * @return gjeldande beregningsreglar for tidsserien
-     */
-    Regelsett regelsett();
 
     /**
      * Genererer ein ny tidsserie.
      * <br>
+     *
+     * @param registry tjenesteregister som benyttes for kjøringen
      * @return alle meldingar som har blitt generert i løpet av tidsseriegenereringa, gruppert på melding med antall
      * gangar meldinga var generert som verdi
-     * @param registry tjenesteregister som benyttes for kjøringen
      */
     Map<String, Integer> lagTidsserie(ServiceRegistry registry);
-
-    /**
-     * {@inheritDoc}
-     * @since 1.2.0
-     */
-    default Stream<Tidsperiode<?>> referansedata(final TidsperiodeFactory perioder) {
-        return Stream.concat(
-                perioder.loennsdata(),
-                regelsett().reglar()
-        );
-    }
-
-    /**
-     * {@inheritDoc}
-     * @since 1.2.0
-     */
-    default boolean behandleMedlem(Medlemsdata medlemsdata) {
-        return true;
-    }
 
     /**
      * Eit navn som unikt identifiserer modusen for å skille den frå andre modusar.
@@ -85,5 +74,5 @@ public interface Tidsseriemodus extends Medlemsbehandler {
      * @return ein streng som inneheld eit modusnavn som brukaren ønskjer å generere ein tidsserie med
      * @since 2.1.0
      */
-   String navn();
+    String navn();
 }

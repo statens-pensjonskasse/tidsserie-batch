@@ -9,6 +9,9 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import no.spk.felles.tidsperiode.Tidsperiode;
+import no.spk.pensjon.faktura.tidsserie.batch.core.TidsperiodeFactory;
+import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.Medlemsbehandler;
 import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.pensjon.faktura.tidsserie.batch.core.AgentInitializer;
 import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.BehandleMedlemCommand;
@@ -20,7 +23,8 @@ import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Aarsverk;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Premiestatus;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Prosent;
-import no.spk.pensjon.faktura.tidsserie.domain.reglar.PrognoseRegelsett;
+import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medlemsdata;
+import no.spk.pensjon.faktura.tidsserie.domain.prognose.PrognoseRegelsett;
 import no.spk.felles.tidsperiode.underlag.reglar.Regelsett;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonspublikator;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade;
@@ -38,7 +42,7 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
  *
  * @author Tarjei Skorgenes
  */
-public class Stillingsforholdprognosemodus implements Tidsseriemodus {
+public class Stillingsforholdprognosemodus implements Tidsseriemodus, Medlemsbehandler {
     private final ThreadLocal<NumberFormat> format = new ThreadLocal<>();
 
     /**
@@ -72,8 +76,7 @@ public class Stillingsforholdprognosemodus implements Tidsseriemodus {
      *
      * @return ein straum med dei 7 kolonnene som modusen genererer data for på aggregert nivå
      */
-    @Override
-    public Stream<String> kolonnenavn() {
+    private Stream<String> kolonnenavn() {
         return Stream.of(
                 "avtaleId",
                 "stillingsforholdId",
@@ -135,14 +138,26 @@ public class Stillingsforholdprognosemodus implements Tidsseriemodus {
         return tidsserie.lagObservasjonsaggregatorPrStillingsforholdOgAvtale(konsument);
     }
 
+    @Override
+    public Stream<Tidsperiode<?>> referansedata(final TidsperiodeFactory perioder) {
+        return Stream.concat(
+                perioder.loennsdata(),
+                regelsett().reglar()
+        );
+    }
+
+    @Override
+    public boolean behandleMedlem(final Medlemsdata medlemsdata) {
+        return true;
+    }
+
     /**
      * Returnerer regelsettet som skal benyttast ved generering av prognoseobservasjonar.
      *
      * @return eit nytt sett med reglar for prognoseformål
      * @see PrognoseRegelsett
      */
-    @Override
-    public Regelsett regelsett() {
+    private Regelsett regelsett() {
         return new PrognoseRegelsett();
     }
 

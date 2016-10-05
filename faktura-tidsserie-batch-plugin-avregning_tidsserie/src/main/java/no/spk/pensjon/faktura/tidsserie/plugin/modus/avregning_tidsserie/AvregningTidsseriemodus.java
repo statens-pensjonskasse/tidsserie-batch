@@ -13,6 +13,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.core.Katalog;
+import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.Medlemsbehandler;
 import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.BehandleMedlemCommand;
 import no.spk.pensjon.faktura.tidsserie.batch.core.CSVFormat;
@@ -55,7 +56,7 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
  * @see Avregningformat
  * @since 1.2.0
  */
-public class AvregningTidsseriemodus implements Tidsseriemodus {
+public class AvregningTidsseriemodus implements Tidsseriemodus, Medlemsbehandler {
     private final CSVFormat outputFormat = new Avregningformat();
 
     private final Regelsett reglar = new AvregningsRegelsett();
@@ -124,8 +125,7 @@ public class AvregningTidsseriemodus implements Tidsseriemodus {
      * @return ein strøm med navn på alle kolonnene i CSV-filene til tidsserien
      * @see Avregningformat#kolonnenavn()
      */
-    @Override
-    public Stream<String> kolonnenavn() {
+    Stream<String> kolonnenavn() {
         return outputFormat.kolonnenavn();
     }
 
@@ -135,8 +135,7 @@ public class AvregningTidsseriemodus implements Tidsseriemodus {
      * @return regelsettet som modusen benytter
      * @see AvregningsRegelsett
      */
-    @Override
-    public Regelsett regelsett() {
+    Regelsett regelsett() {
         return reglar;
     }
 

@@ -36,7 +36,7 @@ import static no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie.
 import static no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie.FalskeReglar.fakturerbareDagsverkYSKRegel;
 import static no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie.FalskeReglar.gruppelivsfaktureringRegel;
 import static no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie.FalskeReglar.loennstilleggRegel;
-import static no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie.FalskeReglar.maskineltGrunnlagRegel;
+import static no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie.FalskeReglar.pensjonsgivendeLoennRegel;
 import static no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie.FalskeReglar.medregningsRegel;
 import static no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie.FalskeReglar.minstegrenseRegel;
 import static no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie.FalskeReglar.oevreLoennsgrenseRegel;
@@ -57,7 +57,7 @@ import java.util.stream.Stream;
 import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsserienummer;
 import no.spk.pensjon.faktura.tidsserie.domain.avregning.AvregningsRegelsett;
 import no.spk.pensjon.faktura.tidsserie.domain.avregning.Avregningsversjon;
-import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Termintype;
+import no.spk.pensjon.faktura.tidsserie.domain.reglar.Termintype;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Aksjonskode;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AktiveStillingar;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.ArbeidsgiverId;
@@ -97,7 +97,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.reglar.ErMedregningRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.ErPermisjonUtanLoennRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.ErUnderMinstegrensaRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.LoennstilleggRegel;
-import no.spk.pensjon.faktura.tidsserie.domain.reglar.MaskineltGrunnlagRegel;
+import no.spk.pensjon.faktura.tidsserie.domain.reglar.PensjonsgivendeLoennRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.MedregningsRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.Minstegrense;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.MinstegrenseRegel;
@@ -169,7 +169,7 @@ public class AvregningformatMappingTest {
                 instance(kolonne(26), AntallDagarRegel.class, antallDagarRegel(antallDagar(1)), forventa("1")),
                 instance(kolonne(27), DeltidsjustertLoennRegel.class, deltidsjustertLoennRegel(kroner(432_123)), forventa("432123")),
                 instance(kolonne(28), LoennstilleggRegel.class, loennstilleggRegel(kroner(0)), forventa("0")),
-                instance(kolonne(29), MaskineltGrunnlagRegel.class, maskineltGrunnlagRegel(kroner(1_064_800)), forventa("1064800")),
+                instance(kolonne(29), PensjonsgivendeLoennRegel.class, pensjonsgivendeLoennRegel(kroner(1_064_800)), forventa("1064800")),
                 instance(kolonne(30), MedregningsRegel.class, medregningsRegel(kroner(10_000)), forventa("10000")),
                 instance(kolonne(31), MinstegrenseRegel.class, minstegrenseRegel(new Minstegrense(prosent("99.01%"))), forventa("99.01")),
                 instance(kolonne(32), OevreLoennsgrenseRegel.class, oevreLoennsgrenseRegel(new Kroner(9999999999d)), forventa("9999999999")),
@@ -489,8 +489,8 @@ public class AvregningformatMappingTest {
         public void annoter(final UnderlagsperiodeBuilder builder) {
             builder
                     .med(
-                            MaskineltGrunnlagRegel.class,
-                            new MaskineltGrunnlagRegel() {
+                            PensjonsgivendeLoennRegel.class,
+                            new PensjonsgivendeLoennRegel() {
                                 @Override
                                 public Kroner beregn(final Beregningsperiode<?> periode) {
                                     return beloep;

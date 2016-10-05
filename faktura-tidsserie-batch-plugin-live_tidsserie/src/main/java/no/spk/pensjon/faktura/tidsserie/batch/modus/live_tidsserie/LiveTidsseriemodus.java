@@ -10,20 +10,24 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import no.spk.felles.tidsperiode.Tidsperiode;
 import no.spk.pensjon.faktura.tidsserie.batch.core.AgentInitializer;
 import no.spk.pensjon.faktura.tidsserie.batch.core.CSVFormat;
 import no.spk.pensjon.faktura.tidsserie.batch.core.Katalog;
 import no.spk.pensjon.faktura.tidsserie.batch.core.ServiceLocator;
 import no.spk.pensjon.faktura.tidsserie.batch.core.StorageBackend;
+import no.spk.pensjon.faktura.tidsserie.batch.core.TidsperiodeFactory;
 import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieFactory;
 import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieGenerertCallback;
 import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsserienummer;
 import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.BehandleMedlemCommand;
 import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.GenererTidsserieCommand;
+import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.Medlemsbehandler;
 import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.pensjon.faktura.tidsserie.domain.avregning.AvregningsRegelsett;
-import no.spk.pensjon.faktura.tidsserie.domain.reglar.PrognoseRegelsett;
+import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medlemsdata;
+import no.spk.pensjon.faktura.tidsserie.domain.prognose.PrognoseRegelsett;
 import no.spk.felles.tidsperiode.underlag.reglar.Regelsett;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonspublikator;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade;
@@ -44,7 +48,7 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
  * @author Tarjei Skorgenes
  * @see Datavarehusformat
  */
-public class LiveTidsseriemodus implements Tidsseriemodus {
+public class LiveTidsseriemodus implements Tidsseriemodus, Medlemsbehandler {
     private final CSVFormat outputFormat = new Datavarehusformat();
 
     private final Regelsett reglar = new PrognoseRegelsett();
@@ -78,8 +82,7 @@ public class LiveTidsseriemodus implements Tidsseriemodus {
      * @return ein straum med alle kolonnenavna for live-tidsserien
      * @see Datavarehusformat#kolonnenavn()
      */
-    @Override
-    public Stream<String> kolonnenavn() {
+    private Stream<String> kolonnenavn() {
         return outputFormat.kolonnenavn();
     }
 
@@ -89,8 +92,7 @@ public class LiveTidsseriemodus implements Tidsseriemodus {
      * @return regelsettet som skal benyttast ved oppbygging av live-tidsserien
      * @see AvregningsRegelsett
      */
-    @Override
-    public Regelsett regelsett() {
+    private Regelsett regelsett() {
         return reglar;
     }
 
@@ -126,6 +128,19 @@ public class LiveTidsseriemodus implements Tidsseriemodus {
                 this::serialiserPeriode,
                 line -> lagre(publikator, line, serienummer)
         );
+    }
+
+    @Override
+    public Stream<Tidsperiode<?>> referansedata(final TidsperiodeFactory perioder) {
+        return Stream.concat(
+                perioder.loennsdata(),
+                regelsett().reglar()
+        );
+    }
+
+    @Override
+    public boolean behandleMedlem(final Medlemsdata medlemsdata) {
+        return true;
     }
 
     /**

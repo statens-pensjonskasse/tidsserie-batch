@@ -77,24 +77,8 @@ public class Avtaleunderlagmodus implements Tidsseriemodus {
         return new ReferansedataCSVInput(directory);
     }
 
-    @Override
-    public Stream<Tidsperiode<?>> referansedata(final TidsperiodeFactory perioder) {
-        return Stream.empty();
-    }
-
-    @Override
-    public Stream<String> kolonnenavn() {
-        return outputFormat.kolonnenavn();
-    }
-
-    @Override
-    public Regelsett regelsett() {
+    private Regelsett regelsett() {
         return regler;
-    }
-
-    @Override
-    public Observasjonspublikator createPublikator(TidsserieFacade tidsserie, long serienummer, StorageBackend storage) {
-        return o -> {};
     }
 
     @Override
