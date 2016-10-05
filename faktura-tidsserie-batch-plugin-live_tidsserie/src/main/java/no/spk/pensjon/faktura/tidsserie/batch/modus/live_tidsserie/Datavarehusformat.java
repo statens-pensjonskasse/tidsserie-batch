@@ -3,6 +3,7 @@ package no.spk.pensjon.faktura.tidsserie.batch.modus.live_tidsserie;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Aksjonskode.PERMISJON_UTAN_LOENN;
 
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.core.CSVFormat;
@@ -43,6 +44,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.reglar.MedregningsRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.MinstegrenseRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.OevreLoennsgrenseRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.TermintypeRegel;
+import no.spk.pensjon.faktura.tidsserie.domain.reglar.UUIDRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.YrkesskadefaktureringRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonsdato;
 import no.spk.felles.tidsperiode.underlag.Underlag;
@@ -118,7 +120,7 @@ public class Datavarehusformat implements CSVFormat {
             kolonnerForPremiesatser(Produkt.GRU);
             kolonnerForPremiesatser(Produkt.YSK);
             kolonne("produkt_YSK_risikoklasse", (u, up) -> kode(up.valgfriAnnotasjonFor(Avtale.class).flatMap(Avtale::risikoklasse)));
-            kolonne("uuid", (u, up) -> up.id().toString());
+            kolonne("uuid", (u, up) -> up.annotasjonFor(UUID.class).toString()).obligatorisk();
             kolonne("antallFeil", (u, up) -> ANTALL_FEIL_PLACEHOLDER).obligatorisk();
             kolonne("arbeidsgivernummer", (u, up) -> kode(up.valgfriAnnotasjonFor(ArbeidsgiverId.class).map(ArbeidsgiverId::id)));
             kolonne("tidsserienummer", (u, up) -> kode(u.valgfriAnnotasjonFor(Tidsserienummer.class)));

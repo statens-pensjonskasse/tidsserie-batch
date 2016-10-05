@@ -10,6 +10,7 @@ import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Stillingsfor
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
@@ -49,6 +50,17 @@ public class DatavarehusformatTest {
     }
 
     @Test
+    public void skal_feile_viss_uuid_manglar() {
+        forventPaakrevdAnnotasjonFeilForType(UUID.class);
+
+        serialiser(
+                observasjonsdato(),
+                eiPeriodeMedKunObligatoriskeVerdiar()
+                        .uten(UUID.class)
+        );
+    }
+
+    @Test
     public void skalFeileVissObservasjonsdatoManglar() {
         forventPaakrevdAnnotasjonFeilForType(Observasjonsdato.class);
 
@@ -56,7 +68,7 @@ public class DatavarehusformatTest {
                 observasjonsdato(),
                 eiPeriodeMedKunObligatoriskeVerdiar(),
                 (ignorert, p) -> new Underlag(of(p))
-        ).collect(toList());
+        );
     }
 
     @Test
@@ -67,7 +79,7 @@ public class DatavarehusformatTest {
                 observasjonsdato(),
                 eiPeriodeMedKunObligatoriskeVerdiar()
                         .uten(Foedselsnummer.class)
-        ).collect(toList());
+        );
     }
 
     @Test
@@ -78,7 +90,7 @@ public class DatavarehusformatTest {
                 observasjonsdato(),
                 eiPeriodeMedKunObligatoriskeVerdiar()
                         .uten(StillingsforholdId.class)
-        ).collect(toList());;
+        );
     }
 
     @Test
@@ -89,7 +101,7 @@ public class DatavarehusformatTest {
                 observasjonsdato(),
                 eiPeriodeMedKunObligatoriskeVerdiar()
                         .uten(AvtaleId.class)
-        ).collect(toList());
+        );
     }
 
     private void forventPaakrevdAnnotasjonFeilForType(final Class<?> clazz) {
@@ -111,7 +123,9 @@ public class DatavarehusformatTest {
         return format.serialiser(
                 underlag.apply(dato, periode),
                 periode
-        );
+        )
+                .collect(toList())
+                .stream();
     }
 
     private Underlag underlag(final Observasjonsdato dato, final Underlagsperiode periode) {
@@ -128,6 +142,8 @@ public class DatavarehusformatTest {
                         personnummer(1)
                 ))
                 .med(stillingsforhold(1L))
-                .med(avtaleId(223344L));
+                .med(avtaleId(223344L))
+                .med(UUID.randomUUID())
+                ;
     }
 }
