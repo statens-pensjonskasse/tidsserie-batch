@@ -24,11 +24,11 @@ import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.GenererTidsserieComman
 import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.pensjon.faktura.tidsserie.domain.avregning.AvregningsRegelsett;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.PrognoseRegelsett;
-import no.spk.pensjon.faktura.tidsserie.domain.reglar.Regelsett;
+import no.spk.felles.tidsperiode.underlag.reglar.Regelsett;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonspublikator;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
+import no.spk.felles.tidsperiode.underlag.Underlag;
+import no.spk.felles.tidsperiode.underlag.Underlagsperiode;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**

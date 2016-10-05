@@ -5,7 +5,7 @@ import java.io.File;
 import no.spk.pensjon.faktura.tidsserie.batch.main.ApplicationController;
 import no.spk.pensjon.faktura.tidsserie.batch.main.TidsserieMain;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.Modus;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
+import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**
@@ -17,7 +17,7 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
  *
  * @author Tarjei Skorgenes
  */
-class InMemoryBatchRunner {
+class InMemoryBatchRunner implements PU_FAK_BA_10 {
     private final StandardOutputAndError outputAndError = new StandardOutputAndError();
 
     private final TidsserieMain batch;
@@ -32,8 +32,8 @@ class InMemoryBatchRunner {
         );
     }
 
-    void run(final File innKatalog, final File utKatalog, final Observasjonsperiode periode, final Modus modus) {
-
+    @Override
+    public void run(final File innKatalog, final File utKatalog, final Observasjonsperiode periode, final Modus modus) {
         try {
             outputAndError.before();
             batch.run(

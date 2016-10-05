@@ -18,7 +18,7 @@ import no.spk.pensjon.faktura.tidsserie.batch.core.StorageBackend;
 import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieGenerertCallback;
 import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsserienummer;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonspublikator;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
+import no.spk.felles.tidsperiode.underlag.Underlag;
 
 import org.junit.Before;
 import org.junit.Rule;

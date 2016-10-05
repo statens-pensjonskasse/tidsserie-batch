@@ -3,7 +3,7 @@
     <parent>
         <artifactId>faktura-tidsserie-batch-parent</artifactId>
         <groupId>no.spk.pensjon.faktura</groupId>
-        <version>3.1.8-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
     </parent>
     <packaging>jar</packaging>
     <modelVersion>4.0.0</modelVersion>
@@ -28,6 +28,10 @@
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>no.spk.felles</groupId>
+            <artifactId>felles-tidsperiode-underlag-lib</artifactId>
+        </dependency>
         <dependency>
             <groupId>no.spk.pensjon.faktura</groupId>
             <artifactId>faktura-prognose-tidsserie</artifactId>

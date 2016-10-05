@@ -45,8 +45,8 @@ import no.spk.pensjon.faktura.tidsserie.domain.reglar.OevreLoennsgrenseRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.TermintypeRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.YrkesskadefaktureringRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonsdato;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
+import no.spk.felles.tidsperiode.underlag.Underlag;
+import no.spk.felles.tidsperiode.underlag.Underlagsperiode;
 
 /**
  * {@link Datavarehusformat} representerer kontrakta og mapping-strategien for konvertering av {@link Underlagsperiode}r til
