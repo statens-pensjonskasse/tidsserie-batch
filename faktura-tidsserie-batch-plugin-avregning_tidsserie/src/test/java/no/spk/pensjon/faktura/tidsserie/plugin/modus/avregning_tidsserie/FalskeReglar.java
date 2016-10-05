@@ -13,7 +13,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.reglar.ErMedregningRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.ErPermisjonUtanLoennRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.ErUnderMinstegrensaRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.LoennstilleggRegel;
-import no.spk.pensjon.faktura.tidsserie.domain.reglar.MaskineltGrunnlagRegel;
+import no.spk.pensjon.faktura.tidsserie.domain.reglar.PensjonsgivendeLoennRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.MedregningsRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.Minstegrense;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.MinstegrenseRegel;
@@ -92,8 +92,8 @@ class FalskeReglar {
         };
     }
 
-    static MaskineltGrunnlagRegel maskineltGrunnlagRegel(final Kroner beloep) {
-        return new MaskineltGrunnlagRegel() {
+    static PensjonsgivendeLoennRegel pensjonsgivendeLoennRegel(final Kroner beloep) {
+        return new PensjonsgivendeLoennRegel() {
             @Override
             public Kroner beregn(final Beregningsperiode<?> periode) {
                 return beloep;
