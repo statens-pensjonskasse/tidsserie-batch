@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.core.TidsperiodeFactory;
-import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Tidsperiode;
+import no.spk.felles.tidsperiode.Tidsperiode;
 
 /**
  * @author Snorre E. Brekke - Computas
@@ -33,17 +33,16 @@ class PeriodeTypeTestFactory implements TidsperiodeFactory {
 
     private Map<Class<?>, List<Tidsperiode<?>>> group(Tidsperiode<?>[] perioder) {
         return Stream.of(perioder)
-                .collect(groupingBy(p -> p.getClass()));
+                .collect(groupingBy(Tidsperiode::getClass));
     }
 
     private <T> List<Tidsperiode<?>> getPerioder(Class<T> type) {
         return perioder.computeIfAbsent(type, k -> new ArrayList<>());
     }
 
-    public void addPerioder(Tidsperiode<?>... perioder) {
+    void addPerioder(Tidsperiode<?>... perioder) {
         group(perioder)
                 .entrySet()
-                .stream()
                 .forEach(e -> getPerioder(e.getKey()).addAll(e.getValue()));
     }
 }

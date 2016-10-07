@@ -41,7 +41,7 @@ import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.TidsserieArgumentsFactory;
 import no.spk.pensjon.faktura.tidsserie.batch.storage.disruptor.FileTemplate;
 import no.spk.pensjon.faktura.tidsserie.batch.storage.disruptor.LmaxDisruptorPublisher;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
+import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.CSVInput;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistration;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;

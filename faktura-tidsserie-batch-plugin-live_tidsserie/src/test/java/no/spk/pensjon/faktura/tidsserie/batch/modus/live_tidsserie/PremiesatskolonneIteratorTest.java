@@ -10,8 +10,8 @@ import static org.mockito.Mockito.verify;
 import java.time.LocalDate;
 
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.UnderlagsperiodeBuilder;
+import no.spk.felles.tidsperiode.underlag.Underlagsperiode;
+import no.spk.felles.tidsperiode.underlag.UnderlagsperiodeBuilder;
 
 import org.junit.Before;
 import org.junit.Rule;

@@ -19,7 +19,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 
-import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Tidsperiode;
+import no.spk.felles.tidsperiode.Tidsperiode;
 import no.spk.pensjon.faktura.tidsserie.batch.core.GrunnlagsdataRepository;
 
 /**

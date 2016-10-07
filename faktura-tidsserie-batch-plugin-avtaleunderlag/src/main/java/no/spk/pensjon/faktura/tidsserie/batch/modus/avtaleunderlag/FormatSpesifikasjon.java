@@ -15,8 +15,8 @@ import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produktinfo;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Prosent;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Satser;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
+import no.spk.felles.tidsperiode.underlag.Underlag;
+import no.spk.felles.tidsperiode.underlag.Underlagsperiode;
 
 /**
  * Støtteklasse for spesifisering av nye kolonnebaserte tidsserieformat.

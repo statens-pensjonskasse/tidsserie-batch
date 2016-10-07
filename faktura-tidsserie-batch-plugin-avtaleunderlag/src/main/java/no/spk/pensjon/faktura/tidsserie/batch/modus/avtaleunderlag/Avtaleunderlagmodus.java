@@ -20,12 +20,12 @@ import no.spk.pensjon.faktura.tidsserie.batch.core.StorageBackend;
 import no.spk.pensjon.faktura.tidsserie.batch.core.TidsperiodeFactory;
 import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieGenerertCallback;
 import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsseriemodus;
-import no.spk.pensjon.faktura.tidsserie.domain.reglar.Regelsett;
-import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Tidsperiode;
+import no.spk.felles.tidsperiode.underlag.reglar.Regelsett;
+import no.spk.felles.tidsperiode.Tidsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonspublikator;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
+import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
+import no.spk.felles.tidsperiode.underlag.Underlag;
 import no.spk.pensjon.faktura.tidsserie.storage.csv.CSVInput;
 import no.spk.pensjon.faktura.tjenesteregister.Constants;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
@@ -77,24 +77,8 @@ public class Avtaleunderlagmodus implements Tidsseriemodus {
         return new ReferansedataCSVInput(directory);
     }
 
-    @Override
-    public Stream<Tidsperiode<?>> referansedata(final TidsperiodeFactory perioder) {
-        return Stream.empty();
-    }
-
-    @Override
-    public Stream<String> kolonnenavn() {
-        return outputFormat.kolonnenavn();
-    }
-
-    @Override
-    public Regelsett regelsett() {
+    private Regelsett regelsett() {
         return regler;
-    }
-
-    @Override
-    public Observasjonspublikator createPublikator(TidsserieFacade tidsserie, long serienummer, StorageBackend storage) {
-        return o -> {};
     }
 
     @Override

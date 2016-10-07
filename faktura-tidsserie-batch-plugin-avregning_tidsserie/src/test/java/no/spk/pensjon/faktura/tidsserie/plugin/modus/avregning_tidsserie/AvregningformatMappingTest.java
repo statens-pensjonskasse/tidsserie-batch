@@ -23,7 +23,7 @@ import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Stillingsfor
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Stillingsprosent.fulltid;
 import static no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.Fordelingsaarsak.AVKORTET;
 import static no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.Fordelingsaarsak.ORDINAER;
-import static no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.AntallDagar.antallDagar;
+import static no.spk.felles.tidsperiode.AntallDagar.antallDagar;
 import static no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie.FalskeReglar.aarsfaktorRegel;
 import static no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie.FalskeReglar.aarslengdeRegel;
 import static no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie.FalskeReglar.aarsverkRegel;
@@ -36,7 +36,7 @@ import static no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie.
 import static no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie.FalskeReglar.fakturerbareDagsverkYSKRegel;
 import static no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie.FalskeReglar.gruppelivsfaktureringRegel;
 import static no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie.FalskeReglar.loennstilleggRegel;
-import static no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie.FalskeReglar.maskineltGrunnlagRegel;
+import static no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie.FalskeReglar.pensjonsgivendeLoennRegel;
 import static no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie.FalskeReglar.medregningsRegel;
 import static no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie.FalskeReglar.minstegrenseRegel;
 import static no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie.FalskeReglar.oevreLoennsgrenseRegel;
@@ -57,7 +57,7 @@ import java.util.stream.Stream;
 import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsserienummer;
 import no.spk.pensjon.faktura.tidsserie.domain.avregning.AvregningsRegelsett;
 import no.spk.pensjon.faktura.tidsserie.domain.avregning.Avregningsversjon;
-import no.spk.pensjon.faktura.tidsserie.domain.avtaledata.Termintype;
+import no.spk.pensjon.faktura.tidsserie.domain.reglar.Termintype;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Aksjonskode;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.AktiveStillingar;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.ArbeidsgiverId;
@@ -97,7 +97,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.reglar.ErMedregningRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.ErPermisjonUtanLoennRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.ErUnderMinstegrensaRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.LoennstilleggRegel;
-import no.spk.pensjon.faktura.tidsserie.domain.reglar.MaskineltGrunnlagRegel;
+import no.spk.pensjon.faktura.tidsserie.domain.reglar.PensjonsgivendeLoennRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.MedregningsRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.Minstegrense;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.MinstegrenseRegel;
@@ -108,12 +108,11 @@ import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.Begrunn
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.FakturerbareDagsverk;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.FakturerbareDagsverkGRURegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.FakturerbareDagsverkYSKRegel;
-import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.Fordelingsaarsak;
-import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
+import no.spk.felles.tidsperiode.Aarstall;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonsdato;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Beregningsperiode;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.UnderlagsperiodeBuilder;
+import no.spk.felles.tidsperiode.underlag.Beregningsperiode;
+import no.spk.felles.tidsperiode.underlag.Underlag;
+import no.spk.felles.tidsperiode.underlag.UnderlagsperiodeBuilder;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -170,7 +169,7 @@ public class AvregningformatMappingTest {
                 instance(kolonne(26), AntallDagarRegel.class, antallDagarRegel(antallDagar(1)), forventa("1")),
                 instance(kolonne(27), DeltidsjustertLoennRegel.class, deltidsjustertLoennRegel(kroner(432_123)), forventa("432123")),
                 instance(kolonne(28), LoennstilleggRegel.class, loennstilleggRegel(kroner(0)), forventa("0")),
-                instance(kolonne(29), MaskineltGrunnlagRegel.class, maskineltGrunnlagRegel(kroner(1_064_800)), forventa("1064800")),
+                instance(kolonne(29), PensjonsgivendeLoennRegel.class, pensjonsgivendeLoennRegel(kroner(1_064_800)), forventa("1064800")),
                 instance(kolonne(30), MedregningsRegel.class, medregningsRegel(kroner(10_000)), forventa("10000")),
                 instance(kolonne(31), MinstegrenseRegel.class, minstegrenseRegel(new Minstegrense(prosent("99.01%"))), forventa("99.01")),
                 instance(kolonne(32), OevreLoennsgrenseRegel.class, oevreLoennsgrenseRegel(new Kroner(9999999999d)), forventa("9999999999")),
@@ -209,7 +208,7 @@ public class AvregningformatMappingTest {
                 instance(kolonne(61), Avtale.class, einPremiesats(eitYSKprodukt().satser(premiesatsBuilder().arbeidsgiver("0").medlem("0").administrasjonsgebyr("-45").kronesatser())), forventa("-45")),
                 instance(kolonne(62), Avtale.class, einPremiesats(eitYSKprodukt().produktinfo(new Produktinfo(70))), forventa("70")),
                 instance(kolonne(63), Avtale.class, einAvtale(eitYSKprodukt()).risikoklasse(of(new Risikoklasse("1,5"))).bygg(), forventa("1,5")),
-                instance(kolonne(64), UUID.class, null, matches("^\\w{8}-\\w+{4}-\\w+{4}-\\w{4}-\\w{12}$")),
+                instance(kolonne(64), UUID.class, UUID.fromString("12345678-FEDC-BA09-8765-432101234567"), forventa("12345678-fedc-ba09-8765-432101234567")),
                 instance(kolonne(65), Feilantall.class, null, forventa("0")),
                 instance(kolonne(66), ArbeidsgiverId.class, new ArbeidsgiverId(100_000L), forventa("100000")),
                 instance(kolonne(67), Tidsserienummer.class, genererForDato(dato("2016.01.07")), forventa("20160107")),
@@ -385,7 +384,9 @@ public class AvregningformatMappingTest {
                         throw new UnsupportedOperationException();
                     }
                 })
-                .med(Avtale.class, avtale(avtaleId(210_400)).bygg());
+                .med(Avtale.class, avtale(avtaleId(210_400)).bygg())
+                .med(UUID.class, UUID.randomUUID())
+                ;
         new AvregningsRegelsett().reglar().forEach(p -> p.annoter(builder));
         return builder;
     }
@@ -488,8 +489,8 @@ public class AvregningformatMappingTest {
         public void annoter(final UnderlagsperiodeBuilder builder) {
             builder
                     .med(
-                            MaskineltGrunnlagRegel.class,
-                            new MaskineltGrunnlagRegel() {
+                            PensjonsgivendeLoennRegel.class,
+                            new PensjonsgivendeLoennRegel() {
                                 @Override
                                 public Kroner beregn(final Beregningsperiode<?> periode) {
                                     return beloep;

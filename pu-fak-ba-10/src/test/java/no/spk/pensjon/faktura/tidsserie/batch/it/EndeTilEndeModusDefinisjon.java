@@ -1,14 +1,19 @@
 package no.spk.pensjon.faktura.tidsserie.batch.it;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.ServiceLoader;
+import java.util.function.Function;
 
 import no.spk.faktura.input.BatchId;
 import no.spk.pensjon.faktura.tidsserie.batch.main.ConsoleView;
@@ -16,8 +21,8 @@ import no.spk.pensjon.faktura.tidsserie.batch.main.GrunnlagsdataDirectoryValidat
 import no.spk.pensjon.faktura.tidsserie.batch.main.View;
 import no.spk.pensjon.faktura.tidsserie.batch.core.BatchIdConstants;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.Modus;
-import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
+import no.spk.felles.tidsperiode.Aarstall;
+import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
 import no.spk.pensjon.faktura.tjenesteregister.Constants;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
@@ -44,7 +49,11 @@ import org.junit.rules.TemporaryFolder;
  * @author Tarjei Skorgenes
  */
 public class EndeTilEndeModusDefinisjon implements No {
+    private final Map<String, Function<ServiceRegistry, PU_FAK_BA_10>> runas = new HashMap<>();
+
     private final MyTemporaryFolder temp = new MyTemporaryFolder();
+
+    private final Md5Checksums checksums = new Md5Checksums();
 
     private final ModusRule modusar = new ModusRule();
 
@@ -58,11 +67,16 @@ public class EndeTilEndeModusDefinisjon implements No {
 
     private File utKatalog;
 
-    private InMemoryBatchRunner batch;
-
     private Tidsseriefiler tidsseriefiler;
 
+    private ServiceRegistry registry;
+
+    private Optional<Function<ServiceRegistry, PU_FAK_BA_10>> batch = empty();
+
     public EndeTilEndeModusDefinisjon() {
+        runas.put("out-of-process", registry -> new OutOfProcessBatchRunner());
+        runas.put("in-process", InMemoryBatchRunner::new);
+
         /**
          * Fyllord for å gjere egenskapen meir lesbar når ein ønskjer å verifisere kva modusar som er tilgjengelig.
          */
@@ -72,6 +86,7 @@ public class EndeTilEndeModusDefinisjon implements No {
         Gitt("^at modus er lik (.+)$", this::medModus);
         Gitt("^observasjonsperioda strekker seg frå og med (\\d+) til og med (\\d+)$", this::medObservasjonsperiode);
         Gitt("^følgjande kolonner blir ignorert fordi dei endrar verdi frå køyring til køyring:$", this::ignorerKolonner);
+        Gitt("^batchen blir køyrt (.+)$", this::kjoerBatchenVia);
 
         Så("^skal CSV-fil(?:a|ene) som blir generert inneholde følgjande rader:$", this::genererOgVerifiserResultat);
 
@@ -108,6 +123,13 @@ public class EndeTilEndeModusDefinisjon implements No {
         tidsseriefiler.ignorerKolonner(kolonner.asList(String.class));
     }
 
+    private void kjoerBatchenVia(final String name) {
+        assertThat(this.runas.keySet())
+                .as("støtta køyretyper for batchen")
+                .contains(name);
+        this.batch = Optional.of(this.runas.get(name));
+    }
+
     private void medObservasjonsperiode(final String fraOgMed, final String tilOgMed) {
         this.periode = new Observasjonsperiode(
                 parse(fraOgMed).atStartOfYear(),
@@ -131,7 +153,8 @@ public class EndeTilEndeModusDefinisjon implements No {
     }
 
     private void genererTidsserie() {
-        batch.run(
+        checksums.generer(grunnlagsdata);
+        batch().run(
                 requireNonNull(temp.getRoot()),
                 requireNonNull(utKatalog),
                 requireNonNull(periode, "observasjonsperioder er påkrevd, men har ikke blitt satt opp av egenskapen"),
@@ -151,24 +174,30 @@ public class EndeTilEndeModusDefinisjon implements No {
         this.grunnlagsdata = new BatchId(BatchIdConstants.GRUNNLAGSDATA_PREFIX, LocalDateTime.now()).tilArbeidskatalog(temp.getRoot().toPath()).toFile();
         assertThat(grunnlagsdata.mkdir()).isTrue();
 
-        final ServiceRegistry registry = ServiceLoader
+        registry = ServiceLoader
                 .load(ServiceRegistry.class)
                 .iterator()
                 .next();
         registry.registerService(View.class, new ConsoleView());
 
-        this.batch = new InMemoryBatchRunner(registry);
-
         this.tidsseriefiler = new Tidsseriefiler(utKatalog);
-
-        // Vi tar ikkje bryet med å generere gyldige sjekksummer for grunnlagsdatane, overstyrer derfor valideringen
-        registry.registerService(GrunnlagsdataDirectoryValidator.class, this::noop, Constants.SERVICE_RANKING + "=1000");
     }
 
     @After
     public void _after() {
         temp.after();
         modusar.after();
+    }
+
+    private PU_FAK_BA_10 batch() {
+        return batch.orElseThrow(
+                () -> new IllegalArgumentException(
+                        "Du har gløymt å angit korleis batchen skal køyrast, " +
+                                "bruk \"batchen blir køyrt TYPE\" som syntax " +
+                                "(lovlige typer: " + runas.keySet() + ")"
+                )
+        )
+                .apply(registry);
     }
 
     private Aarstall parse(final String fraOgMed) {

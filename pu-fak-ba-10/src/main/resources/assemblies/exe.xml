@@ -45,6 +45,7 @@
             <unpack>true</unpack>
             <scope>provided</scope>
             <fileMode>0755</fileMode>
+            <directoryMode>0755</directoryMode>
             <includes>
                 <include>com.oracle:jre:zip:zip:1.8.0_51</include>
             </includes>

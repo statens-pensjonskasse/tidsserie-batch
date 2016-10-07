@@ -22,7 +22,6 @@ class CSVFiler {
         try {
             try (final GZIPOutputStream output = new GZIPOutputStream(new FileOutputStream(destination.toFile()))) {
                 source.asList(String.class)
-                        .stream()
                         .forEach(line -> {
                             try {
                                 output.write(line.getBytes());

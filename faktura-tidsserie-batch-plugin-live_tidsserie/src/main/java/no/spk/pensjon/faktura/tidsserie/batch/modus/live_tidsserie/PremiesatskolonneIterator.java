@@ -7,7 +7,7 @@ import java.util.function.Function;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Avtale;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Premiesats;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
+import no.spk.felles.tidsperiode.underlag.Underlagsperiode;
 
 /**
  * {@link PremiesatskolonneIterator} brukes for å iterere gjennom en og en premiesatsverdi-mapperfunksjon hentet fra

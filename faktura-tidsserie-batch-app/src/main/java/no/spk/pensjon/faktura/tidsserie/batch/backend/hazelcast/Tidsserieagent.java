@@ -11,7 +11,7 @@ import no.spk.pensjon.faktura.tidsserie.batch.core.Extensionpoint;
 import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.GenererTidsserieCommand;
 import no.spk.pensjon.faktura.tidsserie.batch.core.ServiceLocator;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Feilhandtering;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
+import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 import com.hazelcast.core.HazelcastInstance;

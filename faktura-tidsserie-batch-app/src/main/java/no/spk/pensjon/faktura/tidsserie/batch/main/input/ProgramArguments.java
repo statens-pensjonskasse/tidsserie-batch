@@ -4,7 +4,6 @@ import static java.time.LocalDate.now;
 
 import java.nio.file.Path;
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Optional;
 
@@ -18,8 +17,8 @@ import no.spk.faktura.input.PathStringValidator;
 import no.spk.faktura.input.ReadablePathValidator;
 import no.spk.faktura.input.WritableDirectoryValidator;
 import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsseriemodus;
-import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
+import no.spk.felles.tidsperiode.Aarstall;
+import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
 
 import com.beust.jcommander.Parameter;
 

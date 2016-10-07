@@ -2,6 +2,7 @@ package no.spk.pensjon.faktura.tidsserie.batch.modus.avtaleunderlag;
 
 
 import static java.time.LocalDate.now;
+import static java.util.Collections.singletonList;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static java.util.stream.Collectors.toList;
@@ -19,6 +20,7 @@ import java.time.Month;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsserienummer;
@@ -36,21 +38,27 @@ import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produktinfo;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Satser;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.AntallDagarRegel;
-import no.spk.pensjon.faktura.tidsserie.domain.reglar.Regelperiode;
-import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
+import no.spk.felles.tidsperiode.underlag.reglar.Regelperiode;
+import no.spk.felles.tidsperiode.Aarstall;
+import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
+import no.spk.felles.tidsperiode.underlag.Underlag;
+import no.spk.felles.tidsperiode.underlag.Underlagsperiode;
+import no.spk.pensjon.faktura.tidsserie.domain.reglar.TreigUUIDRegel;
+import no.spk.pensjon.faktura.tidsserie.domain.reglar.UUIDRegel;
 
+import ch.qos.logback.classic.Level;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.OptionalAssert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 /**
  * @author Snorre E. Brekke - Computas
  */
 public class AvtaleunderlagFactoryTest {
+    @Rule
+    public final LogbackVerifier logback = new LogbackVerifier();
 
     private PeriodeTypeTestFactory tidsperiodeFactory;
     private AvtaleunderlagFactory underlagFactory;
@@ -62,6 +70,34 @@ public class AvtaleunderlagFactoryTest {
         tidsperiodeFactory = new PeriodeTypeTestFactory();
         underlagFactory = new AvtaleunderlagFactory(tidsperiodeFactory, new AvtaleunderlagRegelsett());
         observasjonsperiode = new Observasjonsperiode(dato("2015.01.01"), dato("2015.12.31"));
+    }
+
+    @Test
+    public void skal_annotere_underlagsperioder_med_uuid() {
+        tidsperiodeFactory.addPerioder(
+                enAvtaleperiode()
+                        .fraOgMed(dato("2015.01.01"))
+                        .tilOgMed(dato("2015.01.31"))
+                        .bygg()
+                ,
+                enAvtaleperiode()
+                        .fraOgMed(dato("2015.02.01"))
+                        .tilOgMed(dato("2015.12.31"))
+                        .bygg()
+        );
+
+        assertThat(
+                underlagsperioder()
+                        .map(p -> p.valgfriAnnotasjonFor(UUID.class))
+                        .collect(toList())
+        )
+                .as("UUID-annotasjoner")
+                .hasSize(12)
+                .filteredOn(Optional::isPresent)
+                .extracting(Optional::get)
+                .hasSize(12)
+                .doesNotHaveDuplicates()
+        ;
     }
 
     @Test
@@ -88,10 +124,13 @@ public class AvtaleunderlagFactoryTest {
     }
 
     /**
-     * Verifiserer at avtaleunderlaget er splitta i perioder pr måned, ikkje kun pr år eller pr endring i avtale eller arbeidsgivar.
+     * Verifiserer at avtaleunderlaget er splitta i perioder pr måned, ikkje kun pr år eller pr endring i avtale eller
+     * arbeidsgivar.
      * <br>
-     * Hovedårsaka til at ein ønskjer å splitte avtaleunderlaget pr måned er at ein i saksbehandlerdashoardet til FFF skal kunne
-     * sammenstille avtaleunderlaget med live_tidsserien for å telle antall ansatte pr avtale pr siste dag i måned (f.eks.).
+     * Hovedårsaka til at ein ønskjer å splitte avtaleunderlaget pr måned er at ein i saksbehandlerdashoardet til FFF
+     * skal kunne
+     * sammenstille avtaleunderlaget med live_tidsserien for å telle antall ansatte pr avtale pr siste dag i måned
+     * (f.eks.).
      */
     @Test
     public void skal_splitte_perioder_paa_maaned_selv_om_ingenting_annet_endres() {
@@ -205,7 +244,8 @@ public class AvtaleunderlagFactoryTest {
     @Test
     public void skal_kunne_bruke_regler_angitt_til_avtaleunderlagfactory() throws Exception {
         underlagFactory = new AvtaleunderlagFactory(tidsperiodeFactory, () -> Stream.of(
-                new Regelperiode<>(dato("2000.01.01"), empty(), new AntallDagarRegel())
+                new Regelperiode<>(dato("2000.01.01"), empty(), new AntallDagarRegel()),
+                new Regelperiode<>(dato("2000.01.01"), empty(), UUIDRegel.class, new TreigUUIDRegel())
         ));
 
         tidsperiodeFactory.addPerioder(enAvtalepriode());
@@ -353,7 +393,7 @@ public class AvtaleunderlagFactoryTest {
                         .tilOgMed(dato("2015.12.31"))
                         .arbeidsgiverId(ArbeidsgiverId.valueOf(1))
                         .bygg()
-                );
+        );
         final List<Underlag> underlag = underlagFactory
                 .lagAvtaleunderlag(
                         observasjonsperiode,
@@ -402,11 +442,9 @@ public class AvtaleunderlagFactoryTest {
 
         avtaleunderlag
                 .get(avtaleId)
-                .stream()
                 .forEach(up -> assertOrgnummer(up).isPresent());
         avtaleunderlag
                 .get(avtaleUtenArbeidsgiverperiode)
-                .stream()
                 .forEach(up -> assertOrgnummer(up).isEmpty());
     }
 

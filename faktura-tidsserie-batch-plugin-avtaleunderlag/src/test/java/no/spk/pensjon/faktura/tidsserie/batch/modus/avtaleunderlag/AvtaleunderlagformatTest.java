@@ -30,9 +30,9 @@ import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produktinfo;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Risikoklasse;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Satser;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
+import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
+import no.spk.felles.tidsperiode.underlag.Underlag;
+import no.spk.felles.tidsperiode.underlag.Underlagsperiode;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -115,7 +115,7 @@ public class AvtaleunderlagformatTest {
                         .collect(joining("\n")))
                 .collect(joining());
 
-        final UUID uuid = underlag.stream().flatMap(Underlag::stream).map(Underlagsperiode::id).findAny().get();
+        final UUID uuid = underlag.stream().flatMap(Underlag::stream).map(up -> up.annotasjonFor(UUID.class)).findAny().get();
         final Tidsserienummer tidsserienummer = underlag.stream().map(p -> p.annotasjonFor(Tidsserienummer.class)).findAny().get();
 
         assertThat(result).isEqualTo(

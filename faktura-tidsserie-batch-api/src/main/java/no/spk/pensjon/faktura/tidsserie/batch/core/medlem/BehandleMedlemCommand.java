@@ -4,14 +4,13 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
+import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
+import no.spk.felles.tidsperiode.underlag.reglar.Regelsett;
 import no.spk.pensjon.faktura.tidsserie.batch.core.StorageBackend;
 import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieFactory;
-import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medlemsdata;
-import no.spk.pensjon.faktura.tidsserie.domain.reglar.Regelsett;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Feilhandtering;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
 
 public class BehandleMedlemCommand implements GenererTidsserieCommand {
     private final TidsserieFactory grunnlagsdata;
@@ -24,7 +23,7 @@ public class BehandleMedlemCommand implements GenererTidsserieCommand {
      *
      * @param grunnlagsdata tenesta som gir tilgang til grunnlagsdata som ikkje er medlemsspesifikke
      * @param lagring tenesta som lagrar observasjonane generert av
-     * {@link Tidsseriemodus#createPublikator(TidsserieFacade, long, StorageBackend)}
+     * {@link Medlemsbehandler#createPublikator(TidsserieFacade, long, StorageBackend)}
      * @param medlemsbehandler delegat som regulerer kva {@link Regelsett} som skal benyttast, korleis
      * tidsserieobservasjonane skal byggast opp og hvilke medlem som skal behandlast
      * @throws NullPointerException viss nokon av argumenta er <code>null</code>

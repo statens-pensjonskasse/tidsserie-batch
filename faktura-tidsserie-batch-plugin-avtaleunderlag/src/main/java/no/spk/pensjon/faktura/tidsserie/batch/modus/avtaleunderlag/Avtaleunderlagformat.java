@@ -9,6 +9,7 @@ import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt.YSK;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.core.CSVFormat;
@@ -25,10 +26,10 @@ import no.spk.pensjon.faktura.tidsserie.domain.reglar.AarsLengdeRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.Aarsfaktor;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.AarsfaktorRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.AntallDagarRegel;
-import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.Aarstall;
-import no.spk.pensjon.faktura.tidsserie.domain.tidsperiode.AntallDagar;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
+import no.spk.felles.tidsperiode.Aarstall;
+import no.spk.felles.tidsperiode.AntallDagar;
+import no.spk.felles.tidsperiode.underlag.Underlag;
+import no.spk.felles.tidsperiode.underlag.Underlagsperiode;
 
 /**
  * {@link Avtaleunderlagformat} konverterer fra {@link Underlagsperiode}r til csv-formaterte rader,
@@ -51,7 +52,7 @@ class Avtaleunderlagformat implements CSVFormat {
             kolonne("tilOgMedDato", (u, p) -> dato(p.tilOgMed())).obligatorisk();
             kolonne("avtale", (u, p) -> kode(u.valgfriAnnotasjonFor(AvtaleId.class).map(AvtaleId::id))).obligatorisk();
             kolonne("uttrekksdato", (u, p) -> dato(u.valgfriAnnotasjonFor(Uttrekksdato.class).map(Uttrekksdato::uttrekksdato))).obligatorisk();
-            kolonne("uuid", (u, p) -> p.id()).obligatorisk();
+            kolonne("uuid", (u, p) -> p.annotasjonFor(UUID.class).toString()).obligatorisk();
             kolonne("antallFeil", (u, p) -> antallFeil()).obligatorisk();
             kolonne("tidsserienummer", (u, p) -> u.annotasjonFor(Tidsserienummer.class)).obligatorisk();
 

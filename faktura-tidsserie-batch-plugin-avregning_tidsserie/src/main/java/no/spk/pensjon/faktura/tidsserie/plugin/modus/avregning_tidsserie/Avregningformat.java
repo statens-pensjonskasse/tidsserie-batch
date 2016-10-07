@@ -7,6 +7,7 @@ import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt.TIP;
 import static no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Produkt.YSK;
 
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.core.CSVFormat;
@@ -49,7 +50,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.reglar.ErMedregningRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.ErPermisjonUtanLoennRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.ErUnderMinstegrensaRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.LoennstilleggRegel;
-import no.spk.pensjon.faktura.tidsserie.domain.reglar.MaskineltGrunnlagRegel;
+import no.spk.pensjon.faktura.tidsserie.domain.reglar.PensjonsgivendeLoennRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.MedregningsRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.MinstegrenseRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.OevreLoennsgrenseRegel;
@@ -59,8 +60,8 @@ import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.Begrunn
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.FakturerbareDagsverkGRURegel;
 import no.spk.pensjon.faktura.tidsserie.domain.reglar.forsikringsprodukt.FakturerbareDagsverkYSKRegel;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonsdato;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlag;
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Underlagsperiode;
+import no.spk.felles.tidsperiode.underlag.Underlag;
+import no.spk.felles.tidsperiode.underlag.Underlagsperiode;
 
 /**
  * {@link Avregningformat} representerer mapping-strategien for konvertering av {@link Underlagsperiode}r til
@@ -116,7 +117,7 @@ public class Avregningformat implements CSVFormat {
             kolonne(26, "NUM_REGEL_ANTALLDAGER", (u, up) -> heiltall(up.beregn(AntallDagarRegel.class).verdi()));
             kolonne(27, "BEL_REGEL_DELTIDSJUSTERT_LONN", (u, up) -> beloep(up.beregn(DeltidsjustertLoennRegel.class)));
             kolonne(28, "BEL_REGEL_LONN_TILLEGG", (u, up) -> beloep(up.beregn(LoennstilleggRegel.class)));
-            kolonne(29, "BEL_REGEL_PENSJONSGIVENDE_LONN", (u, up) -> beloep(up.beregn(MaskineltGrunnlagRegel.class)));
+            kolonne(29, "BEL_REGEL_PENSJONSGIVENDE_LONN", (u, up) -> beloep(up.beregn(PensjonsgivendeLoennRegel.class)));
             kolonne(30, "BEL_REGEL_MEDREGNING", (u, up) -> beloep(up.beregn(MedregningsRegel.class)));
             kolonne(31, "RTE_REGEL_MINSTEGRENSE", (u, up) -> prosent(up.beregn(MinstegrenseRegel.class).grense(), 2));
             kolonne(32, "NUM_REGEL_OEVRE_LONNSGRENSE", (u, up) -> beloep(up.beregn(OevreLoennsgrenseRegel.class)));
@@ -151,7 +152,7 @@ public class Avregningformat implements CSVFormat {
             kolonne(61, "BEL_YSK_ADMGEB", (u, up) -> beloep(beloepsatser(up, YSK).map(Satser::administrasjonsgebyr)));
             kolonne(62, "KOD_YSK_PRODUKTINFO", (u, up) -> kode(produktinfo(up, YSK)));
             kolonne(63, "KOD_YSK_RISIKO_KL", (u, up) -> kode(avtale(up).flatMap(Avtale::risikoklasse)));
-            kolonne(64, "IDE_UUID", (u, up) -> up.id().toString()).obligatorisk();
+            kolonne(64, "IDE_UUID", (u, up) -> up.annotasjonFor(UUID.class).toString()).obligatorisk();
             kolonne(65, "NUM_ANTALLFEIL", (u, up) -> antallFeil()).obligatorisk();
             kolonne(66, "IDE_SEKV_TORT129", (u, up) -> kode(up.valgfriAnnotasjonFor(ArbeidsgiverId.class).map(ArbeidsgiverId::id)));
             kolonne(67, "IDE_TIDSSERIENUMMER", (u, up) -> kode(u.valgfriAnnotasjonFor(Tidsserienummer.class)));

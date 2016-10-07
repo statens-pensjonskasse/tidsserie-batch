@@ -3,7 +3,7 @@ package no.spk.pensjon.faktura.tidsserie.batch.main.input;
 import static no.spk.pensjon.faktura.tidsserie.Datoar.dato;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import no.spk.pensjon.faktura.tidsserie.domain.underlag.Observasjonsperiode;
+import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
 
 import org.junit.Test;
 
