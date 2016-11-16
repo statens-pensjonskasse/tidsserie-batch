@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tidsserie.batch.at;
+package no.spk.felles.tidsserie.batch.at;
 
 import static java.time.LocalDate.now;
 import static java.util.stream.Collectors.toList;
@@ -13,13 +13,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import no.spk.pensjon.faktura.tidsserie.batch.core.CSVFormat;
-import no.spk.pensjon.faktura.tidsserie.batch.modus.live_tidsserie.Datavarehusformat;
 import no.spk.felles.tidsperiode.Aarstall;
 import no.spk.felles.tidsperiode.underlag.Underlag;
 import no.spk.felles.tidsperiode.underlag.Underlagsperiode;
 import no.spk.felles.tidsperiode.underlag.UnderlagsperiodeBuilder;
-import no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning_tidsserie.Avregningformat;
+import no.spk.felles.tidsserie.batch.core.CSVFormat;
 
 import cucumber.api.DataTable;
 import cucumber.api.java.Before;
@@ -83,10 +81,6 @@ public class FormatDefinisjonar implements No {
 
     private CSVFormat lagCSVFormat(String format) {
         switch (format) {
-        case "avregningsformat":
-            return new Avregningformat();
-        case "live-tidsserieformat":
-            return new Datavarehusformat();
         default:
             throw new IllegalArgumentException("Ukjent format: " + format);
         }

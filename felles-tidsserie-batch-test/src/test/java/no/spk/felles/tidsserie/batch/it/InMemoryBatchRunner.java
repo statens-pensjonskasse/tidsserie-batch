@@ -1,11 +1,11 @@
-package no.spk.pensjon.faktura.tidsserie.batch.it;
+package no.spk.felles.tidsserie.batch.it;
 
 import java.io.File;
 
-import no.spk.pensjon.faktura.tidsserie.batch.main.ApplicationController;
-import no.spk.pensjon.faktura.tidsserie.batch.main.TidsserieMain;
-import no.spk.pensjon.faktura.tidsserie.batch.main.input.Modus;
 import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
+import no.spk.felles.tidsserie.batch.main.ApplicationController;
+import no.spk.felles.tidsserie.batch.main.TidsserieMain;
+import no.spk.felles.tidsserie.batch.main.input.Modus;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**
@@ -17,7 +17,7 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
  *
  * @author Tarjei Skorgenes
  */
-class InMemoryBatchRunner implements PU_FAK_BA_10 {
+class InMemoryBatchRunner implements FellesTidsserieBatch {
     private final StandardOutputAndError outputAndError = new StandardOutputAndError();
 
     private final TidsserieMain batch;

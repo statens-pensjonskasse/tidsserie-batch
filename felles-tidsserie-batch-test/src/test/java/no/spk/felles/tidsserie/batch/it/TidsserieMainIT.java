@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tidsserie.batch.it;
+package no.spk.felles.tidsserie.batch.it;
 
 import cucumber.api.junit.Cucumber;
 import org.junit.runner.RunWith;

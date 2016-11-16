@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tidsserie.batch.it;
+package no.spk.felles.tidsserie.batch.it;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.empty;
@@ -16,14 +16,12 @@ import java.util.ServiceLoader;
 import java.util.function.Function;
 
 import no.spk.faktura.input.BatchId;
-import no.spk.pensjon.faktura.tidsserie.batch.main.ConsoleView;
-import no.spk.pensjon.faktura.tidsserie.batch.main.GrunnlagsdataDirectoryValidator;
-import no.spk.pensjon.faktura.tidsserie.batch.main.View;
-import no.spk.pensjon.faktura.tidsserie.batch.core.BatchIdConstants;
-import no.spk.pensjon.faktura.tidsserie.batch.main.input.Modus;
 import no.spk.felles.tidsperiode.Aarstall;
 import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
-import no.spk.pensjon.faktura.tjenesteregister.Constants;
+import no.spk.felles.tidsserie.batch.core.BatchIdConstants;
+import no.spk.felles.tidsserie.batch.main.ConsoleView;
+import no.spk.felles.tidsserie.batch.main.View;
+import no.spk.felles.tidsserie.batch.main.input.Modus;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 import cucumber.api.DataTable;
@@ -49,7 +47,7 @@ import org.junit.rules.TemporaryFolder;
  * @author Tarjei Skorgenes
  */
 public class EndeTilEndeModusDefinisjon implements No {
-    private final Map<String, Function<ServiceRegistry, PU_FAK_BA_10>> runas = new HashMap<>();
+    private final Map<String, Function<ServiceRegistry, FellesTidsserieBatch>> runas = new HashMap<>();
 
     private final MyTemporaryFolder temp = new MyTemporaryFolder();
 
@@ -71,7 +69,7 @@ public class EndeTilEndeModusDefinisjon implements No {
 
     private ServiceRegistry registry;
 
-    private Optional<Function<ServiceRegistry, PU_FAK_BA_10>> batch = empty();
+    private Optional<Function<ServiceRegistry, FellesTidsserieBatch>> batch = empty();
 
     public EndeTilEndeModusDefinisjon() {
         runas.put("out-of-process", registry -> new OutOfProcessBatchRunner());
@@ -189,7 +187,7 @@ public class EndeTilEndeModusDefinisjon implements No {
         modusar.after();
     }
 
-    private PU_FAK_BA_10 batch() {
+    private FellesTidsserieBatch batch() {
         return batch.orElseThrow(
                 () -> new IllegalArgumentException(
                         "Du har gløymt å angit korleis batchen skal køyrast, " +

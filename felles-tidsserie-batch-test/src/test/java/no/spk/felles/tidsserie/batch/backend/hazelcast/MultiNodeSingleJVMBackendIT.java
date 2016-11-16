@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast;
+package no.spk.felles.tidsserie.batch.backend.hazelcast;
 
 import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import no.spk.pensjon.faktura.tidsserie.batch.it.ServiceRegistryRule;
-import no.spk.pensjon.faktura.tidsserie.batch.it.StandardOutputAndError;
+import no.spk.felles.tidsserie.batch.it.ServiceRegistryRule;
+import no.spk.felles.tidsserie.batch.it.StandardOutputAndError;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.LifecycleEvent;

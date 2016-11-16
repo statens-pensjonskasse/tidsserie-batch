@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tidsserie.batch.it;
+package no.spk.felles.tidsserie.batch.it;
 
 import static java.util.stream.Collectors.toList;
 

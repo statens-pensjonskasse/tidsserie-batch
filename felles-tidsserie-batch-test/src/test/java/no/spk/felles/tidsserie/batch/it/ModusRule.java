@@ -1,13 +1,13 @@
-package no.spk.pensjon.faktura.tidsserie.batch.it;
+package no.spk.felles.tidsserie.batch.it;
 
-import static java.util.Arrays.asList;
+import static java.util.Arrays.stream;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.stream.Stream;
 
-import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsseriemodus;
-import no.spk.pensjon.faktura.tidsserie.batch.main.input.Modus;
+import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
+import no.spk.felles.tidsserie.batch.main.input.Modus;
 
 import org.junit.rules.ExternalResource;
 
@@ -33,8 +33,7 @@ class ModusRule extends ExternalResource {
      */
     public void support(final String... modusnavn) {
         Modus.reload(
-                asList(modusnavn)
-                        .stream()
+                stream(modusnavn)
                         .map(this::create)
         );
     }
