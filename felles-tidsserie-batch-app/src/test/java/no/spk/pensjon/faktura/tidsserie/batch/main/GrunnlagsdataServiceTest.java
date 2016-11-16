@@ -13,9 +13,9 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.ServiceRegistryRule;
-import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.MedlemsdataUploader;
-import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.Medlemslinje;
-import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.MedlemsdataBackend;
+import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataUploader;
+import no.spk.felles.tidsserie.batch.core.medlem.Medlemslinje;
+import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Avtalekoblingsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medregningsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Stillingsendring;

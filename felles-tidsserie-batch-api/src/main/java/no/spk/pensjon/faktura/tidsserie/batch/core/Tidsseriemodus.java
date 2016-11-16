@@ -1,15 +1,8 @@
 package no.spk.pensjon.faktura.tidsserie.batch.core;
 
 import java.util.Map;
-import java.util.stream.Stream;
 
-import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.BehandleMedlemCommand;
-import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.GenererTidsserieCommand;
-import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.Medlemsbehandler;
-import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medlemsdata;
-import no.spk.felles.tidsperiode.underlag.reglar.Regelsett;
-import no.spk.felles.tidsperiode.Tidsperiode;
-import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonspublikator;
+import no.spk.felles.tidsserie.batch.core.medlem.GenererTidsserieCommand;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**

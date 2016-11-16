@@ -14,7 +14,7 @@ import no.spk.pensjon.faktura.tidsserie.batch.core.Extensionpoint;
 import no.spk.pensjon.faktura.tidsserie.batch.core.LastOppGrunnlagsdataKommando;
 import no.spk.pensjon.faktura.tidsserie.batch.core.ServiceLocator;
 import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsseriemodus;
-import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.MedlemsdataBackend;
+import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
 import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;

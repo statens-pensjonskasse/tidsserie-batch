@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.MedlemsId;
-import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.MedlemsdataUploader;
-import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.Medlemslinje;
+import no.spk.felles.tidsserie.batch.core.medlem.MedlemsId;
+import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataUploader;
+import no.spk.felles.tidsserie.batch.core.medlem.Medlemslinje;
 
 import com.hazelcast.core.IMap;
 

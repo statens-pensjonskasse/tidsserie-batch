@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tidsserie.batch.core.medlem;
+package no.spk.felles.tidsserie.batch.core.medlem;
 
 import java.util.stream.Stream;
 

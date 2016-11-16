@@ -12,11 +12,11 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tidsserie.batch.core.LastOppGrunnlagsdataKommando;
-import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.MedlemsdataUploader;
-import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.Medlemslinje;
+import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataUploader;
+import no.spk.felles.tidsserie.batch.core.medlem.Medlemslinje;
 import no.spk.pensjon.faktura.tidsserie.batch.core.ServiceLocator;
 import no.spk.pensjon.faktura.tidsserie.batch.core.TidsperiodeFactory;
-import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.MedlemsdataBackend;
+import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieFactory;
 import no.spk.pensjon.faktura.tidsserie.domain.grunnlagsdata.Ordning;
 import no.spk.pensjon.faktura.tidsserie.domain.loennsdata.ApotekLoennstrinnperiode;

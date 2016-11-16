@@ -1,6 +1,6 @@
 package no.spk.pensjon.faktura.tidsserie.batch.core;
 
-import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.MedlemsId;
+import no.spk.felles.tidsserie.batch.core.medlem.MedlemsId;
 
 import org.assertj.core.api.JUnitSoftAssertions;
 import org.junit.Rule;

@@ -2,7 +2,7 @@ package no.spk.pensjon.faktura.tidsserie.batch.core;
 
 import java.io.UncheckedIOException;
 
-import no.spk.pensjon.faktura.tidsserie.batch.core.medlem.MedlemsdataBackend;
+import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**
