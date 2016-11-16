@@ -17,13 +17,7 @@
     <modules>
         <module>faktura-tidsserie-batch-input</module>
         <module>faktura-tidsserie-batch-app</module>
-        <module>pu-fak-ba-10</module>
-        <module>pu-fak-ba-11</module>
         <module>faktura-tidsserie-batch-api</module>
-        <module>faktura-tidsserie-batch-plugin-avtaleunderlag</module>
-        <module>faktura-tidsserie-batch-plugin-stillingsforholdobservasjonar</module>
-        <module>faktura-tidsserie-batch-plugin-live_tidsserie</module>
-        <module>faktura-tidsserie-batch-plugin-avregning_tidsserie</module>
     </modules>
 
     <properties>
@@ -183,26 +177,6 @@
             <dependency>
                 <groupId>no.spk.pensjon.faktura</groupId>
                 <artifactId>faktura-tidsserie-batch-input</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>no.spk.pensjon.faktura</groupId>
-                <artifactId>faktura-tidsserie-batch-plugin-avtaleunderlag</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>no.spk.pensjon.faktura</groupId>
-                <artifactId>faktura-tidsserie-batch-plugin-avregning_tidsserie</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>no.spk.pensjon.faktura</groupId>
-                <artifactId>faktura-tidsserie-batch-plugin-live_tidsserie</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>no.spk.pensjon.faktura</groupId>
-                <artifactId>faktura-tidsserie-batch-plugin-stillingsforholdobservasjonar</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
