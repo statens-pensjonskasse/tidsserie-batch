@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tidsserie.batch.main.input;
+package no.spk.felles.tidsserie.batch.main.input;
 
 import static java.util.stream.Collectors.joining;
 
@@ -8,10 +8,10 @@ import com.beust.jcommander.IParameterValidator;
 import com.beust.jcommander.ParameterException;
 
 /**
- * {@link no.spk.pensjon.faktura.tidsserie.batch.main.input.ModusValidator} verifiserer
+ * {@link ModusValidator} verifiserer
  * at den angitte moduskoda tilhøyrer ein av modusane som batchen støttar.
  *
- * @see no.spk.pensjon.faktura.tidsserie.batch.main.input.Modus
+ * @see Modus
  */
 public class ModusValidator implements IParameterValidator {
     @Override

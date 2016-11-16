@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 import no.spk.faktura.input.ArgumentSummary;
 import no.spk.faktura.input.InvalidParameterException;
 import no.spk.faktura.input.UsageRequestedException;
-import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
+import no.spk.felles.tidsserie.batch.main.input.ProgramArguments;
 
 import org.slf4j.Logger;
 

@@ -11,7 +11,7 @@ import java.util.Locale;
 import java.util.Optional;
 
 import no.spk.faktura.input.BatchId;
-import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
+import no.spk.felles.tidsserie.batch.main.input.ProgramArguments;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;

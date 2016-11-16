@@ -15,9 +15,9 @@ import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 import no.spk.faktura.input.BatchId;
-import no.spk.pensjon.faktura.tidsserie.batch.main.input.ModusRule;
-import no.spk.pensjon.faktura.tidsserie.batch.main.input.ProgramArguments;
-import no.spk.pensjon.faktura.tidsserie.batch.main.input.TidsserieArgumentsFactory;
+import no.spk.felles.tidsserie.batch.main.input.ModusRule;
+import no.spk.felles.tidsserie.batch.main.input.ProgramArguments;
+import no.spk.felles.tidsserie.batch.main.input.TidsserieArgumentsFactory;
 
 import org.junit.Rule;
 import org.junit.Test;

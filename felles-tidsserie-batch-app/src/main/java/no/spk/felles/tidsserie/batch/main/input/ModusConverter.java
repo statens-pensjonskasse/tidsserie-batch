@@ -1,11 +1,11 @@
-package no.spk.pensjon.faktura.tidsserie.batch.main.input;
+package no.spk.felles.tidsserie.batch.main.input;
 
-import static no.spk.pensjon.faktura.tidsserie.batch.main.input.ModusValidator.feilmelding;
+import static no.spk.felles.tidsserie.batch.main.input.ModusValidator.feilmelding;
 
 import com.beust.jcommander.IStringConverter;
 
 /**
- * Konverterer modus-argument til {@link no.spk.pensjon.faktura.tidsserie.batch.main.input.Modus}.
+ * Konverterer modus-argument til {@link Modus}.
  *
  * @author Tarjei Skorgenes
  */

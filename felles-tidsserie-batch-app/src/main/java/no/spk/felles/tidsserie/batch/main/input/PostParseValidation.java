@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tidsserie.batch.main.input;
+package no.spk.felles.tidsserie.batch.main.input;
 
 import static java.util.Collections.reverseOrder;
 import static no.spk.felles.tidsserie.batch.core.BatchIdConstants.GRUNNLAGSDATA_PATTERN;

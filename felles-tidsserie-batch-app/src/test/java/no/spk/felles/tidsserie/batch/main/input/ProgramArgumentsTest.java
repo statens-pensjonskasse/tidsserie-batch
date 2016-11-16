@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tidsserie.batch.main.input;
+package no.spk.felles.tidsserie.batch.main.input;
 
 import static no.spk.pensjon.faktura.tidsserie.Datoar.dato;
 import static org.assertj.core.api.Assertions.assertThat;
