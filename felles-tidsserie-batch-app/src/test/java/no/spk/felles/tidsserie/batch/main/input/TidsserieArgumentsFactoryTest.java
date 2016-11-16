@@ -76,7 +76,7 @@ public class TidsserieArgumentsFactoryTest {
     @Test
     public void testBeskrivelseInputOutputRequired() throws Exception {
         exception.expect(InvalidParameterException.class);
-        exception.expectMessage("Følgende valg er påkrevd: -log -o -i -m -b");
+        exception.expectMessage("Følgende valg er påkrevd: -i -b -m -o -log");
 
         new TidsserieArgumentsFactory().create();
     }
