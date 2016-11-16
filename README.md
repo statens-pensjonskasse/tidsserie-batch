@@ -1,21 +1,23 @@
-# PU-FAK-BA-10
-## *faktura-tidsserie-batch*
-Batchen genererer tidsserier til CSV-format basert på filer generert av faktura-grunnlagsdata-batch.
+# felles-tidsserie-batch
+
+Platformrammeverk for batchapplikasjonar som ønskjer høgytelses, minnebasert generering av underlags-baserte tidsseriar.
+
+Rammeverket tar seg av innlasting av medlemsavhengige og/eller medlemsuavhengige grunnlagsdata frå GZIP-komprimerte CSV-filer, in-memory prosessering av desse ved hjelp av [felles-tidsperiode-underlag-lib](http://git.spk.no/projects/FELLESJAVA/repos/felles-tidsperiode-underlag-lib) og lagring av genererte underlag og underlagsperioder tilbake til CSV-filer.
+
+Batchapplikasjonar som ønskjer å benytte seg av platformrammeverket blir då ansvarlig for å plugge inn funksjonalitet for konvertering av dei medlemsavhengige og -uavhengige grunnlagsdatane frå CSV til tidsperioder klare for prosessering via felles-tidsperiode-underlag-lib. I tillegg er dei ansvarlige for å plugge inn ein Tidsseriemodus som implementerer den funksjonelle genereringa av underlaga, inkludert spesifikasjon og implementasjon av serialiseringa tilbake til CSV-format for underlagsperiodene som blir generert.
+
 
 ### Moduler
 
-#### faktura-tidsserie-batch-app
-Platformkode som definerer opp fellestjenestene og oppstartsprosedyren som tar seg av validering av input, lagring til CSV-filer og innlesing og opplasting av grunnlagsdata.
+#### felles-tidsserie-batch-app
+
+Platformrammeverk som definerer opp fellestjenestene og oppstartsprosedyren som tar seg av validering av input, lagring til CSV-filer og innlesing og opplasting av grunnlagsdata.
 Inneholder også main-klassen for batchen og alle kommandolinjeargumenter.
 
-#### faktura-tidsserie-batch-input
-Kode for å transformere grunnlagsdata på CSV-format til domene-objekter.
+#### felles-tidsserie-batch-input
 
-### Overordnet Systemdokumentasjon
-[Systemdokumentasjon - faktura-tidsserie-batch (pu_fak_ba_10)](http://wiki/confluence/x/BwMpDQ)
+Faktura-spesifikk modul med oversettere frå FFF-relaterte grunnlagsdata til FFF-spesifikke tidsperioder.
 
-### Driftsdokumentasjon
-[Driftsdokumentasjon - faktura-tidsserie-batch (pu_fak_ba_10)](http://wiki/confluence/x/AgMpDQ)
 
 ## Ofte spurte spørsmål
 
