@@ -1,6 +1,6 @@
 package no.spk.felles.tidsserie.batch.core;
 
-import static no.spk.pensjon.faktura.tidsserie.Datoar.dato;
+import static no.spk.felles.tidsserie.batch.core.Datoar.dato;
 import static no.spk.felles.tidsserie.batch.core.Tidsserienummer.genererForDato;
 import static org.assertj.core.api.Assertions.assertThat;
 

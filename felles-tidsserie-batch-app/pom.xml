@@ -86,11 +86,5 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>no.spk.felles</groupId>
-            <artifactId>felles-tidsserie-batch-input</artifactId>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 </project>

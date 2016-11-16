@@ -1,6 +1,6 @@
 package no.spk.felles.tidsserie.batch.main.input;
 
-import static no.spk.pensjon.faktura.tidsserie.Datoar.dato;
+import static no.spk.felles.tidsserie.batch.Datoar.dato;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;

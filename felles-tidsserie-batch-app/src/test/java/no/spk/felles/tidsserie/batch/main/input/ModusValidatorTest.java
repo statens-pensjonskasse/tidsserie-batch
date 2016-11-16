@@ -31,7 +31,7 @@ public class ModusValidatorTest {
     @Test
     public void skalAvviseUkjenteKoder() {
         e.expect(ParameterException.class);
-        e.expectMessage("Modus 'whatever' er ikkje støtta av faktura-tidsserie-batch.");
+        e.expectMessage("Modus 'whatever' er ikkje støtta av felles-tidsserie-batch.");
         e.expectMessage("Følgjande modusar er støtta:");
 
         Modus.stream().map(Modus::kode).forEach(e::expectMessage);

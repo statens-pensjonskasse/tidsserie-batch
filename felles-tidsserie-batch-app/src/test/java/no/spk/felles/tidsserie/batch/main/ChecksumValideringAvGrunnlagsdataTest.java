@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import no.spk.pensjon.faktura.tidsserie.util.TemporaryFolderWithDeleteVerification;
+import no.spk.felles.tidsserie.batch.TemporaryFolderWithDeleteVerification;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Rule;

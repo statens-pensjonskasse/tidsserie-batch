@@ -2,7 +2,6 @@ package no.spk.felles.tidsserie.batch.main.input;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assume.assumeFalse;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +10,7 @@ import java.nio.file.Paths;
 
 import no.spk.faktura.input.InvalidParameterException;
 import no.spk.faktura.input.UsageRequestedException;
-import no.spk.pensjon.faktura.tidsserie.util.TemporaryFolderWithDeleteVerification;
+import no.spk.felles.tidsserie.batch.TemporaryFolderWithDeleteVerification;
 
 import org.junit.Before;
 import org.junit.Rule;

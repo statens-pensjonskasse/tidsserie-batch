@@ -9,8 +9,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 
+import no.spk.felles.tidsserie.batch.TemporaryFolderWithDeleteVerification;
 import no.spk.felles.tidsserie.batch.core.ObservasjonsEvent;
-import no.spk.pensjon.faktura.tidsserie.util.TemporaryFolderWithDeleteVerification;
 
 import org.assertj.core.api.AbstractListAssert;
 import org.junit.After;

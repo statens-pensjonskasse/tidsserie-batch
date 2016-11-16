@@ -8,8 +8,8 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
 
+import no.spk.felles.tidsserie.batch.TemporaryFolderWithDeleteVerification;
 import no.spk.felles.tidsserie.batch.main.input.StandardOutputAndError;
-import no.spk.pensjon.faktura.tidsserie.util.TemporaryFolderWithDeleteVerification;
 
 import org.junit.Rule;
 import org.junit.Test;

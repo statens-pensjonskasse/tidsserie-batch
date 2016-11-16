@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import no.spk.felles.tidsserie.batch.ServiceRegistryRule;
+import no.spk.felles.tidsserie.batch.TemporaryFolderWithDeleteVerification;
 import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataUploader;
 import no.spk.felles.tidsserie.batch.core.medlem.Medlemslinje;
 import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataBackend;
@@ -22,7 +23,6 @@ import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Stillingsendring;
 import no.spk.felles.tidsperiode.GenerellTidsperiode;
 import no.spk.felles.tidsperiode.Tidsperiode;
 import no.spk.felles.tidsserie.batch.core.GrunnlagsdataRepository;
-import no.spk.pensjon.faktura.tidsserie.util.TemporaryFolderWithDeleteVerification;
 
 import org.junit.Before;
 import org.junit.Rule;

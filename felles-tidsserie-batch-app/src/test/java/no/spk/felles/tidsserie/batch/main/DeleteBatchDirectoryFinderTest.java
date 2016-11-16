@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.File;
 import java.nio.file.Path;
 
-import no.spk.pensjon.faktura.tidsserie.util.TemporaryFolderWithDeleteVerification;
+import no.spk.felles.tidsserie.batch.TemporaryFolderWithDeleteVerification;
 
 import org.junit.Rule;
 import org.junit.Test;
