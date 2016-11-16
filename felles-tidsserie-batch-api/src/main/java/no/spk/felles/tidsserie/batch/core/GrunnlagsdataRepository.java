@@ -7,7 +7,8 @@ import java.util.stream.Stream;
 import no.spk.felles.tidsperiode.Tidsperiode;
 
 /**
- * Datalager som styrer tilgang til grunnlagsdatane som tidligare køyringar av faktura-grunnlagsdata-batch har produsert.
+ * Datalager som styrer tilgang til grunnlagsdatane som batchen skal lese inn og tilby for bruk til {@link Tidsseriemodus}
+ * ved generering av tidsseriar.
  *
  * @author Tarjei Skorgenes
  */

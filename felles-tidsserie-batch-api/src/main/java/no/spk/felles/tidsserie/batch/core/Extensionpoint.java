@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**
- * Extensionpoint lar modular utanfor faktura-tidsserie-batch-app plugge inn tjenester for å overstyre eller legge til,
+ * Extensionpoint lar modular utanfor felles-tidsserie-batch-app plugge inn tjenester for å overstyre eller legge til,
  * utvidelsar som utvidar eller endrar standardoppførselen til batchen.
  * <br>
  * Mekanisma er ei realisering av OCP-prinsippet som sikrar at framtidige utvidelsar og/eller endring av oppførsel

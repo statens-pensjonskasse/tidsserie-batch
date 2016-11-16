@@ -47,7 +47,8 @@ public class DirectoryCleaner {
     }
 
     /**
-     * Sletter alle batch-kataloger generert av tidligere kjøringer av faktura-tidsserie-batch.
+     * Sletter alle batch-kataloger generert av tidligere kjøringer av batchen.
+     *
      * @throws HousekeepingException dersom filoperasjoner feiler
      */
     public void deleteDirectories() throws HousekeepingException {

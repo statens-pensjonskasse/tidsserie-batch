@@ -47,12 +47,13 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistration;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**
- * Batch som genererer tidsseriar for forenkla fakturering fastsats.
+ * Platformrammeverk for generering av tidsseriar ved hjelp av felles-tidsperiode-underlag-lib og plugbare {@link Tidsseriemodus modusar}.
  * <br>
- * Batchen er avhengig av datasett generert av faktura-grunnlagsdata-batch. Datafilene den genererer blir lest inn av
- * faktura-tidsserie-batch, lasta opp til ein Hazelcast-basert in-memory backend og deretter brukt for å
- * generere tidsseriar på stillingsforholdnivå pr premieår pr observasjonsdato.
+ * Batchen er ansvarlig for å laste inn grunnlagsdata som modusane kan benytte for å bygge opp tidsseriar. Datafilene den leser inn blir lasta opp til
+ * ein Hazelcast-basert in-memory backend som modusane kan hente ut grunnlagsdata frå via {@link GrunnlagsdataRepository}.
  * <br>
+ * Ved køyring av batchen må brukaren angi kva {@link Tidsseriemodus modus} som skal benyttast og som følge av dette valget, kva type tidsserie
+ * som skal bli generert.
  *
  * @author Snorre E. Brekke - Computas
  * @author Tarjei Skorgenes
