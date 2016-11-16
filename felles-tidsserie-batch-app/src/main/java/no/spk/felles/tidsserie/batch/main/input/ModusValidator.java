@@ -29,7 +29,7 @@ public class ModusValidator implements IParameterValidator {
     }
 
     static String feilmelding(final String value) {
-        return "Modus '" + value + "' er ikkje støtta av faktura-tidsserie-batch.\n"
+        return "Modus '" + value + "' er ikkje støtta av felles-tidsserie-batch.\n"
                 + "\nFølgjande modusar er støtta:\n"
                 + Modus.stream()
                 .map(Modus::kode)

@@ -108,7 +108,7 @@ class MultiNodeSingleJVMBackend implements Server {
         final Config config = new XmlConfigBuilder().build();
         config.setProperty(GroupProperties.PROP_INITIAL_MIN_CLUSTER_SIZE, "1");
         config.setProperty(GroupProperties.PROP_SOCKET_BIND_ANY, "false");
-        config.getGroupConfig().setName("faktura-prognose-tidsserie-" + UUID.randomUUID().toString());
+        config.getGroupConfig().setName("felles-tidsserie-batch-" + UUID.randomUUID().toString());
         config
                 .getMapConfig("medlem")
                 .setEvictionPolicy(EvictionPolicy.NONE)
@@ -131,7 +131,7 @@ class MultiNodeSingleJVMBackend implements Server {
     private HazelcastInstance startInstance(final Config config, final int instanceNr) {
         HazelcastInstance instance = newHazelcastInstance(
                 config,
-                "faktura-prognose-tidsserie-" + instanceNr,
+                "felles-tidsserie-batch-" + instanceNr,
                 new DefaultNodeContext()
         );
         instance.getUserContext().put(ServiceRegistry.class.getSimpleName(), registry);
