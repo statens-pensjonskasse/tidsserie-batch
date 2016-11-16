@@ -11,11 +11,11 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import no.spk.pensjon.faktura.tidsserie.batch.ServiceRegistryRule;
-import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieGenerertCallback;
-import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieGenerertException;
-import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieLivssyklus;
-import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieLivssyklusException;
-import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsseriemodus;
+import no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback;
+import no.spk.felles.tidsserie.batch.core.TidsserieGenerertException;
+import no.spk.felles.tidsserie.batch.core.TidsserieLivssyklus;
+import no.spk.felles.tidsserie.batch.core.TidsserieLivssyklusException;
+import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.felles.tidsperiode.Aarstall;
 import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
 

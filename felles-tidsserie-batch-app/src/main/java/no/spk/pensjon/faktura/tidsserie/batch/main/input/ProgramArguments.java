@@ -16,7 +16,7 @@ import no.spk.faktura.input.LocalTimeValidator;
 import no.spk.faktura.input.PathStringValidator;
 import no.spk.faktura.input.ReadablePathValidator;
 import no.spk.faktura.input.WritableDirectoryValidator;
-import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsseriemodus;
+import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.felles.tidsperiode.Aarstall;
 import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
 

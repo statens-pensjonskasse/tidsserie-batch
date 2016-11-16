@@ -6,8 +6,8 @@ import java.util.List;
 
 import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
 import no.spk.felles.tidsperiode.underlag.reglar.Regelsett;
-import no.spk.pensjon.faktura.tidsserie.batch.core.StorageBackend;
-import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieFactory;
+import no.spk.felles.tidsserie.batch.core.StorageBackend;
+import no.spk.felles.tidsserie.batch.core.TidsserieFactory;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medlemsdata;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Feilhandtering;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade;

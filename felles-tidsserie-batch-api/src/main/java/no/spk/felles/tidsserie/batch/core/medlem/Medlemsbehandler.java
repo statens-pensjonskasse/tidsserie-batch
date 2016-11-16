@@ -2,8 +2,8 @@ package no.spk.felles.tidsserie.batch.core.medlem;
 
 import java.util.stream.Stream;
 
-import no.spk.pensjon.faktura.tidsserie.batch.core.StorageBackend;
-import no.spk.pensjon.faktura.tidsserie.batch.core.TidsperiodeFactory;
+import no.spk.felles.tidsserie.batch.core.StorageBackend;
+import no.spk.felles.tidsserie.batch.core.TidsperiodeFactory;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medlemsdata;
 import no.spk.felles.tidsperiode.Tidsperiode;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Observasjonspublikator;

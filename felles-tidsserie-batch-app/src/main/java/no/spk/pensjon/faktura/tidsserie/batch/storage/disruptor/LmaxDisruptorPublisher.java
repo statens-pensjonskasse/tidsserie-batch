@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
-import no.spk.pensjon.faktura.tidsserie.batch.core.ObservasjonsEvent;
-import no.spk.pensjon.faktura.tidsserie.batch.core.StorageBackend;
-import no.spk.pensjon.faktura.tidsserie.batch.core.TidsserieLivssyklus;
+import no.spk.felles.tidsserie.batch.core.ObservasjonsEvent;
+import no.spk.felles.tidsserie.batch.core.StorageBackend;
+import no.spk.felles.tidsserie.batch.core.TidsserieLivssyklus;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 import com.lmax.disruptor.RingBuffer;

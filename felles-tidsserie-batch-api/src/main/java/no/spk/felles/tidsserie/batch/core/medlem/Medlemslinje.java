@@ -6,7 +6,7 @@ import static java.util.stream.Collectors.toList;
 
 import java.util.List;
 
-import no.spk.pensjon.faktura.tidsserie.batch.core.Validators;
+import no.spk.felles.tidsserie.batch.core.Validators;
 import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medlemsdata;
 
 /**

@@ -1,7 +1,7 @@
 package no.spk.felles.tidsserie.batch.core.medlem;
 
 import static java.util.Objects.requireNonNull;
-import static no.spk.pensjon.faktura.tidsserie.batch.core.Validators.require;
+import static no.spk.felles.tidsserie.batch.core.Validators.require;
 
 /**
  * {@link MedlemsId} blir brukt for å unikt identifisere medlemmet eit sett med medlemsdata tilhøyrer.

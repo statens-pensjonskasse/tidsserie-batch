@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsseriemodus;
+import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
 
 /**
  * {@link Modus} representerer dei forskjellige modusane som brukaren

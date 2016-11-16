@@ -2,7 +2,7 @@ package no.spk.felles.tidsserie.batch.core.medlem;
 
 import java.util.Map;
 
-import no.spk.pensjon.faktura.tidsserie.batch.core.Tidsseriemodus;
+import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
 
 /**
