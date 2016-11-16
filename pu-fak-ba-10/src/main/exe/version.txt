@@ -1,2 +1,0 @@
-Versjon: ${project.version}
-Bygget: ${timestamp}

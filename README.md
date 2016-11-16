@@ -1,45 +1,30 @@
-# PU-FAK-BA-10
-## *faktura-tidsserie-batch*
-Batchen genererer tidsserier til CSV-format basert på filer generert av faktura-grunnlagsdata-batch.
+# felles-tidsserie-batch
+
+Platformrammeverk for batchapplikasjonar som ønskjer høgytelses, minnebasert generering av underlags-baserte tidsseriar.
+
+Rammeverket tar seg av innlasting av medlemsavhengige og/eller medlemsuavhengige grunnlagsdata frå GZIP-komprimerte CSV-filer, in-memory prosessering av desse ved hjelp av [felles-tidsperiode-underlag-lib](http://git.spk.no/projects/FELLESJAVA/repos/felles-tidsperiode-underlag-lib) og lagring av genererte underlag og underlagsperioder tilbake til CSV-filer.
+
+Batchapplikasjonar som ønskjer å benytte seg av platformrammeverket blir då ansvarlig for å plugge inn funksjonalitet for konvertering av dei medlemsavhengige og -uavhengige grunnlagsdatane frå CSV til tidsperioder klare for prosessering via felles-tidsperiode-underlag-lib. I tillegg er dei ansvarlige for å plugge inn ein Tidsseriemodus som implementerer den funksjonelle genereringa av underlaga, inkludert spesifikasjon og implementasjon av serialiseringa tilbake til CSV-format for underlagsperiodene som blir generert.
+
 
 ### Moduler
 
-#### pu-fak-ba-10
-Applikasjonsartifakt. Lager .exe fil med embedded java for å kunne kjøre batchen på Windows.
-Modulen drar inn app-modulen + alle modusene i en og samme shadede artifact for å sikre at batchen er 100% self contained.
+#### felles-tidsserie-batch-app
 
-#### pu-fak-ba-11
-Script for PU-FAK-BA-11. Ansvarlig for å generere batch-overvåking på vegne av PU-FAK-BA-10, basert på batch.log.
-Genererer tar.gz-filen som spkdeploy/spkappctl-deploy.pl deployerer til test- og produksjonsmiljøene og som kjøres via runbatch der.
-
-#### faktura-tidsserie-batch-app
-Platformkode som definerer opp fellestjenestene og oppstartsprosedyren som tar seg av validering av input, lagring til CSV-filer og innlesing og opplasting av grunnlagsdata.
+Platformrammeverk som definerer opp fellestjenestene og oppstartsprosedyren som tar seg av validering av input, lagring til CSV-filer og innlesing og opplasting av grunnlagsdata.
 Inneholder også main-klassen for batchen og alle kommandolinjeargumenter.
 
-#### faktura-tidsserie-batch-input
-Kode for å transformere grunnlagsdata på CSV-format til domene-objekter.
+#### felles-tidsserie-batch-api
 
-#### faktura-tidsserie-batch-plugin-avregning_tidsserie
-Formatdefinisjon og programkode for generering av 1-2 års tidsserier pr stillingsforhold på periodenivå for bruk i forbindelse med årlig avregning av SPK- og Opera-ordningen.
-Se [systemdokumentasjon - avregningstidsserie](http://wiki/confluence/display/dok/Systemdokumentasjon+-+PU_FAK_BA_10+-+Modus+-+Avregningstidsserie) for mer informasjon.
+API-modul som definerer kontrakta mellom platformrammeverket og applikasjonar som anvender og pluggar seg inn i rammeverket via tidsseriemodus-konseptet.
 
-#### faktura-tidsserie-batch-plugin-avtaleunderlag
-Formatdefinisjon og programkode for generering av tidsserier på avtalenivå for bruk til premiesats- og datakvalitetsformål.
-Se [systemdokumentasjon - avtaleunderlag](http://wiki/confluence/display/dok/Systemdokumentasjon+-+PU_FAK_BA_10+-+Modus+-+Avtaleunderlag) for mer informasjon.
+Modulen inneheld hovedsaklig grensesnitt for extension pointa som modusane kan plugge seg inn i rammeverket via, f.eks. for å plugge seg inn i livssyklushandteringa til rammeverket viss ein har behov for å klargjere eller rydde opp før/etter tidsseriegenereringa blir køyrt.
 
-#### faktura-tidsserie-batch-plugin-live_tidsserie
-Formatdefinisjon og programkode for generering av 10-års tidsserier pr stillingsforhold pr observasjonsdato på periodenivå for bruk i forbindelse med oppfølging av kunder via FFF-dashboard og for årlig- og terminvis prognosegenerering for alle fastsats-avtaler.
-Se [systemdokumentasjon - live tidsserie](http://wiki/confluence/display/dok/Systemdokumentasjon+-+PU_FAK_BA_10+-+Modus+-+Live+tidsserie) for mer informasjon.
+Stort sett all integrasjon mellom klientane av rammeverket og platformrammeverket skjer ved hjelp av eit [in-memory tjenesteregister](http://git.spk.no/projects/FF/repos/faktura-tjenesteregister-lib). Modulen inneheld og eit fåtalls støtteklasser for definisjon og bruk av tjenesteregisteret, enten via extension points eller via service locator-mekanisma.
 
-#### faktura-tidsserie-batch-plugin-stillingsforholdobservasjonar
-Formatdefinisjon og programkode for generering av 10-års tidsserier aggregert pr stillingsforhold, avtale og observasjonsdato.Ble brukt i 2015 for prognosegenerering og oppfølging av kunder via FFF-dashboard. Utgår fra og med 2016 da live tidsserie i DVH tar over ansvaret for dette fra denne modusen.
-Se [systemdokumentasjon - stillingsforholdobservasjonar](http://wiki/confluence/display/dok/Systemdokumentasjon+-+PU_FAK_BA_10+-+Modus+-+Stillingsforholdobservasjonar) for mer informasjon.
+#### felles-tidsserie-batch-input
 
-### Overordnet Systemdokumentasjon
-[Systemdokumentasjon - faktura-tidsserie-batch (pu_fak_ba_10)](http://wiki/confluence/x/BwMpDQ)
-
-### Driftsdokumentasjon
-[Driftsdokumentasjon - faktura-tidsserie-batch (pu_fak_ba_10)](http://wiki/confluence/x/AgMpDQ)
+Faktura-spesifikk modul med oversettere frå FFF-relaterte grunnlagsdata til FFF-spesifikke tidsperioder. Batchen vil bli frikobla frå denne før versjon 1.0.0 blir releasa for å unngå kobling til FFF-domenet.
 
 ## Ofte spurte spørsmål
 
