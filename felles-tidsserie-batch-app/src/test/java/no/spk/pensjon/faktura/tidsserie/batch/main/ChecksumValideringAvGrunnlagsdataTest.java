@@ -1,7 +1,7 @@
-package no.spk.pensjon.faktura.tidsserie.batch.main;
+package no.spk.felles.tidsserie.batch.main;
 
 
-import static no.spk.pensjon.faktura.tidsserie.batch.main.ChecksumValideringAvGrunnlagsdata.MD5_CHECKSUMS_FILENAME;
+import static no.spk.felles.tidsserie.batch.main.ChecksumValideringAvGrunnlagsdata.MD5_CHECKSUMS_FILENAME;
 
 import java.io.File;
 import java.io.FileInputStream;

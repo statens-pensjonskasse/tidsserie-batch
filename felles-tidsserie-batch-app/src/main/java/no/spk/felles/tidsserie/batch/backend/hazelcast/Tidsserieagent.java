@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast;
+package no.spk.felles.tidsserie.batch.backend.hazelcast;
 
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;

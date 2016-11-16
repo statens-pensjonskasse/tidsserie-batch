@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tidsserie.batch.main;
+package no.spk.felles.tidsserie.batch.main;
 
 import java.io.File;
 import java.io.FileWriter;

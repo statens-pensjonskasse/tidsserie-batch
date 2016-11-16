@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tidsserie.batch.main;
+package no.spk.felles.tidsserie.batch.main;
 
 import static no.spk.pensjon.faktura.tjenesteregister.Constants.SERVICE_RANKING;
 

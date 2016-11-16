@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tidsserie.batch.main;
+package no.spk.felles.tidsserie.batch.main;
 
 /**
  * Exception som kastes dersom {@link DirectoryCleaner} eller {@link DeleteBatchDirectoryFinder} feiler.

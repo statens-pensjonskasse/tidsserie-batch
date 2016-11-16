@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast;
+package no.spk.felles.tidsserie.batch.backend.hazelcast;
 
 import com.hazelcast.core.HazelcastInstance;
 
@@ -14,7 +14,7 @@ interface Server {
      * Startar opp master- og slavenodene.
      * <br>
      * Etter at metoda returnerer vil gridet vere klart til å behandle og ta vare på data opplasta via
-     * {@link no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast.HazelcastBackend#uploader()}.
+     * {@link HazelcastBackend#uploader()}.
      *
      * @return masternoda
      */

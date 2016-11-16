@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tidsserie.batch.main;
+package no.spk.felles.tidsserie.batch.main;
 
 import static java.time.Duration.between;
 import static java.time.Duration.ofMinutes;
@@ -22,7 +22,7 @@ import no.spk.faktura.input.InvalidParameterException;
 import no.spk.faktura.input.UsageRequestedException;
 import no.spk.faktura.timeout.BatchTimeout;
 import no.spk.faktura.timeout.BatchTimeoutTaskrunner;
-import no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast.HazelcastBackend;
+import no.spk.felles.tidsserie.batch.backend.hazelcast.HazelcastBackend;
 import no.spk.felles.tidsserie.batch.core.Extensionpoint;
 import no.spk.felles.tidsserie.batch.core.GrunnlagsdataRepository;
 import no.spk.felles.tidsserie.batch.core.Katalog;

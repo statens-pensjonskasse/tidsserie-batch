@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tidsserie.batch.backend.hazelcast;
+package no.spk.felles.tidsserie.batch.backend.hazelcast;
 
 import java.util.ArrayList;
 import java.util.Collection;
