@@ -10,14 +10,14 @@
         <relativePath>../spk-root-pom</relativePath>
     </parent>
 
-    <groupId>no.spk.pensjon.faktura</groupId>
-    <artifactId>faktura-tidsserie-batch-parent</artifactId>
-    <version>4.0.1-SNAPSHOT</version>
+    <groupId>no.spk.felles</groupId>
+    <artifactId>felles-tidsserie-batch</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
 
     <modules>
-        <module>faktura-tidsserie-batch-input</module>
-        <module>faktura-tidsserie-batch-app</module>
-        <module>faktura-tidsserie-batch-api</module>
+        <module>felles-tidsserie-batch-input</module>
+        <module>felles-tidsserie-batch-app</module>
+        <module>felles-tidsserie-batch-api</module>
     </modules>
 
     <properties>
@@ -165,18 +165,24 @@
                 <version>1.0.0</version>
             </dependency>
             <dependency>
-                <groupId>no.spk.pensjon.faktura</groupId>
-                <artifactId>faktura-tidsserie-batch-api</artifactId>
+                <groupId>no.spk.felles</groupId>
+                <artifactId>felles-tidsserie-batch-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>no.spk.pensjon.faktura</groupId>
-                <artifactId>faktura-tidsserie-batch-app</artifactId>
+                <groupId>no.spk.felles</groupId>
+                <artifactId>felles-tidsserie-batch-app</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>no.spk.pensjon.faktura</groupId>
-                <artifactId>faktura-tidsserie-batch-input</artifactId>
+                <groupId>no.spk.felles</groupId>
+                <artifactId>felles-tidsserie-batch-input</artifactId>
+                <type>test-jar</type>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.spk.felles</groupId>
+                <artifactId>felles-tidsserie-batch-input</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
