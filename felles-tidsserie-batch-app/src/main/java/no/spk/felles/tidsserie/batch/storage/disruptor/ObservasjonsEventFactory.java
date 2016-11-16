@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tidsserie.batch.storage.disruptor;
+package no.spk.felles.tidsserie.batch.storage.disruptor;
 
 import no.spk.felles.tidsserie.batch.core.ObservasjonsEvent;
 
