@@ -16,7 +16,6 @@ import org.junit.rules.ExternalResource;
  * Merk at sidan {@link Modus} er ein global JVM-singleton, kan ein ikkje køyre testar som benyttar den,
  * i parallell.
  *
- * @since 2.1.0
  */
 public class ModusRule extends ExternalResource {
     @Override

@@ -13,7 +13,6 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
  * ServiceLocator tilbyr oppslag av standardtjenesta for angitte tjenestetyper via tjenesteregisteret.
  *
  * @author Tarjei Skorgenes
- * @since 2.1.0
  */
 public class ServiceLocator {
     private ServiceRegistry registry;

@@ -19,7 +19,6 @@ import java.util.stream.Stream;
  * nokon andre ønskjer å feile sjølv når tjenester dei kallar feilar.
  *
  * @author Tarjei Skorgenes
- * @since 2.1.0
  */
 public class ExtensionpointStatus {
     private final List<RuntimeException> results = new ArrayList<>();

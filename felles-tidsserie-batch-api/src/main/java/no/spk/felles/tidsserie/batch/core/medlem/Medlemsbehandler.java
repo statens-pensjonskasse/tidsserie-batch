@@ -15,7 +15,6 @@ import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade;
  * {@link BehandleMedlemCommand}, hvilke referansedata som skal benyttes og hvordan medlemmer skal
  * publiseres.
  * @author Snorre E. Brekke - Computas
- * @since 2.0.0
  */
 public interface Medlemsbehandler {
 
@@ -29,7 +28,6 @@ public interface Medlemsbehandler {
      * skal tilhøyre
      * @param backend backendtenesta for lagring av resultata publikatoren genererer
      * @return observasjonspublikatoren som skal benyttast av tidsseriegenereringa.
-     * @since 2.0.0
      */
     Observasjonspublikator createPublikator(final TidsserieFacade tidsserie, long serienummer, final StorageBackend backend);
 

@@ -63,7 +63,6 @@ public class Modus {
      * Lastar inn lista med modusar som er plugga inn i batchen og som brukaren skal kunne velge mellom.
      *
      * @param modusar ei liste med alle tidsseriemodusar som er plugga inn i batchen
-     * @since 2.1.0
      */
     public static void reload(final Stream<Tidsseriemodus> modusar) {
         SUPPORTED.clear();
@@ -74,7 +73,6 @@ public class Modus {
      * Autodetekterer alle modusar som er plugga inn i batchen via {@link ServiceLoader#load(Class)}.
      *
      * @see Tidsseriemodus
-     * @since 2.1.0
      */
     public static void autodetect() {
         reload(

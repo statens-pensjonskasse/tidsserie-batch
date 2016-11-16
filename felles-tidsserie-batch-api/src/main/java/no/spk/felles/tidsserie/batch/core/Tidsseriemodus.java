@@ -65,7 +65,6 @@ public interface Tidsseriemodus {
      * Blir brukt for å gi brukaren muligheit til å angi ønska modus for batchkøyringa på kommandolinja.
      *
      * @return ein streng som inneheld eit modusnavn som brukaren ønskjer å generere ein tidsserie med
-     * @since 2.1.0
      */
     String navn();
 }

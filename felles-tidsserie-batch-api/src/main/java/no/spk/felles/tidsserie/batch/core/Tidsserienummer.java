@@ -19,7 +19,6 @@ import java.time.format.DateTimeFormatter;
  * opp til 9 tidsseriar pr dag før ein får samme problem på nytt.
  *
  * @author Tarjei Skorgenes
- * @since 1.0.2
  */
 public final class Tidsserienummer {
     private static DateTimeFormatter yyyyMMdd = DateTimeFormatter.ofPattern("yyyyMMdd");

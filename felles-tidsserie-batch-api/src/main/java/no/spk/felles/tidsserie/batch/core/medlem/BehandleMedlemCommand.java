@@ -27,7 +27,6 @@ public class BehandleMedlemCommand implements GenererTidsserieCommand {
      * @param medlemsbehandler delegat som regulerer kva {@link Regelsett} som skal benyttast, korleis
      * tidsserieobservasjonane skal byggast opp og hvilke medlem som skal behandlast
      * @throws NullPointerException viss nokon av argumenta er <code>null</code>
-     * @since 2.0.0
      */
     public BehandleMedlemCommand(final TidsserieFactory grunnlagsdata,
             final StorageBackend lagring,

@@ -8,7 +8,6 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
  * Blir kastet dersom en eller flere av {@link TidsserieGenerertCallback}-tjenester feiler ved {@link TidsserieGenerertCallback#tidsserieGenerert(ServiceRegistry)}.
  *
  * @author Snorre E. Brekke - Computas
- * @since 3.1.0
  */
 public class TidsserieGenerertException extends RuntimeException {
     private final static long serialVersionUID = 1;

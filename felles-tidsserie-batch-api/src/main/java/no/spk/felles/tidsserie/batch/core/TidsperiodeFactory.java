@@ -8,7 +8,6 @@ import no.spk.felles.tidsperiode.Tidsperiode;
  * {@link TidsperiodeFactory} gir tilgang til alle tidsperioder frå grunnlagsdatane batchen har tilgang til.
  *
  * @author Tarjei Skorgenes
- * @since 1.2.0
  */
 public interface TidsperiodeFactory {
     /**

@@ -6,7 +6,6 @@ import java.util.stream.Stream;
  * Blir kasta dersom ei eller fleire {@link TidsserieLivssyklus}-tjeneste feilar ved start eller stop.
  *
  * @author Tarjei Skorgenes
- * @since 2.1.0
  */
 public class TidsserieLivssyklusException extends RuntimeException {
     private final static long serialVersionUID = 1;

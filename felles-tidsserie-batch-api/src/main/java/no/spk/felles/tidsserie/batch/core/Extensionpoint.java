@@ -36,7 +36,6 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
  *
  * @param <T> tjenestetypen som extensionpointet støttar
  * @author Tarjei Skorgenes
- * @since 2.1.0
  */
 public class Extensionpoint<T> {
     private final ServiceRegistry registry;
