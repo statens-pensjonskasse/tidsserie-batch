@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tidsserie.batch;
+package no.spk.felles.tidsserie.batch;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

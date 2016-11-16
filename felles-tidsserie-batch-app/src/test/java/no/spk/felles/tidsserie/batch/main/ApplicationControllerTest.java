@@ -20,7 +20,7 @@ import java.util.Map;
 import no.spk.faktura.input.BatchId;
 import no.spk.faktura.input.InvalidParameterException;
 import no.spk.faktura.input.UsageRequestedException;
-import no.spk.pensjon.faktura.tidsserie.batch.ServiceRegistryRule;
+import no.spk.felles.tidsserie.batch.ServiceRegistryRule;
 import no.spk.felles.tidsserie.batch.core.LastOppGrunnlagsdataKommando;
 import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataBackend;

@@ -2,7 +2,7 @@ package no.spk.felles.tidsserie.batch.backend.hazelcast;
 
 import static org.mockito.Mockito.verify;
 
-import no.spk.pensjon.faktura.tidsserie.batch.ServiceRegistryRule;
+import no.spk.felles.tidsserie.batch.ServiceRegistryRule;
 
 import org.junit.Before;
 import org.junit.Rule;

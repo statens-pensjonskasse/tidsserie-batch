@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Stream;
 
-import no.spk.pensjon.faktura.tidsserie.batch.ServiceRegistryRule;
+import no.spk.felles.tidsserie.batch.ServiceRegistryRule;
 import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataUploader;
 import no.spk.felles.tidsserie.batch.core.medlem.Medlemslinje;
 import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataBackend;
