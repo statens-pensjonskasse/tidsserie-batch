@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -63,23 +64,40 @@ class OutOfProcessBatchRunner implements FellesTidsserieBatch {
 
     private String finnBatchensJarfil() {
         try {
-            return Files.find(Paths.get("."), 3, erBatchensJarfil())
+            final Path targetDirectory = projectBuildDirectory();
+            return Files.find(targetDirectory, 1, erBatchensJarfil())
                     .findAny()
                     .map(Path::toFile)
                     .map(File::getAbsolutePath)
-                    .orElseThrow(OutOfProcessBatchRunner::klarteIkkjeLokalisereJarfila);
+                    .orElseThrow(() -> klarteIkkjeLokalisereJarfila(targetDirectory));
         } catch (final IOException e) {
             throw new UncheckedIOException(e);
+        } catch (final URISyntaxException e) {
+            throw new UncheckedIOException(new IOException(e.getMessage(), e));
         }
     }
 
-    private static IllegalArgumentException klarteIkkjeLokalisereJarfila() {
-        return new IllegalArgumentException("Klarte ikkje lokalisere JAR-fila for pu-fak-ba-10 via søk frå rota av katalogen " +
-                Paths.get(".").toFile().getAbsolutePath());
+    private Path projectBuildDirectory() throws URISyntaxException {
+        return Paths.get(
+                // file:///.../felles-tidsserie-batch/target/test-classes
+                getClass()
+                        .getProtectionDomain()
+                        .getCodeSource()
+                        .getLocation()
+                        .toURI()
+        )
+                .getParent();
+    }
+
+    private static IllegalArgumentException klarteIkkjeLokalisereJarfila(final Path targetDirectory) {
+        return new IllegalArgumentException(
+                "Klarte ikkje lokalisere JAR-fila for felles-tidsserie-batch-test i katalogen "
+                        + targetDirectory.toFile().getAbsolutePath()
+        );
     }
 
     private static BiPredicate<Path, BasicFileAttributes> erBatchensJarfil() {
-        return (path, ignorer) -> path.toFile().getName().startsWith("pu-fak-ba-10") &&
+        return (path, ignorer) -> path.toFile().getName().startsWith("felles-tidsserie-batch-test") &&
                 path.toFile().getName().endsWith(".jar") &&
                 !path.toFile().getName().contains("-shaded") &&
                 !path.toFile().getName().contains("-tests") &&

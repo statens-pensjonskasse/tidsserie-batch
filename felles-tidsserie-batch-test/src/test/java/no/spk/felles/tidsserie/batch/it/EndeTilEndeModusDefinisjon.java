@@ -81,10 +81,10 @@ public class EndeTilEndeModusDefinisjon implements No {
         Gitt("^at brukaren ønskjer å generere ein tidsserie$", this::noop);
 
         Gitt("^følgjande innhold i ([^\\.]+\\.csv\\.gz):$", this::lagreLinjerTilFil);
-        Gitt("^at modus er lik (.+)$", this::medModus);
+        Gitt("^(?:at )?modus er lik (.+)$", this::medModus);
         Gitt("^observasjonsperioda strekker seg frå og med (\\d+) til og med (\\d+)$", this::medObservasjonsperiode);
         Gitt("^følgjande kolonner blir ignorert fordi dei endrar verdi frå køyring til køyring:$", this::ignorerKolonner);
-        Gitt("^batchen blir køyrt (.+)$", this::kjoerBatchenVia);
+        Gitt("^(?:at )?batchen blir køyrt (.+)$", this::kjoerBatchenVia);
 
         Så("^skal CSV-fil(?:a|ene) som blir generert inneholde følgjande rader:$", this::genererOgVerifiserResultat);
 
