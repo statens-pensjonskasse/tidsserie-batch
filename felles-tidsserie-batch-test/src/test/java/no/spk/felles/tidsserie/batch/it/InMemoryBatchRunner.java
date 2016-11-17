@@ -9,11 +9,15 @@ import no.spk.felles.tidsserie.batch.main.input.Modus;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**
- * {@link InMemoryBatchRunner} køyrer faktura-tidsserie-batch direkte utan å gå out of process slik som andre batchar blir testa i
- * faktura-integrasjonstester.
+ * {@link InMemoryBatchRunner} køyrer felles-tidsserie-batch direkte i samme prosess som testane køyrer via.
  * <br>
- * Intensjonen med dette er å dekke behovet for ei kodenær testsuite som smoke-testar at main-klassa og resten av batchen, inkludert modusen den blir køyrt
- * med, heng saman og produserer forventa format ut gitt statiske grunnlagsdata inn.
+ * Intensjonen med dette er å dekke behovet for ei kodenær testsuite som smoke-testar at main-klassa og resten av
+ * batchen, inkludert modusen den blir køyrt med, heng saman og produserer forventa format ut gitt statiske
+ * grunnlagsdata inn.
+ * <br>
+ * Ulempa med å køyre batch og testar i samme prosess er at vi ikkje testar 100% realistisk i forhold til
+ * classpathen som ein blir køyrt med. Testclasspathen kan påvirke batchen og skjule problem med hovedartifaktens
+ * avhengigheitsgraf. For meir robust testing, sjå {@link OutOfProcessBatchRunner}.
  *
  * @author Tarjei Skorgenes
  */

@@ -32,7 +32,7 @@ import org.junit.rules.TemporaryFolder;
 
 /**
  * Cucumber-definisjonar som støttar egenskapar som ønskjer å verifisere
- * CSV-outputen som ein modus i faktura-tidsserie-batch genererer.
+ * CSV-outputen som ein modus i felles-tidsserie-batch genererer.
  * <br>
  * Definisjonane tilrettelegger for at at ein setter opp navngitte CSV-filer
  * som inneheld grunnlagsdata som ein gitt modus i batchen skal behandle.

@@ -40,11 +40,6 @@ import org.slf4j.LoggerFactory;
  * For å redusere minnebruken for medlemsdatane tidsserien skal genererast ut i frå, blir alle medlemsdata lagra i
  * binært-format, ikkje i serialisert form.
  * <br>
- * Sidan beregningsagentane som {@link HazelcastBackend} sender
- * ut i gridet også er avhengig av fellestenester for lagring av resultat og innhenting av avtale- og referansedata,
- * tilbyr klassa muligheiter for å registrere fellestenester i kvar enkelt node sin
- * {@link com.hazelcast.core.HazelcastInstance#getUserContext()}.
- * <br>
  * Hazelcast blir satt opp til å rute alle logginnslag via slf4j.
  *
  * @author Tarjei Skorgenes

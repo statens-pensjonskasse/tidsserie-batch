@@ -8,6 +8,7 @@ import java.util.Map;
 
 import no.spk.felles.tidsserie.batch.core.AgentInitializer;
 import no.spk.felles.tidsserie.batch.core.Extensionpoint;
+import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.felles.tidsserie.batch.core.medlem.GenererTidsserieCommand;
 import no.spk.felles.tidsserie.batch.core.ServiceLocator;
 import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Feilhandtering;
@@ -25,7 +26,8 @@ import org.slf4j.MDC;
 
 /**
  * {@link Tidsserieagent} er limet som binder saman data lasta opp til in-memory gridet i Hazelcast og
- * domenemodellen som bygger opp tidsseriar.
+ * {@link GenererTidsserieCommand#generer(List, Observasjonsperiode, Feilhandtering, long)} som tar seg av den
+ * funksjonelle oppbygginga av tidsseriar.
  *
  * @author Tarjei Skorgenes
  */
