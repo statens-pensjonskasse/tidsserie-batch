@@ -2,6 +2,7 @@ package no.spk.felles.tidsserie.batch.storage.disruptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
@@ -40,7 +41,7 @@ public class FileWriterObservasjonsConsumerIT {
 
     @Before
     public void _before() throws IOException {
-        when(template.createUniqueFile(anyInt())).thenAnswer(invocation -> temp.newFile());
+        when(template.createUniqueFile(anyInt(), anyString())).thenAnswer(invocation -> temp.newFile());
         consumer = new FileWriterObservasjonsConsumer(template);
     }
 
@@ -57,7 +58,7 @@ public class FileWriterObservasjonsConsumerIT {
     public void skalTrunkereOutputfilaVissDenEksistererFraFoer() throws IOException {
         final File alreadyExists = temp.newFile();
         Files.write(alreadyExists.toPath(), "YADA YADA\n".getBytes());
-        when(template.createUniqueFile(anyInt())).thenReturn(alreadyExists);
+        when(template.createUniqueFile(anyInt(), anyString())).thenReturn(alreadyExists);
 
         final ObservasjonsEvent event = new ObservasjonsEvent();
         event.buffer.append("MOAR MOAR MOAR\n");
@@ -76,8 +77,8 @@ public class FileWriterObservasjonsConsumerIT {
 
     @Test
     public void skalSkriveEventenTilForskjelligeFilerBasertPaaEventserien() throws IOException {
-        when(template.createUniqueFile(1L)).thenAnswer(a -> temp.newFile("1"));
-        when(template.createUniqueFile(2L)).thenAnswer(a -> temp.newFile("2"));
+        when(template.createUniqueFile(1L, "tidsserie")).thenAnswer(a -> temp.newFile("1"));
+        when(template.createUniqueFile(2L, "tidsserie")).thenAnswer(a -> temp.newFile("2"));
 
         final ObservasjonsEvent event = new ObservasjonsEvent();
 

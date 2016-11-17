@@ -31,7 +31,6 @@ public class FileTemplateIT {
     public void _before() {
         template = new FileTemplate(
                 temp.getRoot().toPath(),
-                prefix(),
                 suffix()
         );
     }
@@ -57,7 +56,7 @@ public class FileTemplateIT {
     }
 
     private File create(final long serienummer) {
-        return template.createUniqueFile(serienummer);
+        return template.createUniqueFile(serienummer, prefix());
     }
 
     private String suffix() {

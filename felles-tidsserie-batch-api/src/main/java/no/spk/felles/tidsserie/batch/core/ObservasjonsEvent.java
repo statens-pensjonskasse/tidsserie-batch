@@ -24,6 +24,8 @@ public final class ObservasjonsEvent {
 
     private Optional<Long> serienummer = Optional.empty();
 
+    public String filprefix = "tidsserie";
+
     /**
      * Identifikator for serien eventen tilhøyrer.
      *
@@ -70,6 +72,14 @@ public final class ObservasjonsEvent {
      */
     public ObservasjonsEvent reset() {
         buffer.setLength(0);
+        return this;
+    }
+
+    public ObservasjonsEvent medFilprefix(final String filprefix) throws IllegalArgumentException{
+        if(filprefix == null || "".equals(filprefix)){
+            throw new IllegalArgumentException("Filprefix må ha en verdi men var tom.");
+        }
+        this.filprefix = filprefix;
         return this;
     }
 }

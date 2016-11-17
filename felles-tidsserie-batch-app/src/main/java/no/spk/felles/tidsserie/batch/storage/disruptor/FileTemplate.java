@@ -13,19 +13,17 @@ public class FileTemplate implements Serializable {
     private final static long serialVersionUID = 1;
 
     private final String directory;
-    private final String prefix;
     private final String suffix;
 
-    public FileTemplate(Path directory, String prefix, String suffix) {
+    public FileTemplate(Path directory, String suffix) {
         this.directory = directory.toFile().getAbsolutePath();
-        this.prefix = prefix;
         this.suffix = suffix;
     }
 
-    public File createUniqueFile(final long serienummer) {
+    public File createUniqueFile(final long serienummer, final String filprefix) {
         return Paths.get(
                 directory,
-                prefix
+                filprefix
                         + serienummer
                         + "-"
                         + UUID.randomUUID()

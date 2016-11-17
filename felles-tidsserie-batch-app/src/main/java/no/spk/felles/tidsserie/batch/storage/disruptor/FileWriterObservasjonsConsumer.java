@@ -25,7 +25,7 @@ import no.spk.felles.tidsserie.batch.core.ObservasjonsEvent;
 class FileWriterObservasjonsConsumer implements ObservasjonsConsumer {
     private final FileTemplate template;
 
-    private Map<Long, FileWriter> writers = new HashMap<>();
+    private Map<String, FileWriter> writers = new HashMap<>();
 
     FileWriterObservasjonsConsumer(final FileTemplate template) {
         this.template = template;
@@ -62,7 +62,7 @@ class FileWriterObservasjonsConsumer implements ObservasjonsConsumer {
      * Innhaldet blir lagra til disk med systemet sin standard encoding.
      * <br>
      * Klienten kan styre kva filer eventen blir skreven til ved å sjå til at kvar event har eit serienummer som
-     * i kombinasjon med {@link FileTemplate#createUniqueFile(long)}, regulerer output-fila eventen blir ruta til.
+     * i kombinasjon med {@link FileTemplate#createUniqueFile(long, String)}, regulerer output-fila eventen blir ruta til.
      * <br>
      * Eventar utan serienummer vil bli behandla som om serienummeret er <code>1</code>.
      *
@@ -75,8 +75,8 @@ class FileWriterObservasjonsConsumer implements ObservasjonsConsumer {
     @Override
     public void onEvent(final ObservasjonsEvent event, final long sequence, final boolean endOfBatch) throws UncheckedIOException {
         final FileWriter writer = this.writers.computeIfAbsent(
-                event.serienummer().orElse(1L),
-                this::newWriter
+                event.serienummer().orElse(1L)+event.filprefix,
+                (k) -> newWriter(event.serienummer().orElse(1L), event.filprefix)
         );
         try {
             writer.write(event.buffer.toString());
@@ -93,8 +93,8 @@ class FileWriterObservasjonsConsumer implements ObservasjonsConsumer {
         }
     }
 
-    protected FileWriter newWriter(final Long serienummer) {
-        final File file = template.createUniqueFile(serienummer);
+    protected FileWriter newWriter(final Long serienummer, final String filprefix) {
+        final File file = template.createUniqueFile(serienummer, filprefix);
         try {
             return new FileWriter(file, false);
         } catch (IOException e) {
