@@ -1,7 +1,9 @@
 package no.spk.felles.tidsserie.batch.core;
 
 import static java.util.Optional.of;
+import static java.util.Objects.requireNonNull;
 
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -76,7 +78,7 @@ public final class ObservasjonsEvent {
     }
 
     public ObservasjonsEvent medFilprefix(final String filprefix) throws IllegalArgumentException{
-        if(filprefix == null || "".equals(filprefix)){
+        if (requireNonNull(filprefix, "filprefix er påkrevd, men var null").trim().length() == 0) {
             throw new IllegalArgumentException("Filprefix må ha en verdi men var tom.");
         }
         this.filprefix = filprefix;
