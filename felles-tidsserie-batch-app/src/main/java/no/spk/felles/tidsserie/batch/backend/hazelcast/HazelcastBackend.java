@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
+import no.spk.felles.tidsserie.batch.core.medlem.GenererTidsserieCommand;
 import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataUploader;
 import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.felles.tidsserie.batch.core.TidsserieLivssyklus;
@@ -26,20 +27,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Gode JVM-argument ved bruk av denne backenden:
- * <pre>
- * -server
- * -Xms8000m
- * -Xmx8000m
- * -XX:NewSize=4000m
- * -XX:MaxNewSize=4000m
- * -XX:SurvivorRatio=36
- * -XX:+UseCompressedOops
- * -XX:+PrintTenuringDistribution
- * -XX:+UseTLAB
- * -XX:+UseParNewGC
- * -verbose:gc
- * </pre>
+ * Medlemsdatabackend som lar ein laste opp medlemsdata til eit in-memory datagrid
+ * i Hazelcast.
+ * <br>
+ * Sjølv om Hazelcast støttar distribuert prosessering på tvers av prosessar og maskiner,
+ * har batchen foreløpig kun implementert støtte for å spinne opp 1 eller fleire hazelcast-noder
+ * innanfor ein og samme JVM. Dette er gjort fordi klientane av batchen hittil ikkje har hatt
+ * behov for reell distribuert multi-maskin/multi-node prosessering.
+ * <br>
+ * Ettersom backenden vil laste opp alle medlemsdata in-memory må derfor applikasjonen
+ * som benyttar seg av backenden passe på å ha tilstrekkelig heap-kapasitet slik at heile datasettet
+ * får plass på heapen.
+ * <br>
+ * Beregningsagentane som {@link HazelcastBackend} sender ut i gridet ved kall til {@link #lagTidsserie()} vil typisk
+ * vere avhengige fellestenester for lagring av resultat og innhenting av avtale- og referansedata. For å gi dei tilgang
+ * til slike tenester må alle fellestenester som skal benyttast av agentane eller tenester dei delegerer til, ha blitt
+ * registrert i {@link ServiceRegistry tjenesteregisteret} før {@link #lagTidsserie()} blir kalla.
+ * <br>
+ * Den funksjonelle implementasjonen av tidsseriegenereringa blir delegert til standardtenesta av type
+ * {@link GenererTidsserieCommand}. Den må derfor ha blitt registrert i tenesteregisteret i forkant av at
+ * {@link #lagTidsserie()} blir kalla.
  */
 public class HazelcastBackend implements MedlemsdataBackend, TidsserieLivssyklus {
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -99,9 +106,7 @@ public class HazelcastBackend implements MedlemsdataBackend, TidsserieLivssyklus
 
         log.info("Startar køyring av {}", mapper);
         try {
-
-            final Map<String, Integer> resultat = future.get();
-            return resultat;
+            return future.get();
         } catch (final InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         } finally {

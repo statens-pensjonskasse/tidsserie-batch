@@ -18,6 +18,7 @@
         <module>felles-tidsserie-batch-input</module>
         <module>felles-tidsserie-batch-app</module>
         <module>felles-tidsserie-batch-api</module>
+        <module>felles-tidsserie-batch-test</module>
     </modules>
 
     <properties>
