@@ -91,4 +91,21 @@ public class FileWriterObservasjonsConsumerIT {
         assertFileContent(new File(temp.getRoot(), "1")).hasSize(1).containsOnly("YEY");
         assertFileContent(new File(temp.getRoot(), "2")).hasSize(1).containsOnly("YAY");
     }
+
+    @Test
+    public void skalSkriveEventenTilForskjelligeFilerBasertPaaPrefix() throws IOException {
+        when(template.createUniqueFile(1L, "tidsserie")).thenAnswer(a -> temp.newFile("1"));
+        when(template.createUniqueFile(1L, "noeAnnet")).thenAnswer(a -> temp.newFile("2"));
+
+        final ObservasjonsEvent event = new ObservasjonsEvent();
+
+        event.serienummer(1L).medInnhold("YEY\n");
+        consumer.onEvent(event, 1, true);
+
+        event.serienummer(1L).medFilprefix("noeAnnet").medInnhold("YAY\n");
+        consumer.onEvent(event, 1, true);
+
+        assertFileContent(new File(temp.getRoot(), "1")).hasSize(1).containsOnly("YEY");
+        assertFileContent(new File(temp.getRoot(), "2")).hasSize(1).containsOnly("YAY");
+    }
 }
