@@ -51,6 +51,8 @@ class OutOfProcessBatchRunner implements FellesTidsserieBatch {
             assertContentOf(stderr).isEmpty();
             assertContentOf(stdout).contains("Tidsserie-batch avsluttet OK");
 
+            assertContentOf(stdout).contains("Antall feil: 0");
+
             assertThat(process.exitValue())
                     .as("exitCode frå batchkøyringa")
                     .isEqualTo(0);

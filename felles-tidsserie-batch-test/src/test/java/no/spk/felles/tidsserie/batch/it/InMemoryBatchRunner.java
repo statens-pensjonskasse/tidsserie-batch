@@ -52,6 +52,7 @@ class InMemoryBatchRunner implements FellesTidsserieBatch {
             );
         } finally {
             outputAndError.after();
+            outputAndError.assertStandardOutput().contains("Antall feil: 0");
             outputAndError.assertBoolean("Har batchen avslutta OK?", exitCode == 0f).isTrue();
         }
     }
