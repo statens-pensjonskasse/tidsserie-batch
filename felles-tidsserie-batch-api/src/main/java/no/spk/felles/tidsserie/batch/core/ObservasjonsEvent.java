@@ -1,6 +1,7 @@
 package no.spk.felles.tidsserie.batch.core;
 
 import static java.util.Optional.of;
+import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
 
@@ -23,6 +24,8 @@ public final class ObservasjonsEvent {
     public final StringBuilder buffer = new StringBuilder(512);
 
     private Optional<Long> serienummer = Optional.empty();
+
+    public String filprefix = "tidsserie";
 
     /**
      * Identifikator for serien eventen tilhøyrer.
@@ -70,6 +73,14 @@ public final class ObservasjonsEvent {
      */
     public ObservasjonsEvent reset() {
         buffer.setLength(0);
+        return this;
+    }
+
+    public ObservasjonsEvent medFilprefix(final String filprefix) throws IllegalArgumentException{
+        if (requireNonNull(filprefix, "filprefix er påkrevd, men var null").trim().length() == 0) {
+            throw new IllegalArgumentException("Filprefix må ha en verdi men var tom.");
+        }
+        this.filprefix = filprefix;
         return this;
     }
 }

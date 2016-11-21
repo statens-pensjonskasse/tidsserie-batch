@@ -142,7 +142,7 @@ public class TidsserieMain {
 
             final LmaxDisruptorPublisher disruptor = new LmaxDisruptorPublisher(
                     executors,
-                    new FileTemplate(utKatalog, "tidsserie", ".csv")
+                    new FileTemplate(utKatalog, ".csv")
             );
             registrer(StorageBackend.class, disruptor);
             registrer(TidsserieLivssyklus.class, disruptor);
