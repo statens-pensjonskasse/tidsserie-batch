@@ -1,5 +1,6 @@
-package no.spk.pensjon.faktura.tidsserie.storage.csv;
+package no.spk.felles.tidsserie.batch.core;
 
+import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 
 import java.io.BufferedInputStream;
@@ -20,46 +21,71 @@ import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 
 import no.spk.felles.tidsperiode.Tidsperiode;
-import no.spk.felles.tidsserie.batch.core.GrunnlagsdataRepository;
 
 /**
- * Parameterobjekt som helde på kjennskapen til kvar datafilene som skal matast inn i tidsserien ligg tilgjengelig.
+ * {@link CSVInput} støttar deserialisering av {@link #referansedata() tidsperioder} og {@link #medlemsdata() medlemsdata} frå
+ * flate filer på CSV-format.
  * <br>
- * Det følest også naturlig å plassere kunnskapen om kva oversetter-implementasjonar som skal benyttast for å behandle
- * datafilene her.
+ * Tenesta er parametriserbar via {@link #addOversettere(CsvOversetter)} / {@link #addOversettere(Stream)}, sjølve
+ * deserialiseringa blir plugga inn i form av {@link CsvOversetter oversettere} som støttar ei bestemt type CSV-rad,
+ * typisk basert på ein eller anna form for type-indikator i første kolonne på kvar rad.
+ * <br>
+ * Tenesta forventar å bli satt opp med ein innkatalog som inneheld GZIP-komprimerte CSV-filer som kategoriserast i ein
+ * av to kategoriar:
+ * <ul>
+ * <li>{@link #referansedata() referansedata / tidsperioder}</li>
+ * <li>{@link #medlemsdata() medlemsdata}</li>
+ * </ul>
+ * <br>
+ * Medlemsdata blir kun lest frå fila medlemsdata.csv.gz i tenestas innkatalog. Alle andre filer av type csv.gz forventast å
+ * tilhøyre {@link #referansedata() referansedata}-kategorien og blir forventa å inneholde {@link Tidsperiode tidsperioder} av
+ * forskjelliger typer.
  *
  * @author Tarjei Skorgenes
  */
 public class CSVInput implements GrunnlagsdataRepository {
     private static final int DO_NOT_STRIP_TRAILING_SEPARATORS = -1;
+
     private final List<CsvOversetter<? extends Tidsperiode<?>>> oversettere = new ArrayList<>();
 
     private final Charset dataencoding = Charset.forName("UTF-8");
 
     private final Path directory;
 
-    public CSVInput(final Path directory) {
-        this.directory = directory;
-
-        oversettere.add(new StatligLoennstrinnperiodeOversetter());
-        oversettere.add(new ApotekLoennstrinnperiodeOversetter());
-        oversettere.add(new OmregningsperiodeOversetter());
-        oversettere.add(new AvtaleversjonOversetter());
-        oversettere.add(new AvtaleproduktOversetter());
-        oversettere.add(new AvtaleperiodeOversetter());
-        oversettere.add(new ArbeidsgiverOversetter());
-        oversettere.add(new ArbeidsgiverdataperiodeOversetter());
+    /**
+     * Konstruerer ei ny teneste som forventar å finne referanse- og medlemsdata i csv.gz-filer
+     * lagra direkte under den angitte katalogen.
+     *
+     * @param innkatalog innkatalogen tenesta skal lese csv.gz-filer frå
+     * @throws NullPointerException dersom <code>innkatalog</code> er <code>null</code>
+     */
+    public CSVInput(final Path innkatalog) {
+        this.directory = requireNonNull(innkatalog, "innkatalog er påkrevd, men var null");
     }
 
     /**
-     * Legger til <code>oversetter</code> som en av oversettarane som blir forsøkt brukt ved konvertering av linjer
-     * frå referansedata-filer til tidsperioder.
+     * Legger til ein <code>oversetter</code> som blir forsøkt brukt ved konvertering
+     * av linjer frå referansedata-filer til tidsperioder.
      *
-     * @param oversetter ein ny oversetter
+     * @param oversetter ein oversetter som tenesta skal kunne benytte seg av
      * @return <code>this</code>
+     * @see #referansedata()
      */
     public CSVInput addOversettere(final CsvOversetter<?> oversetter) {
         this.oversettere.add(oversetter);
+        return this;
+    }
+
+    /**
+     * Legger til eit sett med <code>oversettere</code> som blir forsøkt brukt ved konvertering
+     * av linjer frå referansedata-filer til tidsperioder.
+     *
+     * @param oversettere ein samling oversettere som tenesta skal kunne benytte seg av
+     * @return <code>this</code>
+     * @see #referansedata()
+     */
+    public CSVInput addOversettere(final Stream<CsvOversetter<?>> oversettere) {
+        oversettere.forEach(this::addOversettere);
         return this;
     }
 
@@ -80,7 +106,7 @@ public class CSVInput implements GrunnlagsdataRepository {
     }
 
     /**
-     * Returnerer stien til alle CSV-filer som inneheld referansedata som ikkje er
+     * Returnerer stien til alle komprimerte CSV-filer som inneheld referansedata som ikkje er
      * medlemsspesifikke.
      * <br>
      * Referansedatafiler blir plukka basert på at dei har filending <code>csv.gz</code> og ikkje
@@ -91,10 +117,10 @@ public class CSVInput implements GrunnlagsdataRepository {
      * @throws IOException dersom ein uvent I/O-feil oppstår under utlisting av filene
      */
     Stream<Path> referansedataFiler() throws IOException {
-        try(final Stream<Path> filer = Files
+        try (final Stream<Path> filer = Files
                 .list(directory)
                 .filter(path -> path.toString().endsWith("csv.gz"))
-                .filter(path -> !path.toString().endsWith("medlemsdata.csv.gz"))){
+                .filter(path -> !path.toString().endsWith("medlemsdata.csv.gz"))) {
             return filer.collect(toList()).stream();
         }
     }

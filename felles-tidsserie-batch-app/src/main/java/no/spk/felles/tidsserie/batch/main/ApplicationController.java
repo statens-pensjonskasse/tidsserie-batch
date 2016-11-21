@@ -142,7 +142,7 @@ public class ApplicationController {
     public void lastOpp() {
         view.startarOpplasting();
         opplasting
-                .invokeFirst(kommando -> kommando.lastOpp(registry))
+                .invokeAll(kommando -> kommando.lastOpp(registry))
                 .orElseRethrowFirstFailure()
         ;
         view.opplastingFullfoert();

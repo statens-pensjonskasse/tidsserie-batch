@@ -6,16 +6,18 @@ import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**
- * Laster opp grunnlagsdata frå {@link GrunnlagsdataRepository}  og gjer dei tilgjengelig via
- * {@link MedlemsdataBackend} og {@link TidsperiodeFactory}.
+ * {@link LastOppGrunnlagsdataKommando} lar modusane plugge inn tenester som har
+ * behov for å lese inn grunnlagsdata, typisk via {@link GrunnlagsdataRepository}
+ * ved oppstart av batchen, før nokon av {@link TidsserieLivssyklus} blir kalla og
+ * tidsseriegenereringa blir initiert.
  *
  * @author Tarjei Skorgenes
+ * @see GrunnlagsdataRepository
  */
 public interface LastOppGrunnlagsdataKommando {
     /**
-     * Lastar inn {@link GrunnlagsdataRepository#referansedata()} og
-     * {@link GrunnlagsdataRepository#medlemsdata()} og lastar dei opp til backend-tenestene som gjer dei
-     * tilgjengelig via {@link MedlemsdataBackend} og {@link TidsperiodeFactory}.
+     * Notifiserer tenesta om at batchen har satt opp {@link GrunnlagsdataRepository} og
+     * dermed er klar for innlesing eller {@link MedlemsdataBackend#uploader() opplasting} av desse.
      *
      * @param registry tjenesteregisteret som {@link GrunnlagsdataRepository} og eventuelle andre samarbeidande tenester
      * kan hentast frå

@@ -166,7 +166,7 @@ public class ApplicationControllerTest {
     }
 
     @Test
-    public void skal_kalle_standard_grunnlagsdata_uploader_service() throws IOException {
+    public void skal_kalle_lastOpp_for_alle_grunnlagsdata_uploader_services() throws IOException {
         final LastOppGrunnlagsdataKommando uploader1 = mock(LastOppGrunnlagsdataKommando.class);
         registry.registrer(LastOppGrunnlagsdataKommando.class, uploader1, Constants.SERVICE_RANKING + "=0");
 
@@ -175,7 +175,7 @@ public class ApplicationControllerTest {
 
         controller.lastOpp();
 
-        verify(uploader1, times(0)).lastOpp(any());
+        verify(uploader1, times(1)).lastOpp(any());
         verify(uploader2, times(1)).lastOpp(any());
         verifiserInformasjonsmelding("Starter lasting av grunnlagsdata...");
         verifiserInformasjonsmelding("Grunnlagsdata lastet.");
