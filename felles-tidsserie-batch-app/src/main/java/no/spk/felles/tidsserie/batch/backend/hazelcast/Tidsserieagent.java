@@ -6,8 +6,8 @@ import static java.util.stream.Collectors.joining;
 import java.util.List;
 import java.util.Map;
 
-import no.spk.felles.tidsserie.batch.core.AgentInitializer;
 import no.spk.felles.tidsserie.batch.core.medlem.GenererTidsserieCommand;
+import no.spk.felles.tidsserie.batch.core.medlem.PartisjonsListener;
 import no.spk.felles.tidsserie.batch.core.medlem.TidsserieContext;
 import no.spk.felles.tidsserie.batch.core.registry.Extensionpoint;
 import no.spk.felles.tidsserie.batch.core.registry.ServiceLocator;
@@ -36,7 +36,7 @@ class Tidsserieagent
     public static final String MDC_SERIENUMMER = "serienummer";
 
     private transient GenererTidsserieCommand kommando;
-    private transient Extensionpoint<AgentInitializer> listeners;
+    private transient Extensionpoint<PartisjonsListener> listeners;
 
     private transient IAtomicLong serienummerGenerator;
     private transient long serienummer;
@@ -54,7 +54,7 @@ class Tidsserieagent
 
     void configure(final ServiceRegistry registry) {
         final ServiceLocator services = new ServiceLocator(registry);
-        this.listeners = new Extensionpoint<>(AgentInitializer.class, registry);
+        this.listeners = new Extensionpoint<>(PartisjonsListener.class, registry);
         this.kommando = services.firstMandatory(GenererTidsserieCommand.class);
     }
 

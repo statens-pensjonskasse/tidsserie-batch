@@ -1,10 +1,7 @@
-package no.spk.felles.tidsserie.batch.core;
-
-import no.spk.felles.tidsserie.batch.core.medlem.GenererTidsserieCommand;
-import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataBackend;
+package no.spk.felles.tidsserie.batch.core.medlem;
 
 /**
- * {@link AgentInitializer} mottar notifikasjonar frå {@link MedlemsdataBackend}
+ * {@link PartisjonsListener} mottar notifikasjonar frå {@link MedlemsdataBackend}
  * kvar gang tidsseriegenereringa skal til å starte prosessering av ein ny medlemspartisjon.
  * <br>
  * Ved å plugge inn tenester av denne typen kan dermed modusane initiere initialisering eller
@@ -14,7 +11,7 @@ import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataBackend;
  *
  * @author Snorre E. Brekke - Computas
  */
-public interface AgentInitializer {
+public interface PartisjonsListener {
     /**
      * Notifiserer tenesta om at {@link MedlemsdataBackend} skal til å starte generering av
      * tidsseriar for medlemmer i ein bestemt partisjon.

@@ -3,6 +3,7 @@ package no.spk.felles.tidsserie.batch.core;
 import java.util.Map;
 
 import no.spk.felles.tidsserie.batch.core.medlem.GenererTidsserieCommand;
+import no.spk.felles.tidsserie.batch.core.medlem.PartisjonsListener;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**
@@ -26,7 +27,7 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
  * @see TidsserieGenerertCallback
  * @see GenererTidsserieCommand
  * @see TidsserieLivssyklus
- * @see AgentInitializer
+ * @see PartisjonsListener
  * @see StorageBackend
  * @see Katalog
  * @see TidsperiodeFactory
