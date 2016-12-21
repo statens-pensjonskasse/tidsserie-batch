@@ -2,8 +2,6 @@ package no.spk.felles.tidsserie.batch.core;
 
 import java.util.stream.Stream;
 
-import no.spk.felles.tidsperiode.Tidsperiode;
-
 /**
  * {@link TidsperiodeFactory} er ei teneste som modusane kan plugge inn for å
  * effektivisere oppslag og uthenting av {@link GrunnlagsdataRepository#referansedata()}.

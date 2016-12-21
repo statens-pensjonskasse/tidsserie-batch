@@ -9,8 +9,8 @@ import java.util.Map;
 import no.spk.felles.tidsserie.batch.core.AgentInitializer;
 import no.spk.felles.tidsserie.batch.core.Extensionpoint;
 import no.spk.felles.tidsserie.batch.core.ServiceLocator;
-import no.spk.felles.tidsserie.batch.core.medlem.TidsserieContext;
 import no.spk.felles.tidsserie.batch.core.medlem.GenererTidsserieCommand;
+import no.spk.felles.tidsserie.batch.core.medlem.TidsserieContext;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 import com.hazelcast.core.HazelcastInstance;

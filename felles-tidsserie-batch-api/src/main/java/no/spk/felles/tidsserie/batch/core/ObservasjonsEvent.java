@@ -1,7 +1,7 @@
 package no.spk.felles.tidsserie.batch.core;
 
-import static java.util.Optional.of;
 import static java.util.Objects.requireNonNull;
+import static java.util.Optional.of;
 
 import java.util.Optional;
 
