@@ -8,11 +8,9 @@ import java.util.Map;
 
 import no.spk.felles.tidsserie.batch.core.AgentInitializer;
 import no.spk.felles.tidsserie.batch.core.Extensionpoint;
-import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
-import no.spk.felles.tidsserie.batch.core.medlem.GenererTidsserieCommand;
 import no.spk.felles.tidsserie.batch.core.ServiceLocator;
-import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Feilhandtering;
-import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
+import no.spk.felles.tidsserie.batch.core.medlem.TidsserieContext;
+import no.spk.felles.tidsserie.batch.core.medlem.GenererTidsserieCommand;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 import com.hazelcast.core.HazelcastInstance;
@@ -26,7 +24,7 @@ import org.slf4j.MDC;
 
 /**
  * {@link Tidsserieagent} er limet som binder saman data lasta opp til in-memory gridet i Hazelcast og
- * {@link GenererTidsserieCommand#generer(List, Observasjonsperiode, Feilhandtering, long)} som tar seg av den
+ * {@link GenererTidsserieCommand#generer(String, List, TidsserieContext)}   som tar seg av den
  * funksjonelle oppbygginga av tidsseriar.
  *
  * @author Tarjei Skorgenes
@@ -39,7 +37,6 @@ class Tidsserieagent
 
     private transient GenererTidsserieCommand kommando;
     private transient Extensionpoint<AgentInitializer> listeners;
-    private transient Observasjonsperiode periode;
 
     private transient IAtomicLong serienummerGenerator;
     private transient long serienummer;
@@ -59,7 +56,6 @@ class Tidsserieagent
         final ServiceLocator services = new ServiceLocator(registry);
         this.listeners = new Extensionpoint<>(AgentInitializer.class, registry);
         this.kommando = services.firstMandatory(GenererTidsserieCommand.class);
-        this.periode = services.firstMandatory(Observasjonsperiode.class);
     }
 
     @Override
@@ -84,15 +80,13 @@ class Tidsserieagent
     public void map(final String key, final List<List<String>> value, final Context<String, Integer> context) {
         final Logger log = LoggerFactory.getLogger(getClass());
 
-        final Feilhandtering feilhandtering = lagFeilhandteringForMedlem(key, context, log);
         context.emit("medlem", 1);
 
         try {
             kommando.generer(
+                    key,
                     value,
-                    periode,
-                    feilhandtering,
-                    serienummer
+                    getTidsserieContext(context)
             );
         } catch (final RuntimeException | Error e) {
             log.warn("Periodisering av medlem {} feila: {} (endringar = {})", key, e.getMessage(), value);
@@ -101,13 +95,17 @@ class Tidsserieagent
         }
     }
 
-    private Feilhandtering lagFeilhandteringForMedlem(final String medlem, final Context<String, Integer> context,
-                                                      final Logger log) {
-        return (s, u, t) -> {
-            log.warn("Observering av stillingsforhold feila: {} (medlem = {}, stillingsforhold = {})", t.getMessage(), medlem, s.id());
-            log.info("Feilkilde:", t);
-            log.debug("Underlag: {}", u);
-            emitError(context, t);
+    private TidsserieContext getTidsserieContext(final Context<String, Integer> context) {
+        return new TidsserieContext() {
+            @Override
+            public void emitError(Throwable throwable) {
+                Tidsserieagent.this.emitError(context, throwable);
+            }
+
+            @Override
+            public long getSerienummer() {
+                return serienummer;
+            }
         };
     }
 

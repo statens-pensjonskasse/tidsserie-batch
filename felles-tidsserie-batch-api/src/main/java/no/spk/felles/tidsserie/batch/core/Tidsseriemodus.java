@@ -29,7 +29,6 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
  * @see AgentInitializer
  * @see StorageBackend
  * @see Katalog
- * @see TidsserieFactory
  * @see TidsperiodeFactory
  * @see GrunnlagsdataRepository
  */

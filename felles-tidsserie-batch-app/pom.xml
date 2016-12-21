@@ -22,10 +22,6 @@
             <artifactId>felles-tidsserie-batch-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>no.spk.pensjon.faktura</groupId>
-            <artifactId>faktura-prognose-tidsserie</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.hazelcast</groupId>
             <artifactId>hazelcast</artifactId>
         </dependency>

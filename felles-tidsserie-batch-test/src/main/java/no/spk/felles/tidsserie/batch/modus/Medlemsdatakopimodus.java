@@ -2,18 +2,22 @@ package no.spk.felles.tidsserie.batch.modus;
 
 import static java.util.stream.Collectors.joining;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
+import no.spk.felles.tidsserie.batch.core.CSVInput;
 import no.spk.felles.tidsserie.batch.core.GrunnlagsdataRepository;
+import no.spk.felles.tidsserie.batch.core.Katalog;
+import no.spk.felles.tidsserie.batch.core.LastOppGrunnlagsdataKommando;
 import no.spk.felles.tidsserie.batch.core.ServiceLocator;
 import no.spk.felles.tidsserie.batch.core.StorageBackend;
 import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.felles.tidsserie.batch.core.medlem.GenererTidsserieCommand;
 import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataBackend;
-import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Feilhandtering;
+import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataOpplaster;
+import no.spk.felles.tidsserie.batch.core.medlem.TidsserieContext;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**
@@ -25,6 +29,13 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 public class Medlemsdatakopimodus implements Tidsseriemodus {
     @Override
     public void registerServices(final ServiceRegistry serviceRegistry) {
+        final ServiceLocator services = new ServiceLocator(serviceRegistry);
+        final Path innkatalog = services.firstMandatory(Path.class, Katalog.GRUNNLAGSDATA.egenskap());
+        serviceRegistry.registerService(GrunnlagsdataRepository.class, new CSVInput(innkatalog));
+        final MedlemsdataOpplaster overfoering = new MedlemsdataOpplaster();
+        serviceRegistry.registerService(MedlemsdataOpplaster.class, overfoering);
+        serviceRegistry.registerService(LastOppGrunnlagsdataKommando.class, overfoering);
+
     }
 
     @Override
@@ -59,7 +70,7 @@ public class Medlemsdatakopimodus implements Tidsseriemodus {
         }
 
         @Override
-        public void generer(final List<List<String>> medlemsdata, final Observasjonsperiode periode, final Feilhandtering feilhandtering, final long serienummer) {
+        public void generer(final String key, List<List<String>> medlemsdata, TidsserieContext tidsserieContext) {
             medlemsdata
                     .stream()
                     .map(this::serialiser)
