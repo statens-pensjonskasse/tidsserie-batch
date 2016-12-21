@@ -15,8 +15,6 @@ import java.util.stream.Collectors;
 
 import no.spk.felles.tidsserie.batch.core.ServiceRegistryRule;
 import no.spk.felles.tidsserie.batch.core.TidsserieLivssyklus;
-import no.spk.felles.tidsserie.batch.core.registry.Extensionpoint;
-import no.spk.felles.tidsserie.batch.core.registry.ExtensionpointStatus;
 import no.spk.pensjon.faktura.tjenesteregister.Constants;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 

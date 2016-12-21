@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import no.spk.felles.tidsserie.batch.core.CSVInput;
-import no.spk.felles.tidsserie.batch.core.GrunnlagsdataRepository;
 import no.spk.felles.tidsserie.batch.core.Katalog;
-import no.spk.felles.tidsserie.batch.core.LastOppGrunnlagsdataKommando;
 import no.spk.felles.tidsserie.batch.core.StorageBackend;
 import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
+import no.spk.felles.tidsserie.batch.core.grunnlagsdata.GrunnlagsdataRepository;
+import no.spk.felles.tidsserie.batch.core.grunnlagsdata.LastOppGrunnlagsdataKommando;
+import no.spk.felles.tidsserie.batch.core.grunnlagsdata.csv.CSVInput;
 import no.spk.felles.tidsserie.batch.core.medlem.GenererTidsserieCommand;
 import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataOpplaster;

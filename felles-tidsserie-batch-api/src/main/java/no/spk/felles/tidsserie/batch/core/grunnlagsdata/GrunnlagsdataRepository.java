@@ -1,10 +1,11 @@
-package no.spk.felles.tidsserie.batch.core;
+package no.spk.felles.tidsserie.batch.core.grunnlagsdata;
 
 import java.io.UncheckedIOException;
 import java.util.List;
 import java.util.stream.Stream;
 
 import no.spk.felles.tidsperiode.Tidsperiode;
+import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
 
 /**
  * Datalager som styrer tilgang til grunnlagsdatane som batchen skal lese inn og tilby for bruk til {@link Tidsseriemodus}

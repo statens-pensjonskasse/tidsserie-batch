@@ -4,8 +4,8 @@ import java.io.UncheckedIOException;
 import java.util.List;
 import java.util.stream.Stream;
 
-import no.spk.felles.tidsserie.batch.core.GrunnlagsdataRepository;
-import no.spk.felles.tidsserie.batch.core.LastOppGrunnlagsdataKommando;
+import no.spk.felles.tidsserie.batch.core.grunnlagsdata.GrunnlagsdataRepository;
+import no.spk.felles.tidsserie.batch.core.grunnlagsdata.LastOppGrunnlagsdataKommando;
 import no.spk.felles.tidsserie.batch.core.registry.ServiceLocator;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 

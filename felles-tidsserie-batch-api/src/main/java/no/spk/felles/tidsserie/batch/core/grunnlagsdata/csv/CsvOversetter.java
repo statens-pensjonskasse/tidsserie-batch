@@ -1,4 +1,4 @@
-package no.spk.felles.tidsserie.batch.core;
+package no.spk.felles.tidsserie.batch.core.grunnlagsdata.csv;
 
 import java.util.List;
 

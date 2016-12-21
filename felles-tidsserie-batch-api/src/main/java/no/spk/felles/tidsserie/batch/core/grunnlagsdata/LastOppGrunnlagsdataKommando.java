@@ -1,7 +1,8 @@
-package no.spk.felles.tidsserie.batch.core;
+package no.spk.felles.tidsserie.batch.core.grunnlagsdata;
 
 import java.io.UncheckedIOException;
 
+import no.spk.felles.tidsserie.batch.core.TidsserieLivssyklus;
 import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 

@@ -1,4 +1,4 @@
-package no.spk.felles.tidsserie.batch.core;
+package no.spk.felles.tidsserie.batch.core.grunnlagsdata.csv;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
@@ -21,6 +21,7 @@ import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 
 import no.spk.felles.tidsperiode.Tidsperiode;
+import no.spk.felles.tidsserie.batch.core.grunnlagsdata.GrunnlagsdataRepository;
 
 /**
  * {@link CSVInput} støttar deserialisering av {@link #referansedata() tidsperioder} og {@link #medlemsdata() medlemsdata} frå

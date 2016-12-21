@@ -2,6 +2,8 @@ package no.spk.felles.tidsserie.batch.core;
 
 import java.util.Map;
 
+import no.spk.felles.tidsserie.batch.core.grunnlagsdata.GrunnlagsdataRepository;
+import no.spk.felles.tidsserie.batch.core.grunnlagsdata.TidsperiodeFactory;
 import no.spk.felles.tidsserie.batch.core.medlem.GenererTidsserieCommand;
 import no.spk.felles.tidsserie.batch.core.medlem.PartisjonsListener;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
