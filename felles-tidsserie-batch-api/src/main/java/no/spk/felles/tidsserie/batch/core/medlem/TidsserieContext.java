@@ -2,7 +2,7 @@ package no.spk.felles.tidsserie.batch.core.medlem;
 
 import java.util.List;
 
-import no.spk.felles.tidsserie.batch.core.lagring.ObservasjonsEvent;
+import no.spk.felles.tidsserie.batch.core.lagring.Tidsserierad;
 
 /**
  * {@link TidsserieContext} er bindeleddet mellom {@link GenererTidsserieCommand} og teknologien
@@ -39,7 +39,7 @@ public interface TidsserieContext {
      *
      * @return eit serienummer som indikerer kva partisjon medlemmet tilhøyrer i
      * den distribuerte medlemsdatabackenden
-     * @see ObservasjonsEvent#serienummer()
+     * @see Tidsserierad#serienummer()
      */
     long getSerienummer();
 }

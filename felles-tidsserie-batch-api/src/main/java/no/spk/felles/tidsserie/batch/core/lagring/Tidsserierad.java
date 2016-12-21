@@ -6,17 +6,20 @@ import static java.util.Optional.of;
 import java.util.Optional;
 
 /**
- * {@link ObservasjonsEvent} inneheld den serialiserte representasjonen av ein tidsserieobservasjon på
- * stillingsforholdnivå.
+ * {@link Tidsserierad} inneheld den serialiserte representasjonen av ein tidsserieobservasjon.
  * <br>
- * Kvar event blir handtert som ein tekstbuffer for å unngå at nokon objekt tilhøyrande tidsseriens domenemodell
+ * Kvar rad blir handtert som ein tekstbuffer for å unngå at nokon objekt tilhøyrande tidsseriens domenemodell
  * skal bevege seg over i old-generation kun som ein konsekvens av at dei er tilgjengelig via ringbufferen som
  * held på observasjonseventane. Ringbufferen forventast å relativt fort bevege seg over i old-generation som ein
  * effekt at den lever på tvers av alle obserasjonar generert frå ein og samme partisjon i gridet.
+ * <br>
+ * Kvar rad er tilknytta eit serienummer som kan benyttast til å rute rader på ein slik måte at alle rader
+ * tilhøyrande samme serienummer blir samlokaliserte og liggande i samme fil. Dette er ønskelig for eksempel
+ * for å sikre at alle rader tilhøyrande samme medlem blir liggande i samme fil.
  *
  * @author Tarjei Skorgenes
  */
-public final class ObservasjonsEvent {
+public final class Tidsserierad {
     /**
      * Ein buffer som den tekstlige representasjonen av ein tidsserieobservasjon skal mellomlagrast i
      * frå observasjonen er ferdig generert til den blir lagra til disk.
@@ -44,7 +47,7 @@ public final class ObservasjonsEvent {
      * @return <code>this</code>
      * @throws IllegalArgumentException dersom serienummeret er mindre enn 1
      */
-    public ObservasjonsEvent serienummer(final long serienummer) throws IllegalArgumentException {
+    public Tidsserierad serienummer(final long serienummer) throws IllegalArgumentException {
         if (serienummer < 1) {
             throw new IllegalArgumentException(
                     "serienummer må vere eit positivt heiltal, men var " + serienummer
@@ -60,7 +63,7 @@ public final class ObservasjonsEvent {
      * @param content det nye, tekstlige innholdet til eventen
      * @return <code>this</code>
      */
-    public ObservasjonsEvent medInnhold(final String content) {
+    public Tidsserierad medInnhold(final String content) {
         reset();
         buffer.append(content);
         return this;
@@ -71,12 +74,12 @@ public final class ObservasjonsEvent {
      *
      * @return event for chaining
      */
-    public ObservasjonsEvent reset() {
+    public Tidsserierad reset() {
         buffer.setLength(0);
         return this;
     }
 
-    public ObservasjonsEvent medFilprefix(final String filprefix) throws IllegalArgumentException{
+    public Tidsserierad medFilprefix(final String filprefix) throws IllegalArgumentException{
         if (requireNonNull(filprefix, "filprefix er påkrevd, men var null").trim().length() == 0) {
             throw new IllegalArgumentException("Filprefix må ha en verdi men var tom.");
         }

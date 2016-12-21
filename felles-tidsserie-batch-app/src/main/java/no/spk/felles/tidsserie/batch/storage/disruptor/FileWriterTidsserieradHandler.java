@@ -10,31 +10,31 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import no.spk.felles.tidsserie.batch.core.lagring.ObservasjonsEvent;
+import no.spk.felles.tidsserie.batch.core.lagring.Tidsserierad;
 
 /**
- * Fil-basert implementasjon av {@link ObservasjonsConsumer}.
+ * Fil-basert implementasjon av {@link TidsserieradHandler}.
  * <br>
- * {@link ObservasjonsEvent}ar som blir mottatt av {@link #onEvent(ObservasjonsEvent, long, boolean)} blir lagra
+ * {@link Tidsserierad}ar som blir mottatt av {@link #onEvent(Tidsserierad, long, boolean)} blir lagra
  * til disk via ordinær, ubuffra {@link Writer}-basert blocking I/O.
  * <br>
  * Ved slutten av kvar batch og ved lukking av consumeren, blir eventane flusha til disk.
  *
  * @author Tarjei Skorgenes
  */
-class FileWriterObservasjonsConsumer implements ObservasjonsConsumer {
+class FileWriterTidsserieradHandler implements TidsserieradHandler {
     private final FileTemplate template;
 
     private Map<String, FileWriter> writers = new HashMap<>();
 
-    FileWriterObservasjonsConsumer(final FileTemplate template) {
+    FileWriterTidsserieradHandler(final FileTemplate template) {
         this.template = template;
     }
 
     /**
-     * Flushar og lukkar alle åpne filer
+     * Lukkar alle åpne filer som rader har blitt lagra til i løpet av tidsseriegenereringa.
      *
-     * @throws IOException
+     * @throws IOException dersom lukke av ei eller fleire av dei åpne feilene feilar
      */
     public void close() throws IOException {
         final List<IOException> feilVedLukking = new ArrayList<>();
@@ -66,16 +66,16 @@ class FileWriterObservasjonsConsumer implements ObservasjonsConsumer {
      * <br>
      * Eventar utan serienummer vil bli behandla som om serienummeret er <code>1</code>.
      *
-     * @param event      eventen som inneheld innholdet som skal lagrast og serienummeret den eventuelt tilhøyrer
-     * @param sequence   sekvensnummeret til eventen som blir prosessert
+     * @param event eventen som inneheld innholdet som skal lagrast og serienummeret den eventuelt tilhøyrer
+     * @param sequence sekvensnummeret til eventen som blir prosessert
      * @param endOfBatch <code>true</code> dersom dette er siste event i ein batch, <code>false</code> viss det
-     *                   vil bli sendt inn fleire eventar til consumeren straks metoda returnerer
+     * vil bli sendt inn fleire eventar til consumeren straks metoda returnerer
      * @throws UncheckedIOException dersom skriving til disk eller åpning av nye filer feilar
      */
     @Override
-    public void onEvent(final ObservasjonsEvent event, final long sequence, final boolean endOfBatch) throws UncheckedIOException {
+    public void onEvent(final Tidsserierad event, final long sequence, final boolean endOfBatch) throws UncheckedIOException {
         final FileWriter writer = this.writers.computeIfAbsent(
-                event.serienummer().orElse(1L)+event.filprefix,
+                event.serienummer().orElse(1L) + event.filprefix,
                 (k) -> newWriter(event.serienummer().orElse(1L), event.filprefix)
         );
         try {

@@ -31,5 +31,5 @@ public interface StorageBackend {
      * @throws RuntimeException viss <code>consumer</code> kastar ein {@link RuntimeException}
      * @throws Error            viss <code>consumer</code> kaster ein {@link Error}
      */
-    void lagre(final Consumer<ObservasjonsEvent> consumer);
+    void lagre(final Consumer<Tidsserierad> consumer);
 }

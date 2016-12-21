@@ -11,7 +11,7 @@ import java.nio.file.Files;
 import java.util.List;
 
 import no.spk.felles.tidsserie.batch.TemporaryFolderWithDeleteVerification;
-import no.spk.felles.tidsserie.batch.core.lagring.ObservasjonsEvent;
+import no.spk.felles.tidsserie.batch.core.lagring.Tidsserierad;
 
 import org.assertj.core.api.AbstractListAssert;
 import org.junit.After;
@@ -23,11 +23,11 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 /**
- * Integrasjonstestar for {@link FileWriterObservasjonsConsumer}.
+ * Integrasjonstestar for {@link FileWriterTidsserieradHandler}.
  *
  * @author Tarjei Skorgenes
  */
-public class FileWriterObservasjonsConsumerIT {
+public class FileWriterTidsserieradHandlerIT {
     @Rule
     public final TemporaryFolderWithDeleteVerification temp = new TemporaryFolderWithDeleteVerification();
 
@@ -37,12 +37,12 @@ public class FileWriterObservasjonsConsumerIT {
     @Mock
     private FileTemplate template;
 
-    private FileWriterObservasjonsConsumer consumer;
+    private FileWriterTidsserieradHandler consumer;
 
     @Before
     public void _before() throws IOException {
         when(template.createUniqueFile(anyInt(), anyString())).thenAnswer(invocation -> temp.newFile());
-        consumer = new FileWriterObservasjonsConsumer(template);
+        consumer = new FileWriterTidsserieradHandler(template);
     }
 
     @After
@@ -60,7 +60,7 @@ public class FileWriterObservasjonsConsumerIT {
         Files.write(alreadyExists.toPath(), "YADA YADA\n".getBytes());
         when(template.createUniqueFile(anyInt(), anyString())).thenReturn(alreadyExists);
 
-        final ObservasjonsEvent event = new ObservasjonsEvent();
+        final Tidsserierad event = new Tidsserierad();
         event.buffer.append("MOAR MOAR MOAR\n");
         consumer.onEvent(event, 1, true);
 
@@ -80,7 +80,7 @@ public class FileWriterObservasjonsConsumerIT {
         when(template.createUniqueFile(1L, "tidsserie")).thenAnswer(a -> temp.newFile("1"));
         when(template.createUniqueFile(2L, "tidsserie")).thenAnswer(a -> temp.newFile("2"));
 
-        final ObservasjonsEvent event = new ObservasjonsEvent();
+        final Tidsserierad event = new Tidsserierad();
 
         event.serienummer(1L).medInnhold("YEY\n");
         consumer.onEvent(event, 1, true);
@@ -97,7 +97,7 @@ public class FileWriterObservasjonsConsumerIT {
         when(template.createUniqueFile(1L, "tidsserie")).thenAnswer(a -> temp.newFile("1"));
         when(template.createUniqueFile(1L, "noeAnnet")).thenAnswer(a -> temp.newFile("2"));
 
-        final ObservasjonsEvent event = new ObservasjonsEvent();
+        final Tidsserierad event = new Tidsserierad();
 
         event.serienummer(1L).medInnhold("YEY\n");
         consumer.onEvent(event, 1, true);

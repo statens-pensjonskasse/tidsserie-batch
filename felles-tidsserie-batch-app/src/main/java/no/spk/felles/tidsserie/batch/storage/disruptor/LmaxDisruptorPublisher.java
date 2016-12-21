@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
-import no.spk.felles.tidsserie.batch.core.lagring.ObservasjonsEvent;
+import no.spk.felles.tidsserie.batch.core.lagring.Tidsserierad;
 import no.spk.felles.tidsserie.batch.core.lagring.StorageBackend;
 import no.spk.felles.tidsserie.batch.core.TidsserieLivssyklus;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
@@ -19,9 +19,9 @@ public class LmaxDisruptorPublisher implements StorageBackend, TidsserieLivssykl
     private final ExecutorService executor;
     private final FileTemplate fileTemplate;
 
-    private Disruptor<ObservasjonsEvent> disruptor;
-    private RingBuffer<ObservasjonsEvent> ringBuffer;
-    private ObservasjonsConsumer consumer;
+    private Disruptor<Tidsserierad> disruptor;
+    private RingBuffer<Tidsserierad> ringBuffer;
+    private TidsserieradHandler consumer;
 
     public LmaxDisruptorPublisher(final ExecutorService executor, final FileTemplate fileTemplate) {
         this.executor = executor;
@@ -32,14 +32,14 @@ public class LmaxDisruptorPublisher implements StorageBackend, TidsserieLivssykl
     @Override
     public void start(final ServiceRegistry registry) {
         // The factory for the buffer
-        final ObservasjonsEventFactory factory = new ObservasjonsEventFactory();
+        final TidsserieradFactory factory = new TidsserieradFactory();
 
         // Specify the size of the ring buffer, must be power of 2.
         int bufferSize = 1024 * 16;
 
         disruptor = new Disruptor<>(factory, bufferSize, this.executor);
 
-        consumer = new FileWriterObservasjonsConsumer(this.fileTemplate);
+        consumer = new FileWriterTidsserieradHandler(this.fileTemplate);
         disruptor.handleEventsWith(consumer);
         // Start the Disruptor, starts all threads running
         disruptor.start();
@@ -71,7 +71,7 @@ public class LmaxDisruptorPublisher implements StorageBackend, TidsserieLivssykl
     }
 
     @Override
-    public void lagre(final Consumer<ObservasjonsEvent> consumer) {
+    public void lagre(final Consumer<Tidsserierad> consumer) {
         final long sequence = ringBuffer.next();
         try {
             consumer.accept(
