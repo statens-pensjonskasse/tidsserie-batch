@@ -11,13 +11,13 @@ import no.spk.felles.tidsserie.batch.core.CSVInput;
 import no.spk.felles.tidsserie.batch.core.GrunnlagsdataRepository;
 import no.spk.felles.tidsserie.batch.core.Katalog;
 import no.spk.felles.tidsserie.batch.core.LastOppGrunnlagsdataKommando;
-import no.spk.felles.tidsserie.batch.core.ServiceLocator;
 import no.spk.felles.tidsserie.batch.core.StorageBackend;
 import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.felles.tidsserie.batch.core.medlem.GenererTidsserieCommand;
 import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataOpplaster;
 import no.spk.felles.tidsserie.batch.core.medlem.TidsserieContext;
+import no.spk.felles.tidsserie.batch.core.registry.ServiceLocator;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**

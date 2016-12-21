@@ -1,4 +1,4 @@
-package no.spk.felles.tidsserie.batch.core;
+package no.spk.felles.tidsserie.batch.core.registry;
 
 import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;

@@ -11,11 +11,11 @@ import no.spk.faktura.input.BatchId;
 import no.spk.faktura.input.InvalidParameterException;
 import no.spk.faktura.input.UsageRequestedException;
 import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
-import no.spk.felles.tidsserie.batch.core.Extensionpoint;
 import no.spk.felles.tidsserie.batch.core.LastOppGrunnlagsdataKommando;
-import no.spk.felles.tidsserie.batch.core.ServiceLocator;
 import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataBackend;
+import no.spk.felles.tidsserie.batch.core.registry.Extensionpoint;
+import no.spk.felles.tidsserie.batch.core.registry.ServiceLocator;
 import no.spk.felles.tidsserie.batch.main.input.ProgramArguments;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 

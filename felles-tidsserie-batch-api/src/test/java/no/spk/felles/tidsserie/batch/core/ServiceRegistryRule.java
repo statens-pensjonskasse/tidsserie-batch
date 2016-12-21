@@ -5,13 +5,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Optional;
 import java.util.ServiceLoader;
 
+import no.spk.felles.tidsserie.batch.core.registry.ServiceLocator;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistration;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 import org.assertj.core.api.OptionalAssert;
 import org.junit.rules.ExternalResource;
 
-class ServiceRegistryRule extends ExternalResource {
+public class ServiceRegistryRule extends ExternalResource {
     private ServiceRegistry registry;
     private ServiceLocator locator;
 

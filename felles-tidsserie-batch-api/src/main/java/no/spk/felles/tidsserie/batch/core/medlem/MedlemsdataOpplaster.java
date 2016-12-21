@@ -6,7 +6,7 @@ import java.util.stream.Stream;
 
 import no.spk.felles.tidsserie.batch.core.GrunnlagsdataRepository;
 import no.spk.felles.tidsserie.batch.core.LastOppGrunnlagsdataKommando;
-import no.spk.felles.tidsserie.batch.core.ServiceLocator;
+import no.spk.felles.tidsserie.batch.core.registry.ServiceLocator;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**
