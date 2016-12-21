@@ -25,7 +25,7 @@ import no.spk.faktura.timeout.BatchTimeoutTaskrunner;
 import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
 import no.spk.felles.tidsserie.batch.backend.hazelcast.HazelcastBackend;
 import no.spk.felles.tidsserie.batch.core.Katalog;
-import no.spk.felles.tidsserie.batch.core.StorageBackend;
+import no.spk.felles.tidsserie.batch.core.lagring.StorageBackend;
 import no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback;
 import no.spk.felles.tidsserie.batch.core.TidsserieGenerertException;
 import no.spk.felles.tidsserie.batch.core.TidsserieLivssyklus;

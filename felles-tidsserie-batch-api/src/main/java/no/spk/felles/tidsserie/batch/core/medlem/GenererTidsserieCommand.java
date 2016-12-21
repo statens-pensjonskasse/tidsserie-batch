@@ -2,7 +2,7 @@ package no.spk.felles.tidsserie.batch.core.medlem;
 
 import java.util.List;
 
-import no.spk.felles.tidsserie.batch.core.StorageBackend;
+import no.spk.felles.tidsserie.batch.core.lagring.StorageBackend;
 import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.felles.tidsserie.batch.core.grunnlagsdata.TidsperiodeFactory;
 

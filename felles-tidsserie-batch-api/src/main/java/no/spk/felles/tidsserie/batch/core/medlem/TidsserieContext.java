@@ -2,7 +2,7 @@ package no.spk.felles.tidsserie.batch.core.medlem;
 
 import java.util.List;
 
-import no.spk.felles.tidsserie.batch.core.ObservasjonsEvent;
+import no.spk.felles.tidsserie.batch.core.lagring.ObservasjonsEvent;
 
 /**
  * {@link TidsserieContext} er bindeleddet mellom {@link GenererTidsserieCommand} og teknologien

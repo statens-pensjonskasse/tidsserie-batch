@@ -11,7 +11,7 @@ import java.nio.file.Files;
 import java.util.List;
 
 import no.spk.felles.tidsserie.batch.TemporaryFolderWithDeleteVerification;
-import no.spk.felles.tidsserie.batch.core.ObservasjonsEvent;
+import no.spk.felles.tidsserie.batch.core.lagring.ObservasjonsEvent;
 
 import org.assertj.core.api.AbstractListAssert;
 import org.junit.After;

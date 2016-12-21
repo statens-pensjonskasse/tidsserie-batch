@@ -1,4 +1,4 @@
-package no.spk.felles.tidsserie.batch.core;
+package no.spk.felles.tidsserie.batch.core.lagring;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.of;

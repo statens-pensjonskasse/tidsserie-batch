@@ -2,7 +2,7 @@ package no.spk.felles.tidsserie.batch.storage.disruptor;
 
 import java.io.IOException;
 
-import no.spk.felles.tidsserie.batch.core.ObservasjonsEvent;
+import no.spk.felles.tidsserie.batch.core.lagring.ObservasjonsEvent;
 
 import com.lmax.disruptor.EventHandler;
 
