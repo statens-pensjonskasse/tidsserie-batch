@@ -15,7 +15,6 @@
     <version>1.0.0-SNAPSHOT</version>
 
     <modules>
-        <module>felles-tidsserie-batch-input</module>
         <module>felles-tidsserie-batch-app</module>
         <module>felles-tidsserie-batch-api</module>
         <module>felles-tidsserie-batch-test</module>
@@ -173,17 +172,6 @@
             <dependency>
                 <groupId>no.spk.felles</groupId>
                 <artifactId>felles-tidsserie-batch-app</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>no.spk.felles</groupId>
-                <artifactId>felles-tidsserie-batch-input</artifactId>
-                <type>test-jar</type>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>no.spk.felles</groupId>
-                <artifactId>felles-tidsserie-batch-input</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

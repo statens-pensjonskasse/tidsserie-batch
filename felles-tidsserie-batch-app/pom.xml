@@ -19,10 +19,6 @@
         </dependency>
         <dependency>
             <groupId>no.spk.felles</groupId>
-            <artifactId>felles-tidsserie-batch-input</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>no.spk.felles</groupId>
             <artifactId>felles-tidsserie-batch-api</artifactId>
         </dependency>
         <dependency>
