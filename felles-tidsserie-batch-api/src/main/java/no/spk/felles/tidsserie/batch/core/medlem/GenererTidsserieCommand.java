@@ -2,9 +2,9 @@ package no.spk.felles.tidsserie.batch.core.medlem;
 
 import java.util.List;
 
-import no.spk.felles.tidsserie.batch.core.lagring.StorageBackend;
 import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.felles.tidsserie.batch.core.grunnlagsdata.TidsperiodeFactory;
+import no.spk.felles.tidsserie.batch.core.lagring.StorageBackend;
 
 /**
  * {@link GenererTidsserieCommand} er eit backend-uavhengig kommandobjekt som genererer ein tidsserie

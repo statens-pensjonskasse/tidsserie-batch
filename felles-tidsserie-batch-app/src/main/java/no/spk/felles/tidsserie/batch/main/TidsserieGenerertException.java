@@ -1,7 +1,8 @@
-package no.spk.felles.tidsserie.batch.core;
+package no.spk.felles.tidsserie.batch.main;
 
 import java.util.stream.Stream;
 
+import no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**

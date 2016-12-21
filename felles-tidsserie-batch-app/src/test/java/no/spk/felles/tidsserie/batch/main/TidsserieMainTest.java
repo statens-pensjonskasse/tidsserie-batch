@@ -14,7 +14,6 @@ import no.spk.felles.tidsperiode.Aarstall;
 import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
 import no.spk.felles.tidsserie.batch.ServiceRegistryRule;
 import no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback;
-import no.spk.felles.tidsserie.batch.core.TidsserieGenerertException;
 import no.spk.felles.tidsserie.batch.core.TidsserieLivssyklus;
 import no.spk.felles.tidsserie.batch.core.TidsserieLivssyklusException;
 import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
