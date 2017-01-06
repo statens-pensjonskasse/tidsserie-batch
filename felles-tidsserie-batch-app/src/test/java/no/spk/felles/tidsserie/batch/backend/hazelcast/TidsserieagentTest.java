@@ -14,12 +14,12 @@ import static org.mockito.Mockito.when;
 import java.util.HashMap;
 import java.util.Map;
 
-import no.spk.felles.tidsserie.batch.ServiceRegistryRule;
-import no.spk.felles.tidsserie.batch.core.AgentInitializer;
-import no.spk.felles.tidsserie.batch.core.medlem.GenererTidsserieCommand;
-import no.spk.felles.tidsserie.batch.core.StorageBackend;
-import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
+import no.spk.felles.tidsserie.batch.ServiceRegistryRule;
+import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
+import no.spk.felles.tidsserie.batch.core.lagring.StorageBackend;
+import no.spk.felles.tidsserie.batch.core.medlem.GenererTidsserieCommand;
+import no.spk.felles.tidsserie.batch.core.medlem.PartisjonsListener;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 import com.hazelcast.mapreduce.Context;
@@ -78,8 +78,8 @@ public class TidsserieagentTest {
     @Test
     @SuppressWarnings("unchecked")
     public void skal_ikkje_feile_sjoelv_om_partisjons_listener_feilar() {
-        final AgentInitializer listener = mock(AgentInitializer.class);
-        registry.registrer(AgentInitializer.class, listener);
+        final PartisjonsListener listener = mock(PartisjonsListener.class);
+        registry.registrer(PartisjonsListener.class, listener);
 
         final RuntimeException expected = new RuntimeException("You no take candle");
         doThrow(expected).when(listener).partitionInitialized(anyInt());

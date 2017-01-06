@@ -18,10 +18,6 @@
         </dependency>
         <dependency>
             <groupId>no.spk.pensjon.faktura</groupId>
-            <artifactId>faktura-prognose-tidsserie</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>no.spk.pensjon.faktura</groupId>
             <artifactId>faktura-tjenesteregister-lib</artifactId>
         </dependency>
         <dependency>

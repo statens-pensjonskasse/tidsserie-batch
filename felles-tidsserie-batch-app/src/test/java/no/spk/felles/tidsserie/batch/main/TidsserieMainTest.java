@@ -10,14 +10,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import no.spk.felles.tidsperiode.Aarstall;
+import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
 import no.spk.felles.tidsserie.batch.ServiceRegistryRule;
 import no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback;
-import no.spk.felles.tidsserie.batch.core.TidsserieGenerertException;
 import no.spk.felles.tidsserie.batch.core.TidsserieLivssyklus;
 import no.spk.felles.tidsserie.batch.core.TidsserieLivssyklusException;
 import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
-import no.spk.felles.tidsperiode.Aarstall;
-import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
 
 import org.junit.Before;
 import org.junit.Rule;

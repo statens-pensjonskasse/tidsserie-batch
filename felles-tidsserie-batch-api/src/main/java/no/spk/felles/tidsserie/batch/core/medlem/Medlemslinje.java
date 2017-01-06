@@ -7,7 +7,6 @@ import static java.util.stream.Collectors.toList;
 import java.util.List;
 
 import no.spk.felles.tidsserie.batch.core.Validators;
-import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medlemsdata;
 
 /**
  * {@link Medlemslinje} representerer ei rad som inneheld medlemsdata for eit medlem.
@@ -29,10 +28,7 @@ import no.spk.pensjon.faktura.tidsserie.domain.medlemsdata.Medlemsdata;
  * <br>
  * Medlemslinjene validerer ikkje at datatypen er ein av datatypene som domenemodellen støttar, dette forventast utført
  * i og av domenemodellen på eit seinare tidspunkt i tidsseriegenereringa.
- * <br>
- * For meir informasjon om kva medlemsspesifikke datatyper som er støtta, sjå {@link Medlemsdata} i domenemodellen
- * for tidsserien.
- *
+*
  * @author Tarjei Skorgenes
  */
 public class Medlemslinje {

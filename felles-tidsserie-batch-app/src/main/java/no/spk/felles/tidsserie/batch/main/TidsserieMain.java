@@ -22,27 +22,22 @@ import no.spk.faktura.input.InvalidParameterException;
 import no.spk.faktura.input.UsageRequestedException;
 import no.spk.faktura.timeout.BatchTimeout;
 import no.spk.faktura.timeout.BatchTimeoutTaskrunner;
+import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
 import no.spk.felles.tidsserie.batch.backend.hazelcast.HazelcastBackend;
-import no.spk.felles.tidsserie.batch.core.Extensionpoint;
-import no.spk.felles.tidsserie.batch.core.GrunnlagsdataRepository;
 import no.spk.felles.tidsserie.batch.core.Katalog;
-import no.spk.felles.tidsserie.batch.core.LastOppGrunnlagsdataKommando;
-import no.spk.felles.tidsserie.batch.core.StorageBackend;
-import no.spk.felles.tidsserie.batch.core.TidsperiodeFactory;
-import no.spk.felles.tidsserie.batch.core.TidsserieFactory;
 import no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback;
-import no.spk.felles.tidsserie.batch.core.TidsserieGenerertException;
 import no.spk.felles.tidsserie.batch.core.TidsserieLivssyklus;
 import no.spk.felles.tidsserie.batch.core.TidsserieLivssyklusException;
 import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
+import no.spk.felles.tidsserie.batch.core.grunnlagsdata.GrunnlagsdataRepository;
+import no.spk.felles.tidsserie.batch.core.lagring.StorageBackend;
 import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataBackend;
+import no.spk.felles.tidsserie.batch.core.registry.Extensionpoint;
 import no.spk.felles.tidsserie.batch.main.input.Modus;
 import no.spk.felles.tidsserie.batch.main.input.ProgramArguments;
 import no.spk.felles.tidsserie.batch.main.input.TidsserieArgumentsFactory;
 import no.spk.felles.tidsserie.batch.storage.disruptor.FileTemplate;
 import no.spk.felles.tidsserie.batch.storage.disruptor.LmaxDisruptorPublisher;
-import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
-import no.spk.pensjon.faktura.tidsserie.storage.csv.CSVInput;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistration;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
@@ -122,14 +117,6 @@ public class TidsserieMain {
             final HazelcastBackend backend = new HazelcastBackend(registry, arguments.getNodes());
             registrer(MedlemsdataBackend.class, backend);
             registrer(TidsserieLivssyklus.class, backend);
-
-            registrer(GrunnlagsdataRepository.class, new CSVInput(innKatalog));
-
-            final GrunnlagsdataService overfoering = new GrunnlagsdataService();
-            registrer(GrunnlagsdataService.class, overfoering);
-            registrer(TidsserieFactory.class, overfoering);
-            registrer(TidsperiodeFactory.class, overfoering);
-            registrer(LastOppGrunnlagsdataKommando.class, overfoering);
 
             final MetaDataWriter metaDataWriter = new MetaDataWriter(TemplateConfigurationFactory.create(), logKatalog);
             registrer(MetaDataWriter.class, metaDataWriter);

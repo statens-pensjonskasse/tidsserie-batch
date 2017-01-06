@@ -2,12 +2,9 @@ package no.spk.felles.tidsserie.batch.core.medlem;
 
 import java.util.List;
 
-import no.spk.felles.tidsserie.batch.core.StorageBackend;
-import no.spk.felles.tidsserie.batch.core.TidsserieFactory;
 import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
-import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.Feilhandtering;
-import no.spk.pensjon.faktura.tidsserie.domain.tidsserie.TidsserieFacade;
-import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
+import no.spk.felles.tidsserie.batch.core.grunnlagsdata.TidsperiodeFactory;
+import no.spk.felles.tidsserie.batch.core.lagring.StorageBackend;
 
 /**
  * {@link GenererTidsserieCommand} er eit backend-uavhengig kommandobjekt som genererer ein tidsserie
@@ -15,10 +12,9 @@ import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
  * <br>
  * Kommandoen er primært ein koordinator mellom følgjande tenester/fasader i og utanfor domenemodellen:
  * <ul>
- * <li>{@link TidsserieFactory}</li>
+ * <li>{@link TidsperiodeFactory}</li>
  * <li>{@link Tidsseriemodus}</li>
  * <li>{@link StorageBackend}</li>
- * <li>{@link TidsserieFacade}</li>
  * </ul>
  *
  * @author Tarjei Skorgenes
@@ -26,7 +22,7 @@ import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
 public interface GenererTidsserieCommand {
     /**
      * Genererer ein ny tidsserie basert på <code>medlemsdata</code> og avtale- og referansedata frå
-     * {@link TidsserieFactory}.
+     * {@link TidsperiodeFactory}.
      * <br>
      * Tidsserien blir avgrensa til å ikkje strekke seg lenger enn den angitte observasjonsperioda.
      * <br>
@@ -37,13 +33,12 @@ public interface GenererTidsserieCommand {
      * Feil som oppstår i forkant av underlagsoppbygginga, som endel av prosesseringa av medlemsdatane, fører til at heile
      * tidsserien for det aktuelle medlemmet feilar, slike feil blir ikkje delegert vidare til <code>feilhandtering</code>.
      *
+     * @param key Identifikator for dette medlemmet
      * @param medlemsdata serialiserte medlemsdata for eit enkelt medlem
-     * @param periode observasjonsperioda som bestemmer yttergrensene for tidsserien sine underlagsperioder sine
      * frå og med- og til og med-datoar
-     * @param feilhandtering feilhandteringsstrategien som vil bli bedt om å handtere alle feil på stillingsforholdnivå
-     * @param serienummer serienummer som alle eventar som blir sendt vidare for persistering skal tilhøyre
+     * @param tidsserieContext Agentvalues som inneholder serienummer og som kan sende feilmeldingen til Hazelcast contexten.
      * @throws RuntimeException dersom deserialiseringa av <code>medlemsdata</code> eller prosessering på medlemsnivå feilar
      */
-    void generer(List<List<String>> medlemsdata, Observasjonsperiode periode,
-            Feilhandtering feilhandtering, long serienummer);
+   void generer(String key, List<List<String>> medlemsdata,
+            TidsserieContext tidsserieContext);
 }

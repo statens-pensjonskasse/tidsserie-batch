@@ -20,13 +20,13 @@ import java.util.Map;
 import no.spk.faktura.input.BatchId;
 import no.spk.faktura.input.InvalidParameterException;
 import no.spk.faktura.input.UsageRequestedException;
+import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
 import no.spk.felles.tidsserie.batch.ServiceRegistryRule;
-import no.spk.felles.tidsserie.batch.core.LastOppGrunnlagsdataKommando;
 import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
+import no.spk.felles.tidsserie.batch.core.grunnlagsdata.LastOppGrunnlagsdataKommando;
 import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.felles.tidsserie.batch.main.input.ProgramArguments;
 import no.spk.felles.tidsserie.batch.main.input.StandardOutputAndError;
-import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
 import no.spk.pensjon.faktura.tjenesteregister.Constants;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
@@ -166,7 +166,7 @@ public class ApplicationControllerTest {
     }
 
     @Test
-    public void skal_kalle_standard_grunnlagsdata_uploader_service() throws IOException {
+    public void skal_kalle_lastOpp_for_alle_grunnlagsdata_uploader_services() throws IOException {
         final LastOppGrunnlagsdataKommando uploader1 = mock(LastOppGrunnlagsdataKommando.class);
         registry.registrer(LastOppGrunnlagsdataKommando.class, uploader1, Constants.SERVICE_RANKING + "=0");
 
@@ -175,7 +175,7 @@ public class ApplicationControllerTest {
 
         controller.lastOpp();
 
-        verify(uploader1, times(0)).lastOpp(any());
+        verify(uploader1, times(1)).lastOpp(any());
         verify(uploader2, times(1)).lastOpp(any());
         verifiserInformasjonsmelding("Starter lasting av grunnlagsdata...");
         verifiserInformasjonsmelding("Grunnlagsdata lastet.");
