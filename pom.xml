@@ -12,7 +12,7 @@
 
     <groupId>no.spk.felles</groupId>
     <artifactId>felles-tidsserie-batch</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <modules>
         <module>felles-tidsserie-batch-app</module>
