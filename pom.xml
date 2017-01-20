@@ -10,20 +10,14 @@
         <relativePath>../spk-root-pom</relativePath>
     </parent>
 
-    <groupId>no.spk.pensjon.faktura</groupId>
-    <artifactId>faktura-tidsserie-batch-parent</artifactId>
-    <version>4.0.0</version>
+    <groupId>no.spk.felles</groupId>
+    <artifactId>felles-tidsserie-batch</artifactId>
+    <version>1.0.0</version>
 
     <modules>
-        <module>faktura-tidsserie-batch-input</module>
-        <module>faktura-tidsserie-batch-app</module>
-        <module>pu-fak-ba-10</module>
-        <module>pu-fak-ba-11</module>
-        <module>faktura-tidsserie-batch-api</module>
-        <module>faktura-tidsserie-batch-plugin-avtaleunderlag</module>
-        <module>faktura-tidsserie-batch-plugin-stillingsforholdobservasjonar</module>
-        <module>faktura-tidsserie-batch-plugin-live_tidsserie</module>
-        <module>faktura-tidsserie-batch-plugin-avregning_tidsserie</module>
+        <module>felles-tidsserie-batch-app</module>
+        <module>felles-tidsserie-batch-api</module>
+        <module>felles-tidsserie-batch-test</module>
     </modules>
 
     <properties>
@@ -171,55 +165,19 @@
                 <version>1.0.0</version>
             </dependency>
             <dependency>
-                <groupId>no.spk.pensjon.faktura</groupId>
-                <artifactId>faktura-tidsserie-batch-api</artifactId>
+                <groupId>no.spk.felles</groupId>
+                <artifactId>felles-tidsserie-batch-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>no.spk.pensjon.faktura</groupId>
-                <artifactId>faktura-tidsserie-batch-app</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>no.spk.pensjon.faktura</groupId>
-                <artifactId>faktura-tidsserie-batch-input</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>no.spk.pensjon.faktura</groupId>
-                <artifactId>faktura-tidsserie-batch-plugin-avtaleunderlag</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>no.spk.pensjon.faktura</groupId>
-                <artifactId>faktura-tidsserie-batch-plugin-avregning_tidsserie</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>no.spk.pensjon.faktura</groupId>
-                <artifactId>faktura-tidsserie-batch-plugin-live_tidsserie</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>no.spk.pensjon.faktura</groupId>
-                <artifactId>faktura-tidsserie-batch-plugin-stillingsforholdobservasjonar</artifactId>
+                <groupId>no.spk.felles</groupId>
+                <artifactId>felles-tidsserie-batch-app</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.lmax</groupId>
                 <artifactId>disruptor</artifactId>
                 <version>3.3.0</version>
-            </dependency>
-            <dependency>
-                <groupId>no.spk.pensjon.faktura</groupId>
-                <artifactId>faktura-prognose-tidsserie</artifactId>
-                <version>${faktura.prognose.tidsserie.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>no.spk.pensjon.faktura</groupId>
-                <artifactId>faktura-prognose-tidsserie</artifactId>
-                <type>test-jar</type>
-                <version>${faktura.prognose.tidsserie.version}</version>
             </dependency>
             <dependency>
                 <groupId>ch.qos.logback</groupId>
