@@ -2,6 +2,7 @@ package no.spk.felles.tidsserie.batch.main;
 
 import java.util.ServiceLoader;
 
+import no.spk.felles.tidsserie.batch.core.registry.Plugin;
 import no.spk.felles.tidsserie.batch.main.input.Modus;
 import no.spk.felles.tidsserie.batch.main.spi.ExitCommand;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
@@ -32,6 +33,8 @@ public class TidsserieMain {
 
         final ServiceRegistry registry = ServiceLoader.load(ServiceRegistry.class).iterator().next();
         registry.registerService(View.class, new ConsoleView());
+
+        Plugin.registrerAlle(registry, ServiceLoader.load(Plugin.class));
 
         new TidsserieBatch(
                 registry,

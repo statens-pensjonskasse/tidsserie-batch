@@ -4,7 +4,9 @@ import static no.spk.felles.tidsserie.batch.Datoar.dato;
 import static no.spk.felles.tidsserie.batch.main.ApplicationController.EXIT_ERROR;
 import static no.spk.felles.tidsserie.batch.main.ApplicationController.EXIT_SUCCESS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -25,6 +27,7 @@ import no.spk.felles.tidsserie.batch.ServiceRegistryRule;
 import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.felles.tidsserie.batch.core.grunnlagsdata.LastOppGrunnlagsdataKommando;
 import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataBackend;
+import no.spk.felles.tidsserie.batch.core.registry.Plugin;
 import no.spk.felles.tidsserie.batch.main.input.ProgramArguments;
 import no.spk.felles.tidsserie.batch.main.input.StandardOutputAndError;
 import no.spk.pensjon.faktura.tjenesteregister.Constants;
@@ -216,6 +219,63 @@ public class ApplicationControllerTest {
         meldinger.put("medlem", 1000);
         lagerTidsserien("live_tidsserie", meldinger);
         console.assertStandardOutput().contains("Antall medlemmer behandlet: 1000");
+    }
+
+    @Test
+    public void skal_aktivere_alle_plugins_tilgjengelig_via_tjenesteregisteret() {
+        final Plugin plugin_a = registrerPlugin("plugin_a");
+        final Plugin plugin_b = registrerPlugin("plugin_b");
+
+        controller.aktiverPlugins();
+
+        verifiserAtPluginVartAktivert(plugin_a);
+        verifiserAtPluginVartAktivert(plugin_b);
+    }
+
+    @Test
+    public void skal_avbryte_køyringa_dersom_aktivering_av_minst_1_plugin_feilar() {
+        final Throwable førsteFeil = new RuntimeException("Eg feila først!");
+        final Plugin plugin_a = registrerPluginSomFeilar("plugin_a", førsteFeil);
+
+        final Throwable andreFeil = new NullPointerException("Sjå, eg feila også!");
+        final Plugin plugin_b = registrerPluginSomFeilar("plugin_b", andreFeil);
+
+        final Plugin plugin_c = registrerPlugin("plugin_c");
+
+        assertThatCode(
+                () -> controller.aktiverPlugins()
+        )
+                .as(
+                        "Aktivering av plugins skal feile dersom aktivering av minst 1 plugin feilar"
+                )
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("Aktivering av 2 plugins feila.")
+                .hasMessageContaining("Feilmeldingar frå aktiveringa:")
+                .hasMessageContaining("- " + førsteFeil.getMessage())
+                .hasMessageContaining("- " + andreFeil.getMessage())
+                .hasSuppressedException(førsteFeil)
+                .hasSuppressedException(andreFeil)
+        ;
+
+        verifiserAtPluginVartAktivert(plugin_a);
+        verifiserAtPluginVartAktivert(plugin_b);
+        verifiserAtPluginVartAktivert(plugin_c);
+    }
+
+    private Plugin registrerPluginSomFeilar(final String tittel, final Throwable e) {
+        final Plugin plugin = registrerPlugin(tittel);
+        doThrow(e).when(plugin).aktiver(any());
+        return plugin;
+    }
+
+    private void verifiserAtPluginVartAktivert(final Plugin plugin_a) {
+        verify(plugin_a).aktiver(eq(registry.registry()));
+    }
+
+    private Plugin registrerPlugin(final String tittel) {
+        final Plugin plugin_a = mock(Plugin.class, tittel);
+        registry.registrer(Plugin.class, plugin_a);
+        return plugin_a;
     }
 
     private void lagerTidsserien(String modusnavn, Map<String, Integer> meldinger) {

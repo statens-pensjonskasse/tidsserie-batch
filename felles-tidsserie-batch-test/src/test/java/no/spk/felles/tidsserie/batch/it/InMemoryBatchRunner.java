@@ -1,8 +1,10 @@
 package no.spk.felles.tidsserie.batch.it;
 
 import java.io.File;
+import java.util.ServiceLoader;
 
 import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
+import no.spk.felles.tidsserie.batch.core.registry.Plugin;
 import no.spk.felles.tidsserie.batch.main.ApplicationController;
 import no.spk.felles.tidsserie.batch.main.TidsserieBatch;
 import no.spk.felles.tidsserie.batch.main.input.Modus;
@@ -24,6 +26,8 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 class InMemoryBatchRunner implements FellesTidsserieBatch {
     private final StandardOutputAndError outputAndError = new StandardOutputAndError();
 
+    private final ServiceRegistry registry;
+
     private final TidsserieBatch batch;
 
     private int exitCode;
@@ -34,12 +38,14 @@ class InMemoryBatchRunner implements FellesTidsserieBatch {
                 exitCode -> this.exitCode = exitCode,
                 new ApplicationController(registry)
         );
+        this.registry = registry;
     }
 
     @Override
     public void run(final File innKatalog, final File utKatalog, final Observasjonsperiode periode, final Modus modus) {
         try {
             outputAndError.before();
+            Plugin.registrerAlle(registry, ServiceLoader.load(Plugin.class));
             batch.run(
                     "-i", innKatalog.toString(),
                     "-o", utKatalog.getPath(),

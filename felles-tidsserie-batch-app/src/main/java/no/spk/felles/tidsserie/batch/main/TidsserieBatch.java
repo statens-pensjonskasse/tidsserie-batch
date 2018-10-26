@@ -134,6 +134,7 @@ public class TidsserieBatch {
             registrer(StorageBackend.class, disruptor);
             registrer(TidsserieLivssyklus.class, disruptor);
 
+            controller.aktiverPlugins();
             modus.registerServices(registry);
             registrer(TidsserieGenerertCallback.class, new TriggerfileCreator(utKatalog), SERVICE_RANKING + "=-1000");
 

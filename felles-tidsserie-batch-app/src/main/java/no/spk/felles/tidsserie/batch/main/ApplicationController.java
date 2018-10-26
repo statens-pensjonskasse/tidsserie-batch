@@ -1,11 +1,16 @@
 package no.spk.felles.tidsserie.batch.main;
 
 import static no.spk.pensjon.faktura.tjenesteregister.Constants.SERVICE_RANKING;
+import static java.lang.String.format;
+import static java.util.stream.Collectors.joining;
 
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import no.spk.faktura.input.BatchId;
 import no.spk.faktura.input.InvalidParameterException;
@@ -15,6 +20,7 @@ import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.felles.tidsserie.batch.core.grunnlagsdata.LastOppGrunnlagsdataKommando;
 import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.felles.tidsserie.batch.core.registry.Extensionpoint;
+import no.spk.felles.tidsserie.batch.core.registry.Plugin;
 import no.spk.felles.tidsserie.batch.core.registry.ServiceLocator;
 import no.spk.felles.tidsserie.batch.main.input.ProgramArguments;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
@@ -43,6 +49,7 @@ public class ApplicationController {
 
     private final Extensionpoint<GrunnlagsdataDirectoryValidator> validator;
     private final Extensionpoint<LastOppGrunnlagsdataKommando> opplasting;
+    private final Extensionpoint<Plugin> plugins;
     private final ServiceRegistry registry;
 
     private Optional<Logger> logger = Optional.empty();
@@ -60,6 +67,7 @@ public class ApplicationController {
         this.view = new ServiceLocator(registry).firstMandatory(View.class);
         this.validator = new Extensionpoint<>(GrunnlagsdataDirectoryValidator.class, registry);
         this.opplasting = new Extensionpoint<>(LastOppGrunnlagsdataKommando.class, registry);
+        this.plugins = new Extensionpoint<>(Plugin.class, registry);
     }
 
     public void initialiserLogging(final BatchId id, final Path utKatalog) {
@@ -182,6 +190,36 @@ public class ApplicationController {
      */
     public void logExit() {
         logger.ifPresent(l -> l.info("Exit code: " + exitCode()));
+    }
+
+
+    /**
+     * Notifiserer alle {@link Plugin#aktiver(ServiceRegistry) plugins} om at dei no kan registrere tjenester
+     * i tjenesteregisteret.
+     *
+     * @since 1.1.0
+     */
+    public void aktiverPlugins() {
+        plugins
+                .invokeAll(plugin -> plugin.aktiver(registry))
+                .orElseThrow(this::feilVedPluginAktivering);
+    }
+
+    private IllegalStateException feilVedPluginAktivering(final Stream<RuntimeException> alleFeil) {
+        final List<RuntimeException> feil = alleFeil.collect(Collectors.toList());
+        final IllegalStateException e = new IllegalStateException(
+                format(
+                        "Aktivering av %d plugins feila.\n\nFeilmeldingar frå aktiveringa:\n%s",
+                        feil.size(),
+                        feil
+                                .stream()
+                                .map(Throwable::getMessage)
+                                .map(feilmelding -> "- " + feilmelding)
+                                .collect(joining("\n"))
+                )
+        );
+        feil.forEach(e::addSuppressed);
+        return e;
     }
 
     private Logger getLogger() {
