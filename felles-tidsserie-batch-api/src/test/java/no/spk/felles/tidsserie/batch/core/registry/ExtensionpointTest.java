@@ -3,13 +3,15 @@ package no.spk.felles.tidsserie.batch.core.registry;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.junit.MockitoJUnit.rule;
+import static org.mockito.quality.Strictness.STRICT_STUBS;
 
 import java.util.stream.Collectors;
 
@@ -24,12 +26,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 public class ExtensionpointTest {
     @Rule
-    public final MockitoRule mockito = MockitoJUnit.rule();
+    public final MockitoRule mockito = rule().strictness(STRICT_STUBS);
 
     @Rule
     public final ServiceRegistryRule registry = new ServiceRegistryRule();

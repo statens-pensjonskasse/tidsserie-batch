@@ -4,7 +4,7 @@ import static no.spk.felles.tidsserie.batch.Datoar.dato;
 import static no.spk.felles.tidsserie.batch.main.ApplicationController.EXIT_ERROR;
 import static no.spk.felles.tidsserie.batch.main.ApplicationController.EXIT_SUCCESS;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;

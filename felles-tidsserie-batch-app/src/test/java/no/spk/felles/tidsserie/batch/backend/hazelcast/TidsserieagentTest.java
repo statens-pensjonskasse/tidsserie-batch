@@ -1,15 +1,17 @@
 package no.spk.felles.tidsserie.batch.backend.hazelcast;
 
 import static java.time.LocalDate.now;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.junit.MockitoJUnit.rule;
+import static org.mockito.quality.Strictness.STRICT_STUBS;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,12 +29,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 public class TidsserieagentTest {
     @Rule
-    public final MockitoRule mockito = MockitoJUnit.rule();
+    public final MockitoRule mockito = rule().strictness(STRICT_STUBS);
 
     @Rule
     public final ExpectedException e = ExpectedException.none();
@@ -60,7 +61,6 @@ public class TidsserieagentTest {
         registry.registrer(GenererTidsserieCommand.class, command);
         registry.registrer(StorageBackend.class, lagring);
         registry.registrer(Tidsseriemodus.class, modus);
-        registry.registrer(Observasjonsperiode.class, new Observasjonsperiode(now(), now()));
 
         agent.configure(registry.registry());
     }

@@ -1,6 +1,8 @@
 package no.spk.felles.tidsserie.batch.backend.hazelcast;
 
 import static org.mockito.Mockito.verify;
+import static org.mockito.junit.MockitoJUnit.rule;
+import static org.mockito.quality.Strictness.STRICT_STUBS;
 
 import no.spk.felles.tidsserie.batch.ServiceRegistryRule;
 
@@ -8,12 +10,11 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 public class HazelcastBackendTest {
     @Rule
-    public final MockitoRule mockito = MockitoJUnit.rule();
+    public final MockitoRule mockito = rule().strictness(STRICT_STUBS);
 
     @Rule
     public final ServiceRegistryRule registry = new ServiceRegistryRule();

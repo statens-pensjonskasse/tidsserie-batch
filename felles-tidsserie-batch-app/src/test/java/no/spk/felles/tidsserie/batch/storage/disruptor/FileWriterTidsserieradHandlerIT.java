@@ -1,9 +1,10 @@
 package no.spk.felles.tidsserie.batch.storage.disruptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.will;
+import static org.mockito.BDDMockito.willReturn;
+import static org.mockito.junit.MockitoJUnit.rule;
+import static org.mockito.quality.Strictness.STRICT_STUBS;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,7 +20,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 /**
@@ -32,7 +32,7 @@ public class FileWriterTidsserieradHandlerIT {
     public final TemporaryFolderWithDeleteVerification temp = new TemporaryFolderWithDeleteVerification();
 
     @Rule
-    public final MockitoRule mockito = MockitoJUnit.rule();
+    public final MockitoRule mockito = rule().strictness(STRICT_STUBS);
 
     @Mock
     private FileTemplate template;
@@ -41,7 +41,6 @@ public class FileWriterTidsserieradHandlerIT {
 
     @Before
     public void _before() throws IOException {
-        when(template.createUniqueFile(anyInt(), anyString())).thenAnswer(invocation -> temp.newFile());
         consumer = new FileWriterTidsserieradHandler(template);
     }
 
@@ -58,7 +57,7 @@ public class FileWriterTidsserieradHandlerIT {
     public void skalTrunkereOutputfilaVissDenEksistererFraFoer() throws IOException {
         final File alreadyExists = temp.newFile();
         Files.write(alreadyExists.toPath(), "YADA YADA\n".getBytes());
-        when(template.createUniqueFile(anyInt(), anyString())).thenReturn(alreadyExists);
+        willReturn(alreadyExists).given(template).createUniqueFile(1L, "tidsserie");
 
         final Tidsserierad event = new Tidsserierad();
         event.buffer.append("MOAR MOAR MOAR\n");
@@ -77,8 +76,8 @@ public class FileWriterTidsserieradHandlerIT {
 
     @Test
     public void skalSkriveEventenTilForskjelligeFilerBasertPaaEventserien() throws IOException {
-        when(template.createUniqueFile(1L, "tidsserie")).thenAnswer(a -> temp.newFile("1"));
-        when(template.createUniqueFile(2L, "tidsserie")).thenAnswer(a -> temp.newFile("2"));
+        will(a -> temp.newFile("1")).given(template).createUniqueFile(1L, "tidsserie");
+        will(a -> temp.newFile("2")).given(template).createUniqueFile(2L, "tidsserie");
 
         final Tidsserierad event = new Tidsserierad();
 
@@ -94,8 +93,8 @@ public class FileWriterTidsserieradHandlerIT {
 
     @Test
     public void skalSkriveEventenTilForskjelligeFilerBasertPaaPrefix() throws IOException {
-        when(template.createUniqueFile(1L, "tidsserie")).thenAnswer(a -> temp.newFile("1"));
-        when(template.createUniqueFile(1L, "noeAnnet")).thenAnswer(a -> temp.newFile("2"));
+        will(a -> temp.newFile("1")).given(template).createUniqueFile(1L, "tidsserie");
+        will(a -> temp.newFile("2")).given(template).createUniqueFile(1L, "noeAnnet");
 
         final Tidsserierad event = new Tidsserierad();
 

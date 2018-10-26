@@ -3,6 +3,8 @@ package no.spk.felles.tidsserie.batch.core.grunnlagsdata.csv;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Stream.of;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.junit.MockitoJUnit.rule;
+import static org.mockito.quality.Strictness.STRICT_STUBS;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -24,7 +26,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.junit.rules.TestName;
-import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 public class CSVInputTest {
@@ -37,7 +38,7 @@ public class CSVInputTest {
     public final TemporaryFolder folder = new TemporaryFolderWithDeleteVerification();
 
     @Rule
-    public final MockitoRule mockito = MockitoJUnit.rule();
+    public final MockitoRule mockito = rule().strictness(STRICT_STUBS);
 
     @Rule
     public final ExpectedException e = ExpectedException.none();
