@@ -26,6 +26,10 @@
             <artifactId>felles-tidsserie-batch-app</artifactId>
         </dependency>
         <dependency>
+            <groupId>no.spk.felles</groupId>
+            <artifactId>felles-tidsserie-batch-arguments</artifactId>
+        </dependency>
+        <dependency>
             <groupId>no.spk.pensjon.faktura</groupId>
             <artifactId>faktura-tjenesteregister-lib</artifactId>
         </dependency>

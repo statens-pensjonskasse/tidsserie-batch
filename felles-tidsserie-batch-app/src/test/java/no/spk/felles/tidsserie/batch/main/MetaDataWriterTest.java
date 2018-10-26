@@ -15,7 +15,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 import no.spk.faktura.input.BatchId;
-import no.spk.felles.tidsserie.batch.main.input.ModusRule;
+import no.spk.felles.tidsserie.batch.core.kommandolinje.BruksveiledningSkalVisesException;
+import no.spk.felles.tidsserie.batch.core.kommandolinje.UgyldigKommandolinjeArgumentException;
 import no.spk.felles.tidsserie.batch.main.input.ProgramArguments;
 import no.spk.felles.tidsserie.batch.main.input.TidsserieArgumentsFactory;
 
@@ -30,6 +31,7 @@ import org.junit.rules.TestName;
 public class MetaDataWriterTest {
     @Rule
     public final TestName name = new TestName();
+    private final TidsserieArgumentsFactory parser = new TidsserieArgumentsFactory();
 
     @Rule
     public TemporaryFolder testFolder = new TemporaryFolder();
@@ -53,11 +55,11 @@ public class MetaDataWriterTest {
         assertThat(fileContent).contains("Batch-id: " + batchId);
     }
 
-    private ProgramArguments getProgramArguments(File writeFolder) {
+    private ProgramArguments getProgramArguments(File writeFolder) throws UgyldigKommandolinjeArgumentException, BruksveiledningSkalVisesException {
         String navn = "modus";
         this.modus.support(navn);
         String file = writeFolder.getAbsolutePath();
-        return new TidsserieArgumentsFactory().create(
+        return (ProgramArguments) parser.parse(
                 "-b", "lager metadata",
                 "-i", file,
                 "-o", file,

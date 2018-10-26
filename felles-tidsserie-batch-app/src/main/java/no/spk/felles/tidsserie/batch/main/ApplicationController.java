@@ -13,16 +13,15 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import no.spk.faktura.input.BatchId;
-import no.spk.faktura.input.InvalidParameterException;
-import no.spk.faktura.input.UsageRequestedException;
-import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
 import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.felles.tidsserie.batch.core.grunnlagsdata.LastOppGrunnlagsdataKommando;
+import no.spk.felles.tidsserie.batch.core.kommandolinje.BruksveiledningSkalVisesException;
+import no.spk.felles.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenter;
+import no.spk.felles.tidsserie.batch.core.kommandolinje.UgyldigKommandolinjeArgumentException;
 import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.felles.tidsserie.batch.core.registry.Extensionpoint;
 import no.spk.felles.tidsserie.batch.core.registry.Plugin;
 import no.spk.felles.tidsserie.batch.core.registry.ServiceLocator;
-import no.spk.felles.tidsserie.batch.main.input.ProgramArguments;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 import ch.qos.logback.classic.LoggerContext;
@@ -37,7 +36,7 @@ import org.slf4j.MDC;
  * prosessen som batchen blir køyrt frå.
  * <p>
  * NB: Kontrolleren kan ikkje bruke eller instansiere nokon form for logger eller logging før tidligast i
- * eller etter at {@link #informerOmOppstart(ProgramArguments)} har blitt kalla. Om så blir forsøkt
+ * eller etter at {@link #informerOmOppstart(TidsserieBatchArgumenter)} har blitt kalla. Om så blir forsøkt
  * vil ikkje batchens loggfil inneholde meldinga.
  *
  * @author Snorre E. Brekke - computas
@@ -81,7 +80,7 @@ public class ApplicationController {
         registry.registerService(View.class, view, SERVICE_RANKING + "=100");
     }
 
-    public void informerOmOppstart(final ProgramArguments argumenter) {
+    public void informerOmOppstart(final TidsserieBatchArgumenter argumenter) {
         view.informerOmOppstart(argumenter);
     }
 
@@ -101,12 +100,12 @@ public class ApplicationController {
         markerSomSuksess();
     }
 
-    public void informerOmBruk(final UsageRequestedException e) {
+    public void informerOmBruk(final BruksveiledningSkalVisesException e) {
         view.visHjelp(e);
         markerSomSuksess();
     }
 
-    public void informerOmUgyldigeArgumenter(final InvalidParameterException e) {
+    public void informerOmUgyldigeArgumenter(final UgyldigKommandolinjeArgumentException e) {
         view.informerOmUgyldigKommandolinjeArgument(e);
         markerSomFeilet();
     }
@@ -156,13 +155,13 @@ public class ApplicationController {
         view.opplastingFullfoert();
     }
 
-    public void lagTidsserie(ServiceRegistry registry, Tidsseriemodus modus, final Observasjonsperiode periode) {
-        view.startarTidsseriegenerering(periode.fraOgMed(), periode.tilOgMed().get());
+    public void lagTidsserie(ServiceRegistry registry, Tidsseriemodus modus) {
+        view.startarTidsseriegenerering();
         Map<String, Integer> meldingar = modus.lagTidsserie(registry);
         view.tidsseriegenereringFullfoert(meldingar, modus.navn());
     }
 
-    public void opprettMetadata(MetaDataWriter metaDataWriter, ProgramArguments arguments, BatchId batchId, Duration duration) {
+    public void opprettMetadata(MetaDataWriter metaDataWriter, TidsserieBatchArgumenter arguments, BatchId batchId, Duration duration) {
         view.informerOmMetadataOppretting();
         metaDataWriter.createMetadataFile(arguments, batchId, duration);
     }

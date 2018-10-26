@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import no.spk.felles.tidsserie.batch.TemporaryFolderWithDeleteVerification;
-import no.spk.felles.tidsserie.batch.main.input.StandardOutputAndError;
 
 import org.junit.Rule;
 import org.junit.Test;

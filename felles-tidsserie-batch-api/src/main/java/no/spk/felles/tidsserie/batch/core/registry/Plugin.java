@@ -9,6 +9,8 @@ import java.util.ServiceLoader;
 import no.spk.felles.tidsserie.batch.core.Katalog;
 import no.spk.felles.tidsserie.batch.core.TidsserieLivssyklus;
 import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
+import no.spk.felles.tidsserie.batch.core.kommandolinje.AntallProsessorar;
+import no.spk.felles.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenter;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**
@@ -62,7 +64,11 @@ public interface Plugin {
      * På tidspunktet pluginet blir kalla er det er mulig å slå opp eit avgrensa sett med tenester frå <code>registry</code>:
      * <ul>
      * <li>{@link Path}: Inn-, ut- og log-katalogane til batchen</li>
+     * <li>{@link TidsserieBatchArgumenter}: Kommandolinjeargumenta som kjerna av batchen sjølv benyttar seg av</li>
+     * <li>{@link AntallProsessorar}: Antall CPU-kjerner som brukaren vil at batchen skal benytte for tidsseriegenerering</li>
      * <li>{@link Tidsseriemodus}: Modusen brukaren har angitt at batchen skal bruke for å generere tidsseriar</li>
+     * <li>Andre {@link TidsserieBatchArgumenter#registrer(ServiceRegistry) kommandolinjeargument} som er spesifikke for
+     * applikasjonen som felles-tidsserie-batch inngår som ein del av</li>
      * </ul>
      * Denne delen av eit plugin kan ikkje slå opp/vere avhengig av tenester som har blitt/vil bli registrert av andre
      * plugins, rekkefølga plugina blir initialisert i er uspesifisert og kan for alle praktiske formål sjåast på som
@@ -74,6 +80,8 @@ public interface Plugin {
      *
      * @param registry tenesteregisteret som batchen anvendar seg av
      * @see Katalog
+     * @see TidsserieBatchArgumenter
+     * @see AntallProsessorar
      * @see Tidsseriemodus
      */
     void aktiver(final ServiceRegistry registry);

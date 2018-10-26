@@ -11,7 +11,7 @@ import java.util.Locale;
 import java.util.Optional;
 
 import no.spk.faktura.input.BatchId;
-import no.spk.felles.tidsserie.batch.main.input.ProgramArguments;
+import no.spk.felles.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenter;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -37,12 +37,12 @@ public class MetaDataWriter {
         this.batchKatalog = batchKatalog;
     }
 
-    public Optional<File> createMetadataFile(ProgramArguments programArguments, BatchId batchId, Duration duration) {
+    public Optional<File> createMetadataFile(TidsserieBatchArgumenter params, BatchId batchId, Duration duration) {
         File fileToWrite = batchKatalog.resolve("metadata.txt").toFile();
         try (Writer writer = new FileWriter(fileToWrite)) {
             HashMap<String, Object> dataModel = new HashMap<>();
-            dataModel.put("params", programArguments);
-            dataModel.put("grunnlagsdataBatchKatalog", programArguments.getGrunnlagsdataBatchKatalog().toAbsolutePath().normalize());
+            dataModel.put("params", params);
+            dataModel.put("grunnlagsdataBatchKatalog", params.uttrekkskatalog().toAbsolutePath().normalize());
             dataModel.put("batchId", batchId);
             dataModel.put("jobDuration", getDurationString(duration));
             dataModel.put("outputDirectory", batchKatalog.toAbsolutePath().normalize().toString());

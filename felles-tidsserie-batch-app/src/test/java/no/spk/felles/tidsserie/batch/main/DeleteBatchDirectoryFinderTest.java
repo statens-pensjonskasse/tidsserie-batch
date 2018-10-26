@@ -1,17 +1,19 @@
 package no.spk.felles.tidsserie.batch.main;
 
-import static java.util.Arrays.asList;
+import static no.spk.felles.tidsserie.batch.core.kommandolinje.AldersgrenseForSlettingAvLogKatalogar.aldersgrenseForSlettingAvLogKatalogar;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 
 import no.spk.felles.tidsserie.batch.TemporaryFolderWithDeleteVerification;
+import no.spk.felles.tidsserie.batch.core.kommandolinje.AldersgrenseForSlettingAvLogKatalogar;
 
+import org.assertj.core.api.ObjectArrayAssert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.junit.rules.TestName;
 
 /**
  * @author Snorre E. Brekke - Computas
@@ -20,29 +22,41 @@ public class DeleteBatchDirectoryFinderTest {
     @Rule
     public TemporaryFolder testFolder = new TemporaryFolderWithDeleteVerification();
 
-    @Rule
-    public final TestName name = new TestName();
+    private Path logKatalog;
 
+    private Path utKatalog;
+    private DeleteBatchDirectoryFinder finder;
+
+    @Before
+    public void _before() throws IOException {
+        logKatalog = testFolder.newFolder("log").toPath();
+        utKatalog = testFolder.newFolder("ut").toPath();
+        finder = new DeleteBatchDirectoryFinder(utKatalog, logKatalog);
+    }
+
+    @SuppressWarnings("unused")
     @Test
-    public void testFindDataDirectoryAndOldBatches() throws Exception {
-        Path path = testFolder.newFolder(name.getMethodName()).toPath();
+    public void skal_kun_inkludere_logkatalog_eldre_enn_aldersgrensa_og_utkatalog() throws Exception {
+        Path deleteOld1 = logkatalog("tidsserie_2013-01-01_01-00-00-00");
+        Path deleteOld2 = logkatalog("tidsserie_2015-01-01_01-00-00-00");
+        Path doNotDelete1 = logkatalog("tidsserie_2099-01-01_01-00-00-00");
+        Path doNotDelete2 = logkatalog("unrelatedFolder");
 
-        Path logDir = path.resolve("logDir");
-        Path dataDir = path.resolve("dataDir");
+        assertFind(
+                aldersgrenseForSlettingAvLogKatalogar(1)
+        )
+                .containsOnly(utKatalog, deleteOld1, deleteOld2);
+    }
 
-        Path deleteOld1 = logDir.resolve("tidsserie_2013-01-01_01-00-00-00");
-        Path deleteOld2 = logDir.resolve("tidsserie_2015-01-01_01-00-00-00");
-        Path doNotDelete1 = logDir.resolve("tidsserie_2099-01-01_01-00-00-00");
-        Path doNotDelete2 = logDir.resolve("unrelatedFolder");
+    private ObjectArrayAssert<Path> assertFind(final AldersgrenseForSlettingAvLogKatalogar aldersgrense) throws HousekeepingException {
+        return assertThat(
+                finder.findDeletableBatchDirectories(aldersgrense)
+        );
+    }
 
-        asList(logDir, dataDir, deleteOld1, deleteOld2, doNotDelete1, doNotDelete2)
-                .stream()
-                .map(s -> dataDir.resolve(s).toFile())
-                .forEach(File::mkdir);
-
-        DeleteBatchDirectoryFinder finder = new DeleteBatchDirectoryFinder(dataDir, logDir);
-        Path[] deletable = finder.findDeletableBatchDirectories(1);
-
-        assertThat(deletable).containsOnly(dataDir, deleteOld1, deleteOld2);
+    private Path logkatalog(final String katalognavn) {
+        final Path underkatalog = this.logKatalog.resolve(katalognavn);
+        assertThat(underkatalog.toFile().mkdirs()).isTrue();
+        return underkatalog;
     }
 }

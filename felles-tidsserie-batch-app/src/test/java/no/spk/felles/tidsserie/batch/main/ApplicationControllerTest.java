@@ -1,6 +1,5 @@
 package no.spk.felles.tidsserie.batch.main;
 
-import static no.spk.felles.tidsserie.batch.Datoar.dato;
 import static no.spk.felles.tidsserie.batch.main.ApplicationController.EXIT_ERROR;
 import static no.spk.felles.tidsserie.batch.main.ApplicationController.EXIT_SUCCESS;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,16 +19,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import no.spk.faktura.input.BatchId;
-import no.spk.faktura.input.InvalidParameterException;
-import no.spk.faktura.input.UsageRequestedException;
-import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
 import no.spk.felles.tidsserie.batch.ServiceRegistryRule;
 import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.felles.tidsserie.batch.core.grunnlagsdata.LastOppGrunnlagsdataKommando;
+import no.spk.felles.tidsserie.batch.core.kommandolinje.BruksveiledningSkalVisesException;
+import no.spk.felles.tidsserie.batch.core.kommandolinje.UgyldigKommandolinjeArgumentException;
 import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.felles.tidsserie.batch.core.registry.Plugin;
 import no.spk.felles.tidsserie.batch.main.input.ProgramArguments;
-import no.spk.felles.tidsserie.batch.main.input.StandardOutputAndError;
 import no.spk.pensjon.faktura.tjenesteregister.Constants;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
@@ -118,18 +115,18 @@ public class ApplicationControllerTest {
     }
 
     @Test
-    public void testInformerOmBruk() throws Exception {
-        UsageRequestedException mockException = mock(UsageRequestedException.class);
-        controller.informerOmBruk(mockException);
-        verify(mockException).usage();
+    public void testInformerOmBruk() {
+        BruksveiledningSkalVisesException e = mock(BruksveiledningSkalVisesException.class);
+        controller.informerOmBruk(e);
+        verify(e).bruksveiledning();
         assertThat(controller.exitCode()).isEqualTo(EXIT_SUCCESS);
     }
 
     @Test
-    public void testInformerOmUgyldigeArgumenter() throws Exception {
-        InvalidParameterException mockException = mock(InvalidParameterException.class);
-        controller.informerOmUgyldigeArgumenter(mockException);
-        verify(mockException).usage();
+    public void testInformerOmUgyldigeArgumenter() {
+        UgyldigKommandolinjeArgumentException e = mock(UgyldigKommandolinjeArgumentException.class);
+        controller.informerOmUgyldigeArgumenter(e);
+        verify(e).bruksveiledning();
         assertThat(controller.exitCode()).isEqualTo(EXIT_ERROR);
     }
 
@@ -152,7 +149,7 @@ public class ApplicationControllerTest {
         final Tidsseriemodus modus = mock(Tidsseriemodus.class, "modus");
         when(modus.navn()).thenReturn("modus");
 
-        controller.lagTidsserie(registry.registry(), modus, new Observasjonsperiode(dato("1970.01.01"), dato("1980.12.31")));
+        controller.lagTidsserie(registry.registry(), modus);
 
         verify(modus).lagTidsserie(registry.registry());
         verifiserInformasjonsmelding("Starter tidsserie-generering");
@@ -285,7 +282,7 @@ public class ApplicationControllerTest {
         when(modus.navn()).thenReturn(modusnavn);
         when(modus.lagTidsserie(register)).thenReturn(meldinger);
 
-        controller.lagTidsserie(register, modus, new Observasjonsperiode(dato("1970.01.01"), dato("1980.12.31")));
+        controller.lagTidsserie(register, modus);
         verify(modus).lagTidsserie(register);
 
     }

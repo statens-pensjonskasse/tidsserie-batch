@@ -8,6 +8,7 @@ import no.spk.felles.tidsserie.batch.core.registry.Plugin;
 import no.spk.felles.tidsserie.batch.main.ApplicationController;
 import no.spk.felles.tidsserie.batch.main.TidsserieBatch;
 import no.spk.felles.tidsserie.batch.main.input.Modus;
+import no.spk.felles.tidsserie.batch.main.input.TidsserieArgumentsFactory;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**
@@ -47,6 +48,7 @@ class InMemoryBatchRunner implements FellesTidsserieBatch {
             outputAndError.before();
             Plugin.registrerAlle(registry, ServiceLoader.load(Plugin.class));
             batch.run(
+                    TidsserieArgumentsFactory::new,
                     "-i", innKatalog.toString(),
                     "-o", utKatalog.getPath(),
                     "-log", utKatalog.getPath(),

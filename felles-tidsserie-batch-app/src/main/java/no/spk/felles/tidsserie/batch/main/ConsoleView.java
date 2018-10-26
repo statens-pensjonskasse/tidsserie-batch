@@ -1,22 +1,21 @@
 package no.spk.felles.tidsserie.batch.main;
 
-import static java.time.LocalDateTime.now;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 
 import java.nio.file.Path;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import no.spk.faktura.input.ArgumentSummary;
-import no.spk.faktura.input.InvalidParameterException;
-import no.spk.faktura.input.UsageRequestedException;
-import no.spk.felles.tidsserie.batch.main.input.ProgramArguments;
+import no.spk.felles.tidsserie.batch.core.kommandolinje.BruksveiledningSkalVisesException;
+import no.spk.felles.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenter;
+import no.spk.felles.tidsserie.batch.core.kommandolinje.UgyldigKommandolinjeArgumentException;
 
 import org.slf4j.Logger;
 
@@ -25,29 +24,35 @@ public class ConsoleView implements View{
 
     private final Optional<Logger> logger;
 
+    private Supplier<LocalDateTime> klokke = LocalDateTime::now;
+
     public ConsoleView() {
         logger = empty();
     }
 
-    public ConsoleView(Logger logger) {
+    ConsoleView(final Logger logger) {
         requireNonNull(logger, "logger kan ikke være null.");
         this.logger = of(logger);
     }
 
+    @Override
     public void startarBackend() {
         println("Starter server.");
     }
 
+    @Override
     public void startarOpplasting() {
         println("Starter lasting av grunnlagsdata...");
     }
 
+    @Override
     public void opplastingFullfoert() {
         println("Grunnlagsdata lastet.");
 }
 
-    public void startarTidsseriegenerering(LocalDate fraOgMed, LocalDate tilOgMed) {
-        println("Starter tidsserie-generering for observasjonsperioden " + fraOgMed +  " -> " + tilOgMed);
+    @Override
+    public void startarTidsseriegenerering() {
+        println("Starter tidsserie-generering");
     }
 
     /**
@@ -56,8 +61,9 @@ public class ConsoleView implements View{
      *
      * @param e hjelp-forespørslen som inneheld informasjon om tilgjengelige argument
      */
-    public void visHjelp(UsageRequestedException e){
-        println(e.usage());
+    @Override
+    public void visHjelp(BruksveiledningSkalVisesException e){
+        println(e.bruksveiledning());
     }
 
     /**
@@ -66,23 +72,23 @@ public class ConsoleView implements View{
      *
      * @param e valideringsfeilen som inneheld informasjon om kva som er feil med argumentet
      */
-    public void informerOmUgyldigKommandolinjeArgument(InvalidParameterException e){
+    @Override
+    public void informerOmUgyldigKommandolinjeArgument(UgyldigKommandolinjeArgumentException e){
         println(e.getMessage());
-        println(e.usage());
+        println(e.bruksveiledning());
     }
 
-    public void informerOmOppstart(ProgramArguments arguments) {
-        println("Tidsserie-batch startet " + now().format(DATE_TIME_FORMATTER));
+    @Override
+    public void informerOmOppstart(final TidsserieBatchArgumenter arguments) {
+        println("Tidsserie-batch startet " + now());
         println("Følgende programargumenter blir brukt: ");
-        println(ArgumentSummary.createParameterSummary(arguments));
-        arguments.postMessage().ifPresent(this::println);
+        println(arguments.toString());
     }
-
 
     @Override
     public void informerOmSuksess(Path arbeidskatalog) {
         println("Resultat av kjøringen ligger i katalogen " + arbeidskatalog);
-        println("Tidsserie-batch avsluttet OK " + now().format(DATE_TIME_FORMATTER));
+        println("Tidsserie-batch avsluttet OK " + now());
     }
 
     @Override
@@ -140,7 +146,7 @@ public class ConsoleView implements View{
         Integer antallFeil = sorterteMeldinger.entrySet()
                 .stream()
                 .filter(map ->  "errors".equals(map.getKey()))
-                .map(map -> map.getValue())
+                .map(Map.Entry::getValue)
                 .reduce(0, Integer::sum);
         System.out.println("Antall feil: " + antallFeil);
 
@@ -150,16 +156,24 @@ public class ConsoleView implements View{
     }
 
     private static Map<String, Integer> sortereMeldinger(Map<String, Integer> meldinger) {
-        Map<String, Integer> sortedMap = meldinger.entrySet().stream()
+        return meldinger.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
                         (e1, e2) -> e2, LinkedHashMap::new));
-        return sortedMap;
     }
 
     private String lageModusmelding(Map<String, Integer> meldinger, String modusnavn) {
         String avtaleunderlag = "Antall avtaler behandlet: " + meldinger.get("avtaler");
         String andremoduser = "Antall medlemmer behandlet: " + meldinger.get("medlem");
         return modusnavn.equals("avtaleunderlag") ? avtaleunderlag : andremoduser;
+    }
+
+    private String now() {
+        return klokke.get().format(DATE_TIME_FORMATTER);
+    }
+
+    ConsoleView overstyr(final Supplier<LocalDateTime> klokke) {
+        this.klokke = requireNonNull(klokke, "klokke er påkrevd, men var null");
+        return this;
     }
 }

@@ -20,7 +20,7 @@ public class Modus {
 
     private final Tidsseriemodus modus;
 
-    Modus(final String kode, final Tidsseriemodus modus) {
+    protected Modus(final String kode, final Tidsseriemodus modus) {
         this.kode = kode;
         this.modus = modus;
     }
@@ -50,7 +50,7 @@ public class Modus {
         return kode;
     }
 
-    Tidsseriemodus modus() {
+    public Tidsseriemodus modus() {
         return modus;
     }
 

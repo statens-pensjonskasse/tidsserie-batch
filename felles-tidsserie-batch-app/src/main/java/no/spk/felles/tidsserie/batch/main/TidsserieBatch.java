@@ -12,16 +12,13 @@ import static no.spk.pensjon.faktura.tjenesteregister.Constants.SERVICE_RANKING;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
-import java.util.ServiceLoader;
 import java.util.concurrent.ExecutorService;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import no.spk.faktura.input.BatchId;
-import no.spk.faktura.input.InvalidParameterException;
-import no.spk.faktura.input.UsageRequestedException;
 import no.spk.faktura.timeout.BatchTimeout;
 import no.spk.faktura.timeout.BatchTimeoutTaskrunner;
-import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
 import no.spk.felles.tidsserie.batch.backend.hazelcast.HazelcastBackend;
 import no.spk.felles.tidsserie.batch.core.Katalog;
 import no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback;
@@ -29,12 +26,14 @@ import no.spk.felles.tidsserie.batch.core.TidsserieLivssyklus;
 import no.spk.felles.tidsserie.batch.core.TidsserieLivssyklusException;
 import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.felles.tidsserie.batch.core.grunnlagsdata.GrunnlagsdataRepository;
+import no.spk.felles.tidsserie.batch.core.kommandolinje.AldersgrenseForSlettingAvLogKatalogar;
+import no.spk.felles.tidsserie.batch.core.kommandolinje.BruksveiledningSkalVisesException;
+import no.spk.felles.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenter;
+import no.spk.felles.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenterParser;
+import no.spk.felles.tidsserie.batch.core.kommandolinje.UgyldigKommandolinjeArgumentException;
 import no.spk.felles.tidsserie.batch.core.lagring.StorageBackend;
 import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.felles.tidsserie.batch.core.registry.Extensionpoint;
-import no.spk.felles.tidsserie.batch.main.input.Modus;
-import no.spk.felles.tidsserie.batch.main.input.ProgramArguments;
-import no.spk.felles.tidsserie.batch.main.input.TidsserieArgumentsFactory;
 import no.spk.felles.tidsserie.batch.main.spi.ExitCommand;
 import no.spk.felles.tidsserie.batch.storage.disruptor.FileTemplate;
 import no.spk.felles.tidsserie.batch.storage.disruptor.LmaxDisruptorPublisher;
@@ -82,29 +81,34 @@ public class TidsserieBatch {
         this.generert = new Extensionpoint<>(TidsserieGenerertCallback.class, registry);
     }
 
-    public void run(final String... args) {
+    public void run(final Supplier<TidsserieBatchArgumenterParser> parser, final String... args) {
         try {
-            ProgramArguments arguments = new TidsserieArgumentsFactory().create(args);
+            final TidsserieBatchArgumenter arguments = parser.get().parse(args);
+            registrer(TidsserieBatchArgumenter.class, arguments);
+            arguments.registrer(registry);
+
             startBatchTimeout(arguments);
 
             final BatchId batchId = new BatchId(TIDSSERIE_PREFIX, now());
 
-            final Path logKatalog = batchId.tilArbeidskatalog(arguments.getLogkatalog());
-            final Path utKatalog = arguments.getUtkatalog().resolve("tidsserie");
-            final Path innKatalog = arguments.getGrunnlagsdataBatchKatalog();
+            final Path logKatalog = batchId.tilArbeidskatalog(arguments.logkatalog());
+            final Path utKatalog = arguments.utkatalog().resolve("tidsserie");
+            final Path innKatalog = arguments.uttrekkskatalog();
 
             registrer(Path.class, logKatalog, Katalog.LOG.egenskap());
             registrer(Path.class, utKatalog, Katalog.UT.egenskap());
             registrer(Path.class, innKatalog, Katalog.GRUNNLAGSDATA.egenskap());
-
-            registrer(Observasjonsperiode.class, arguments.observasjonsperiode());
 
             Files.createDirectories(logKatalog);
 
             controller.initialiserLogging(batchId, logKatalog);
             controller.informerOmOppstart(arguments);
 
-            final DirectoryCleaner directoryCleaner = createDirectoryCleaner(arguments.getSlettLogEldreEnn(), arguments.getLogkatalog(), utKatalog);
+            final DirectoryCleaner directoryCleaner = createDirectoryCleaner(
+                    arguments.slettegrense(),
+                    arguments.logkatalog(),
+                    utKatalog
+            );
             registrer(DirectoryCleaner.class, directoryCleaner);
             controller.ryddOpp(directoryCleaner);
             Files.createDirectories(utKatalog);
@@ -114,7 +118,8 @@ public class TidsserieBatch {
             final Tidsseriemodus modus = arguments.modus();
             registrer(Tidsseriemodus.class, modus);
 
-            final HazelcastBackend backend = new HazelcastBackend(registry, arguments.getNodes());
+            @SuppressWarnings("deprecation")
+            final HazelcastBackend backend = new HazelcastBackend(registry, arguments.antallProsessorar().antall());
             registrer(MedlemsdataBackend.class, backend);
             registrer(TidsserieLivssyklus.class, backend);
 
@@ -143,14 +148,16 @@ public class TidsserieBatch {
             controller.startBackend(backend);
             controller.lastOpp();
 
-            lagTidsserie(controller, modus, arguments.observasjonsperiode());
-
+            lagTidsserie(
+                    controller,
+                    modus
+            );
             controller.opprettMetadata(metaDataWriter, arguments, batchId, between(started, now()));
 
             controller.informerOmSuksess(logKatalog);
-        } catch (InvalidParameterException e) {
+        } catch (UgyldigKommandolinjeArgumentException e) {
             controller.informerOmUgyldigeArgumenter(e);
-        } catch (UsageRequestedException e) {
+        } catch (BruksveiledningSkalVisesException e) {
             controller.informerOmBruk(e);
         } catch (GrunnlagsdataException e) {
             controller.informerOmKorrupteGrunnlagsdata(e);
@@ -163,8 +170,10 @@ public class TidsserieBatch {
         shutdown();
     }
 
-    void lagTidsserie(final ApplicationController controller, final Tidsseriemodus modus,
-                      final Observasjonsperiode periode) {
+    void lagTidsserie(
+            final ApplicationController controller,
+            final Tidsseriemodus modus
+    ) {
         try {
             livssyklus
                     .invokeAll(l -> l.start(registry))
@@ -172,8 +181,7 @@ public class TidsserieBatch {
 
             controller.lagTidsserie(
                     registry,
-                    modus,
-                    periode
+                    modus
             );
 
             generert
@@ -191,9 +199,13 @@ public class TidsserieBatch {
         return registry.registerService(type, tjeneste, egenskapar);
     }
 
-    private DirectoryCleaner createDirectoryCleaner(int slettEldreEnn, Path logKatalog, Path dataKatalog) throws HousekeepingException {
+    private DirectoryCleaner createDirectoryCleaner(
+            final AldersgrenseForSlettingAvLogKatalogar grense,
+            final Path logKatalog,
+            final Path dataKatalog
+    ) throws HousekeepingException {
         DeleteBatchDirectoryFinder finder = new DeleteBatchDirectoryFinder(dataKatalog, logKatalog);
-        Path[] deleteDirectories = finder.findDeletableBatchDirectories(slettEldreEnn);
+        Path[] deleteDirectories = finder.findDeletableBatchDirectories(grense);
         return new DirectoryCleaner(deleteDirectories);
     }
 
@@ -202,7 +214,7 @@ public class TidsserieBatch {
         exiter.exit(controller.exitCode());
     }
 
-    private void startBatchTimeout(ProgramArguments arguments) {
+    private void startBatchTimeout(TidsserieBatchArgumenter arguments) {
         new BatchTimeoutTaskrunner(
                 createBatchTimeout(arguments)).startTerminationTimeout
                 (
@@ -214,8 +226,12 @@ public class TidsserieBatch {
                 );
     }
 
-    private BatchTimeout createBatchTimeout(ProgramArguments arguments) {
-        return new BatchTimeout(arguments.getKjoeretid(), arguments.getSluttidspunkt()).start();
+    private BatchTimeout createBatchTimeout(TidsserieBatchArgumenter arguments) {
+        return new BatchTimeout(
+                arguments.maksimalKjøretid(),
+                arguments.avsluttFørTidspunkt()
+        )
+                .start();
     }
 
     private static TidsserieLivssyklusException livssyklusStartFeila(final Stream<RuntimeException> errors) {

@@ -1,15 +1,17 @@
 package no.spk.felles.tidsserie.batch.main;
 
 import java.nio.file.Path;
-import java.time.LocalDate;
 import java.util.Map;
 
-import no.spk.faktura.input.InvalidParameterException;
-import no.spk.faktura.input.UsageRequestedException;
-import no.spk.felles.tidsserie.batch.main.input.ProgramArguments;
+import no.spk.felles.tidsserie.batch.core.kommandolinje.BruksveiledningSkalVisesException;
+import no.spk.felles.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenter;
+import no.spk.felles.tidsserie.batch.core.kommandolinje.UgyldigKommandolinjeArgumentException;
 
 /**
- * TODO: Kva og korleis ønskjer vi å vise status for batchkøyringa når vi køyrer den for vår egen bruk?
+ * {@link View} er ansvarlig for presentasjon av all informasjon som brukaren
+ * skal få sjå i sanntid medan batchen køyrer.
+ * <p>
+ * Alt av informasjons- og feilmeldingar blir vist til brukaren via viewet.
  */
 public interface View {
 
@@ -19,7 +21,7 @@ public interface View {
 
     void opplastingFullfoert() ;
 
-    void startarTidsseriegenerering(LocalDate fraOgMed, LocalDate tilOgMed) ;
+    void startarTidsseriegenerering();
 
     /**
      * Viser informasjon om kva kommandolinjeargument batchen støttar med forklaring av
@@ -27,7 +29,7 @@ public interface View {
      *
      * @param e hjelp-forespørslen som inneheld informasjon om tilgjengelige argument
      */
-    void visHjelp(UsageRequestedException e);
+    void visHjelp(BruksveiledningSkalVisesException e);
 
     /**
      * Notifiserer brukaren om at eit av kommandolinjeargumenta som er angitt, er ugyldig med
@@ -35,9 +37,9 @@ public interface View {
      *
      * @param e valideringsfeilen som inneheld informasjon om kva som er feil med argumentet
      */
-    void informerOmUgyldigKommandolinjeArgument(InvalidParameterException e);
+    void informerOmUgyldigKommandolinjeArgument(UgyldigKommandolinjeArgumentException e);
 
-    void informerOmOppstart(ProgramArguments arguments) ;
+    void informerOmOppstart(TidsserieBatchArgumenter arguments) ;
 
 
     /**
