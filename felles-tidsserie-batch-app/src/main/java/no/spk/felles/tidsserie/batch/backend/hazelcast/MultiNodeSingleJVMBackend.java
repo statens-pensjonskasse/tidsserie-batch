@@ -22,7 +22,7 @@ import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.LifecycleService;
 import com.hazelcast.instance.DefaultNodeContext;
-import com.hazelcast.instance.GroupProperties;
+import com.hazelcast.spi.properties.GroupProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,11 +98,11 @@ class MultiNodeSingleJVMBackend implements Server {
     }
 
     private Config buildConfig() {
-        System.setProperty(GroupProperties.PROP_LOGGING_TYPE, "slf4j");
+        GroupProperty.LOGGING_TYPE.setSystemProperty("slf4j");
 
         final Config config = new XmlConfigBuilder().build();
-        config.setProperty(GroupProperties.PROP_INITIAL_MIN_CLUSTER_SIZE, "1");
-        config.setProperty(GroupProperties.PROP_SOCKET_BIND_ANY, "false");
+        config.setProperty(GroupProperty.INITIAL_MIN_CLUSTER_SIZE.getName(), "1");
+        config.setProperty(GroupProperty.SOCKET_BIND_ANY.getName(), "false");
         config.getGroupConfig().setName("felles-tidsserie-batch-" + UUID.randomUUID().toString());
         config
                 .getMapConfig("medlem")

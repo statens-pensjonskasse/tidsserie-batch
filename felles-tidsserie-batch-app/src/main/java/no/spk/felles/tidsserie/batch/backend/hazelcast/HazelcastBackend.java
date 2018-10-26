@@ -17,11 +17,6 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IMap;
-import com.hazelcast.mapreduce.Job;
-import com.hazelcast.mapreduce.JobCompletableFuture;
-import com.hazelcast.mapreduce.JobTracker;
-import com.hazelcast.mapreduce.KeyValueSource;
-import com.hazelcast.mapreduce.Mapper;
 import com.hazelcast.mapreduce.aggregation.impl.IntegerSumAggregation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +43,7 @@ import org.slf4j.LoggerFactory;
  * {@link GenererTidsserieCommand}. Den må derfor ha blitt registrert i tenesteregisteret i forkant av at
  * {@link #lagTidsserie()} blir kalla.
  */
+@SuppressWarnings("deprecation")
 public class HazelcastBackend implements MedlemsdataBackend, TidsserieLivssyklus {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -93,10 +89,10 @@ public class HazelcastBackend implements MedlemsdataBackend, TidsserieLivssyklus
     }
 
     private Map<String, Integer> submit(
-            final Mapper<String, List<List<String>>, String, Integer> mapper
+            final com.hazelcast.mapreduce.Mapper<String, List<List<String>>, String, Integer> mapper
     ) {
         final IntegerSumAggregation<String, Integer> factory = new IntegerSumAggregation<>();
-        final JobCompletableFuture<Map<String, Integer>> future = createJob()
+        final com.hazelcast.mapreduce.JobCompletableFuture<Map<String, Integer>> future = createJob()
                 .mapper(mapper)
                 .combiner(factory.getCombinerFactory())
                 .reducer(factory.getReducerFactory())
@@ -114,9 +110,9 @@ public class HazelcastBackend implements MedlemsdataBackend, TidsserieLivssyklus
         }
     }
 
-    private Job<String, List<List<String>>> createJob() {
-        final JobTracker tracker = instance.get().getJobTracker("default");
-        final KeyValueSource<String, List<List<String>>> source = KeyValueSource.fromMap(map.get());
+    private com.hazelcast.mapreduce.Job<String, List<List<String>>> createJob() {
+        final com.hazelcast.mapreduce.JobTracker tracker = instance.get().getJobTracker("default");
+        final com.hazelcast.mapreduce.KeyValueSource<String, List<List<String>>> source = com.hazelcast.mapreduce.KeyValueSource.fromMap(map.get());
         return tracker.newJob(source);
     }
 }

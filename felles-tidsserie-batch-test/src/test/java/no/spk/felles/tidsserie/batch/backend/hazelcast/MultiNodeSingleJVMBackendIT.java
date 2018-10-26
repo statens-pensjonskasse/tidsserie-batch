@@ -13,7 +13,7 @@ import no.spk.felles.tidsserie.batch.it.StandardOutputAndError;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.LifecycleEvent;
 import com.hazelcast.core.LifecycleEvent.LifecycleState;
-import com.hazelcast.instance.GroupProperties;
+import com.hazelcast.spi.properties.GroupProperty;
 import org.assertj.core.api.AbstractBooleanAssert;
 import org.junit.After;
 import org.junit.Before;
@@ -50,7 +50,7 @@ public class MultiNodeSingleJVMBackendIT {
                 antallNoder
         );
         // Reduserer køyretida for testen med 5 sekund i forhold til standardinnstillingane
-        server.setProperty(GroupProperties.PROP_WAIT_SECONDS_BEFORE_JOIN, "0");
+        server.setProperty(GroupProperty.WAIT_SECONDS_BEFORE_JOIN.getName(), "0");
 
         final HazelcastInstance instance = server.start();
         assertThat(instance.getCluster().getMembers())

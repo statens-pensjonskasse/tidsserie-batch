@@ -22,7 +22,6 @@ import no.spk.felles.tidsserie.batch.core.medlem.GenererTidsserieCommand;
 import no.spk.felles.tidsserie.batch.core.medlem.PartisjonsListener;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
-import com.hazelcast.mapreduce.Context;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -50,8 +49,9 @@ public class TidsserieagentTest {
     @Mock
     private Tidsseriemodus modus;
 
+    @SuppressWarnings("deprecation")
     @Mock
-    private Context<String, Integer> context;
+    private com.hazelcast.mapreduce.Context<String, Integer> context;
 
     private Tidsserieagent agent = new Tidsserieagent();
 

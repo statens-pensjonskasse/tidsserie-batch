@@ -16,8 +16,6 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.HazelcastInstanceAware;
 import com.hazelcast.core.IAtomicLong;
-import com.hazelcast.mapreduce.Context;
-import com.hazelcast.mapreduce.LifecycleMapperAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -29,8 +27,9 @@ import org.slf4j.MDC;
  *
  * @author Tarjei Skorgenes
  */
+@SuppressWarnings("deprecation")
 class Tidsserieagent
-        extends LifecycleMapperAdapter<String, List<List<String>>, String, Integer> implements HazelcastInstanceAware {
+        extends com.hazelcast.mapreduce.LifecycleMapperAdapter<String, List<List<String>>, String, Integer> implements HazelcastInstanceAware {
     private final static long serialVersionUID = 1;
 
     public static final String MDC_SERIENUMMER = "serienummer";
@@ -59,25 +58,25 @@ class Tidsserieagent
     }
 
     @Override
-    public void initialize(final Context<String, Integer> context) {
+    public void initialize(final com.hazelcast.mapreduce.Context<String, Integer> context) {
         // Serienummeret for alle eventar som blir generert for medlemmar i gjeldande partisjon
         serienummer = serienummerGenerator.getAndIncrement();
         notifyListeners(context);
     }
 
-    void notifyListeners(final Context<String, Integer> context) {
+    void notifyListeners(final com.hazelcast.mapreduce.Context<String, Integer> context) {
         MDC.put(MDC_SERIENUMMER, "" + serienummer);
         listeners.invokeAll(i -> i.partitionInitialized(serienummer))
                 .forEachFailure(e -> emitError(context, e));
     }
 
     @Override
-    public void finalized(final Context<String, Integer> context) {
+    public void finalized(final com.hazelcast.mapreduce.Context<String, Integer> context) {
         MDC.remove(MDC_SERIENUMMER);
     }
 
     @Override
-    public void map(final String key, final List<List<String>> value, final Context<String, Integer> context) {
+    public void map(final String key, final List<List<String>> value, final com.hazelcast.mapreduce.Context<String, Integer> context) {
         final Logger log = LoggerFactory.getLogger(getClass());
 
         context.emit("medlem", 1);
@@ -95,7 +94,7 @@ class Tidsserieagent
         }
     }
 
-    private TidsserieContext getTidsserieContext(final Context<String, Integer> context) {
+    private TidsserieContext getTidsserieContext(final com.hazelcast.mapreduce.Context<String, Integer> context) {
         return new TidsserieContext() {
             @Override
             public void emitError(Throwable throwable) {
@@ -109,7 +108,7 @@ class Tidsserieagent
         };
     }
 
-    private void emitError(Context<String, Integer> context, Throwable t) {
+    private void emitError(com.hazelcast.mapreduce.Context<String, Integer> context, Throwable t) {
         context.emit("errors", 1);
         context.emit("errors_type_" + t.getClass().getSimpleName(), 1);
         context.emit("errors_message_" + (t.getMessage() != null ? t.getMessage() : "null"), 1);
