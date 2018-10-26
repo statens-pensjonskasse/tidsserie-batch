@@ -42,6 +42,7 @@ public class MetaDataWriter {
         try (Writer writer = new FileWriter(fileToWrite)) {
             HashMap<String, Object> dataModel = new HashMap<>();
             dataModel.put("params", programArguments);
+            dataModel.put("grunnlagsdataBatchKatalog", programArguments.getGrunnlagsdataBatchKatalog().toAbsolutePath().normalize());
             dataModel.put("batchId", batchId);
             dataModel.put("jobDuration", getDurationString(duration));
             dataModel.put("outputDirectory", batchKatalog.toAbsolutePath().normalize().toString());
