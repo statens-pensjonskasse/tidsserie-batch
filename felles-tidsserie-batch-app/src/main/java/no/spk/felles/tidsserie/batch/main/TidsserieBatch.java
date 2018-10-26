@@ -14,7 +14,6 @@ import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.ServiceLoader;
 import java.util.concurrent.ExecutorService;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import no.spk.faktura.input.BatchId;
@@ -36,6 +35,7 @@ import no.spk.felles.tidsserie.batch.core.registry.Extensionpoint;
 import no.spk.felles.tidsserie.batch.main.input.Modus;
 import no.spk.felles.tidsserie.batch.main.input.ProgramArguments;
 import no.spk.felles.tidsserie.batch.main.input.TidsserieArgumentsFactory;
+import no.spk.felles.tidsserie.batch.main.spi.ExitCommand;
 import no.spk.felles.tidsserie.batch.storage.disruptor.FileTemplate;
 import no.spk.felles.tidsserie.batch.storage.disruptor.LmaxDisruptorPublisher;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistration;
@@ -57,12 +57,12 @@ public class TidsserieBatch {
     private final Extensionpoint<TidsserieLivssyklus> livssyklus;
     private final Extensionpoint<TidsserieGenerertCallback> generert;
     private final ServiceRegistry registry;
-    private final Consumer<Integer> exiter;
+    private final ExitCommand exiter;
 
     private ApplicationController controller;
 
     /**
-     * Konstruerer ein ny instans av main-klassa som skal brukast til å eksekvere batchen.
+     * Konstruerer ein ny instans av platformrammeverket som skal brukast til å eksekvere batchen.
      * <br>
      * For å støtte direkte kall til batchen frå integrasjonstestar er {@code exiter}
      * lagt til som eit parameter ved konstruksjon. Dette for å unngå
@@ -73,7 +73,7 @@ public class TidsserieBatch {
      * @param controller kontrolleren som tar seg av å informere brukaren, logging og handtering av exitkode
      * @throws NullPointerException dersom nokon av parameterverdiane er lik {@code null}
      */
-    public TidsserieBatch(final ServiceRegistry registry, final Consumer<Integer> exiter,
+    public TidsserieBatch(final ServiceRegistry registry, final ExitCommand exiter,
                           final ApplicationController controller) {
         this.registry = requireNonNull(registry, "registry er påkrevd, men var null");
         this.exiter = requireNonNull(exiter, "exiter er påkrevd, men var null");
@@ -186,19 +186,6 @@ public class TidsserieBatch {
         }
     }
 
-    public static void main(String[] args) {
-        Modus.autodetect();
-
-        final ServiceRegistry registry = ServiceLoader.load(ServiceRegistry.class).iterator().next();
-        registry.registerService(View.class, new ConsoleView());
-
-        new TidsserieBatch(
-                registry,
-                System::exit, new ApplicationController(registry)
-        )
-                .run(args);
-    }
-
     private <T> ServiceRegistration<T> registrer(final Class<T> type, final T tjeneste, final String... egenskapar) {
         return registry.registerService(type, tjeneste, egenskapar);
     }
@@ -211,7 +198,7 @@ public class TidsserieBatch {
 
     private void shutdown() {
         controller.logExit();
-        exiter.accept(controller.exitCode());
+        exiter.exit(controller.exitCode());
     }
 
     private void startBatchTimeout(ProgramArguments arguments) {
