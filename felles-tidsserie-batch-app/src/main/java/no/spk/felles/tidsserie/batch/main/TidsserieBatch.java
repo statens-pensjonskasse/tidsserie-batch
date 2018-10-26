@@ -53,7 +53,7 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
  * @author Snorre E. Brekke - Computas
  * @author Tarjei Skorgenes
  */
-public class TidsserieMain {
+public class TidsserieBatch {
     private final Extensionpoint<TidsserieLivssyklus> livssyklus;
     private final Extensionpoint<TidsserieGenerertCallback> generert;
     private final ServiceRegistry registry;
@@ -73,8 +73,8 @@ public class TidsserieMain {
      * @param controller kontrolleren som tar seg av å informere brukaren, logging og handtering av exitkode
      * @throws NullPointerException dersom nokon av parameterverdiane er lik {@code null}
      */
-    public TidsserieMain(final ServiceRegistry registry, final Consumer<Integer> exiter,
-                         final ApplicationController controller) {
+    public TidsserieBatch(final ServiceRegistry registry, final Consumer<Integer> exiter,
+                          final ApplicationController controller) {
         this.registry = requireNonNull(registry, "registry er påkrevd, men var null");
         this.exiter = requireNonNull(exiter, "exiter er påkrevd, men var null");
         this.controller = requireNonNull(controller, "controller er påkrevd, men var null");
@@ -167,7 +167,7 @@ public class TidsserieMain {
         try {
             livssyklus
                     .invokeAll(l -> l.start(registry))
-                    .orElseThrow(TidsserieMain::livssyklusStartFeila);
+                    .orElseThrow(TidsserieBatch::livssyklusStartFeila);
 
             controller.lagTidsserie(
                     registry,
@@ -192,7 +192,7 @@ public class TidsserieMain {
         final ServiceRegistry registry = ServiceLoader.load(ServiceRegistry.class).iterator().next();
         registry.registerService(View.class, new ConsoleView());
 
-        new TidsserieMain(
+        new TidsserieBatch(
                 registry,
                 System::exit, new ApplicationController(registry)
         )

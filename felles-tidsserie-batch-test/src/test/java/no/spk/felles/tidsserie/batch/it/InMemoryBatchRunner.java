@@ -4,7 +4,7 @@ import java.io.File;
 
 import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
 import no.spk.felles.tidsserie.batch.main.ApplicationController;
-import no.spk.felles.tidsserie.batch.main.TidsserieMain;
+import no.spk.felles.tidsserie.batch.main.TidsserieBatch;
 import no.spk.felles.tidsserie.batch.main.input.Modus;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
@@ -24,12 +24,12 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 class InMemoryBatchRunner implements FellesTidsserieBatch {
     private final StandardOutputAndError outputAndError = new StandardOutputAndError();
 
-    private final TidsserieMain batch;
+    private final TidsserieBatch batch;
 
     private int exitCode;
 
     InMemoryBatchRunner(final ServiceRegistry registry) {
-        this.batch = new TidsserieMain(
+        this.batch = new TidsserieBatch(
                 registry,
                 exitCode -> this.exitCode = exitCode,
                 new ApplicationController(registry)

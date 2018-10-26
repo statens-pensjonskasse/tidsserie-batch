@@ -26,7 +26,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoRule;
 
-public class TidsserieMainTest {
+public class TidsserieBatchTest {
     @Rule
     public final MockitoRule mockito = rule().strictness(STRICT_STUBS);
 
@@ -53,13 +53,13 @@ public class TidsserieMainTest {
             new Aarstall(2015).atEndOfYear()
     );
 
-    private TidsserieMain main;
+    private TidsserieBatch main;
 
     private Integer exitCode;
 
     @Before
     public void _before() {
-        main = new TidsserieMain(
+        main = new TidsserieBatch(
                 registry.registry(),
                 exitCode -> this.exitCode = exitCode,
                 controller
