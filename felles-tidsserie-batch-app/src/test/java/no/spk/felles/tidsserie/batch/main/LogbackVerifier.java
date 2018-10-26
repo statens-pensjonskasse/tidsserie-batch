@@ -25,7 +25,7 @@ import ch.qos.logback.classic.spi.IThrowableProxy;
 import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.joran.spi.JoranException;
 import org.assertj.core.api.AbstractCharSequenceAssert;
-import org.assertj.core.api.AbstractListAssert;
+import org.assertj.core.api.ListAssert;
 import org.junit.rules.ExternalResource;
 import org.mockito.Mock;
 import org.slf4j.LoggerFactory;
@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
  * Klasse som kan brukes som class-rule i JUnit-tester for å sjekke etter spesifikke logg-hendelser.
  * @author Snorre E. Brekke - Computas
  */
+@SuppressWarnings({ "unused", "WeakerAccess" })
 public class LogbackVerifier extends ExternalResource {
 
     private final List<ILoggingEvent> events = new ArrayList<>();
@@ -81,9 +82,9 @@ public class LogbackVerifier extends ExternalResource {
      * @return en asserter som inneholder en liste med den tekstlige meldingen til logg-hendelsene på angitt nivå.
      */
     @SuppressWarnings("unchecked")
-    public AbstractListAssert<?, ? extends List<String>, String> assertMessagesWithLevel(final Level... level) {
+    public ListAssert<String> assertMessagesWithLevel(final Level... level) {
         final HashSet<Level> tmp = new HashSet<>(asList(level));
-        return (AbstractListAssert<?, ? extends List<String>, String>) assertThat(
+        return assertThat(
                 events()
                         .filter(e -> tmp.contains(e.getLevel()))
                         .map(ILoggingEvent::getFormattedMessage)
@@ -98,8 +99,8 @@ public class LogbackVerifier extends ExternalResource {
      * @return en asserter som inneholder en liste med den tekstlige meldingen til feilmeldingen for angitt exception.
      */
     @SuppressWarnings("unchecked")
-    public final AbstractListAssert<?, ? extends List<String>, String> assertMessagesForExceptions(final Collection<Class<? extends Exception>> expectedExeptions) {
-        return (AbstractListAssert<?, ? extends List<String>, String>) assertThat(
+    public final ListAssert<String> assertMessagesForExceptions(final Collection<Class<? extends Exception>> expectedExeptions) {
+        return assertThat(
                 events()
                         .map(ILoggingEvent::getThrowableProxy)
                         .filter(t -> isSubtypeOf(t, expectedExeptions))
@@ -125,7 +126,7 @@ public class LogbackVerifier extends ExternalResource {
     private boolean isSubtypeOf(IThrowableProxy throwable, final Collection<Class<? extends Exception>> expectedExeptions) {
         try {
             Class<?> type = Class.forName(throwable.getClassName());
-            return expectedExeptions.stream().filter(t -> t.isAssignableFrom(type)).findAny().isPresent();
+            return expectedExeptions.stream().anyMatch(t -> t.isAssignableFrom(type));
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }

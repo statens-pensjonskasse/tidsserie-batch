@@ -9,12 +9,11 @@ import static org.mockito.quality.Strictness.STRICT_STUBS;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.List;
 
 import no.spk.felles.tidsserie.batch.TemporaryFolderWithDeleteVerification;
 import no.spk.felles.tidsserie.batch.core.lagring.Tidsserierad;
 
-import org.assertj.core.api.AbstractListAssert;
+import org.assertj.core.api.ListAssert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -68,12 +67,6 @@ public class FileWriterTidsserieradHandlerIT {
                 .containsOnly("MOAR MOAR MOAR");
     }
 
-    protected AbstractListAssert<?, ? extends List<? extends String>, String> assertFileContent(
-            final File file) throws IOException {
-        return assertThat(Files.readAllLines(file.toPath()))
-                .as("alle linjer i " + file);
-    }
-
     @Test
     public void skalSkriveEventenTilForskjelligeFilerBasertPaaEventserien() throws IOException {
         will(a -> temp.newFile("1")).given(template).createUniqueFile(1L, "tidsserie");
@@ -106,5 +99,11 @@ public class FileWriterTidsserieradHandlerIT {
 
         assertFileContent(new File(temp.getRoot(), "1")).hasSize(1).containsOnly("YEY");
         assertFileContent(new File(temp.getRoot(), "2")).hasSize(1).containsOnly("YAY");
+    }
+
+    private ListAssert<String> assertFileContent(
+            final File file) throws IOException {
+        return assertThat(Files.readAllLines(file.toPath()))
+                .as("alle linjer i " + file);
     }
 }
