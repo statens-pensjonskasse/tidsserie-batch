@@ -4,15 +4,12 @@ import static java.time.Duration.between;
 import static java.time.Duration.ofMinutes;
 import static java.time.LocalDateTime.now;
 import static java.util.Objects.requireNonNull;
-import static java.util.concurrent.Executors.newCachedThreadPool;
 import static no.spk.felles.tidsserie.batch.core.BatchIdConstants.TIDSSERIE_PREFIX;
-import static no.spk.felles.tidsserie.batch.core.TidsserieLivssyklus.onStop;
 import static no.spk.felles.tidsserie.batch.core.registry.Ranking.ranking;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
-import java.util.concurrent.ExecutorService;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -30,11 +27,8 @@ import no.spk.felles.tidsserie.batch.core.kommandolinje.BruksveiledningSkalVises
 import no.spk.felles.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenter;
 import no.spk.felles.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenterParser;
 import no.spk.felles.tidsserie.batch.core.kommandolinje.UgyldigKommandolinjeArgumentException;
-import no.spk.felles.tidsserie.batch.core.lagring.StorageBackend;
 import no.spk.felles.tidsserie.batch.core.registry.Extensionpoint;
 import no.spk.felles.tidsserie.batch.main.spi.ExitCommand;
-import no.spk.felles.tidsserie.batch.storage.disruptor.FileTemplate;
-import no.spk.felles.tidsserie.batch.storage.disruptor.LmaxDisruptorPublisher;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistration;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
@@ -118,19 +112,6 @@ public class TidsserieBatch {
 
             final MetaDataWriter metaDataWriter = new MetaDataWriter(TemplateConfigurationFactory.create(), logKatalog);
             registrer(MetaDataWriter.class, metaDataWriter);
-
-            final ExecutorService executors = newCachedThreadPool(
-                    r -> new Thread(r, "lmax-disruptor-" + System.currentTimeMillis())
-            );
-            registrer(ExecutorService.class, executors);
-            registrer(TidsserieLivssyklus.class, onStop(executors::shutdown));
-
-            final LmaxDisruptorPublisher disruptor = new LmaxDisruptorPublisher(
-                    executors,
-                    new FileTemplate(utKatalog, ".csv")
-            );
-            registrer(StorageBackend.class, disruptor);
-            registrer(TidsserieLivssyklus.class, disruptor);
 
             controller.aktiverPlugins();
             modus.registerServices(registry);

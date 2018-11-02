@@ -20,6 +20,7 @@
         <module>felles-tidsserie-batch-test</module>
         <module>felles-tidsserie-batch-arguments</module>
         <module>felles-tidsserie-batch-bom</module>
+        <module>felles-tidsserie-batch-plugins-disruptor</module>
         <module>felles-tidsserie-batch-plugins-hazelcast</module>
     </modules>
 
@@ -240,11 +241,6 @@
                 <version>1.0.0</version>
             </dependency>
 
-            <dependency>
-                <groupId>com.lmax</groupId>
-                <artifactId>disruptor</artifactId>
-                <version>3.3.0</version>
-            </dependency>
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>

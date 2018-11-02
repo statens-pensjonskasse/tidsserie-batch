@@ -1,10 +1,8 @@
-package no.spk.felles.tidsserie.batch.storage.disruptor;
+package no.spk.felles.tidsserie.batch.plugins.disruptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
-
-import no.spk.felles.tidsserie.batch.TemporaryFolderWithDeleteVerification;
 
 import org.assertj.core.api.AbstractCharSequenceAssert;
 import org.junit.Before;

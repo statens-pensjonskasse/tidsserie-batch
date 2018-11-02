@@ -1,4 +1,4 @@
-package no.spk.felles.tidsserie.batch.storage.disruptor;
+package no.spk.felles.tidsserie.batch.plugins.disruptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.will;
@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-import no.spk.felles.tidsserie.batch.TemporaryFolderWithDeleteVerification;
 import no.spk.felles.tidsserie.batch.core.lagring.Tidsserierad;
 
 import org.assertj.core.api.ListAssert;

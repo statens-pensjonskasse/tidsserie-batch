@@ -1,4 +1,4 @@
-package no.spk.felles.tidsserie.batch.storage.disruptor;
+package no.spk.felles.tidsserie.batch.plugins.disruptor;
 
 import java.io.File;
 import java.io.Serializable;
