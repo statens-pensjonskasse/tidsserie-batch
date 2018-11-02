@@ -5,7 +5,6 @@ import static java.time.Duration.ofMinutes;
 import static java.time.LocalDateTime.now;
 import static java.util.Objects.requireNonNull;
 import static no.spk.felles.tidsserie.batch.core.BatchIdConstants.TIDSSERIE_PREFIX;
-import static no.spk.felles.tidsserie.batch.core.registry.Ranking.ranking;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -115,7 +114,6 @@ public class TidsserieBatch {
 
             controller.aktiverPlugins();
             modus.registerServices(registry);
-            registrer(TidsserieGenerertCallback.class, new TriggerfileCreator(utKatalog), ranking(1000).egenskap());
 
             final LocalDateTime started = now();
             controller.validerGrunnlagsdata();

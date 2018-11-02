@@ -36,6 +36,11 @@
             <artifactId>felles-tidsserie-batch-plugins-hazelcast</artifactId>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>no.spk.felles</groupId>
+            <artifactId>felles-tidsserie-batch-plugins-triggerfil</artifactId>
+            <scope>runtime</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.freemarker</groupId>
