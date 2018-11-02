@@ -57,7 +57,10 @@ public class AldersgrenseForSlettingAvLogKatalogar {
      * Køyrer sletteoperasjonen dersom aldersgrensa er større en 0 dagar.
      *
      * @param sletting operasjonen som vil slette logkatalogar som er eldre enn aldersgrensa
+     * @return alle logkatalogar som {@link FinnLogkatalogerOperasjon#finn(LocalDateTime)} har indikert at skal slettast, eller ingen dersom batche køyrer
+     * utan sletting av logkatalogar aktivert
      * @throws IOException dersom slettinga feilar
+     * @see #cutoff()
      */
     public Stream<Path> finnSlettbareLogkatalogar(final FinnLogkatalogerOperasjon sletting) throws IOException {
         if (antallDagar > 0) {
@@ -71,6 +74,7 @@ public class AldersgrenseForSlettingAvLogKatalogar {
          * Lokaliserer alle logkatalogar som er eldre enn <code>cutoff</code>.
          *
          * @param cutoff klokkeslett som logkatalogar som skal slettast må vere eldre enn
+         * @return alle logkatalogar som vart oppretta før <code>cutoff</code>
          * @throws IOException dersom søkeoperasjonen feilar
          */
         Stream<Path> finn(final LocalDateTime cutoff) throws IOException;

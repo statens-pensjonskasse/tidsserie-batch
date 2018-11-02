@@ -3,7 +3,7 @@ package no.spk.felles.tidsserie.batch.core.grunnlagsdata;
 import no.spk.felles.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenter;
 
 /**
- * {@link UgyldigUttrekkException blir kasta dersom
+ * {@link UgyldigUttrekkException} blir kasta dersom
  * {@link TidsserieBatchArgumenter#uttrekkskatalog() uttrekket} batchen skal lese inn grunnlagsdata frå,
  * blir flagga som ugyldig av av {@link UttrekksValidator}
  *

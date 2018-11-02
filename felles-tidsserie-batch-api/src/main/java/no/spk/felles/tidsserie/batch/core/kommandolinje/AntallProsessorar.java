@@ -29,6 +29,8 @@ public class AntallProsessorar {
      * Opprettar ein ny instans med <code>antall</code> som antall prosessorar som batchen skal benytte
      * til prosesseringsformål.
      *
+     * @param antall antall prosessorar batchen skal benytte til generering av tidsseriar
+     * @return ein ny instans med det angitte antall prosessorar
      * @throws IllegalArgumentException dersom <code>antall</code> er mindre enn 1
      */
     public static AntallProsessorar antallProsessorar(final int antall) {

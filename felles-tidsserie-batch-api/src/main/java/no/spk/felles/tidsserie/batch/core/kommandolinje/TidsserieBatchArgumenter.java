@@ -67,6 +67,11 @@ public interface TidsserieBatchArgumenter {
     Tidsseriemodus modus();
 
     /**
+     * Dersom brukaren ikkje har angitt ein {@link #uttrekkskatalog()}, køyrer den angitte funksjonen med
+     * batchen sin inn-katalog som input for å la funksjonen automatisk velge kva uttrekk som automatisk
+     * skal brukast som {@link #uttrekkskatalog()}.
+     *
+     * @param utvelger utvalgsfunksjon, gitt ein inn-katalog, velger kva underkatalog som skal brukast som uttrekkskatalog for batchen
      * @since 1.1.0
      */
     void velgUttrekkVissIkkeAngitt(final Function<Path, UttrekksId> utvelger);

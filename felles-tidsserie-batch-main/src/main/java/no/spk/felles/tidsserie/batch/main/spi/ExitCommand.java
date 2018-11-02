@@ -10,7 +10,7 @@ public interface ExitCommand {
     /**
      * Termine
      *
-     * @param exitCode
+     * @param exitCode returkoda frå batchkøringa
      */
     void exit(int exitCode);
 }
