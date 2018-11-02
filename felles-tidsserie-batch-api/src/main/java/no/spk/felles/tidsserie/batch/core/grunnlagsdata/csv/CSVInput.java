@@ -2,11 +2,14 @@ package no.spk.felles.tidsserie.batch.core.grunnlagsdata.csv;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
+import static no.spk.felles.tidsserie.batch.core.grunnlagsdata.csv.DuplisertCSVFilException.sjekkForDuplikat;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
@@ -16,12 +19,14 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 
 import no.spk.felles.tidsperiode.Tidsperiode;
 import no.spk.felles.tidsserie.batch.core.grunnlagsdata.GrunnlagsdataRepository;
+import no.spk.felles.tidsserie.batch.core.grunnlagsdata.csv.CsvOversetter;
 
 /**
  * {@link CSVInput} støttar deserialisering av {@link #referansedata() tidsperioder} og {@link #medlemsdata() medlemsdata} frå
@@ -92,7 +97,10 @@ public class CSVInput implements GrunnlagsdataRepository {
 
     @Override
     public Stream<List<String>> medlemsdata() {
-        return readLinesFrom(medlemsdataFil());
+        return medlemsdataFil()
+                .map(Stream::of)
+                .orElseGet(Stream::empty)
+                .flatMap(this::readLinesFrom);
     }
 
     @Override
@@ -120,14 +128,23 @@ public class CSVInput implements GrunnlagsdataRepository {
     Stream<Path> referansedataFiler() throws IOException {
         try (final Stream<Path> filer = Files
                 .list(directory)
-                .filter(path -> path.toString().endsWith("csv.gz"))
-                .filter(path -> !path.toString().endsWith("medlemsdata.csv.gz"))) {
+                .filter(path -> path.toString().endsWith("csv.gz") || path.toString().endsWith(".csv"))
+                .filter(path -> !path.toFile().getName().startsWith("medlemsdata.csv"))
+                .peek(DuplisertCSVFilException::sjekkForDuplikat)) {
             return filer.collect(toList()).stream();
         }
     }
 
-    private Path medlemsdataFil() {
-        return Paths.get(directory.toString(), "medlemsdata.csv.gz");
+    private Optional<Path> medlemsdataFil() {
+        return Stream.of(
+                "medlemsdata.csv",
+                "medlemsdata.csv.gz"
+        )
+                .map(filename -> new File(directory.toFile(), filename))
+                .filter(File::exists)
+                .map(File::toPath)
+                .peek(DuplisertCSVFilException::sjekkForDuplikat)
+                .findAny();
     }
 
     private Stream<? extends Tidsperiode<?>> oversettLinje(final List<String> linje) {
@@ -165,13 +182,7 @@ public class CSVInput implements GrunnlagsdataRepository {
     private BufferedReader openReader(final Path path) throws IOException {
         return new BufferedReader(
                 new InputStreamReader(
-                        new GZIPInputStream(
-                                new BufferedInputStream(
-                                        new FileInputStream(
-                                                path.toFile()
-                                        )
-                                )
-                        ),
+                        open(path),
                         dataencoding
                 )
         );
@@ -186,4 +197,16 @@ public class CSVInput implements GrunnlagsdataRepository {
             }
         };
     }
+
+    private static InputStream open(final Path path) throws IOException {
+        final File file = sjekkForDuplikat(path).toFile();
+        final BufferedInputStream input = new BufferedInputStream(
+                new FileInputStream(file)
+        );
+        if (file.getName().endsWith(".gz")) {
+            return new GZIPInputStream(input);
+        }
+        return input;
+    }
+
 }
