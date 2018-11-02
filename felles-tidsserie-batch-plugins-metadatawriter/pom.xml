@@ -8,11 +8,24 @@
         <version>1.1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>felles-tidsserie-batch-plugins-triggerfil</artifactId>
+    <artifactId>felles-tidsserie-batch-plugins-metadatawriter</artifactId>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.freemarker</groupId>
+                <artifactId>freemarker</artifactId>
+                <version>2.3.28</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <dependencies>
         <dependency>
             <groupId>no.spk.felles</groupId>
             <artifactId>felles-tidsserie-batch-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.spk.felles</groupId>
+            <artifactId>felles-tidsserie-batch-arguments</artifactId>
         </dependency>
         <dependency>
             <groupId>no.spk.pensjon.faktura</groupId>
@@ -28,6 +41,14 @@
             <groupId>no.spk.pensjon.faktura</groupId>
             <artifactId>faktura-tjenesteregister-lib</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>junit</groupId>
@@ -37,6 +58,16 @@
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

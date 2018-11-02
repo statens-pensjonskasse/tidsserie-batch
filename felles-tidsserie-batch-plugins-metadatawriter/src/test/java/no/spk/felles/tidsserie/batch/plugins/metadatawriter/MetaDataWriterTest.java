@@ -1,4 +1,4 @@
-package no.spk.felles.tidsserie.batch.main;
+package no.spk.felles.tidsserie.batch.plugins.metadatawriter;
 
 
 import static no.spk.felles.tidsserie.batch.core.BatchIdConstants.TIDSSERIE_PREFIX;
@@ -31,13 +31,14 @@ import org.junit.rules.TestName;
 public class MetaDataWriterTest {
     @Rule
     public final TestName name = new TestName();
-    private final TidsserieArgumentsFactory parser = new TidsserieArgumentsFactory();
 
     @Rule
-    public TemporaryFolder testFolder = new TemporaryFolder();
+    public TemporaryFolder testFolder = new TemporaryFolderWithDeleteVerification();
 
     @Rule
     public final ModusRule modus = new ModusRule();
+
+    private final TidsserieArgumentsFactory parser = new TidsserieArgumentsFactory();
 
     @Test
     public void testCreateMetadataFile() throws Exception {

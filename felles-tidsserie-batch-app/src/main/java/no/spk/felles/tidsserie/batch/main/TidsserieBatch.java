@@ -5,6 +5,7 @@ import static java.time.Duration.ofMinutes;
 import static java.time.LocalDateTime.now;
 import static java.util.Objects.requireNonNull;
 import static no.spk.felles.tidsserie.batch.core.BatchIdConstants.TIDSSERIE_PREFIX;
+import static no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback.metadata;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,6 +18,7 @@ import no.spk.faktura.timeout.BatchTimeout;
 import no.spk.faktura.timeout.BatchTimeoutTaskrunner;
 import no.spk.felles.tidsserie.batch.core.Katalog;
 import no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback;
+import no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback.Metadata;
 import no.spk.felles.tidsserie.batch.core.TidsserieLivssyklus;
 import no.spk.felles.tidsserie.batch.core.TidsserieLivssyklusException;
 import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
@@ -109,9 +111,6 @@ public class TidsserieBatch {
             final Tidsseriemodus modus = arguments.modus();
             registrer(Tidsseriemodus.class, modus);
 
-            final MetaDataWriter metaDataWriter = new MetaDataWriter(TemplateConfigurationFactory.create(), logKatalog);
-            registrer(MetaDataWriter.class, metaDataWriter);
-
             controller.aktiverPlugins();
             modus.registerServices(registry);
 
@@ -122,9 +121,10 @@ public class TidsserieBatch {
 
             lagTidsserie(
                     controller,
-                    modus
+                    modus,
+                    started,
+                    batchId
             );
-            controller.opprettMetadata(metaDataWriter, arguments, batchId, between(started, now()));
 
             controller.informerOmSuksess(logKatalog);
         } catch (UgyldigKommandolinjeArgumentException e) {
@@ -144,7 +144,9 @@ public class TidsserieBatch {
 
     void lagTidsserie(
             final ApplicationController controller,
-            final Tidsseriemodus modus
+            final Tidsseriemodus modus,
+            final LocalDateTime start,
+            final BatchId kjøring
     ) {
         try {
             livssyklus
@@ -156,8 +158,9 @@ public class TidsserieBatch {
                     modus
             );
 
+            final Metadata metadata = metadata(kjøring, between(now(), start));
             generert
-                    .invokeAll(g -> g.tidsserieGenerert(registry))
+                    .invokeAll(g -> g.tidsserieGenerert(registry, metadata))
                     .orElseThrow(TidsserieGenerertException::new);
         } finally {
             // Unngå at feil ved stop sluker eventuelle feil som boblar ut av tidsseriegenereringa

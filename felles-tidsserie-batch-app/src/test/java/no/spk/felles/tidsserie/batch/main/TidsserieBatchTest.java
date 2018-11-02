@@ -3,11 +3,10 @@ package no.spk.felles.tidsserie.batch.main;
 import static no.spk.felles.tidsserie.batch.core.kommandolinje.AntallProsessorar.antallProsessorar;
 import static no.spk.felles.tidsserie.batch.core.registry.Ranking.ranking;
 import static no.spk.felles.tidsserie.batch.core.registry.Ranking.standardRanking;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
@@ -17,10 +16,13 @@ import static org.mockito.junit.MockitoJUnit.rule;
 import static org.mockito.quality.Strictness.STRICT_STUBS;
 
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.function.Supplier;
 
+import no.spk.faktura.input.BatchId;
 import no.spk.felles.tidsserie.batch.ServiceRegistryRule;
 import no.spk.felles.tidsserie.batch.TemporaryFolderWithDeleteVerification;
+import no.spk.felles.tidsserie.batch.core.BatchIdConstants;
 import no.spk.felles.tidsserie.batch.core.Katalog;
 import no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback;
 import no.spk.felles.tidsserie.batch.core.TidsserieLivssyklus;
@@ -54,16 +56,16 @@ public class TidsserieBatchTest {
     @Mock(name = "a")
     private TidsserieLivssyklus a;
 
-    @Mock(name = "b")
+    @Mock
     private TidsserieLivssyklus b;
 
-    @Mock(name = "c")
+    @Mock
     private TidsserieLivssyklus c;
 
-    @Mock(name = "modus")
+    @Mock
     private Tidsseriemodus modus;
 
-    @Mock(name = "controller")
+    @Mock
     private ApplicationController controller;
 
     @Mock
@@ -75,7 +77,8 @@ public class TidsserieBatchTest {
     public void _before() {
         main = new TidsserieBatch(
                 registry.registry(),
-                exitCode -> {},
+                exitCode -> {
+                },
                 controller
         );
         registry.registrer(TidsserieLivssyklus.class, a);
@@ -83,6 +86,7 @@ public class TidsserieBatchTest {
         registry.registrer(TidsserieLivssyklus.class, c);
 
         registry.registrer(Path.class, temp.getRoot().toPath(), Katalog.UT.egenskap());
+        registry.registrer(Path.class, temp.getRoot().toPath(), Katalog.LOG.egenskap());
 
         lenient().doReturn(antallProsessorar(1)).when(argumenter).antallProsessorar();
         registry.registrer(TidsserieBatchArgumenter.class, argumenter);
@@ -169,7 +173,7 @@ public class TidsserieBatchTest {
         final IllegalArgumentException expected = new IllegalArgumentException("this is the message");
         doThrow(expected).when(a).start(any());
 
-        lagTidsserieMenForventFeil(expected);
+        lagTidsserieOgIgnorerFeil(expected);
     }
 
     @Test
@@ -195,15 +199,7 @@ public class TidsserieBatchTest {
         final IllegalArgumentException expected = new IllegalArgumentException("this is the message");
         doThrow(expected).when(controller).lagTidsserie(any(), any());
 
-        try {
-            main.lagTidsserie(
-                    controller,
-                    modus
-            );
-            fail("Skulle ha feila ettersom ein livssyklusane eller controlleren feila");
-        } catch (final RuntimeException e) {
-            assertThat(e).isSameAs(expected);
-        }
+        assertThatCode(this::lagTidsserie).isSameAs(expected);
     }
 
     @Test
@@ -221,9 +217,10 @@ public class TidsserieBatchTest {
     @Test
     public void skal_kalle_alle_generer_tidsserie_callback_selv_om_foerste_feilet() {
         final RuntimeException expected = new RuntimeException("callback error");
-        final TidsserieGenerertCallback firstCallback = r -> {
-            throw expected;
-        };
+
+        final TidsserieGenerertCallback firstCallback = mock(TidsserieGenerertCallback.class);
+        willThrow(expected).given(firstCallback).tidsserieGenerert(any(), any());
+
         registry.registrer(TidsserieGenerertCallback.class, firstCallback, ranking(1000).egenskap());
 
         TidsserieGenerertCallback secondCallback = mock(TidsserieGenerertCallback.class);
@@ -231,16 +228,18 @@ public class TidsserieBatchTest {
 
         lagTidsserieOgIgnorerFeil(expected);
 
-        verify(secondCallback).tidsserieGenerert(any());
+        verify(secondCallback).tidsserieGenerert(any(), any());
     }
 
 
     @Test
     public void skal_kalle_stop_paa_alle_livssyklusar_sjoelv_om_generer_tidsserie_callback_feila() {
         final RuntimeException expected = new RuntimeException("callback error");
-        registry.registrer(TidsserieGenerertCallback.class, r -> {
-            throw expected;
-        });
+
+        final TidsserieGenerertCallback callback = mock(TidsserieGenerertCallback.class);
+        willThrow(expected).given(callback).tidsserieGenerert(any(), any());
+
+        registry.registrer(TidsserieGenerertCallback.class, callback);
 
         lagTidsserieOgIgnorerFeil(expected);
 
@@ -288,15 +287,7 @@ public class TidsserieBatchTest {
         final RuntimeException expected = new RuntimeException("b says hello!");
         doThrow(expected).when(controller).lagTidsserie(any(), any());
 
-        try {
-            main.lagTidsserie(
-                    controller,
-                    modus
-            );
-            fail("Skulle ha feila ettersom ein livssyklusane eller controlleren feila");
-        } catch (final RuntimeException e) {
-            assertThat(e).isSameAs(expected);
-        }
+        assertThatCode(this::lagTidsserie).isSameAs(expected);
 
         verify(a).stop(any());
         verify(b).stop(any());
@@ -304,25 +295,21 @@ public class TidsserieBatchTest {
     }
 
     private void lagTidsserieOgIgnorerFeil(final Exception expected) {
-        try {
-            main.lagTidsserie(
-                    controller,
-                    modus
-            );
-            fail("Skulle ha feila ettersom ein livssyklusane eller controlleren feila");
-        } catch (final TidsserieLivssyklusException | TidsserieGenerertException e) {
-            assertThat(e.getSuppressed()).contains(expected);
-        }
-    }
-
-    private void lagTidsserieMenForventFeil(final Exception expected) {
-        lagTidsserieOgIgnorerFeil(expected);
+        assertThatCode(this::lagTidsserie)
+                .isInstanceOfAny(TidsserieLivssyklusException.class, TidsserieGenerertException.class)
+                .hasSuppressedException(expected);
     }
 
     private void lagTidsserieUtenAaForventeFeil() {
+        lagTidsserie();
+    }
+
+    private void lagTidsserie() {
         main.lagTidsserie(
                 controller,
-                modus
+                modus,
+                LocalDateTime.MIN,
+                new BatchId(BatchIdConstants.TIDSSERIE_PREFIX, LocalDateTime.MIN)
         );
     }
 

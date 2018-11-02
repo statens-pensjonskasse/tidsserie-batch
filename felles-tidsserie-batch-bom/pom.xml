@@ -91,6 +91,11 @@
             </dependency>
             <dependency>
                 <groupId>no.spk.felles</groupId>
+                <artifactId>felles-tidsserie-batch-plugins-metadatawriter</artifactId>
+                <version>1.1.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>no.spk.felles</groupId>
                 <artifactId>felles-tidsserie-batch-plugins-triggerfil</artifactId>
                 <version>1.1.0-SNAPSHOT</version>
             </dependency>

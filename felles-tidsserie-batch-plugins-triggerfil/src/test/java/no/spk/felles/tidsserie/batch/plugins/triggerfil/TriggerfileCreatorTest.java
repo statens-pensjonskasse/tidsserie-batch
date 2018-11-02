@@ -1,29 +1,51 @@
 package no.spk.felles.tidsserie.batch.plugins.triggerfil;
 
+import static no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback.metadata;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.file.Path;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
-import no.spk.pensjon.faktura.tjenesteregister.support.SimpleServiceRegistry;
+import no.spk.faktura.input.BatchId;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.junit.rules.TestName;
 
 /**
  * @author Snorre E. Brekke - Computas
  */
 public class TriggerfileCreatorTest {
     @Rule
-    public final TestName name = new TestName();
+    public final TemporaryFolder temp = new TemporaryFolder();
 
-    @Rule
-    public TemporaryFolder testFolder = new TemporaryFolder();
+    private Path utKatalog;
+
+    private TriggerfileCreator creator;
+
+    @Before
+    public void _before() {
+        utKatalog = temp.getRoot().toPath();
+        creator = new TriggerfileCreator(utKatalog);
+    }
+
     @Test
-    public void testCreateTriggerFile() throws Exception {
-        Path writeFolder = testFolder.newFolder(name.getMethodName()).toPath();
-        new TriggerfileCreator(writeFolder).tidsserieGenerert(new SimpleServiceRegistry());
-        assertThat(writeFolder.resolve("ok.trg")).isRegularFile();
+    public void testCreateTriggerFile() {
+        generer();
+
+        assertThat(utKatalog.resolve("ok.trg"))
+                .exists()
+                .isRegularFile();
+    }
+
+    private void generer() {
+        creator.tidsserieGenerert(null,
+                metadata(
+                        new BatchId("1234", LocalDateTime.MIN),
+                        Duration.ZERO
+                )
+        );
     }
 }

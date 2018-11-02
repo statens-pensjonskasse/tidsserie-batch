@@ -165,11 +165,6 @@ public class ApplicationController {
         view.tidsseriegenereringFullfoert(meldingar, modus.navn());
     }
 
-    public void opprettMetadata(MetaDataWriter metaDataWriter, TidsserieBatchArgumenter arguments, BatchId batchId, Duration duration) {
-        view.informerOmMetadataOppretting();
-        metaDataWriter.createMetadataFile(arguments, batchId, duration);
-    }
-
     /**
      * Informerer bruker om at opprydding i kataloger feilet, og markerer batchen som feilet.
      */

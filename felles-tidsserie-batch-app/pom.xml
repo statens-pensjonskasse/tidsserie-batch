@@ -38,14 +38,15 @@
         </dependency>
         <dependency>
             <groupId>no.spk.felles</groupId>
+            <artifactId>felles-tidsserie-batch-plugins-metadatawriter</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>no.spk.felles</groupId>
             <artifactId>felles-tidsserie-batch-plugins-triggerfil</artifactId>
             <scope>runtime</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.freemarker</groupId>
-            <artifactId>freemarker</artifactId>
-        </dependency>
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>

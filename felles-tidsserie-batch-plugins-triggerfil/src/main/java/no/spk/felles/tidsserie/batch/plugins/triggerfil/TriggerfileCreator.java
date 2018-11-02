@@ -22,10 +22,10 @@ public class TriggerfileCreator implements TidsserieGenerertCallback {
     }
 
     @Override
-    public void tidsserieGenerert(ServiceRegistry serviceRegistry) {
+    public void tidsserieGenerert(final ServiceRegistry serviceRegistry, final Metadata metadata) {
         try {
             Files.createFile(tidserieKatalog.resolve("ok.trg"));
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new UncheckedIOException(e);
         }
     }

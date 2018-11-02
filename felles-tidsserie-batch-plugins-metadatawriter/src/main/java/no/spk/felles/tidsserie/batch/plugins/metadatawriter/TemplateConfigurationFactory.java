@@ -1,4 +1,4 @@
-package no.spk.felles.tidsserie.batch.main;
+package no.spk.felles.tidsserie.batch.plugins.metadatawriter;
 
 import freemarker.template.Configuration;
 import freemarker.template.TemplateExceptionHandler;
