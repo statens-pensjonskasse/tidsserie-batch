@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import no.spk.felles.tidsserie.batch.core.grunnlagsdata.UgyldigUttrekkException;
 import no.spk.felles.tidsserie.batch.core.kommandolinje.BruksveiledningSkalVisesException;
 import no.spk.felles.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenter;
 import no.spk.felles.tidsserie.batch.core.kommandolinje.UgyldigKommandolinjeArgumentException;
@@ -102,7 +103,7 @@ public class ConsoleView implements View{
     }
 
     @Override
-    public void informerOmKorrupteGrunnlagsdata(GrunnlagsdataException e) {
+    public void informerOmKorrupteGrunnlagsdata(UgyldigUttrekkException e) {
         println("Grunnlagsdata i inn-katalogen er korrupte - avbryter kjøringen.");
         println("Årsak: " + e.getMessage());
     }

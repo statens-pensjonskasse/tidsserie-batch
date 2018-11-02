@@ -27,6 +27,8 @@ import no.spk.faktura.input.BatchId;
 import no.spk.felles.tidsserie.batch.ServiceRegistryRule;
 import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.felles.tidsserie.batch.core.grunnlagsdata.LastOppGrunnlagsdataKommando;
+import no.spk.felles.tidsserie.batch.core.grunnlagsdata.UgyldigUttrekkException;
+import no.spk.felles.tidsserie.batch.core.grunnlagsdata.UttrekksValidator;
 import no.spk.felles.tidsserie.batch.core.kommandolinje.BruksveiledningSkalVisesException;
 import no.spk.felles.tidsserie.batch.core.kommandolinje.UgyldigKommandolinjeArgumentException;
 import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataBackend;
@@ -86,8 +88,8 @@ public class ApplicationControllerTest {
 
     @Test
     public void testValiderGrunnlagsdata() {
-        GrunnlagsdataDirectoryValidator validator = mock(GrunnlagsdataDirectoryValidator.class);
-        registry.registrer(GrunnlagsdataDirectoryValidator.class, validator);
+        UttrekksValidator validator = mock(UttrekksValidator.class);
+        registry.registrer(UttrekksValidator.class, validator);
         controller.validerGrunnlagsdata();
         verify(validator).validate();
         verifiserInformasjonsmelding("Validerer grunnlagsdata.");
@@ -95,15 +97,15 @@ public class ApplicationControllerTest {
 
     @Test
     public void skal_rekaste_opprinnelig_feil_ved_validering_av_grunnlagsdata() {
-        final GrunnlagsdataDirectoryValidator validator = mock(GrunnlagsdataDirectoryValidator.class);
-        registry.registrer(GrunnlagsdataDirectoryValidator.class, validator);
+        final UttrekksValidator validator = mock(UttrekksValidator.class);
+        registry.registrer(UttrekksValidator.class, validator);
 
-        final GrunnlagsdataException expected = new GrunnlagsdataException("I WAN't BETTER GRUNNLAGSDATA");
+        final UgyldigUttrekkException expected = new UgyldigUttrekkException("I WAN't BETTER GRUNNLAGSDATA");
         doThrow(expected).when(validator).validate();
 
         try {
             controller.validerGrunnlagsdata();
-        } catch (final GrunnlagsdataException e) {
+        } catch (final UgyldigUttrekkException e) {
             assertThat(e).isSameAs(expected);
         }
     }
@@ -151,7 +153,7 @@ public class ApplicationControllerTest {
 
     @Test
     public void testInformerOmKorrupteGrunnlagsdata() {
-        controller.informerOmKorrupteGrunnlagsdata(new GrunnlagsdataException("Feil."));
+        controller.informerOmKorrupteGrunnlagsdata(new UgyldigUttrekkException("Feil."));
         verifiserInformasjonsmelding("Grunnlagsdata i inn-katalogen er korrupte - avbryter kjøringen.");
         assertThat(controller.exitCode()).isEqualTo(EXIT_ERROR);
     }

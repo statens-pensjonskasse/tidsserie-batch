@@ -5,7 +5,6 @@ import static java.util.stream.Collectors.joining;
 import static no.spk.felles.tidsserie.batch.core.registry.Ranking.ranking;
 
 import java.nio.file.Path;
-import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -15,6 +14,8 @@ import java.util.stream.Stream;
 import no.spk.faktura.input.BatchId;
 import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.felles.tidsserie.batch.core.grunnlagsdata.LastOppGrunnlagsdataKommando;
+import no.spk.felles.tidsserie.batch.core.grunnlagsdata.UgyldigUttrekkException;
+import no.spk.felles.tidsserie.batch.core.grunnlagsdata.UttrekksValidator;
 import no.spk.felles.tidsserie.batch.core.kommandolinje.BruksveiledningSkalVisesException;
 import no.spk.felles.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenter;
 import no.spk.felles.tidsserie.batch.core.kommandolinje.UgyldigKommandolinjeArgumentException;
@@ -46,7 +47,7 @@ public class ApplicationController {
     static final int EXIT_ERROR = 1;
     static final int EXIT_WARNING = 2;
 
-    private final Extensionpoint<GrunnlagsdataDirectoryValidator> validator;
+    private final Extensionpoint<UttrekksValidator> validator;
     private final Extensionpoint<LastOppGrunnlagsdataKommando> opplasting;
     private final Extensionpoint<MedlemsdataBackend> medlemsdata;
     private final Extensionpoint<Plugin> plugins;
@@ -65,7 +66,7 @@ public class ApplicationController {
     public ApplicationController(final ServiceRegistry registry) {
         this.registry = registry;
         this.view = new ServiceLocator(registry).firstMandatory(View.class);
-        this.validator = new Extensionpoint<>(GrunnlagsdataDirectoryValidator.class, registry);
+        this.validator = new Extensionpoint<>(UttrekksValidator.class, registry);
         this.opplasting = new Extensionpoint<>(LastOppGrunnlagsdataKommando.class, registry);
         this.medlemsdata = new Extensionpoint<>(MedlemsdataBackend.class, registry);
         this.plugins = new Extensionpoint<>(Plugin.class, registry);
@@ -88,7 +89,7 @@ public class ApplicationController {
 
     public void validerGrunnlagsdata() {
         view.informerOmGrunnlagsdataValidering();
-        validator.invokeFirst(GrunnlagsdataDirectoryValidator::validate)
+        validator.invokeFirst(UttrekksValidator::validate)
                 .orElseRethrowFirstFailure();
     }
 
@@ -118,7 +119,7 @@ public class ApplicationController {
         markerSomFeilet();
     }
 
-    public void informerOmKorrupteGrunnlagsdata(GrunnlagsdataException e) {
+    public void informerOmKorrupteGrunnlagsdata(UgyldigUttrekkException e) {
         view.informerOmKorrupteGrunnlagsdata(e);
         markerSomFeilet();
     }

@@ -23,6 +23,7 @@ import no.spk.felles.tidsserie.batch.core.TidsserieLivssyklus;
 import no.spk.felles.tidsserie.batch.core.TidsserieLivssyklusException;
 import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.felles.tidsserie.batch.core.grunnlagsdata.GrunnlagsdataRepository;
+import no.spk.felles.tidsserie.batch.core.grunnlagsdata.UgyldigUttrekkException;
 import no.spk.felles.tidsserie.batch.core.kommandolinje.AldersgrenseForSlettingAvLogKatalogar;
 import no.spk.felles.tidsserie.batch.core.kommandolinje.BruksveiledningSkalVisesException;
 import no.spk.felles.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenter;
@@ -106,8 +107,6 @@ public class TidsserieBatch {
             controller.ryddOpp(directoryCleaner);
             Files.createDirectories(utKatalog);
 
-            registrer(GrunnlagsdataDirectoryValidator.class, new ChecksumValideringAvGrunnlagsdata(innKatalog));
-
             final Tidsseriemodus modus = arguments.modus();
             registrer(Tidsseriemodus.class, modus);
 
@@ -131,7 +130,7 @@ public class TidsserieBatch {
             controller.informerOmUgyldigeArgumenter(e);
         } catch (BruksveiledningSkalVisesException e) {
             controller.informerOmBruk(e);
-        } catch (GrunnlagsdataException e) {
+        } catch (UgyldigUttrekkException e) {
             controller.informerOmKorrupteGrunnlagsdata(e);
         } catch (HousekeepingException e) {
             controller.informerOmFeiletOpprydding();

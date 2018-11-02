@@ -1,21 +1,25 @@
 package no.spk.felles.tidsserie.batch.it;
 
-import static org.springframework.util.DigestUtils.md5DigestAsHex;
+
+import static java.lang.String.format;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import no.spk.felles.tidsserie.batch.plugins.grunnlagsdatavalidator.Md5sum;
+
 class Md5Checksums {
+    private final Md5sum md5sum = new Md5sum();
+
     void generer(final File grunnlagsdata) {
         final File checksums = new File(grunnlagsdata, "md5-checksums.txt");
         try (final FileWriter writer = new FileWriter(checksums)) {
             list(grunnlagsdata)
-                    .filter(file -> file.getName().endsWith(".gz"))
+                    .filter(file -> file.getName().contains("csv"))
                     .map(this::md5checksumline)
                     .forEach((str) -> {
                         try {
@@ -34,15 +38,10 @@ class Md5Checksums {
     }
 
     private String md5checksumline(final File file) {
-        try {
-            try (final FileInputStream input = new FileInputStream(file)) {
-                return md5DigestAsHex(input)
-                        + " *"
-                        + file.getName()
-                        + "\n";
-            }
-        } catch (final IOException e) {
-            throw new UncheckedIOException(e);
-        }
+        return format(
+                "%s *%s\n",
+                md5sum.produser(file),
+                file.getName()
+        );
     }
 }

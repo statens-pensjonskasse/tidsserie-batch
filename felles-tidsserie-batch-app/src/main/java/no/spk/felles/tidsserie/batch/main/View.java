@@ -3,6 +3,7 @@ package no.spk.felles.tidsserie.batch.main;
 import java.nio.file.Path;
 import java.util.Map;
 
+import no.spk.felles.tidsserie.batch.core.grunnlagsdata.UgyldigUttrekkException;
 import no.spk.felles.tidsserie.batch.core.kommandolinje.BruksveiledningSkalVisesException;
 import no.spk.felles.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenter;
 import no.spk.felles.tidsserie.batch.core.kommandolinje.UgyldigKommandolinjeArgumentException;
@@ -59,7 +60,7 @@ public interface View {
 
     void informerOmOppryddingStartet();
 
-    void informerOmKorrupteGrunnlagsdata(GrunnlagsdataException e);
+    void informerOmKorrupteGrunnlagsdata(UgyldigUttrekkException e);
 
     void tidsseriegenereringFullfoert(Map<String, Integer> meldingar, String modusnavn);
 
