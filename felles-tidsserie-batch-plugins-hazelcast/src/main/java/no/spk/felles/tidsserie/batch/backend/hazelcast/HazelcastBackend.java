@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 import no.spk.felles.tidsserie.batch.core.TidsserieLivssyklus;
+import no.spk.felles.tidsserie.batch.core.kommandolinje.AntallProsessorar;
 import no.spk.felles.tidsserie.batch.core.medlem.GenererTidsserieCommand;
 import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataUploader;
@@ -53,13 +54,8 @@ public class HazelcastBackend implements MedlemsdataBackend, TidsserieLivssyklus
 
     private Optional<HazelcastInstance> instance = empty();
 
-    public HazelcastBackend(final ServiceRegistry registry, final int antallNoder) {
-        this(
-                new MultiNodeSingleJVMBackend(
-                        registry,
-                        antallNoder
-                )
-        );
+    public HazelcastBackend(final ServiceRegistry registry, final AntallProsessorar antall) {
+        this(new MultiNodeSingleJVMBackend(registry, antall));
     }
 
     HazelcastBackend(final Server server) {

@@ -4,8 +4,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.junit.MockitoJUnit.rule;
 import static org.mockito.quality.Strictness.STRICT_STUBS;
 
-import no.spk.felles.tidsserie.batch.ServiceRegistryRule;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

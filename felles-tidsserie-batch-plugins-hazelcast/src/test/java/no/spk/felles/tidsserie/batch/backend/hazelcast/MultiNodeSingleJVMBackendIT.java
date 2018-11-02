@@ -1,14 +1,12 @@
 package no.spk.felles.tidsserie.batch.backend.hazelcast;
 
 import static java.util.Optional.ofNullable;
+import static no.spk.felles.tidsserie.batch.core.kommandolinje.AntallProsessorar.antallProsessorar;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import no.spk.felles.tidsserie.batch.it.ServiceRegistryRule;
-import no.spk.felles.tidsserie.batch.it.StandardOutputAndError;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.LifecycleEvent;
@@ -33,7 +31,7 @@ public class MultiNodeSingleJVMBackendIT {
     public void _before() {
         server = new MultiNodeSingleJVMBackend(
                 registry.registry(),
-                1
+                antallProsessorar(1)
         );
     }
 
@@ -47,7 +45,7 @@ public class MultiNodeSingleJVMBackendIT {
         final int antallNoder = 2;
         server = new MultiNodeSingleJVMBackend(
                 registry.registry(),
-                antallNoder
+                antallProsessorar(antallNoder)
         );
         // Reduserer køyretida for testen med 5 sekund i forhold til standardinnstillingane
         server.setProperty(GroupProperty.WAIT_SECONDS_BEFORE_JOIN.getName(), "0");

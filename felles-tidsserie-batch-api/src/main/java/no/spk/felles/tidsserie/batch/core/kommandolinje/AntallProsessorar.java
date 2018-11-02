@@ -80,9 +80,4 @@ public class AntallProsessorar {
     public String toString() {
         return "antall prosessorar " + verdi;
     }
-
-    @Deprecated
-    public int antall() {
-        return verdi;
-    }
 }

@@ -1,5 +1,7 @@
 package no.spk.felles.tidsserie.batch.main;
 
+import static no.spk.felles.tidsserie.batch.core.registry.Ranking.ranking;
+import static no.spk.felles.tidsserie.batch.core.registry.Ranking.standardRanking;
 import static no.spk.felles.tidsserie.batch.main.ApplicationController.EXIT_ERROR;
 import static no.spk.felles.tidsserie.batch.main.ApplicationController.EXIT_SUCCESS;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -8,9 +10,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.junit.MockitoJUnit.rule;
+import static org.mockito.quality.Strictness.STRICT_STUBS;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -27,7 +32,6 @@ import no.spk.felles.tidsserie.batch.core.kommandolinje.UgyldigKommandolinjeArgu
 import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.felles.tidsserie.batch.core.registry.Plugin;
 import no.spk.felles.tidsserie.batch.main.input.ProgramArguments;
-import no.spk.pensjon.faktura.tjenesteregister.Constants;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 import org.junit.Before;
@@ -35,6 +39,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoRule;
 
 /**
  * @author Snorre E. Brekke - Computas
@@ -55,7 +61,13 @@ public class ApplicationControllerTest {
     @Rule
     public final ServiceRegistryRule registry = new ServiceRegistryRule();
 
-    ApplicationController controller;
+    @Rule
+    public final MockitoRule mockito = rule().strictness(STRICT_STUBS);
+
+    @Mock(name = "medlemsdata")
+    private MedlemsdataBackend medlemsdata;
+
+    private ApplicationController controller;
 
     @Before
     public void setUp() throws Exception {
@@ -65,7 +77,7 @@ public class ApplicationControllerTest {
     }
 
     @Test
-    public void testInformerOmOppstart() throws Exception {
+    public void testInformerOmOppstart() {
         ProgramArguments programArguments = new ProgramArguments();
         controller.informerOmOppstart(programArguments);
         verifiserInformasjonsmelding("Tidsserie-batch startet ");
@@ -73,7 +85,7 @@ public class ApplicationControllerTest {
     }
 
     @Test
-    public void testValiderGrunnlagsdata() throws Exception {
+    public void testValiderGrunnlagsdata() {
         GrunnlagsdataDirectoryValidator validator = mock(GrunnlagsdataDirectoryValidator.class);
         registry.registrer(GrunnlagsdataDirectoryValidator.class, validator);
         controller.validerGrunnlagsdata();
@@ -131,14 +143,14 @@ public class ApplicationControllerTest {
     }
 
     @Test
-    public void testInformerOmUkjentFeil() throws Exception {
+    public void testInformerOmUkjentFeil() {
         controller.informerOmUkjentFeil(new RuntimeException());
         verifiserInformasjonsmelding("Tidsserie-batch feilet - se logfil for detaljer.");
         assertThat(controller.exitCode()).isEqualTo(EXIT_ERROR);
     }
 
     @Test
-    public void testInformerOmKorrupteGrunnlagsdata() throws Exception {
+    public void testInformerOmKorrupteGrunnlagsdata() {
         controller.informerOmKorrupteGrunnlagsdata(new GrunnlagsdataException("Feil."));
         verifiserInformasjonsmelding("Grunnlagsdata i inn-katalogen er korrupte - avbryter kjøringen.");
         assertThat(controller.exitCode()).isEqualTo(EXIT_ERROR);
@@ -157,21 +169,45 @@ public class ApplicationControllerTest {
     }
 
     @Test
-    public void skal_starte_backend() {
-        final MedlemsdataBackend backend = mock(MedlemsdataBackend.class);
-        controller.startBackend(backend);
-
-        verify(backend).start();
+    public void skal_informere_om_at_backend_blir_starta_opp() {
+        controller.startBackend();
         verifiserInformasjonsmelding("Starter server.");
     }
 
     @Test
-    public void skal_kalle_lastOpp_for_alle_grunnlagsdata_uploader_services() throws IOException {
+    public void skal_starte_opp_den_høgast_rangerte_medlemsdata_backenden() {
+        final MedlemsdataBackend medlemsdata_b = mock(MedlemsdataBackend.class, "lav_rangert");
+        registry.registrer(MedlemsdataBackend.class, medlemsdata_b, standardRanking().egenskap());
+
+        registry.registrer(MedlemsdataBackend.class, medlemsdata, ranking(9999).egenskap());
+
+        controller.startBackend();
+
+        verify(medlemsdata, times(1)).start();
+        verify(medlemsdata_b, never()).start();
+    }
+
+    @Test
+    public void skal_rekaste_feil_frå_oppstart_av_medlemsdatabackend() {
+        final RuntimeException expected = new RuntimeException("La oss late som om ein horribel feil oppstod");
+        doThrow(expected).when(medlemsdata).start();
+
+        registry.registrer(MedlemsdataBackend.class, medlemsdata);
+
+        assertThatCode(
+                () -> controller.startBackend()
+        )
+                .as("feil frå ApplicationController.startBackend")
+                .isSameAs(expected);
+    }
+
+    @Test
+    public void skal_kalle_lastOpp_for_alle_grunnlagsdata_uploader_services() {
         final LastOppGrunnlagsdataKommando uploader1 = mock(LastOppGrunnlagsdataKommando.class);
-        registry.registrer(LastOppGrunnlagsdataKommando.class, uploader1, Constants.SERVICE_RANKING + "=0");
+        registry.registrer(LastOppGrunnlagsdataKommando.class, uploader1, standardRanking().egenskap());
 
         final LastOppGrunnlagsdataKommando uploader2 = mock(LastOppGrunnlagsdataKommando.class);
-        registry.registrer(LastOppGrunnlagsdataKommando.class, uploader2, Constants.SERVICE_RANKING + "=10");
+        registry.registrer(LastOppGrunnlagsdataKommando.class, uploader2, ranking(10).egenskap());
 
         controller.lastOpp();
 
@@ -197,6 +233,7 @@ public class ApplicationControllerTest {
     @Test
     public void skal_vise_riktig_antall_feil() {
         Map<String, Integer> meldinger = new HashMap<>();
+        //noinspection RedundantStringConstructorCall
         meldinger.put(new String("errors"), 12);
         lagerTidsserien("stillingsforholdunderlag", meldinger);
         console.assertStandardOutput().contains("Antall feil: 12");

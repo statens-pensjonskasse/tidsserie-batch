@@ -1,7 +1,6 @@
 <configuration>
     <appender name="STDOUT" class="ch.qos.logback.core.helpers.NOPAppender"/>
-
     <root level="INFO">
-        <appender-ref ref="STDOUT" />
+        <appender-ref ref="STDOUT"/>
     </root>
 </configuration>

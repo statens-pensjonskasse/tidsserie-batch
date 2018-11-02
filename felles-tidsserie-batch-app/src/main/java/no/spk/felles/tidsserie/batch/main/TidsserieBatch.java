@@ -7,7 +7,7 @@ import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.Executors.newCachedThreadPool;
 import static no.spk.felles.tidsserie.batch.core.BatchIdConstants.TIDSSERIE_PREFIX;
 import static no.spk.felles.tidsserie.batch.core.TidsserieLivssyklus.onStop;
-import static no.spk.pensjon.faktura.tjenesteregister.Constants.SERVICE_RANKING;
+import static no.spk.felles.tidsserie.batch.core.registry.Ranking.ranking;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,7 +19,6 @@ import java.util.stream.Stream;
 import no.spk.faktura.input.BatchId;
 import no.spk.faktura.timeout.BatchTimeout;
 import no.spk.faktura.timeout.BatchTimeoutTaskrunner;
-import no.spk.felles.tidsserie.batch.backend.hazelcast.HazelcastBackend;
 import no.spk.felles.tidsserie.batch.core.Katalog;
 import no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback;
 import no.spk.felles.tidsserie.batch.core.TidsserieLivssyklus;
@@ -32,7 +31,6 @@ import no.spk.felles.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenter
 import no.spk.felles.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenterParser;
 import no.spk.felles.tidsserie.batch.core.kommandolinje.UgyldigKommandolinjeArgumentException;
 import no.spk.felles.tidsserie.batch.core.lagring.StorageBackend;
-import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.felles.tidsserie.batch.core.registry.Extensionpoint;
 import no.spk.felles.tidsserie.batch.main.spi.ExitCommand;
 import no.spk.felles.tidsserie.batch.storage.disruptor.FileTemplate;
@@ -118,11 +116,6 @@ public class TidsserieBatch {
             final Tidsseriemodus modus = arguments.modus();
             registrer(Tidsseriemodus.class, modus);
 
-            @SuppressWarnings("deprecation")
-            final HazelcastBackend backend = new HazelcastBackend(registry, arguments.antallProsessorar().antall());
-            registrer(MedlemsdataBackend.class, backend);
-            registrer(TidsserieLivssyklus.class, backend);
-
             final MetaDataWriter metaDataWriter = new MetaDataWriter(TemplateConfigurationFactory.create(), logKatalog);
             registrer(MetaDataWriter.class, metaDataWriter);
 
@@ -141,11 +134,11 @@ public class TidsserieBatch {
 
             controller.aktiverPlugins();
             modus.registerServices(registry);
-            registrer(TidsserieGenerertCallback.class, new TriggerfileCreator(utKatalog), SERVICE_RANKING + "=-1000");
+            registrer(TidsserieGenerertCallback.class, new TriggerfileCreator(utKatalog), ranking(1000).egenskap());
 
             final LocalDateTime started = now();
             controller.validerGrunnlagsdata();
-            controller.startBackend(backend);
+            controller.startBackend();
             controller.lastOpp();
 
             lagTidsserie(
@@ -237,4 +230,5 @@ public class TidsserieBatch {
     private static TidsserieLivssyklusException livssyklusStartFeila(final Stream<RuntimeException> errors) {
         return new TidsserieLivssyklusException("start", errors);
     }
+
 }

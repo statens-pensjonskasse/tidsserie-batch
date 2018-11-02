@@ -1,8 +1,8 @@
 package no.spk.felles.tidsserie.batch.main;
 
-import static no.spk.pensjon.faktura.tjenesteregister.Constants.SERVICE_RANKING;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
+import static no.spk.felles.tidsserie.batch.core.registry.Ranking.ranking;
 
 import java.nio.file.Path;
 import java.time.Duration;
@@ -48,6 +48,7 @@ public class ApplicationController {
 
     private final Extensionpoint<GrunnlagsdataDirectoryValidator> validator;
     private final Extensionpoint<LastOppGrunnlagsdataKommando> opplasting;
+    private final Extensionpoint<MedlemsdataBackend> medlemsdata;
     private final Extensionpoint<Plugin> plugins;
     private final ServiceRegistry registry;
 
@@ -66,6 +67,7 @@ public class ApplicationController {
         this.view = new ServiceLocator(registry).firstMandatory(View.class);
         this.validator = new Extensionpoint<>(GrunnlagsdataDirectoryValidator.class, registry);
         this.opplasting = new Extensionpoint<>(LastOppGrunnlagsdataKommando.class, registry);
+        this.medlemsdata = new Extensionpoint<>(MedlemsdataBackend.class, registry);
         this.plugins = new Extensionpoint<>(Plugin.class, registry);
     }
 
@@ -77,7 +79,7 @@ public class ApplicationController {
 
         logger = Optional.of(LoggerFactory.getLogger(ApplicationController.class));
         view = new ConsoleView(logger.get());
-        registry.registerService(View.class, view, SERVICE_RANKING + "=100");
+        registry.registerService(View.class, view, ranking(100).egenskap());
     }
 
     public void informerOmOppstart(final TidsserieBatchArgumenter argumenter) {
@@ -141,9 +143,11 @@ public class ApplicationController {
         exitCode = EXIT_ERROR;
     }
 
-    public void startBackend(MedlemsdataBackend backend) {
+    public void startBackend() {
         view.startarBackend();
-        backend.start();
+        this.medlemsdata
+                .invokeFirst(MedlemsdataBackend::start)
+                .orElseRethrowFirstFailure();
     }
 
     public void lastOpp() {

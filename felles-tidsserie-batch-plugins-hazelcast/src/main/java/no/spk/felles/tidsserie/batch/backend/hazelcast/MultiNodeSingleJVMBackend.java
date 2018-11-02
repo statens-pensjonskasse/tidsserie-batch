@@ -10,8 +10,8 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.IntStream;
 
+import no.spk.felles.tidsserie.batch.core.kommandolinje.AntallProsessorar;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 import com.hazelcast.config.Config;
@@ -51,15 +51,14 @@ class MultiNodeSingleJVMBackend implements Server {
 
     private final ServiceRegistry registry;
 
-    private final int antallNoder;
+    private final AntallProsessorar antallNoder;
 
     private Optional<HazelcastInstance> master = empty();
     private Config config;
 
-    public MultiNodeSingleJVMBackend(final ServiceRegistry registry, int antallNoder) {
+    public MultiNodeSingleJVMBackend(final ServiceRegistry registry, final AntallProsessorar antall) {
         this.registry = requireNonNull(registry, "registry er påkrevd, men var null");
-        this.antallNoder = antallNoder;
-
+        this.antallNoder = requireNonNull(antall, "antall er påkrevd, men var null");
         this.config = buildConfig();
     }
 
@@ -87,8 +86,9 @@ class MultiNodeSingleJVMBackend implements Server {
 
         logger.info("Startar sekundærnoder...");
         slavar.addAll(
-                IntStream
-                        .rangeClosed(2, antallNoder)
+                antallNoder
+                        .stream()
+                        .skip(1)
                         .parallel()
                         .mapToObj(threadNr -> startInstance(config, threadNr))
                         .collect(toSet())

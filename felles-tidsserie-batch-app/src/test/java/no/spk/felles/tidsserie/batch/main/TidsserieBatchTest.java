@@ -1,7 +1,8 @@
 package no.spk.felles.tidsserie.batch.main;
 
 import static no.spk.felles.tidsserie.batch.core.kommandolinje.AntallProsessorar.antallProsessorar;
-import static no.spk.pensjon.faktura.tjenesteregister.Constants.SERVICE_RANKING;
+import static no.spk.felles.tidsserie.batch.core.registry.Ranking.ranking;
+import static no.spk.felles.tidsserie.batch.core.registry.Ranking.standardRanking;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.fail;
@@ -70,13 +71,11 @@ public class TidsserieBatchTest {
 
     private TidsserieBatch main;
 
-    private Integer exitCode;
-
     @Before
     public void _before() {
         main = new TidsserieBatch(
                 registry.registry(),
-                exitCode -> this.exitCode = exitCode,
+                exitCode -> {},
                 controller
         );
         registry.registrer(TidsserieLivssyklus.class, a);
@@ -225,10 +224,10 @@ public class TidsserieBatchTest {
         final TidsserieGenerertCallback firstCallback = r -> {
             throw expected;
         };
-        registry.registrer(TidsserieGenerertCallback.class, firstCallback, SERVICE_RANKING + "=1000");
+        registry.registrer(TidsserieGenerertCallback.class, firstCallback, ranking(1000).egenskap());
 
         TidsserieGenerertCallback secondCallback = mock(TidsserieGenerertCallback.class);
-        registry.registrer(TidsserieGenerertCallback.class, secondCallback, SERVICE_RANKING + "=0");
+        registry.registrer(TidsserieGenerertCallback.class, secondCallback, standardRanking().egenskap());
 
         lagTidsserieOgIgnorerFeil(expected);
 

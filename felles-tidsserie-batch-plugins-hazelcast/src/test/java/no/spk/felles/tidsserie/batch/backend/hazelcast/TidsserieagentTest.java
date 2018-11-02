@@ -1,6 +1,5 @@
 package no.spk.felles.tidsserie.batch.backend.hazelcast;
 
-import static java.time.LocalDate.now;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -16,8 +15,6 @@ import static org.mockito.quality.Strictness.STRICT_STUBS;
 import java.util.HashMap;
 import java.util.Map;
 
-import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
-import no.spk.felles.tidsserie.batch.ServiceRegistryRule;
 import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.felles.tidsserie.batch.core.lagring.StorageBackend;
 import no.spk.felles.tidsserie.batch.core.medlem.GenererTidsserieCommand;
