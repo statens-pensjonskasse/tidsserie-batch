@@ -8,8 +8,6 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
 
-import no.spk.felles.tidsserie.batch.TemporaryFolderWithDeleteVerification;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;

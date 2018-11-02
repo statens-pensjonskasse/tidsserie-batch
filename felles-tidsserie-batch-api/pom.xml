@@ -15,6 +15,12 @@
         <dependency>
             <groupId>no.spk.pensjon.faktura</groupId>
             <artifactId>faktura-bootstrap-lib</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.beust</groupId>
+                    <artifactId>jcommander</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>no.spk.pensjon.faktura</groupId>

@@ -11,19 +11,12 @@
     <dependencies>
         <dependency>
             <groupId>no.spk.felles</groupId>
-            <artifactId>felles-tidsperiode-underlag-lib</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>no.spk.pensjon.faktura</groupId>
-            <artifactId>faktura-tjenesteregister-lib</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>no.spk.felles</groupId>
-            <artifactId>felles-tidsserie-batch-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>no.spk.felles</groupId>
             <artifactId>felles-tidsserie-batch-arguments</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>no.spk.felles</groupId>
+            <artifactId>felles-tidsserie-batch-main</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
@@ -50,44 +43,6 @@
             <groupId>no.spk.felles</groupId>
             <artifactId>felles-tidsserie-batch-plugins-triggerfil</artifactId>
             <scope>runtime</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.logstash.logback</groupId>
-            <artifactId>logstash-logback-encoder</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>no.spk.pensjon.faktura</groupId>
-            <artifactId>faktura-bootstrap-lib</artifactId>
-        </dependency>
-        <!-- test-->
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

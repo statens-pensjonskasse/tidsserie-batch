@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.IOException;
 import java.nio.file.Path;
 
-import no.spk.felles.tidsserie.batch.TemporaryFolderWithDeleteVerification;
 import no.spk.felles.tidsserie.batch.core.kommandolinje.AldersgrenseForSlettingAvLogKatalogar;
 
 import org.assertj.core.api.ObjectArrayAssert;

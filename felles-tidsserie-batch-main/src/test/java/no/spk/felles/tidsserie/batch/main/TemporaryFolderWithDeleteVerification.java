@@ -1,4 +1,4 @@
-package no.spk.felles.tidsserie.batch;
+package no.spk.felles.tidsserie.batch.main;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

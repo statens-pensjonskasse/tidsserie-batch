@@ -1,6 +1,5 @@
 package no.spk.felles.tidsserie.batch.main;
 
-import static no.spk.felles.tidsserie.batch.ServiceRegistryRule.erAvType;
 import static no.spk.felles.tidsserie.batch.core.kommandolinje.AntallProsessorar.antallProsessorar;
 import static no.spk.felles.tidsserie.batch.core.registry.Ranking.ranking;
 import static no.spk.felles.tidsserie.batch.core.registry.Ranking.standardRanking;
@@ -18,25 +17,20 @@ import static org.mockito.quality.Strictness.STRICT_STUBS;
 
 import java.nio.file.Path;
 import java.time.LocalDateTime;
-import java.util.ServiceLoader;
 import java.util.function.Supplier;
 
 import no.spk.faktura.input.BatchId;
-import no.spk.felles.tidsserie.batch.ServiceRegistryRule;
-import no.spk.felles.tidsserie.batch.TemporaryFolderWithDeleteVerification;
 import no.spk.felles.tidsserie.batch.core.BatchIdConstants;
 import no.spk.felles.tidsserie.batch.core.Katalog;
 import no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback;
 import no.spk.felles.tidsserie.batch.core.TidsserieLivssyklus;
 import no.spk.felles.tidsserie.batch.core.TidsserieLivssyklusException;
 import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
-import no.spk.felles.tidsserie.batch.core.grunnlagsdata.UttrekksValidator;
 import no.spk.felles.tidsserie.batch.core.kommandolinje.Bruksveiledning;
 import no.spk.felles.tidsserie.batch.core.kommandolinje.BruksveiledningSkalVisesException;
 import no.spk.felles.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenter;
 import no.spk.felles.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenterParser;
 import no.spk.felles.tidsserie.batch.core.kommandolinje.UgyldigKommandolinjeArgumentException;
-import no.spk.felles.tidsserie.batch.core.registry.Plugin;
 
 import org.junit.Before;
 import org.junit.Rule;

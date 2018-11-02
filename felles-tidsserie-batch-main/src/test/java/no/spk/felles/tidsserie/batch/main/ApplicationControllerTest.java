@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import no.spk.faktura.input.BatchId;
-import no.spk.felles.tidsserie.batch.ServiceRegistryRule;
 import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.felles.tidsserie.batch.core.grunnlagsdata.LastOppGrunnlagsdataKommando;
 import no.spk.felles.tidsserie.batch.core.grunnlagsdata.UgyldigUttrekkException;
