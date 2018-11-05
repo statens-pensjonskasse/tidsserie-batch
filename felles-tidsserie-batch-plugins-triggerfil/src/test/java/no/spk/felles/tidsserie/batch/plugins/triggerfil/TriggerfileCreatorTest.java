@@ -1,6 +1,6 @@
 package no.spk.felles.tidsserie.batch.plugins.triggerfil;
 
-import static no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback.metadata;
+import static no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback2.metadata;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.file.Path;

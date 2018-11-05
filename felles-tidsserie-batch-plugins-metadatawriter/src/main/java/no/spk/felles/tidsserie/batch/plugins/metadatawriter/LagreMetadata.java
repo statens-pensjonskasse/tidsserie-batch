@@ -5,11 +5,11 @@ import static no.spk.felles.tidsserie.batch.plugins.metadatawriter.TemplateConfi
 
 import java.nio.file.Path;
 
-import no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback;
+import no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback2;
 import no.spk.felles.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenter;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
-class LagreMetadata implements TidsserieGenerertCallback {
+class LagreMetadata implements TidsserieGenerertCallback2 {
     private final Path logKatalog;
     private final TidsserieBatchArgumenter argumenter;
 
@@ -19,7 +19,7 @@ class LagreMetadata implements TidsserieGenerertCallback {
     }
 
     @Override
-    public void tidsserieGenerert(final ServiceRegistry serviceRegistry, final Metadata metadata) {
+    public void tidsserieGenerert(final ServiceRegistry serviceRegistry, final TidsserieGenerertCallback2.Metadata metadata) {
         new MetaDataWriter(create(), logKatalog)
                 .createMetadataFile(argumenter, metadata.kjøring, metadata.kjøretid);
     }

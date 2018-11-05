@@ -3,7 +3,7 @@ package no.spk.felles.tidsserie.batch.plugins.metadatawriter;
 import java.nio.file.Path;
 
 import no.spk.felles.tidsserie.batch.core.Katalog;
-import no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback;
+import no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback2;
 import no.spk.felles.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenter;
 import no.spk.felles.tidsserie.batch.core.registry.Plugin;
 import no.spk.felles.tidsserie.batch.core.registry.ServiceLocator;
@@ -17,7 +17,7 @@ public class MetadataWriterPlugin implements Plugin {
         final Path logKatalog = locator.firstMandatory(Path.class, Katalog.LOG.egenskap());
         final TidsserieBatchArgumenter argumenter = locator.firstMandatory(TidsserieBatchArgumenter.class);
         registry.registerService(
-                TidsserieGenerertCallback.class,
+                TidsserieGenerertCallback2.class,
                 new LagreMetadata(logKatalog, argumenter)
         );
     }

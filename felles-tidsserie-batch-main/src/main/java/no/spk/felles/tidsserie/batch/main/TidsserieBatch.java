@@ -5,7 +5,9 @@ import static java.time.Duration.ofMinutes;
 import static java.time.LocalDateTime.now;
 import static java.util.Objects.requireNonNull;
 import static no.spk.felles.tidsserie.batch.core.BatchIdConstants.TIDSSERIE_PREFIX;
-import static no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback.metadata;
+import static no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback2.Metadata;
+import static no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback2.metadata;
+import static no.spk.felles.tidsserie.batch.core.registry.ExtensionpointStatus.merge;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,8 +19,7 @@ import no.spk.faktura.input.BatchId;
 import no.spk.faktura.timeout.BatchTimeout;
 import no.spk.faktura.timeout.BatchTimeoutTaskrunner;
 import no.spk.felles.tidsserie.batch.core.Katalog;
-import no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback;
-import no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback.Metadata;
+import no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback2;
 import no.spk.felles.tidsserie.batch.core.TidsserieLivssyklus;
 import no.spk.felles.tidsserie.batch.core.TidsserieLivssyklusException;
 import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
@@ -31,7 +32,6 @@ import no.spk.felles.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenter
 import no.spk.felles.tidsserie.batch.core.kommandolinje.UgyldigKommandolinjeArgumentException;
 import no.spk.felles.tidsserie.batch.core.registry.Extensionpoint;
 import no.spk.felles.tidsserie.batch.main.spi.ExitCommand;
-import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistration;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**
@@ -48,7 +48,9 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
  */
 public class TidsserieBatch {
     private final Extensionpoint<TidsserieLivssyklus> livssyklus;
-    private final Extensionpoint<TidsserieGenerertCallback> generert;
+    private final Extensionpoint<TidsserieGenerertCallback2> generert;
+    @SuppressWarnings("deprecation")
+    private final Extensionpoint<no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback> generertOld;
     private final ServiceRegistry registry;
     private final ExitCommand exiter;
 
@@ -66,13 +68,18 @@ public class TidsserieBatch {
      * @param controller kontrolleren som tar seg av å informere brukaren, logging og handtering av exitkode
      * @throws NullPointerException dersom nokon av parameterverdiane er lik {@code null}
      */
+    @SuppressWarnings("deprecation")
     public TidsserieBatch(final ServiceRegistry registry, final ExitCommand exiter,
                           final ApplicationController controller) {
         this.registry = requireNonNull(registry, "registry er påkrevd, men var null");
         this.exiter = requireNonNull(exiter, "exiter er påkrevd, men var null");
         this.controller = requireNonNull(controller, "controller er påkrevd, men var null");
         this.livssyklus = new Extensionpoint<>(TidsserieLivssyklus.class, registry);
-        this.generert = new Extensionpoint<>(TidsserieGenerertCallback.class, registry);
+        this.generert = new Extensionpoint<>(TidsserieGenerertCallback2.class, registry);
+        this.generertOld = new Extensionpoint<>(
+                no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback.class,
+                registry
+        );
     }
 
     public void run(final Supplier<TidsserieBatchArgumenterParser> parser, final String... args) {
@@ -98,6 +105,9 @@ public class TidsserieBatch {
             controller.initialiserLogging(batchId, logKatalog);
             controller.informerOmOppstart(arguments);
 
+            final Tidsseriemodus modus = arguments.modus();
+            registrer(Tidsseriemodus.class, modus);
+
             final DirectoryCleaner directoryCleaner = createDirectoryCleaner(
                     arguments.slettegrense(),
                     arguments.logkatalog(),
@@ -106,9 +116,6 @@ public class TidsserieBatch {
             registrer(DirectoryCleaner.class, directoryCleaner);
             controller.ryddOpp(directoryCleaner);
             Files.createDirectories(utKatalog);
-
-            final Tidsseriemodus modus = arguments.modus();
-            registrer(Tidsseriemodus.class, modus);
 
             controller.aktiverPlugins();
             modus.registerServices(registry);
@@ -141,6 +148,7 @@ public class TidsserieBatch {
         shutdown();
     }
 
+    @SuppressWarnings("deprecation")
     void lagTidsserie(
             final ApplicationController controller,
             final Tidsseriemodus modus,
@@ -158,8 +166,10 @@ public class TidsserieBatch {
             );
 
             final Metadata metadata = metadata(kjøring, between(now(), start));
-            generert
-                    .invokeAll(g -> g.tidsserieGenerert(registry, metadata))
+            merge(
+                    generertOld.invokeAll(g -> g.tidsserieGenerert(registry)),
+                    generert.invokeAll(g -> g.tidsserieGenerert(registry, metadata))
+            )
                     .orElseThrow(TidsserieGenerertException::new);
         } finally {
             // Unngå at feil ved stop sluker eventuelle feil som boblar ut av tidsseriegenereringa
@@ -169,8 +179,8 @@ public class TidsserieBatch {
         }
     }
 
-    private <T> ServiceRegistration<T> registrer(final Class<T> type, final T tjeneste, final String... egenskapar) {
-        return registry.registerService(type, tjeneste, egenskapar);
+    private <T> void registrer(final Class<T> type, final T tjeneste, final String... egenskapar) {
+        registry.registerService(type, tjeneste, egenskapar);
     }
 
     private DirectoryCleaner createDirectoryCleaner(

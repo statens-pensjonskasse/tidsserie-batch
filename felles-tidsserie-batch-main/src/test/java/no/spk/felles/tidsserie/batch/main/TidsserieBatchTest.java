@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 import no.spk.faktura.input.BatchId;
 import no.spk.felles.tidsserie.batch.core.BatchIdConstants;
 import no.spk.felles.tidsserie.batch.core.Katalog;
-import no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback;
+import no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback2;
 import no.spk.felles.tidsserie.batch.core.TidsserieLivssyklus;
 import no.spk.felles.tidsserie.batch.core.TidsserieLivssyklusException;
 import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
@@ -217,17 +217,35 @@ public class TidsserieBatchTest {
     public void skal_kalle_alle_generer_tidsserie_callback_selv_om_foerste_feilet() {
         final RuntimeException expected = new RuntimeException("callback error");
 
-        final TidsserieGenerertCallback firstCallback = mock(TidsserieGenerertCallback.class);
+        final TidsserieGenerertCallback2 firstCallback = mock(TidsserieGenerertCallback2.class);
         willThrow(expected).given(firstCallback).tidsserieGenerert(any(), any());
 
-        registry.registrer(TidsserieGenerertCallback.class, firstCallback, ranking(1000).egenskap());
+        registry.registrer(TidsserieGenerertCallback2.class, firstCallback, ranking(1000).egenskap());
 
-        TidsserieGenerertCallback secondCallback = mock(TidsserieGenerertCallback.class);
-        registry.registrer(TidsserieGenerertCallback.class, secondCallback, standardRanking().egenskap());
+        TidsserieGenerertCallback2 secondCallback = mock(TidsserieGenerertCallback2.class);
+        registry.registrer(TidsserieGenerertCallback2.class, secondCallback, standardRanking().egenskap());
 
         lagTidsserieOgIgnorerFeil(expected);
 
         verify(secondCallback).tidsserieGenerert(any(), any());
+    }
+
+    @SuppressWarnings("deprecation")
+    @Test
+    public void skal_kalle_alle_gamle_generer_tidsserie_callback_selv_om_foerste_feilet() {
+        final RuntimeException expected = new RuntimeException("callback error");
+
+        final no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback firstCallback = mock(no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback.class);
+        willThrow(expected).given(firstCallback).tidsserieGenerert(any());
+
+        registry.registrer(no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback.class, firstCallback, ranking(1000).egenskap());
+
+        no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback secondCallback = mock(no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback.class);
+        registry.registrer(no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback.class, secondCallback, standardRanking().egenskap());
+
+        lagTidsserieOgIgnorerFeil(expected);
+
+        verify(secondCallback).tidsserieGenerert(any());
     }
 
 
@@ -235,10 +253,27 @@ public class TidsserieBatchTest {
     public void skal_kalle_stop_paa_alle_livssyklusar_sjoelv_om_generer_tidsserie_callback_feila() {
         final RuntimeException expected = new RuntimeException("callback error");
 
-        final TidsserieGenerertCallback callback = mock(TidsserieGenerertCallback.class);
+        final TidsserieGenerertCallback2 callback = mock(TidsserieGenerertCallback2.class);
         willThrow(expected).given(callback).tidsserieGenerert(any(), any());
 
-        registry.registrer(TidsserieGenerertCallback.class, callback);
+        registry.registrer(TidsserieGenerertCallback2.class, callback);
+
+        lagTidsserieOgIgnorerFeil(expected);
+
+        verify(a).stop(any());
+        verify(b).stop(any());
+        verify(c).stop(any());
+    }
+
+    @SuppressWarnings("deprecation")
+    @Test
+    public void skal_kalle_stop_paa_alle_livssyklusar_sjoelv_om_gamle_generer_tidsserie_callback_feila() {
+        final RuntimeException expected = new RuntimeException("callback error");
+
+        final no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback callback = mock(no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback.class);
+        willThrow(expected).given(callback).tidsserieGenerert(any());
+
+        registry.registrer(no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback.class, callback);
 
         lagTidsserieOgIgnorerFeil(expected);
 

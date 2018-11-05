@@ -5,7 +5,7 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback;
+import no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback2;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**
@@ -14,10 +14,10 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
  * er opprettet av batchen.
  * @author Snorre E. Brekke - Computas
  */
-public class TriggerfileCreator implements TidsserieGenerertCallback {
+public class TriggerfileCreator implements TidsserieGenerertCallback2 {
     private final Path tidserieKatalog;
 
-    public TriggerfileCreator(Path tidserieKatalog) {
+    TriggerfileCreator(Path tidserieKatalog) {
         this.tidserieKatalog = tidserieKatalog;
     }
 

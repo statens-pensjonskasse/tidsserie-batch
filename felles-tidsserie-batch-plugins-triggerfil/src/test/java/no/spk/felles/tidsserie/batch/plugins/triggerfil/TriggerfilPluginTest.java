@@ -7,7 +7,7 @@ import java.nio.file.Path;
 import java.util.ServiceLoader;
 
 import no.spk.felles.tidsserie.batch.core.Katalog;
-import no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback;
+import no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback2;
 import no.spk.felles.tidsserie.batch.core.registry.Plugin;
 
 import org.junit.Before;
@@ -46,12 +46,20 @@ public class TriggerfilPluginTest {
                 .hasSize(1);
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void skal_registrere_triggerfilecreator_som_plugin() {
         plugin.aktiver(registry.registry());
 
         registry
-                .assertTenesterAvType(TidsserieGenerertCallback.class)
+                .assertTenesterAvType(
+                        no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback.class
+                )
+                .filteredOn(callback -> erAvType(callback, TriggerfileCreator.class))
+                .isEmpty();
+
+        registry
+                .assertTenesterAvType(TidsserieGenerertCallback2.class)
                 .filteredOn(callback -> erAvType(callback, TriggerfileCreator.class))
                 .hasSize(1);
     }

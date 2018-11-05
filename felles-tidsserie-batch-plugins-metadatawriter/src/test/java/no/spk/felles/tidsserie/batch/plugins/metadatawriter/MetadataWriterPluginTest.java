@@ -7,7 +7,7 @@ import java.nio.file.Path;
 import java.util.ServiceLoader;
 
 import no.spk.felles.tidsserie.batch.core.Katalog;
-import no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback;
+import no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback2;
 import no.spk.felles.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenter;
 import no.spk.felles.tidsserie.batch.core.registry.Plugin;
 import no.spk.felles.tidsserie.batch.main.input.ProgramArguments;
@@ -48,6 +48,7 @@ public class MetadataWriterPluginTest {
                 .hasSize(1);
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void skal_registrere_metadatawriter_som_plugin() {
         registry.registrer(
@@ -58,7 +59,13 @@ public class MetadataWriterPluginTest {
         plugin.aktiver(registry.registry());
 
         registry
-                .assertTenesterAvType(TidsserieGenerertCallback.class)
+                .assertTenesterAvType(
+                        no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback.class
+                )
+                .filteredOn(callback -> erAvType(callback, LagreMetadata.class))
+                .isEmpty();
+        registry
+                .assertTenesterAvType(TidsserieGenerertCallback2.class)
                 .filteredOn(callback -> erAvType(callback, LagreMetadata.class))
                 .hasSize(1);
     }

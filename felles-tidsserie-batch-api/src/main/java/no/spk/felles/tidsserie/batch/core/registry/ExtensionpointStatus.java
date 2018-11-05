@@ -31,7 +31,7 @@ public class ExtensionpointStatus {
         results.forEach(this.results::add);
     }
 
-    static ExtensionpointStatus merge(final ExtensionpointStatus a, final ExtensionpointStatus b) {
+    public static ExtensionpointStatus merge(final ExtensionpointStatus a, final ExtensionpointStatus b) {
         return new ExtensionpointStatus(
                 Stream.concat(
                         a.results.stream(),
