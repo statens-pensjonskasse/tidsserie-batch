@@ -1,6 +1,9 @@
 package no.spk.felles.tidsserie.batch.backend.hazelcast;
 
+import static java.util.Arrays.asList;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
@@ -12,13 +15,16 @@ import static org.mockito.Mockito.when;
 import static org.mockito.junit.MockitoJUnit.rule;
 import static org.mockito.quality.Strictness.STRICT_STUBS;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.felles.tidsserie.batch.core.lagring.StorageBackend;
 import no.spk.felles.tidsserie.batch.core.medlem.GenererTidsserieCommand;
 import no.spk.felles.tidsserie.batch.core.medlem.PartisjonsListener;
+import no.spk.felles.tidsserie.batch.core.medlem.TidsserieContext;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 import org.junit.Before;
@@ -34,6 +40,9 @@ public class TidsserieagentTest {
 
     @Rule
     public final ExpectedException e = ExpectedException.none();
+
+    @Rule
+    public final LogbackVerifier logback = new LogbackVerifier();
 
     @Rule
     public final ServiceRegistryRule registry = new ServiceRegistryRule();
@@ -84,5 +93,25 @@ public class TidsserieagentTest {
         agent.notifyListeners(context);
 
         verify(context, times(3)).emit(anyString(), eq(1));
+    }
+
+    @Test
+    public void skal_ikkje_logge_ut_endringar() {
+        String nøkkel = "123456789098";
+        RuntimeException expected = new RuntimeException("");
+        doThrow(expected).when(command).generer(anyString(), anyList(), any(TidsserieContext.class));
+        agent.map(nøkkel, endringer(), context);
+
+        logback.assertMessagesAsString()
+                .contains(String.format("Periodisering av medlem %s feila", nøkkel))
+                .doesNotContain("endringar = [[kode, fødselsdato, noe], [A, 19500101, mer]]");
+    }
+
+    private List<List<String>> endringer() {
+        List<List<String>> endringer = new ArrayList<>();
+        endringer.add(asList("kode", "fødselsdato", "noe"));
+        endringer.add(asList("A", "19500101", "mer"));
+
+        return endringer;
     }
 }

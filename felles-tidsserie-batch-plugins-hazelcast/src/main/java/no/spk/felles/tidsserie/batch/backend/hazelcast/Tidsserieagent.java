@@ -88,7 +88,7 @@ class Tidsserieagent
                     getTidsserieContext(context)
             );
         } catch (final RuntimeException | Error e) {
-            log.warn("Periodisering av medlem {} feila: {} (endringar = {})", key, e.getMessage(), value);
+            log.warn("Periodisering av medlem {} feila: {}", key, e.getMessage());
             log.info("Feilkilde:", e);
             emitError(context, e);
         }
