@@ -3,6 +3,10 @@ package no.spk.felles.tidsserie.batch.core.kommandolinje;
 import static java.util.Objects.requireNonNull;
 
 /**
+ * Blir kasta ved {@link TidsserieBatchArgumenterParser parsing} av kommandolinjeargument dersom
+ * brukaren har bedt om hjelp for å å få sett kva argument batchen støttar.
+ *
+ * @see TidsserieBatchArgumenterParser
  * @since 1.1.0
  */
 public class BruksveiledningSkalVisesException extends RuntimeException {

@@ -3,6 +3,10 @@ package no.spk.felles.tidsserie.batch.core.kommandolinje;
 import static java.util.Objects.requireNonNull;
 
 /**
+ * Blir kasta dersom {@link TidsserieBatchArgumenterParser#parse(String...) parsing} av kommandolinjeargument
+ * detekterer 1 eller fleire ukjente eller ugyldige verdiar for nokon av argumenta.
+ *
+ * @see TidsserieBatchArgumenterParser#parse(String...)
  * @since 1.1.0
  */
 public class UgyldigKommandolinjeArgumentException extends RuntimeException {
