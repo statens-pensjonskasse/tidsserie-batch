@@ -2,8 +2,12 @@ package no.spk.felles.tidsserie.batch.core.kommandolinje;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.rangeClosed;
+import static no.spk.felles.tidsserie.batch.core.kommandolinje.AntallProsessorar.*;
 import static no.spk.felles.tidsserie.batch.core.kommandolinje.AntallProsessorar.antallProsessorar;
+import static no.spk.felles.tidsserie.batch.core.kommandolinje.AntallProsessorar.standardAntallProsessorar;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.assertj.core.api.JUnitSoftAssertions;
@@ -14,6 +18,39 @@ import org.junit.Test;
 public class AntallProsessorarTest {
     @Rule
     public final JUnitSoftAssertions softly = new JUnitSoftAssertions();
+
+    @Rule
+    public final AvailableProcessors prosessorar = new AvailableProcessors();
+
+    @Test
+    public void skal_takle_maskiner_som_har_1_kjerne() {
+        prosessorar.overstyr(1);
+        softly.assertThat(
+                standardAntallProsessorar()
+        )
+                .isEqualTo(antallProsessorar(1));
+    }
+
+    @Test
+    public void skal_ikkje_bruke_alle_prosessorar_som_standard() {
+        rangeClosed(2, 1000)
+                .peek(prosessorar::overstyr)
+                .map(antall -> antall - 1)
+                .forEach(
+                        expected -> softly.assertThat(
+                                standardAntallProsessorar()
+                        )
+                                .isEqualTo(
+                                        antallProsessorar(expected)
+                                )
+                );
+    }
+
+    @Test
+    public void skal_hente_antall_tilgjengelige_prosessorar_via_JVMen() {
+        assertThat(availableProcessors())
+                .isEqualTo(antallProsessorar(Runtime.getRuntime().availableProcessors()));
+    }
 
     @Test
     public void skal_ikkje_tillate_verdiar_mindre_enn_1() {

@@ -1,7 +1,9 @@
 package no.spk.felles.tidsserie.batch.core.kommandolinje;
 
+import static java.util.Objects.requireNonNull;
 import static java.util.stream.IntStream.rangeClosed;
 
+import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
@@ -16,6 +18,12 @@ import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
  * @since 1.1.0
  */
 public class AntallProsessorar {
+    private static Supplier<Integer> AVAILABLE_PROCESSORS;
+
+    static {
+        reset();
+    }
+
     private final Integer verdi;
 
     private AntallProsessorar(final int verdi) {
@@ -38,11 +46,16 @@ public class AntallProsessorar {
     }
 
     public static AntallProsessorar availableProcessors() {
-        return antallProsessorar(Runtime.getRuntime().availableProcessors());
+        return antallProsessorar(AVAILABLE_PROCESSORS.get());
     }
 
     public static AntallProsessorar standardAntallProsessorar() {
-        return antallProsessorar(availableProcessors().verdi - 1);
+        return antallProsessorar(
+                Math.max(
+                        availableProcessors().verdi - 1,
+                        1
+                )
+        );
     }
 
     public static boolean erGyldig(final int antall) {
@@ -81,5 +94,21 @@ public class AntallProsessorar {
     @Override
     public String toString() {
         return "antall prosessorar " + verdi;
+    }
+
+    /**
+     * Kun for testformål.
+     *
+     * @param availableProcessors ein stub som angir antall tilgjengelige CPUar på maskina
+     */
+    static void overstyr(final Supplier<Integer> availableProcessors) {
+        AVAILABLE_PROCESSORS = requireNonNull(availableProcessors, "availableProcessors er påkrevd, men var null");
+    }
+
+    /**
+     * Kun for testformål.
+     */
+    static void reset() {
+        overstyr(Runtime.getRuntime()::availableProcessors);
     }
 }
