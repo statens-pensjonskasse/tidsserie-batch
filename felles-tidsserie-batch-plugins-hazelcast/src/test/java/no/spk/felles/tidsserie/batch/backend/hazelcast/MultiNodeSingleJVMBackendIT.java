@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.hazelcast.config.EvictionPolicy;
+import com.hazelcast.config.InMemoryFormat;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.LifecycleEvent;
 import com.hazelcast.core.LifecycleEvent.LifecycleState;
@@ -86,6 +88,45 @@ public class MultiNodeSingleJVMBackendIT {
         assertIsRunning(instance)
                 .as("køyrer hazelcast?")
                 .isFalse();
+    }
+
+    @Test
+    public void skal_ikkje_sette_opp_backup_partisjonar_for_medlemsdata_mapen() {
+        final String navn = "medlemsdata";
+        assertThat(
+                server.start()
+                        .getConfig()
+                        .getMapConfig(navn)
+                        .getTotalBackupCount()
+        )
+                .as("totalt antall backups pr innslag i %s-mapen for Hazelcast", navn)
+                .isEqualTo(0);
+    }
+
+    @Test
+    public void skal_benytte_binary_som_in_memory_format() {
+        final String navn = "medlemsdata";
+        assertThat(
+                server.start()
+                        .getConfig()
+                        .getMapConfig(navn)
+                        .getInMemoryFormat()
+        )
+                .as("in-memory-format for %s-mapen for Hazelcast", navn)
+                .isEqualTo(InMemoryFormat.BINARY);
+    }
+
+    @Test
+    public void skal_aldri_evicte_medlemsdata_hazelast() {
+        final String navn = "medlemsdata";
+        assertThat(
+                server.start()
+                        .getConfig()
+                        .getMapConfig(navn)
+                        .getEvictionPolicy()
+        )
+                .as("eviction policy for %s-mapen for Hazelcast", navn)
+                .isEqualTo(EvictionPolicy.NONE);
     }
 
     private static AbstractBooleanAssert<?> assertIsRunning(final HazelcastInstance instance) {

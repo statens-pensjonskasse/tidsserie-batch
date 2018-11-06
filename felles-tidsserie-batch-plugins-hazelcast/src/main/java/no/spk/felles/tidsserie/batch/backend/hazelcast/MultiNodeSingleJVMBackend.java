@@ -105,7 +105,9 @@ class MultiNodeSingleJVMBackend implements Server {
         config.setProperty(GroupProperty.SOCKET_BIND_ANY.getName(), "false");
         config.getGroupConfig().setName("felles-tidsserie-batch-" + UUID.randomUUID().toString());
         config
-                .getMapConfig("medlem")
+                .getMapConfig(Server.NAME_MEDLEMSDATA_MAP)
+                .setAsyncBackupCount(0)
+                .setBackupCount(0)
                 .setEvictionPolicy(EvictionPolicy.NONE)
                 .setInMemoryFormat(InMemoryFormat.BINARY);
         config

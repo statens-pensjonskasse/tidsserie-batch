@@ -11,6 +11,11 @@ import com.hazelcast.core.HazelcastInstance;
  */
 interface Server {
     /**
+     * Navnet på mapen medlemsdatane ligg lagra i.
+     */
+    String NAME_MEDLEMSDATA_MAP = "medlemsdata";
+
+    /**
      * Startar opp master- og slavenodene.
      * <br>
      * Etter at metoda returnerer vil gridet vere klart til å behandle og ta vare på data opplasta via

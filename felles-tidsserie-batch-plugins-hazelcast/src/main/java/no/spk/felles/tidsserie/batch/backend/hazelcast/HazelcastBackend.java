@@ -70,7 +70,7 @@ public class HazelcastBackend implements MedlemsdataBackend, TidsserieLivssyklus
     @Override
     public void start() {
         this.instance = of(server.start());
-        this.map = instance.map(i -> i.getMap("medlemsdata"));
+        this.map = instance.map(i -> i.getMap(Server.NAME_MEDLEMSDATA_MAP));
         instance.ifPresent(i -> i.getAtomicLong("serienummer").set(1L));
     }
 
