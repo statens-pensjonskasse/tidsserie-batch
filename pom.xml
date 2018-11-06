@@ -7,7 +7,7 @@
         <artifactId>spk-root-pom</artifactId>
         <groupId>no.spk</groupId>
         <version>118</version>
-        <relativePath/>
+        <relativePath />
     </parent>
 
     <groupId>no.spk.felles</groupId>
