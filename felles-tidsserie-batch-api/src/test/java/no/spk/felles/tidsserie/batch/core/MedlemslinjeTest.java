@@ -1,6 +1,9 @@
 package no.spk.felles.tidsserie.batch.core;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
+import static no.spk.felles.tidsserie.batch.core.medlem.MedlemsId.medlemsId;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import no.spk.felles.tidsserie.batch.core.medlem.MedlemsId;
@@ -10,39 +13,114 @@ import org.assertj.core.api.BooleanAssert;
 import org.assertj.core.api.JUnitSoftAssertions;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 public class MedlemslinjeTest {
-    @Rule
-    public final ExpectedException e = ExpectedException.none();
-
     @Rule
     public final JUnitSoftAssertions softly = new JUnitSoftAssertions();
 
     @Test
-    public void skalVerifisereAtInputIkkjeErNull() {
-        e.expect(NullPointerException.class);
-        e.expectMessage("verdiar for medlemslinja er påkrevd, men var null");
+    public void skal_godta_kva_som_helst_utenom_ingenting_i_kolonne_1() {
+        final String id = "Medlem X";
+        final Medlemslinje linje = new Medlemslinje(
+                asList(id, "18763187263", "127631827631872")
+        );
+        assertThat(linje.medlem()).isEqualTo(new MedlemsId(id));
+        assertThat(linje.data()).isEqualTo(asList("18763187263", "127631827631872"));
+    }
 
-        new Medlemslinje(null);
+    @Test
+    public void skal_ikkje_kreve_fleire_kolonner_enn_1() {
+        final String id = "Medlem Y";
+        final Medlemslinje linje = new Medlemslinje(
+                singletonList(id)
+        );
+        assertThat(linje.medlem()).isEqualTo(new MedlemsId(id));
+        assertThat(linje.data()).isEmpty();
+    }
+
+    @Test
+    public void skal_ikkje_godta_tomme_linjer() {
+        softly.assertThatCode(
+                () -> new Medlemslinje(emptyList())
+        )
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(
+                        "Ei medlemslinje må inneholde minst 1 kolonne med medlemsdata, antall kolonner var 0\n" +
+                                "Kolonner:\n"
+                );
+    }
+
+    @Test
+    public void skal_ikkje_godta_null_som_medlemsid() {
+        softly.assertThatCode(
+                () -> new Medlemslinje(asList(null, "ABCD"))
+        )
+                .isInstanceOf(NullPointerException.class)
+                .hasMessageContaining("Kolonne for medlemsid kan ikkje inneholde verdien '<null>'")
+                .hasMessageContaining("Kolonner:")
+                .hasMessageContaining("- <null>")
+                .hasMessageContaining("- ABCD");
+    }
+
+    @Test
+    public void skal_ikkje_godta_tom_string_som_medlemsid() {
+        softly.assertThatCode(
+                () -> new Medlemslinje(asList("  ", "ABCD"))
+        )
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Kolonne for medlemsid kan ikkje inneholde verdien '<tom streng>'")
+                .hasMessageContaining("Kolonner:")
+                .hasMessageContaining("- <tom streng>")
+                .hasMessageContaining("- ABCD");
+    }
+
+    @Test
+    public void skal_trimme_medlemsidentifikatoren() {
+        assertThat(
+                new Medlemslinje(singletonList("   Medlem W "))
+                        .medlem()
+        )
+                .isEqualTo(medlemsId("Medlem W"));
+    }
+
+    @Test
+    public void skal_godta_tom_string_i_medlemsdata_kolonnene_etter_medlemsid() {
+        assertThat(
+                new Medlemslinje(asList("Medlem W", "A", "  ", ""))
+                        .data()
+        )
+                .isEqualTo(asList("A", "  ", ""));
+    }
+
+    @Test
+    public void skalVerifisereAtInputIkkjeErNull() {
+        softly.assertThatCode(
+                () -> new Medlemslinje(null)
+        )
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("verdiar for medlemslinja er påkrevd, men var null")
+        ;
     }
 
 
     @Test
-    public void skalPopulereMedlemsIdFraKolonnerForFoedselsdatoOgPersonnummerIkkjeFraMedlemsidentifikator() {
+    public void skal_populere_medlemsId_fra_kolonne_for_medlemsidentifikator() {
+        final String expected = "ABCD-BDEF-QXY";
         assertThat(
                 new Medlemslinje(
                         asList(
-                                "ABCD-BDEF-QXY",
+                                expected,
                                 "9",
                                 "19790101",
                                 "12345",
                                 "2000.01.01"
                         )
-                ).medlem()
-        ).as("medlemsidentifikator")
+                )
+                        .medlem()
+        )
+                .as("medlemsidentifikator")
                 .isEqualTo(
-                        new MedlemsId("19790101", "12345")
+                        new MedlemsId(expected)
                 );
     }
 
@@ -68,26 +146,18 @@ public class MedlemslinjeTest {
     }
 
     @Test
-    public void skalKunTilhoyreMedlemmarMedSammeFoedselsnummerSomLinjaErTilknytta() {
-        String foedselsdato = "19500405";
-        String personnummer = "54321";
-        Medlemslinje linje = new Medlemslinje(
-                asList(
-                        "ABCD",
-                        "9",
-                        foedselsdato,
-                        personnummer,
-                        "2019.12.18"
-                )
-        );
-        softlyAssertThat(linje, foedselsdato, personnummer).isTrue();
-        softlyAssertThat(linje, foedselsdato, "12345").isFalse();
-        softlyAssertThat(linje, "19700806", personnummer).isFalse();
+    public void skal_kun_tilhøyre_linjer_med_samme_id() {
+        final Medlemslinje linje = new Medlemslinje(singletonList("ABCD"));
+        assertTilhøyrer(linje, "ABCD").isTrue();
+        assertTilhøyrer(linje, "12345").isFalse();
     }
 
-    private BooleanAssert softlyAssertThat(final Medlemslinje linje, final String foedselsdato, final String personnummer) {
-        final MedlemsId medlem = MedlemsId.medlemsId(foedselsdato, personnummer);
-        return softly.assertThat(linje.tilhoeyrer(medlem)).as("tilhøyrer {" + linje + "} medlem " + medlem + "?");
+    private BooleanAssert assertTilhøyrer(final Medlemslinje linje, final String id) {
+        final MedlemsId other = medlemsId(id);
+        return softly.assertThat(
+                linje.tilhoeyrer(other)
+        )
+                .as("tilhøyrer {%s} medlem %s", linje, other);
     }
 
 }
