@@ -1,5 +1,6 @@
 package no.spk.felles.tidsserie.batch.it;
 
+import static java.lang.System.getProperty;
 import static java.util.stream.Collectors.joining;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -14,6 +15,8 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiPredicate;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
@@ -27,7 +30,7 @@ class OutOfProcessBatchRunner implements FellesTidsserieBatch {
         try {
             final File stderr = new File(utKatalog, "stderr");
             final File stdout = new File(utKatalog, "stdout");
-            final Process process = new ProcessBuilder(
+            final Process process = newProcessBuilder(
                     "java",
                     "-Dfile.encoding=" + Charset.defaultCharset().name(),
                     "-jar",
@@ -62,6 +65,29 @@ class OutOfProcessBatchRunner implements FellesTidsserieBatch {
             // Be a good JVM citizen
             Thread.currentThread().interrupt();
         }
+    }
+
+    private ProcessBuilder newProcessBuilder(final String executable, final String... args) {
+        return new ProcessBuilder(
+                Stream.of(
+                        Stream.of(executable),
+                        deaktiverHazelcastAdvarslar(),
+                        Stream.of(args)
+                )
+                        .flatMap(Function.identity())
+                        .collect(Collectors.toList())
+        );
+    }
+
+    private Stream<String> deaktiverHazelcastAdvarslar() {
+        if (erEldreEnnJava9()) {
+            return Stream.empty();
+        }
+        return Stream.of("--add-opens", "java.base/sun.nio.ch=ALL-UNNAMED");
+    }
+
+    private boolean erEldreEnnJava9() {
+        return getProperty("java.specification.version").startsWith("1.");
     }
 
     private String finnBatchensJarfil() {
