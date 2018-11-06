@@ -15,20 +15,18 @@ import java.util.stream.Stream;
 import java.util.zip.GZIPOutputStream;
 
 import no.spk.felles.tidsperiode.Tidsperiode;
-import no.spk.felles.tidsserie.batch.util.TemporaryFolderWithDeleteVerification;
 
 import org.assertj.core.api.AbstractBooleanAssert;
+import org.assertj.core.api.JUnitSoftAssertions;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.junit.rules.TestName;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 public class CSVInputTest {
-    public static final String DUMMYDATA = "1;2;3;4;5;6;7;8;9;0";
+    private static final String DUMMYDATA = "1;2;3;4;5;6;7;8;9;0";
 
     @Rule
     public final TestName name = new TestName();
@@ -37,10 +35,10 @@ public class CSVInputTest {
     public final TemporaryFolder folder = new TemporaryFolderWithDeleteVerification();
 
     @Rule
-    public final MockitoRule mockito = MockitoJUnit.rule();
+    public final ExpectedException e = ExpectedException.none();
 
     @Rule
-    public final ExpectedException e = ExpectedException.none();
+    public final JUnitSoftAssertions softly = new JUnitSoftAssertions();
 
     private CSVInput fixture;
 
@@ -116,6 +114,64 @@ public class CSVInputTest {
         }
     }
 
+    @Test
+    public void skal_støtte_ukomprimerte_csv_filer() throws IOException {
+        write(newTemporaryFile("tjafs.csv"), of(DUMMYDATA));
+
+        softly.assertThat(
+                fixture.referansedataFiler()
+        )
+                .as("referansedatafiler skal inkludere ukomprimerte CSV-filer")
+                .hasSize(1)
+                .extracting(e -> e.toFile().getName())
+                .contains("tjafs.csv");
+
+        fixture.addOversettere(new FakeOversetter());
+        softly.assertThat(
+                fixture.referansedata()
+        )
+                .as("referansedata frå tjafs.csv")
+                .hasSize(1);
+
+        assertDeletable(medlemsdata).isTrue();
+
+        write(newTemporaryFile("medlemsdata.csv"), of(DUMMYDATA));
+        softly.assertThat(
+                fixture.medlemsdata()
+        )
+                .as("medlemsdata frå medlemsdata.csv")
+                .hasSize(1);
+    }
+
+    @Test
+    public void skal_ikkje_godta_filer_som_eksisterer_i_både_komprimert_og_ukomprimert_versjon() throws IOException {
+        write(newTemporaryFile("filnavn.csv.gz"), of(DUMMYDATA));
+        write(newTemporaryFile("filnavn.csv"), of(DUMMYDATA));
+
+        //noinspection ResultOfMethodCallIgnored
+        softly.assertThatCode(
+                () -> fixture
+                        .referansedata()
+                        .findAny()
+        )
+                .as("referansedata for CSV-fil som eksisterer i både ukomprimert og komprimert versjon")
+                .isInstanceOf(DuplisertCSVFilException.class);
+
+        assertDeletable(medlemsdata).isTrue();
+
+        write(newTemporaryFile("medlemsdata.csv.gz"), of(DUMMYDATA));
+        write(newTemporaryFile("medlemsdata.csv"), of(DUMMYDATA));
+
+        //noinspection ResultOfMethodCallIgnored
+        softly.assertThatCode(
+                () -> fixture
+                        .medlemsdata()
+                        .findAny()
+        )
+                .as("medlemsdata som eksisterer i både ukomprimert og komprimert versjon")
+                .isInstanceOf(DuplisertCSVFilException.class);
+    }
+
     private File newTemporaryFile(final String filename) throws IOException {
         final File file = new File(baseDir, filename);
         assertThat(file.createNewFile()).as("was " + file + " successfully created?").isTrue();
@@ -128,9 +184,17 @@ public class CSVInputTest {
     }
 
     private static void write(final File file, final Stream<String> lines) throws IOException {
-        try (final OutputStream output = new GZIPOutputStream(new FileOutputStream(file))) {
-            lines.forEach(line -> write(output, DUMMYDATA));
+        try (final OutputStream output = open(file)) {
+            lines.forEach(line -> write(output, line));
         }
+    }
+
+    private static OutputStream open(final File file) throws IOException {
+        final FileOutputStream output = new FileOutputStream(file);
+        if (file.getName().endsWith("gz")) {
+            return new GZIPOutputStream(output);
+        }
+        return output;
     }
 
     private static void write(final OutputStream output, final String line) {

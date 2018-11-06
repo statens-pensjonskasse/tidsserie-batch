@@ -3,7 +3,7 @@
     <parent>
         <artifactId>felles-tidsserie-batch</artifactId>
         <groupId>no.spk.felles</groupId>
-        <version>1.0.0</version>
+        <version>1.1.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>felles-tidsserie-batch-api</artifactId>
@@ -15,6 +15,12 @@
         <dependency>
             <groupId>no.spk.pensjon.faktura</groupId>
             <artifactId>faktura-bootstrap-lib</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.beust</groupId>
+                    <artifactId>jcommander</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>no.spk.pensjon.faktura</groupId>
@@ -48,14 +54,9 @@
                             <artifactId>${project.artifactId}</artifactId>
                             <!-- NB: Ved binært-inkompatible endringar som fører til bump -->
                             <!-- i versjonsnummer på modulen må også den her bumpast opp -->
-                            <version>${project.version}</version>
+                            <version>1.0.0</version>
                         </dependency>
                     </oldVersion>
-                    <newVersion>
-                        <file>
-                            <path>${project.build.directory}/${project.artifactId}-${project.version}.${project.packaging}</path>
-                        </file>
-                    </newVersion>
                     <parameter>
                         <onlyModified>true</onlyModified>
                         <accessModifier>protected</accessModifier>

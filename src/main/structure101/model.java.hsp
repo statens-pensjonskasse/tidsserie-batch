@@ -1,176 +1,81 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<local-project language="java" version="4.2.10071" xml-version="3" flavor="j2se">
+<local-project language="java" version="5.0.13433" xml-version="3" flavor="j2se">
+  <property name="show-as-module" value="false" />
+  <property name="publish-architecture-artifacts" value="true" />
+  <property name="force-classpath" value="false" />
+  <property name="project-type" value="maven" />
+  <property name="hide-externals" value="true" />
   <property name="parse-archive-in-archive" value="false" />
   <property name="include-injected-dependency" value="true" />
-  <property name="show-as-module" value="false" />
   <property name="relative-to" value="const(THIS_FILE)" />
   <property name="action-set-mod" value="1" />
   <property name="detail-mode" value="true" />
   <property name="hide-deprecated" value="false" />
+  <property name="resolve-name-clashes" value="true" />
   <property name="project-excluded" />
   <property name="show-needs-to-compile" value="false" />
-  <property name="project-type" value="maven" />
-  <property name="hide-externals" value="true" />
+  <property name="show-poms" value="true" />
+  <property name="show-test-classes" value="false" />
   <classpath>
-    <classpathentry kind="lib" path="../../../faktura-tidsserie-batch-input/target/classes" />
-    <classpathentry kind="lib" path="../../../faktura-tidsserie-batch-app/target/classes" />
-    <classpathentry kind="lib" path="../../../faktura-tidsserie-batch-overvaak/target/classes" />
-    <classpathentry kind="lib" path="../../../faktura-tidsserie-batch/target/classes" />
+    <classpathentry kind="lib" path="../../../felles-tidsserie-batch-api/target/classes" module="felles-tidsserie-batch-api" />
+    <classpathentry kind="lib" path="../../../felles-tidsserie-batch-main/target/classes" module="felles-tidsserie-batch-main" />
+    <classpathentry kind="lib" path="../../../felles-tidsserie-batch-plugins-hazelcast/target/classes" module="felles-tidsserie-batch-plugins-hazelcast" />
+    <classpathentry kind="lib" path="../../../felles-tidsserie-batch-plugins-metadatawriter/target/classes" module="felles-tidsserie-batch-plugins-metadatawriter" />
+    <classpathentry kind="lib" path="../../../felles-tidsserie-batch-plugins-disruptor/target/classes" module="felles-tidsserie-batch-plugins-disruptor" />
+    <classpathentry kind="lib" path="../../../felles-tidsserie-batch-plugins-grunnlagsdatavalidator/target/classes" module="felles-tidsserie-batch-plugins-grunnlagsdatavalidator" />
+    <classpathentry kind="lib" path="../../../felles-tidsserie-batch-app/target/classes" module="felles-tidsserie-batch-app" />
+    <classpathentry kind="lib" path="../../../felles-tidsserie-batch-arguments/target/classes" module="felles-tidsserie-batch-arguments" />
+    <classpathentry kind="lib" path="../../../felles-tidsserie-batch-plugins-triggerfil/target/classes" module="felles-tidsserie-batch-plugins-triggerfil" />
+    <classpathentry kind="lib" path="../../../felles-tidsserie-batch-test/target/classes" module="felles-tidsserie-batch-test" />
   </classpath>
   <pom-root-files>
     <pom path="../../../pom.xml" />
   </pom-root-files>
-  <transformations>
-    <transformation in="*" out="{jar}.*" />
-  </transformations>
+  <modules>
+    <module name="felles-tidsserie-batch-api" kind="jar" />
+    <module name="felles-tidsserie-batch-plugins-triggerfil" kind="jar">
+      <requires name="felles-tidsserie-batch-api" kind="jar" />
+    </module>
+    <module name="felles-tidsserie-batch-plugins-hazelcast" kind="jar">
+      <requires name="felles-tidsserie-batch-api" kind="jar" />
+    </module>
+    <module name="felles-tidsserie-batch-plugins-grunnlagsdatavalidator" kind="jar">
+      <requires name="felles-tidsserie-batch-api" kind="jar" />
+    </module>
+    <module name="felles-tidsserie-batch-plugins-disruptor" kind="jar">
+      <requires name="felles-tidsserie-batch-api" kind="jar" />
+    </module>
+    <module name="felles-tidsserie-batch-arguments" kind="jar">
+      <requires name="felles-tidsserie-batch-api" kind="jar" />
+    </module>
+    <module name="felles-tidsserie-batch-plugins-metadatawriter" kind="jar">
+      <requires name="felles-tidsserie-batch-api" kind="jar" />
+      <requires name="felles-tidsserie-batch-arguments" kind="jar" />
+    </module>
+    <module name="felles-tidsserie-batch-main" kind="jar">
+      <requires name="felles-tidsserie-batch-api" kind="jar" />
+      <requires name="felles-tidsserie-batch-arguments" kind="jar" />
+    </module>
+    <module name="felles-tidsserie-batch-app" kind="jar">
+      <requires name="felles-tidsserie-batch-arguments" kind="jar" />
+      <requires name="felles-tidsserie-batch-main" kind="jar" />
+      <requires name="felles-tidsserie-batch-plugins-disruptor" kind="jar" />
+      <requires name="felles-tidsserie-batch-plugins-grunnlagsdatavalidator" kind="jar" />
+      <requires name="felles-tidsserie-batch-plugins-hazelcast" kind="jar" />
+      <requires name="felles-tidsserie-batch-plugins-metadatawriter" kind="jar" />
+      <requires name="felles-tidsserie-batch-plugins-triggerfil" kind="jar" />
+    </module>
+    <module name="felles-tidsserie-batch-test" kind="jar">
+      <requires name="felles-tidsserie-batch-api" kind="jar" />
+      <requires name="felles-tidsserie-batch-app" kind="jar" />
+      <requires name="felles-tidsserie-batch-arguments" kind="jar" />
+      <requires name="felles-tidsserie-batch-main" kind="jar" />
+      <requires name="felles-tidsserie-batch-plugins-grunnlagsdatavalidator" kind="jar" />
+    </module>
+  </modules>
+  <modules-in-scope />
   <restructuring>
-    <set version="3" name="Model 1" hiview="Codemap" active="true" todo="false" list="0">
-      <namemap applyMappings="true">
-        <map from="no.spk.pensjon.faktura.tidsserie.plugin.modus.underlagsperioder.CsvFileGroupWriter" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.plugin.modus.underlagsperioder.CsvFileGroupWriter" to="faktura-tidsserie-batch-parent.plugin.modus.underlagsperioder.CsvFileGroupWriter" />
-        <map from="no.spk.pensjon.faktura.tidsserie.plugin.modus.underlagsperioder.CsvFileGroupWriter$1" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.plugin.modus.underlagsperioder.CsvFileGroupWriter$1" to="faktura-tidsserie-batch-parent.plugin.modus.underlagsperioder.CsvFileGroupWriter$1" />
-        <map from="no.spk.pensjon.faktura.tidsserie.plugin.modus.underlagsperioder.Premiesatskolonner" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.plugin.modus.underlagsperioder.Premiesatskolonner" to="faktura-tidsserie-batch-parent.plugin.modus.underlagsperioder.Premiesatskolonner" />
-        <map from="no.spk.pensjon.faktura.tidsserie.plugin.modus.underlagsperioder.Premiesatskolonner$Memento" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.plugin.modus.underlagsperioder.Premiesatskolonner$Memento" to="faktura-tidsserie-batch-parent.plugin.modus.underlagsperioder.Premiesatskolonner$Memento" />
-        <map from="no.spk.pensjon.faktura.tidsserie.plugin.modus.underlagsperioder.Desimaltallformatering" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.plugin.modus.underlagsperioder.Desimaltallformatering" to="faktura-tidsserie-batch-parent.plugin.modus.underlagsperioder.Desimaltallformatering" />
-        <map from="no.spk.pensjon.faktura.tidsserie.plugin.modus.underlagsperioder.Desimaltallformatering$Key" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.plugin.modus.underlagsperioder.Desimaltallformatering$Key" to="faktura-tidsserie-batch-parent.plugin.modus.underlagsperioder.Desimaltallformatering$Key" />
-        <map from="no.spk.pensjon.faktura.tidsserie.plugin.modus.underlagsperioder.ErrorDetector" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.plugin.modus.underlagsperioder.ErrorDetector" to="faktura-tidsserie-batch-parent.plugin.modus.underlagsperioder.ErrorDetector" />
-        <map from="no.spk.pensjon.faktura.tidsserie.plugin.modus.underlagsperioder.Kolonnetyper" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.plugin.modus.underlagsperioder.Kolonnetyper" to="faktura-tidsserie-batch-parent.plugin.modus.underlagsperioder.Kolonnetyper" />
-        <map from="no.spk.pensjon.faktura.tidsserie.plugin.modus.underlagsperioder.LiveTidsserieAvslutter" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.plugin.modus.underlagsperioder.LiveTidsserieAvslutter" to="faktura-tidsserie-batch-parent.plugin.modus.underlagsperioder.LiveTidsserieAvslutter" />
-        <map from="no.spk.pensjon.faktura.tidsserie.plugin.modus.underlagsperioder.LiveTidsseriemodus" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.plugin.modus.underlagsperioder.LiveTidsseriemodus" to="faktura-tidsserie-batch-parent.plugin.modus.underlagsperioder.LiveTidsseriemodus" />
-        <map from="no.spk.pensjon.faktura.tidsserie.plugin.modus.underlagsperioder.Datavarehusformat" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.plugin.modus.underlagsperioder.Datavarehusformat" to="faktura-tidsserie-batch-parent.plugin.modus.underlagsperioder.Datavarehusformat" />
-        <map from="no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag.Uttrekksdato" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag.Uttrekksdato" to="faktura-tidsserie-batch-parent.plugin.modus.avtaleunderlag.Uttrekksdato" />
-        <map from="no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag.Avtaleunderlagformat" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag.Avtaleunderlagformat" to="faktura-tidsserie-batch-parent.plugin.modus.avtaleunderlag.Avtaleunderlagformat" />
-        <map from="no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag.Avtaleunderlagformat$1" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag.Avtaleunderlagformat$1" to="faktura-tidsserie-batch-parent.plugin.modus.avtaleunderlag.Avtaleunderlagformat$1" />
-        <map from="no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag.Avtaleunderlagmodus" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag.Avtaleunderlagmodus" to="faktura-tidsserie-batch-parent.plugin.modus.avtaleunderlag.Avtaleunderlagmodus" />
-        <map from="no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag.Avtaleunderlagmodus$1" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag.Avtaleunderlagmodus$1" to="faktura-tidsserie-batch-parent.plugin.modus.avtaleunderlag.Avtaleunderlagmodus$1" />
-        <map from="no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag.Underlagskriver" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag.Underlagskriver" to="faktura-tidsserie-batch-parent.plugin.modus.avtaleunderlag.Underlagskriver" />
-        <map from="no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag.Desimaltallformatering" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag.Desimaltallformatering" to="faktura-tidsserie-batch-parent.plugin.modus.avtaleunderlag.Desimaltallformatering" />
-        <map from="no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag.Desimaltallformatering$Key" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag.Desimaltallformatering$Key" to="faktura-tidsserie-batch-parent.plugin.modus.avtaleunderlag.Desimaltallformatering$Key" />
-        <map from="no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag.AvtaleunderlagFactory" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag.AvtaleunderlagFactory" to="faktura-tidsserie-batch-parent.plugin.modus.avtaleunderlag.AvtaleunderlagFactory" />
-        <map from="no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag.FormatSpesifikasjon" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag.FormatSpesifikasjon" to="faktura-tidsserie-batch-parent.plugin.modus.avtaleunderlag.FormatSpesifikasjon" />
-        <map from="no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag.FormatSpesifikasjon$ErrorDetector" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag.FormatSpesifikasjon$ErrorDetector" to="faktura-tidsserie-batch-parent.plugin.modus.avtaleunderlag.FormatSpesifikasjon$ErrorDetector" />
-        <map from="no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag.FormatSpesifikasjon$KolonneSpesifikasjon" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag.FormatSpesifikasjon$KolonneSpesifikasjon" to="faktura-tidsserie-batch-parent.plugin.modus.avtaleunderlag.FormatSpesifikasjon$KolonneSpesifikasjon" />
-        <map from="no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag.FormatSpesifikasjon$KolonneMapper" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag.FormatSpesifikasjon$KolonneMapper" to="faktura-tidsserie-batch-parent.plugin.modus.avtaleunderlag.FormatSpesifikasjon$KolonneMapper" />
-        <map from="no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag.FormatSpesifikasjon$1" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag.FormatSpesifikasjon$1" to="faktura-tidsserie-batch-parent.plugin.modus.avtaleunderlag.FormatSpesifikasjon$1" />
-        <map from="no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag.AvtaleunderlagRegelsett" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.plugin.modus.avtaleunderlag.AvtaleunderlagRegelsett" to="faktura-tidsserie-batch-parent.plugin.modus.avtaleunderlag.AvtaleunderlagRegelsett" />
-        <map from="no.spk.pensjon.faktura.tidsserie.plugin.modus.prognoseobservasjonar.Stillingsforholdprognosemodus" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.plugin.modus.prognoseobservasjonar.Stillingsforholdprognosemodus" to="faktura-tidsserie-batch-parent.plugin.modus.prognoseobservasjonar.Stillingsforholdprognosemodus" />
-        <map from="no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning.FormatSpesifikasjon" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning.FormatSpesifikasjon" to="faktura-tidsserie-batch-parent.plugin.modus.avregning.FormatSpesifikasjon" />
-        <map from="no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning.FormatSpesifikasjon$ErrorDetector" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning.FormatSpesifikasjon$ErrorDetector" to="faktura-tidsserie-batch-parent.plugin.modus.avregning.FormatSpesifikasjon$ErrorDetector" />
-        <map from="no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning.FormatSpesifikasjon$KolonneMapper" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning.FormatSpesifikasjon$KolonneMapper" to="faktura-tidsserie-batch-parent.plugin.modus.avregning.FormatSpesifikasjon$KolonneMapper" />
-        <map from="no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning.FormatSpesifikasjon$KolonneSpesifikasjon" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning.FormatSpesifikasjon$KolonneSpesifikasjon" to="faktura-tidsserie-batch-parent.plugin.modus.avregning.FormatSpesifikasjon$KolonneSpesifikasjon" />
-        <map from="no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning.FormatSpesifikasjon$1" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning.FormatSpesifikasjon$1" to="faktura-tidsserie-batch-parent.plugin.modus.avregning.FormatSpesifikasjon$1" />
-        <map from="no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning.AvregningTidsseriemodus" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning.AvregningTidsseriemodus" to="faktura-tidsserie-batch-parent.plugin.modus.avregning.AvregningTidsseriemodus" />
-        <map from="no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning.Avregningformat" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning.Avregningformat" to="faktura-tidsserie-batch-parent.plugin.modus.avregning.Avregningformat" />
-        <map from="no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning.Avregningformat$1" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning.Avregningformat$1" to="faktura-tidsserie-batch-parent.plugin.modus.avregning.Avregningformat$1" />
-        <map from="no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning.Desimaltallformatering" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning.Desimaltallformatering" to="faktura-tidsserie-batch-parent.plugin.modus.avregning.Desimaltallformatering" />
-        <map from="no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning.Desimaltallformatering$Key" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.plugin.modus.avregning.Desimaltallformatering$Key" to="faktura-tidsserie-batch-parent.plugin.modus.avregning.Desimaltallformatering$Key" />
-        <map from="no.spk.pensjon.faktura.tidsserie.core.GenererTidsserieCommand" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.core.GenererTidsserieCommand" to="faktura-tidsserie-batch-parent.core.GenererTidsserieCommand" />
-        <map from="no.spk.pensjon.faktura.tidsserie.core.Medlemsbehandler" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.core.Medlemsbehandler" to="faktura-tidsserie-batch-parent.core.Medlemsbehandler" />
-        <map from="no.spk.pensjon.faktura.tidsserie.core.ObservasjonsEvent" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.core.ObservasjonsEvent" to="faktura-tidsserie-batch-parent.core.ObservasjonsEvent" />
-        <map from="no.spk.pensjon.faktura.tidsserie.core.ServiceLocator" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.core.ServiceLocator" to="faktura-tidsserie-batch-parent.core.ServiceLocator" />
-        <map from="no.spk.pensjon.faktura.tidsserie.core.FeltVerdiValidering" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.core.FeltVerdiValidering" to="faktura-tidsserie-batch-parent.core.FeltVerdiValidering" />
-        <map from="no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklusException" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklusException" to="faktura-tidsserie-batch-parent.core.TidsserieLivssyklusException" />
-        <map from="no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.core.Tidsseriemodus" to="faktura-tidsserie-batch-parent.core.Tidsseriemodus" />
-        <map from="no.spk.pensjon.faktura.tidsserie.core.Tidsserienummer" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.core.Tidsserienummer" to="faktura-tidsserie-batch-parent.core.Tidsserienummer" />
-        <map from="no.spk.pensjon.faktura.tidsserie.batch.upload.TidsserieBackendService" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.batch.upload.TidsserieBackendService" to="faktura-tidsserie-batch-parent.core.upload.TidsserieBackendService" />
-        <map from="no.spk.pensjon.faktura.tidsserie.batch.upload.MedlemsId" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.batch.upload.MedlemsId" to="faktura-tidsserie-batch-parent.core.upload.MedlemsId" />
-        <map from="no.spk.pensjon.faktura.tidsserie.batch.upload.Medlemslinje" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.batch.upload.Medlemslinje" to="faktura-tidsserie-batch-parent.core.upload.Medlemslinje" />
-        <map from="no.spk.pensjon.faktura.tidsserie.batch.upload.MedlemsdataUploader" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.batch.upload.MedlemsdataUploader" to="faktura-tidsserie-batch-parent.core.upload.MedlemsdataUploader" />
-        <map from="no.spk.pensjon.faktura.tidsserie.batch.upload.FileTemplate" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.batch.upload.FileTemplate" to="faktura-tidsserie-batch-parent.core.upload.FileTemplate" />
-        <map from="no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklus" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklus" to="faktura-tidsserie-batch-parent.core.TidsserieLivssyklus" />
-        <map from="no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklus$1" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklus$1" to="faktura-tidsserie-batch-parent.core.TidsserieLivssyklus$1" />
-        <map from="no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklus$2" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.core.TidsserieLivssyklus$2" to="faktura-tidsserie-batch-parent.core.TidsserieLivssyklus$2" />
-        <map from="no.spk.pensjon.faktura.tidsserie.core.Katalog" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.core.Katalog" to="faktura-tidsserie-batch-parent.core.Katalog" />
-        <map from="no.spk.pensjon.faktura.tidsserie.core.Extensionpoint" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.core.Extensionpoint" to="faktura-tidsserie-batch-parent.core.Extensionpoint" />
-        <map from="no.spk.pensjon.faktura.tidsserie.core.AgentInitializer" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.core.AgentInitializer" to="faktura-tidsserie-batch-parent.core.AgentInitializer" />
-        <map from="no.spk.pensjon.faktura.tidsserie.core.TidsperiodeFactory" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.core.TidsperiodeFactory" to="faktura-tidsserie-batch-parent.core.TidsperiodeFactory" />
-        <map from="no.spk.pensjon.faktura.tidsserie.core.BehandleMedlemCommand" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.core.BehandleMedlemCommand" to="faktura-tidsserie-batch-parent.core.BehandleMedlemCommand" />
-        <map from="no.spk.pensjon.faktura.tidsserie.core.StorageBackend" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.core.StorageBackend" to="faktura-tidsserie-batch-parent.core.StorageBackend" />
-        <map from="no.spk.pensjon.faktura.tidsserie.core.TidsserieFactory" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.core.TidsserieFactory" to="faktura-tidsserie-batch-parent.core.TidsserieFactory" />
-        <map from="no.spk.pensjon.faktura.tidsserie.core.TidsserieResulat" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.core.TidsserieResulat" to="faktura-tidsserie-batch-parent.core.TidsserieResulat" />
-        <map from="no.spk.pensjon.faktura.tidsserie.core.TidsserieResulat$TidsserieResultBuilder" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.core.TidsserieResulat$TidsserieResultBuilder" to="faktura-tidsserie-batch-parent.core.TidsserieResulat$TidsserieResultBuilder" />
-        <map from="no.spk.pensjon.faktura.tidsserie.core.TidsserieResulat$1" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.core.TidsserieResulat$1" to="faktura-tidsserie-batch-parent.core.TidsserieResulat$1" />
-        <map from="no.spk.pensjon.faktura.tidsserie.core.Validators" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.core.Validators" to="faktura-tidsserie-batch-parent.core.Validators" />
-        <map from="no.spk.pensjon.faktura.tidsserie.core.CSVFormat" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.core.CSVFormat" to="faktura-tidsserie-batch-parent.core.CSVFormat" />
-        <map from="no.spk.pensjon.faktura.tidsserie.storage.GrunnlagsdataRepository" xform="faktura-tidsserie-batch-input.no.spk.pensjon.faktura.tidsserie.storage.GrunnlagsdataRepository" to="faktura-tidsserie-batch-parent.core.GrunnlagsdataRepository" />
-        <map from="no.spk.pensjon.faktura.tidsserie.core.ExtensionpointStatus" xform="faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.core.ExtensionpointStatus" to="faktura-tidsserie-batch-parent.core.ExtensionpointStatus" />
-      </namemap>
-      <action type="move" active="true" last-applied="true" description="Move faktura-tidsserie-batch-parent.faktura-tidsserie-batch-app.faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.core to faktura-tidsserie-batch-parent">
-        <params>
-          <source-fqn fqn="faktura-tidsserie-batch-parent.faktura-tidsserie-batch-app.faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.core" type="package">
-            <node name="faktura-tidsserie-batch-parent" type="pom" />
-            <node name="faktura-tidsserie-batch-app" type="pom" />
-            <node name="faktura-tidsserie-batch-app" type="jar" />
-            <node name="no" type="package" />
-            <node name="spk" type="package" />
-            <node name="pensjon" type="package" />
-            <node name="faktura" type="package" />
-            <node name="tidsserie" type="package" />
-            <node name="core" type="package" />
-          </source-fqn>
-          <to-fqn fqn="faktura-tidsserie-batch-parent" type="pom">
-            <node name="faktura-tidsserie-batch-parent" type="pom" />
-          </to-fqn>
-        </params>
-      </action>
-      <action type="move" active="true" last-applied="true" description="Move faktura-tidsserie-batch-parent.faktura-tidsserie-batch-input.faktura-tidsserie-batch-input.no.spk.pensjon.faktura.tidsserie.storage.GrunnlagsdataRepository to faktura-tidsserie-batch-parent.core">
-        <params>
-          <source-fqn fqn="faktura-tidsserie-batch-parent.faktura-tidsserie-batch-input.faktura-tidsserie-batch-input.no.spk.pensjon.faktura.tidsserie.storage.GrunnlagsdataRepository" type="class" path="no.spk.pensjon.faktura.tidsserie.storage.GrunnlagsdataRepository">
-            <node name="faktura-tidsserie-batch-parent" type="pom" />
-            <node name="faktura-tidsserie-batch-input" type="pom" />
-            <node name="faktura-tidsserie-batch-input" type="jar" />
-            <node name="no" type="package" />
-            <node name="spk" type="package" />
-            <node name="pensjon" type="package" />
-            <node name="faktura" type="package" />
-            <node name="tidsserie" type="package" />
-            <node name="storage" type="package" />
-            <node name="GrunnlagsdataRepository" type="class" />
-          </source-fqn>
-          <to-fqn fqn="faktura-tidsserie-batch-parent.core" type="package">
-            <node name="faktura-tidsserie-batch-parent" type="pom" />
-            <node name="core" type="package" />
-          </to-fqn>
-        </params>
-      </action>
-      <action type="move" active="true" last-applied="true" description="Move faktura-tidsserie-batch-parent.faktura-tidsserie-batch-app.faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.plugin to faktura-tidsserie-batch-parent">
-        <params>
-          <source-fqn fqn="faktura-tidsserie-batch-parent.faktura-tidsserie-batch-app.faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.plugin" type="package">
-            <node name="faktura-tidsserie-batch-parent" type="pom" />
-            <node name="faktura-tidsserie-batch-app" type="pom" />
-            <node name="faktura-tidsserie-batch-app" type="jar" />
-            <node name="no" type="package" />
-            <node name="spk" type="package" />
-            <node name="pensjon" type="package" />
-            <node name="faktura" type="package" />
-            <node name="tidsserie" type="package" />
-            <node name="plugin" type="package" />
-          </source-fqn>
-          <to-fqn fqn="faktura-tidsserie-batch-parent" type="pom">
-            <node name="faktura-tidsserie-batch-parent" type="pom" />
-          </to-fqn>
-        </params>
-      </action>
-      <action type="move" active="true" last-applied="true" description="Move faktura-tidsserie-batch-parent.faktura-tidsserie-batch-app.faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.batch.upload to faktura-tidsserie-batch-parent.core">
-        <params>
-          <source-fqn fqn="faktura-tidsserie-batch-parent.faktura-tidsserie-batch-app.faktura-tidsserie-batch-app.no.spk.pensjon.faktura.tidsserie.batch.upload" type="package">
-            <node name="faktura-tidsserie-batch-parent" type="pom" />
-            <node name="faktura-tidsserie-batch-app" type="pom" />
-            <node name="faktura-tidsserie-batch-app" type="jar" />
-            <node name="no" type="package" />
-            <node name="spk" type="package" />
-            <node name="pensjon" type="package" />
-            <node name="faktura" type="package" />
-            <node name="tidsserie" type="package" />
-            <node name="batch" type="package" />
-            <node name="upload" type="package" />
-          </source-fqn>
-          <to-fqn fqn="faktura-tidsserie-batch-parent.core" type="package">
-            <node name="faktura-tidsserie-batch-parent" type="pom" />
-            <node name="core" type="package" />
-          </to-fqn>
-        </params>
-      </action>
-    </set>
+    <set version="3" name="Action list 1" hiview="Codemap" active="true" todo="false" list="0" />
   </restructuring>
+  <grid-set sep="." version="5.0.13433" />
 </local-project>
-

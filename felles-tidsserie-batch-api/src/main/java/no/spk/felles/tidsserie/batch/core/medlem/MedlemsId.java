@@ -6,37 +6,26 @@ import static no.spk.felles.tidsserie.batch.core.Validators.require;
 /**
  * {@link MedlemsId} blir brukt for å unikt identifisere medlemmet eit sett med medlemsdata tilhøyrer.
  * <br>
- * Fødselsnummer er bygd opp som ei 13-sifra kode som består av to delar:
- * <ol>
- * <li>8-sifra fødselsdato på format yyyyMMdd</li>
- * <li>5-sifra personnummer</li>
- * </ol>
- * <br>
- * Grunna bruken av tall som representasjonsform for både fødselsdato og personnummer i kasper, vil personnummer med
- * verdi under 10000, inneholde færre enn 5-siffer. For å normalisere desse bli dei derfor padda med påkrevd
- * antall 0-siffer i front av personnummeret slik at det alltid blir behandla vidare som ei 5-sifra kode.
+ * Vi har ingen føringer på korleis medlemsid er formatert. Einaste kravet er ein ikkje-tom streng.
  *
  * @author Tarjei Skorgenes
  */
+@SuppressWarnings("deprecation")
 public class MedlemsId {
     public static final int PERSONNUMMER_LENGDE = 5;
     private final String text;
 
     /**
-     * Konstruerer eit nytt fødselsnummer.
-     * <br>
-     * Verdiane blir syntaktisk validert, det blir ikkje validert korvidt fødseldatoen er ein gyldig dato
-     * eller korvidt personnummeret er eit gyldig personnummer.
-     * <br>
-     * Personnummer blir automatisk utvida til 5-siffer viss det inneheld eit 1- til 4-sifra tall. Utvidelsen
-     * skjer ved å legge til ledande 0ara slik at den endelige koda blir 5-sifra.
+     * Deprecated. Bruk {@link #MedlemsId(String)}
      *
      * @param foedselsdato fødselsdato, kun eit 8-sifra tall blir godtatt
      * @param personnummer personnummeret, 1-5 siffer blir godtatt
-     * @throws NullPointerException     dersom nokon av argumenta er <code>null</code>
+     * @throws NullPointerException dersom nokon av argumenta er <code>null</code>
      * @throws IllegalArgumentException dersom fødselsdato ikkje er eit 8-sifra tall eller dersom personnummer ikkje
-     *                                  er eit 1- til 5-sifra tall
+     * er eit 1- til 5-sifra tall
+     * @see #MedlemsId(String)
      */
+    @Deprecated
     public MedlemsId(final String foedselsdato, final String personnummer) {
         final String korrigertFoedselsdato = require(
                 requireNonNull(foedselsdato, "Fødselsdato er påkrevd, men var null")
@@ -58,6 +47,24 @@ public class MedlemsId {
                 value -> new IllegalArgumentException("Personnummer må vere eit 5-sifra tall, var " + value)
         );
         this.text = korrigertFoedselsdato + korrigertPersonnummer;
+    }
+
+    /**
+     * Konstruerer ein ny medlemsidentifikator.
+     * <br>
+     * Verdien kan ikkje være tom eller berre innehalde whitespace
+     *
+     * @param id ein tekst som identifiserer eit bestemt medlem unikt
+     * @throws NullPointerException dersom argumentet er <code>null</code>
+     * @throws IllegalArgumentException dersom id-feltet er tomt
+     * @since 1.1.0
+     */
+    public MedlemsId(String id) {
+        this.text = require(
+                requireNonNull(id, "id er påkrevd, men var null").trim(),
+                value -> !value.isEmpty(),
+                value -> new IllegalArgumentException("id er påkrevd, men var tom")
+        );
     }
 
     @Override
@@ -86,17 +93,31 @@ public class MedlemsId {
     }
 
     /**
-     * Konstruerer eit nytt fødselsnummer.
+     * Deprecated bruk {@link #medlemsId(String)}
      *
      * @param foedselsdato fødselsdato, kun eit 8-sifra tall blir godtatt
      * @param personnummer personnummeret, 1-5 siffer blir godtatt
      * @return det nye fødselsnummeret
-     * @see #MedlemsId(String, String)
+     * @see #medlemsId(String)
      */
+    @Deprecated
     public static MedlemsId medlemsId(final String foedselsdato, String personnummer) {
         return new MedlemsId(foedselsdato, personnummer);
     }
 
+    /**
+     * Konstruerer ein ny medlemsidentifikator
+     *
+     * @param id ein tekst som identifiserer eit bestemt medlem unikt
+     * @return den nye medlemsidentifikatoren
+     * @see #MedlemsId(String)
+     * @since 1.1.0
+     */
+    public static MedlemsId medlemsId(final String id) {
+        return new MedlemsId(id);
+    }
+
+    @Deprecated
     private String padWithLeadingZeroes(final String input) {
         final StringBuilder builder = new StringBuilder();
         final int count = PERSONNUMMER_LENGDE - input.length();

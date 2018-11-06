@@ -3,7 +3,7 @@
     <parent>
         <artifactId>felles-tidsserie-batch</artifactId>
         <groupId>no.spk.felles</groupId>
-        <version>1.0.0</version>
+        <version>1.1.0</version>
     </parent>
     <packaging>jar</packaging>
     <modelVersion>4.0.0</modelVersion>
@@ -24,6 +24,18 @@
         <dependency>
             <groupId>no.spk.felles</groupId>
             <artifactId>felles-tidsserie-batch-app</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.spk.felles</groupId>
+            <artifactId>felles-tidsserie-batch-arguments</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.spk.felles</groupId>
+            <artifactId>felles-tidsserie-batch-main</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.spk.felles</groupId>
+            <artifactId>felles-tidsserie-batch-plugins-grunnlagsdatavalidator</artifactId>
         </dependency>
         <dependency>
             <groupId>no.spk.pensjon.faktura</groupId>
@@ -47,67 +59,23 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>info.cukes</groupId>
+            <groupId>io.cucumber</groupId>
             <artifactId>cucumber-core</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>info.cukes</groupId>
+            <groupId>io.cucumber</groupId>
             <artifactId>cucumber-java</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>info.cukes</groupId>
+            <groupId>io.cucumber</groupId>
             <artifactId>cucumber-java8</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>info.cukes</groupId>
-            <artifactId>cucumber-spring</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>info.cukes</groupId>
+            <groupId>io.cucumber</groupId>
             <artifactId>cucumber-junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-core</artifactId>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -135,6 +103,13 @@
                         ${project.build.directory}/${project.artifactId}-${project.version}.${project.packaging}
                     </classesDirectory>
                     <classpathDependencyScopeExclude>compile+runtime</classpathDependencyScopeExclude>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <forceCreation>true</forceCreation>
                 </configuration>
             </plugin>
             <plugin>

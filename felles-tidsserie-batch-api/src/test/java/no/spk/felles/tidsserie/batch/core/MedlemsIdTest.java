@@ -1,11 +1,16 @@
 package no.spk.felles.tidsserie.batch.core;
 
+import static no.spk.felles.tidsserie.batch.core.medlem.MedlemsId.medlemsId;
+
+import java.util.stream.Stream;
+
 import no.spk.felles.tidsserie.batch.core.medlem.MedlemsId;
 
 import org.assertj.core.api.JUnitSoftAssertions;
 import org.junit.Rule;
 import org.junit.Test;
 
+@SuppressWarnings("deprecation")
 public class MedlemsIdTest {
     @Rule
     public final JUnitSoftAssertions softly = new JUnitSoftAssertions();
@@ -136,11 +141,70 @@ public class MedlemsIdTest {
 
     @Test
     public void skalSjekkeForNullVerdiarVedKonstruksjon() {
-        softly.assertThatThrownBy(() -> new MedlemsId(null, "12345"))
+        softly.assertThatThrownBy(
+                () -> new MedlemsId(null, "12345")
+        )
                 .isInstanceOf(NullPointerException.class)
                 .hasMessageContaining("Fødselsdato er påkrevd, men var null");
-        softly.assertThatThrownBy(() -> new MedlemsId("20000101", null))
+        softly.assertThatThrownBy(
+                () -> new MedlemsId("20000101", null)
+        )
                 .isInstanceOf(NullPointerException.class)
                 .hasMessageContaining("Personnummer er påkrevd, men var null");
+        softly.assertThatCode(
+                () -> new MedlemsId(null)
+        )
+                .isInstanceOf(NullPointerException.class)
+                .hasMessageContaining("id er påkrevd, men var null");
+        softly.assertThatThrownBy(
+                () -> medlemsId(null, "12345")
+        )
+                .isInstanceOf(NullPointerException.class)
+                .hasMessageContaining("Fødselsdato er påkrevd, men var null");
+        softly.assertThatThrownBy(
+                () -> medlemsId("20000101", null)
+        )
+                .isInstanceOf(NullPointerException.class)
+                .hasMessageContaining("Personnummer er påkrevd, men var null");
+        softly.assertThatCode(
+                () -> medlemsId(null)
+        )
+                .isInstanceOf(NullPointerException.class)
+                .hasMessageContaining("id er påkrevd, men var null");
+    }
+
+    @Test
+    public void skal_ikkje_godta_tom_id() {
+        softly.assertThatCode(
+                () -> medlemsId("")
+        )
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("id er påkrevd, men var tom");
+        softly.assertThatCode(
+                () -> medlemsId("       ")
+        )
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("id er påkrevd, men var tom");
+    }
+
+    @Test
+    public void skal_trimme_unødvendig_whitespace_frå_id() {
+        softly.assertThat(medlemsId("   Medlemet ")).isEqualTo(medlemsId("Medlemet"));
+    }
+
+    @Test
+    public void skal_godta_kva_som_helst_som_id() {
+        Stream.of("Medlem X", "asiuhgaisgci", "1876182763", "ÆØÅ").forEach(
+                verdi -> softly
+                        .assertThat(medlemsId(verdi))
+                        .hasToString(verdi)
+        );
+    }
+
+    @Test
+    public void skal_ikkje_padde_id() {
+        softly.assertThat(medlemsId("123"))
+                .isNotEqualTo(medlemsId("00123"))
+                .hasToString("123");
     }
 }

@@ -31,7 +31,17 @@ public class ExtensionpointStatus {
         results.forEach(this.results::add);
     }
 
-    static ExtensionpointStatus merge(final ExtensionpointStatus a, final ExtensionpointStatus b) {
+    /**
+     * Slår sammen dei to statusane til ein.
+     * <p>
+     * Den nye statusen vil bli populert med alle feil som finnes i enten <code>a</code> eller <code>b</code>.
+     *
+     * @param a den første statusen
+     * @param b den andre statusen
+     * @return ein ny status som inneheld alle feil frå både <code>a</code> og <code>b</code>
+     * @since 1.1.0
+     */
+    public static ExtensionpointStatus merge(final ExtensionpointStatus a, final ExtensionpointStatus b) {
         return new ExtensionpointStatus(
                 Stream.concat(
                         a.results.stream(),

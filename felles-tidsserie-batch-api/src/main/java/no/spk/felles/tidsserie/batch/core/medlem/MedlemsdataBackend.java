@@ -2,7 +2,6 @@ package no.spk.felles.tidsserie.batch.core.medlem;
 
 import java.util.Map;
 
-import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
 import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
 
 /**
@@ -20,6 +19,8 @@ import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
  * <br>
  * Det er opp til kvar backend å avgjere kva og korleis oppstart, opplasting og generering blir handtert
  * "behind-the-scenes".
+ * <br>
+ * Kva tidsperiode genererte tidsserien strekker seg over, står {@link Tidsseriemodus} ansvarlig for å bestemme.
  *
  * @author Tarjei Skorgenes
  */
@@ -39,13 +40,9 @@ public interface MedlemsdataBackend {
 
     /**
      * Genererer ein ny tidsserie. Formatet bestemmes av {@link Tidsseriemodus}.
-     * <br>
-     * Tidsseriens observasjonsperiode strekker seg frå 1. januar i <code>fraOgMed</code>-året til 31. desember i
-     * <code>tilOgMed</code>-året.
      *
      * @return alle meldingar som har blitt generert i løpet av tidsseriegenereringa, gruppert på melding med antall
      * gangar meldinga var generert som verdi
-     * @see Observasjonsperiode
      */
     Map<String, Integer> lagTidsserie();
 
