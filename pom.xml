@@ -242,7 +242,7 @@
             <dependency>
                 <groupId>no.spk.pensjon.faktura</groupId>
                 <artifactId>faktura-tjenesteregister-lib</artifactId>
-                <version>1.0.0</version>
+                <version>1.0.1</version>
             </dependency>
 
             <dependency>
