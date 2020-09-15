@@ -14,5 +14,6 @@
         <module>felles-tidsserie-batch-plugins-metadatawriter</module>
         <module>felles-tidsserie-batch-plugins-triggerfil</module>
         <module>medlemsdatabackend/felles-tidsserie-batch-plugins-hazelcast</module>
+        <module>medlemsdatabackend/felles-tidsserie-batch-plugins-parallelliserte-medlemsdata</module>
     </modules>
 </project>
