@@ -1,11 +1,16 @@
 package no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.parallellisert;
 
+import static java.util.Objects.requireNonNull;
+
+import java.util.List;
+
 import no.spk.felles.tidsserie.batch.core.TidsserieLivssyklus;
 import no.spk.felles.tidsserie.batch.core.kommandolinje.AntallProsessorar;
 import no.spk.felles.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenter;
 import no.spk.felles.tidsserie.batch.core.medlem.GenererTidsserieCommand;
 import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.felles.tidsserie.batch.core.medlem.PartisjonsListener;
+import no.spk.felles.tidsserie.batch.core.medlem.TidsserieContext;
 import no.spk.felles.tidsserie.batch.core.registry.Extensionpoint;
 import no.spk.felles.tidsserie.batch.core.registry.Plugin;
 import no.spk.felles.tidsserie.batch.core.registry.ServiceLocator;
@@ -44,7 +49,7 @@ public class Activator implements Plugin {
                                                 )
                                 )
                 ),
-                wrapGenererTidsserieKommando(registry),
+                nyWrapper(registry),
                 (medlemsId, t) ->
                         medlemFeilarListeners
                                 .invokeAll(listener -> listener.medlemFeila(medlemsId, t))
@@ -64,6 +69,10 @@ public class Activator implements Plugin {
         );
     }
 
+    GenererTidsserieCommand nyWrapper(final ServiceRegistry registry) {
+        return new Wrapper(registry);
+    }
+
     private int antallTrådar(final AntallProsessorar antallNoder) {
         return Math.toIntExact(
                 antallNoder.stream().count()
@@ -77,36 +86,6 @@ public class Activator implements Plugin {
                 ;
     }
 
-    private GenererTidsserieCommand wrapGenererTidsserieKommando(final ServiceRegistry registry) {
-        final Extensionpoint<GenererTidsserieCommand> kommandoar = new Extensionpoint<>(
-                GenererTidsserieCommand.class,
-                registry
-        );
-        return (medlemsId, medlemsdata, context) -> {
-            if (!modusHarRegistrertEinKommando(registry)) {
-                context.emitError(
-                        new IngenGenererTidsserieKommandoRegistrertException()
-                );
-            }
-            kommandoar.invokeFirst(
-                    kommando ->
-                            kommando.generer(
-                                    medlemsId,
-                                    medlemsdata,
-                                    context
-                            )
-            )
-                    .forEachFailure(context::emitError);
-        };
-    }
-
-    private boolean modusHarRegistrertEinKommando(final ServiceRegistry registry) {
-        return
-                registry
-                        .getServiceReference(GenererTidsserieCommand.class)
-                        .isPresent();
-    }
-
     static class MedlemFeilarLogger implements MedlemFeilarListener {
         private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -114,6 +93,49 @@ public class Activator implements Plugin {
         public void medlemFeila(final String medlemsId, final Throwable t) {
             log.warn("Periodisering av medlem {} feila: {}", medlemsId, t.getMessage());
             log.info("Feilkilde:", t);
+        }
+    }
+
+    private static class Wrapper implements GenererTidsserieCommand {
+        private final Extensionpoint<GenererTidsserieCommand> kommandoar;
+        private final ServiceRegistry registry;
+
+        public Wrapper(final ServiceRegistry registry) {
+            this.registry = requireNonNull(
+                    registry,
+                    "registry er påkrevd, men var null"
+            );
+            this.kommandoar = new Extensionpoint<>(
+                    GenererTidsserieCommand.class,
+                    registry
+            );
+        }
+
+        @Override
+        public void generer(final String medlemsId, final List<List<String>> medlemsdata, final TidsserieContext context) {
+            if (!modusHarRegistrertEinKommando(registry)) {
+                context.emitError(
+                        new IngenGenererTidsserieKommandoRegistrertException()
+                );
+            }
+            kommandoar
+                    .invokeFirst(
+                            kommando ->
+                                    kommando.generer(
+                                            medlemsId,
+                                            medlemsdata,
+                                            context
+                                    )
+                    )
+                    .orElseRethrowFirstFailure();
+            ;
+        }
+
+        private boolean modusHarRegistrertEinKommando(final ServiceRegistry registry) {
+            return
+                    registry
+                            .getServiceReference(GenererTidsserieCommand.class)
+                            .isPresent();
         }
     }
 }

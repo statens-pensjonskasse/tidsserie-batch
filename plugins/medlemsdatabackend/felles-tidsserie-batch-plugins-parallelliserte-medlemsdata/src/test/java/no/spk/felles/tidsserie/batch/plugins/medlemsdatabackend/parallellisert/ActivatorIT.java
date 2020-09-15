@@ -2,16 +2,23 @@ package no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.parallellisert;
 
 import static no.spk.felles.tidsserie.batch.core.kommandolinje.AntallProsessorar.antallProsessorar;
 import static no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.parallellisert.MedlemsdataBuilder.rad;
+import static no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.parallellisert.Partisjonsnummer.partisjonsnummer;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import no.spk.felles.tidsserie.batch.core.TidsserieLivssyklus;
 import no.spk.felles.tidsserie.batch.core.kommandolinje.AntallProsessorar;
 import no.spk.felles.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenter;
+import no.spk.felles.tidsserie.batch.core.medlem.GenererTidsserieCommand;
 import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataUploader;
 import no.spk.felles.tidsserie.batch.core.medlem.Medlemslinje;
+import no.spk.felles.tidsserie.batch.core.medlem.TidsserieContext;
 import no.spk.felles.tidsserie.batch.core.registry.Extensionpoint;
 import no.spk.felles.tidsserie.batch.core.registry.ServiceLocator;
 
@@ -22,6 +29,33 @@ public class ActivatorIT {
     @Rule
     public final ServiceRegistryRule registry = new ServiceRegistryRule();
 
+    @Test
+    public void skal_kaste_alle_feil_frå_tidsseriekommando_vidare_uten_anna_behandling_i_wrapper() {
+        final GenererTidsserieCommand kommando = new Activator().nyWrapper(registry.registry());
+
+        final RuntimeException expected = new RuntimeException("Ein feil gitt");
+        registry.registrer(
+                GenererTidsserieCommand.class,
+                (key, medlemsdata, context) -> {
+                    throw expected;
+                }
+        );
+
+        final AtomicBoolean harNotifisertOmFeil = new AtomicBoolean(false);
+        registry.registrer(
+                MedlemFeilarListener.class,
+                (medlemsId, t) -> harNotifisertOmFeil.set(true)
+        );
+
+        final Context context = new Context(partisjonsnummer(1));
+        assertThatCode(
+                () -> kommando.generer("ABCD", Collections.emptyList(), context)
+        )
+                .isSameAs(expected);
+
+        assertThat(context.meldingar().toMap()).isEmpty();
+        assertThat(harNotifisertOmFeil.get()).isFalse();
+    }
 
     @Test
     public void skal_notifisere_om_manglande_kommando_uten_sjølv_å_feile() {
