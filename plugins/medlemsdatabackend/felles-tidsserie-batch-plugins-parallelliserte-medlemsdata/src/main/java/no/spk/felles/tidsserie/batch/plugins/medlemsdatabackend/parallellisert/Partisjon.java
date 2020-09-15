@@ -69,6 +69,14 @@ class Partisjon {
         return nummer;
     }
 
+    boolean isEmpty() {
+        return medlemsdata.isEmpty();
+    }
+
+    int size() {
+        return medlemsdata.size();
+    }
+
     @Override
     public String toString() {
         return format(

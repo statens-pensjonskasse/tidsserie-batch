@@ -1,0 +1,61 @@
+package no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.parallellisert;
+
+import static java.lang.Math.abs;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
+import static java.util.stream.IntStream.range;
+import static no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.parallellisert.Partisjonsnummer.partisjonsnummer;
+
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+
+class Partisjonstabell {
+    private final Map<Partisjonsnummer, Partisjon> partisjonar;
+
+    Partisjonstabell() {
+        this.partisjonar =
+                Partisjonsnummer
+                        .stream()
+                        .map(Partisjon::new)
+                        .collect(
+                                toMap(
+                                        Partisjon::nummer,
+                                        Function.identity()
+                                )
+                        );
+    }
+
+    void clear() {
+        partisjonar.clear();
+    }
+
+    Set<Partisjon> partisjonarFor(final Nodenummer node) {
+        return
+                partisjonar
+                        .keySet()
+                        .stream()
+                        .filter(node::skalHandtere)
+                        .map(partisjonar::get)
+                        .collect(toSet());
+    }
+
+    void put(final String medlemsId, final List<List<String>> data) {
+        partisjonar
+                .get(partisjon(medlemsId))
+                .put(medlemsId, data);
+    }
+
+
+    private Partisjonsnummer partisjon(final String key) {
+        final byte[] bytes = key.getBytes(StandardCharsets.UTF_8);
+        final long hash = MurmurHash.hash64(
+                bytes,
+                bytes.length
+        );
+        final long index = abs(hash) % partisjonar.size();
+        return partisjonsnummer(1 + index);
+    }
+}
