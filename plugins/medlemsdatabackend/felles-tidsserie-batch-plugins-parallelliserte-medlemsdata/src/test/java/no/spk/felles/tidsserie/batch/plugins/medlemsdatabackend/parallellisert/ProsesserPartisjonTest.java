@@ -6,6 +6,7 @@ import static no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.parallell
 import static no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.parallellisert.Partisjonsnummer.partisjonsnummer;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,32 @@ public class ProsesserPartisjonTest {
     private final ProsesserPartisjon prosessering = new ProsesserPartisjon(
             partisjon
     );
+
+    @Test
+    public void skal_behandle_medlemmar_i_deterministisk_rekkefølge_basert_på_rekkefølga_medlemmane_blir_lagt_til_i_partisjonen_første_gang() {
+        partisjon.put("Ulrich Nielsen", medlemsdata(rad("Litt")));
+        partisjon.put("Katharina Nielsen", medlemsdata(rad()));
+        partisjon.put("Eva", medlemsdata(rad()));
+        partisjon.put("Hannah Kahnwald", medlemsdata(rad()));
+        partisjon.put("Adam", medlemsdata(rad()));
+        partisjon.put("Ulrich Nielsen", medlemsdata(rad("Enda meir")));
+
+        final List<String> behandlingsrekkefølge = new ArrayList<>();
+        prosessering.prosesser(
+                (key, medlemsdata, context) -> behandlingsrekkefølge.add(key),
+                enPartisjonsLyttarSomAldriFeilar(),
+                enMedlemFeilarLyttarSomAldriFeilar()
+        );
+
+        assertThat(behandlingsrekkefølge)
+                .containsExactly(
+                        "Ulrich Nielsen",
+                        "Katharina Nielsen",
+                        "Eva",
+                        "Hannah Kahnwald",
+                        "Adam"
+                );
+    }
 
     @Test
     public void skal_emitte_antall_medlemmar_behandla() {
