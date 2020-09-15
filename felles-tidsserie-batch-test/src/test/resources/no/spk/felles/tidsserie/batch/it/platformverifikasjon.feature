@@ -44,8 +44,9 @@ Egenskap: Smoketest av platformrammeverket
   Scenario: Tilgjengelig modusar
     Gitt at brukaren ønskjer å generere ein tidsserie
     Så skal følgjande modusar vere tilgjengelige for bruk:
-      | Navn            | Beskrivelse                                                                                                           |
-      | medlemsdatakopi | Ein testmodus som ikkje gjer ein døy anna enn å generere CSV-filer med alle linjer kopiert inn frå medlemsdata.csv.gz |
+      | Navn            | Beskrivelse                                                                                                            |
+      | medlemsdatakopi | Ein testmodus som ikkje gjer ein døyt anna enn å generere CSV-filer med alle linjer kopiert inn frå medlemsdata.csv.gz |
+      | medlemsid       | Ein testmodus som lar ein inspisere kva trådar medlemmane blir behandla av                                             |
 
   Scenario: Smoktest med in-process eksekvering
     Gitt at batchen blir køyrt in-process
