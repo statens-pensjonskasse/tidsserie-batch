@@ -3,7 +3,7 @@
     <parent>
         <artifactId>spk-root-pom</artifactId>
         <groupId>no.spk</groupId>
-        <version>114</version>
+        <version>118</version>
         <relativePath />
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -50,6 +50,11 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-install-plugin</artifactId>
                     <version>3.0.0-M1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.1.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
