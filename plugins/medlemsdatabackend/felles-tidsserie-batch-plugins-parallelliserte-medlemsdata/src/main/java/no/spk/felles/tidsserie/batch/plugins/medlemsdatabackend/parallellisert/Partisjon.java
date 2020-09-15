@@ -11,6 +11,7 @@ import static java.util.stream.Collectors.toList;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 
 class Partisjon {
@@ -41,26 +42,17 @@ class Partisjon {
         );
     }
 
+    Optional<List<List<String>>> get(final String medlemsId) {
+        return Optional
+                .ofNullable(medlemsdata.get(medlemsId))
+                .map(this::somMedlemsdata);
+    }
+
     void forEach(final BiConsumer<String, List<List<String>>> consumer) {
         medlemsdata.forEach(
                 (key, bytes) -> consumer.accept(
                         key,
-                        stream(
-                                new String(
-                                        bytes,
-                                        StandardCharsets.UTF_8
-                                )
-                                        .split("\n")
-                        )
-                                .map(
-                                        row -> asList(
-                                                row.split(
-                                                        DELIMITER_COLUMN,
-                                                        ikkjeIgnorerTommeKolonnerPåSluttenAvRada()
-                                                )
-                                        )
-                                )
-                                .collect(toList())
+                        somMedlemsdata(bytes)
                 )
         );
     }
@@ -88,6 +80,25 @@ class Partisjon {
 
     private int ikkjeIgnorerTommeKolonnerPåSluttenAvRada() {
         return -1;
+    }
+
+    private List<List<String>> somMedlemsdata(final byte[] bytes) {
+        return stream(
+                new String(
+                        bytes,
+                        StandardCharsets.UTF_8
+                )
+                        .split("\n")
+        )
+                .map(
+                        row -> asList(
+                                row.split(
+                                        DELIMITER_COLUMN,
+                                        ikkjeIgnorerTommeKolonnerPåSluttenAvRada()
+                                )
+                        )
+                )
+                .collect(toList());
     }
 
     private byte[] append(final byte[] forrige, final byte[] neste) {

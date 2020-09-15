@@ -9,6 +9,7 @@ import static no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.parallell
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -48,9 +49,14 @@ class Partisjonstabell {
                 .put(medlemsId, data);
     }
 
+    Optional<List<List<String>>> get(final String medlemsId) {
+        return partisjonar
+                .get(partisjon(medlemsId))
+                .get(medlemsId);
+    }
 
-    private Partisjonsnummer partisjon(final String key) {
-        final byte[] bytes = key.getBytes(StandardCharsets.UTF_8);
+    private Partisjonsnummer partisjon(final String medlemsId) {
+        final byte[] bytes = medlemsId.getBytes(StandardCharsets.UTF_8);
         final long hash = MurmurHash.hash64(
                 bytes,
                 bytes.length

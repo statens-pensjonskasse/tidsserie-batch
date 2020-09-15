@@ -8,6 +8,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -17,7 +18,9 @@ public class PartisjonTest {
     @Test
     public void skal_godta_opplasting_av_samme_medlem_fleire_gangar_og_appende_kvart_sett_med_medlemsdata_på_medlemmet_dei_tilhøyrer() {
         partisjon.put("Et medlem", medlemsdata(rad("A", "2")));
+        partisjon.put("Ulikt medlem", medlemsdata(rad("X", "24")));
         partisjon.put("Et medlem", medlemsdata(rad("C", "3")));
+        partisjon.put("Noen andre", medlemsdata(rad("Z", "Y")));
         partisjon.put("Et medlem", medlemsdata(rad("B", "1")));
 
         assertThat(
@@ -148,7 +151,7 @@ public class PartisjonTest {
                 .hasToString("partisjon 1 av 271 (2 medlemmar)");
     }
 
-    private HashMap<String, List<List<String>>> hentMedlemsdata() {
+    private Map<String, List<List<String>>> hentMedlemsdata() {
         final HashMap<String, List<List<String>>> medlemsdata = new HashMap<>();
         partisjon.forEach(medlemsdata::put);
         return medlemsdata;
