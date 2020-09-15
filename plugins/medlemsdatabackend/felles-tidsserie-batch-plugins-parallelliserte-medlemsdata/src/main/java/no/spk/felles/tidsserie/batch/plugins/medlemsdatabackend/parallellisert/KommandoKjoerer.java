@@ -5,14 +5,21 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 interface KommandoKjoerer<T> extends AutoCloseable {
     Future<T> start(Callable<T> task);
 
     @Override
     void close();
+
+    static <T> KommandoKjoerer<T> velgFlertrådskjøring(final int antallTråder) {
+        return new FlertraadsKjoerer<>(antallTråder);
+    }
 
     class SynkronKjoerer<T> implements KommandoKjoerer<T> {
         @Override
@@ -51,6 +58,29 @@ interface KommandoKjoerer<T> extends AutoCloseable {
 
         @Override
         public void close() {
+        }
+    }
+
+    class FlertraadsKjoerer<T> implements KommandoKjoerer<T> {
+        private final AtomicInteger threadNumber = new AtomicInteger(1);
+
+        private final ExecutorService executor;
+
+        public FlertraadsKjoerer(final int antallTråder) {
+            this.executor = Executors.newFixedThreadPool(
+                    antallTråder,
+                    r -> new Thread(r, "pa-res-ba-01-" + threadNumber.getAndAdd(1))
+            );
+        }
+
+        @Override
+        public Future<T> start(final Callable<T> task) {
+            return executor.submit(task);
+        }
+
+        @Override
+        public void close() {
+            executor.shutdown();
         }
     }
 

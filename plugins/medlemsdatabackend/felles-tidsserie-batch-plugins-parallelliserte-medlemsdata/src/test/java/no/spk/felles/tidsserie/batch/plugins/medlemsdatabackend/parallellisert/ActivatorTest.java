@@ -8,13 +8,28 @@ import no.spk.felles.tidsserie.batch.core.kommandolinje.AntallProsessorar;
 import no.spk.felles.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenter;
 import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.felles.tidsserie.batch.core.registry.Ranking;
+import no.spk.felles.tidsserie.batch.core.registry.ServiceLocator;
 
+import org.assertj.core.api.Fail;
 import org.junit.Rule;
 import org.junit.Test;
 
 public class ActivatorTest {
     @Rule
     public final ServiceRegistryRule registry = new ServiceRegistryRule();
+
+    @Test
+    public void skal_registrere_medlemsdatafeilerlistener_for_å_logge_medlemmar_som_feilar_nokonlunde_likt_slik_hazelcast_backenden_gjer_det() {
+        medArgumenter(antallProsessorar(1));
+
+        aktiver();
+
+        registry
+                .assertFirstService(
+                        MedlemFeilarListener.class,
+                        actual -> actual.isInstanceOf(Activator.MedlemFeilarLogger.class)
+                );
+    }
 
     @Test
     public void skal_registrere_medlemsdatabackend_med_standard_ranking() {
