@@ -21,11 +21,7 @@
         <module>felles-tidsserie-batch-test</module>
         <module>felles-tidsserie-batch-arguments</module>
         <module>felles-tidsserie-batch-bom</module>
-        <module>felles-tidsserie-batch-plugins-disruptor</module>
-        <module>felles-tidsserie-batch-plugins-grunnlagsdatavalidator</module>
-        <module>felles-tidsserie-batch-plugins-hazelcast</module>
-        <module>felles-tidsserie-batch-plugins-metadatawriter</module>
-        <module>felles-tidsserie-batch-plugins-triggerfil</module>
+        <module>plugins</module>
     </modules>
 
     <properties>
