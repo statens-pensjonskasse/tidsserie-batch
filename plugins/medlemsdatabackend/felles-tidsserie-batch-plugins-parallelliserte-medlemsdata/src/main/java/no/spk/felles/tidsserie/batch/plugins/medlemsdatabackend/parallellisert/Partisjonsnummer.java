@@ -5,8 +5,6 @@ import static java.lang.String.format;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import no.spk.felles.tidsserie.batch.core.medlem.PartisjonsListener;
-
 class Partisjonsnummer {
     private static final int ANTALL_PARTISJONAR = 271;
 
@@ -27,10 +25,6 @@ class Partisjonsnummer {
                 IntStream
                         .rangeClosed(1, ANTALL_PARTISJONAR)
                         .mapToObj(Partisjonsnummer::new);
-    }
-
-    void notifyPartitionInitialized(final PartisjonsListener listener) {
-        listener.partitionInitialized(partisjonsnummer);
     }
 
     long index() {
