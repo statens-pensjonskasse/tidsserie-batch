@@ -3,7 +3,6 @@ package no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.parallellisert;
 import static java.lang.Math.abs;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
-import static java.util.stream.IntStream.range;
 import static no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.parallellisert.Partisjonsnummer.partisjonsnummer;
 
 import java.nio.charset.StandardCharsets;

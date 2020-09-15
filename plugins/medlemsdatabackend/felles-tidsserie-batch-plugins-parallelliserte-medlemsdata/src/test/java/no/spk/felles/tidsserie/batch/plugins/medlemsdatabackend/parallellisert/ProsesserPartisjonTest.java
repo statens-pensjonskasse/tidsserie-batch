@@ -3,7 +3,6 @@ package no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.parallellisert;
 import static java.util.Objects.requireNonNull;
 import static no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.parallellisert.MedlemsdataBuilder.medlemsdata;
 import static no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.parallellisert.MedlemsdataBuilder.rad;
-import static no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.parallellisert.Nodenummer.nodenummer;
 import static no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.parallellisert.Partisjonsnummer.partisjonsnummer;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -14,8 +13,6 @@ import java.util.function.Predicate;
 
 import no.spk.felles.tidsserie.batch.core.medlem.GenererTidsserieCommand;
 import no.spk.felles.tidsserie.batch.core.medlem.TidsserieContext;
-import no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.parallellisert.ProsesserPartisjon.CompositePartisjonListener;
-import no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.parallellisert.ProsesserPartisjon.MedlemFeilarListener;
 
 import org.assertj.core.api.MapAssert;
 import org.junit.Test;
@@ -24,7 +21,6 @@ public class ProsesserPartisjonTest {
     private final Partisjon partisjon = new Partisjon(partisjonsnummer(1));
 
     private final ProsesserPartisjon prosessering = new ProsesserPartisjon(
-            nodenummer(1, 1),
             partisjon
     );
 

@@ -1,11 +1,8 @@
 package no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.parallellisert;
 
-import static java.util.stream.Collectors.toSet;
 import static no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.parallellisert.Nodenummer.nodenummer;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
-
-import java.util.Set;
 
 import org.junit.Test;
 

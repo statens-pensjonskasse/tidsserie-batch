@@ -1,15 +1,9 @@
 package no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.parallellisert;
 
-import static java.lang.String.format;
-
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import no.spk.felles.tidsserie.batch.core.medlem.TidsserieContext;
 
 class Context implements TidsserieContext {
-    private final LinkedHashMap<String, Integer> messages = new LinkedHashMap<>();
+    private final Meldingar meldingar = new Meldingar();
 
     private final int serienummer;
 
@@ -24,26 +18,11 @@ class Context implements TidsserieContext {
 
     @Override
     public void emitError(final Throwable t) {
-        emit("errors");
-        emit("errors_type_" + t.getClass().getSimpleName());
-        emit("errors_message_" + (t.getMessage() != null ? t.getMessage() : "null"));
-    }
-
-    @Override
-    public String toString() {
-        return format("Context[serienummer=%d]", serienummer);
+        meldingar.emitError(t);
     }
 
     void emit(final String key) {
-        messages.merge(
-                key,
-                1,
-                Integer::sum
-        );
-    }
-
-    Map<String, Integer> toMap() {
-        return Collections.unmodifiableMap(messages);
+        meldingar.emit(key);
     }
 
     void inkluderFeilmeldingarFrå(final Runnable handling) {
@@ -52,5 +31,9 @@ class Context implements TidsserieContext {
         } catch (final RuntimeException e) {
             this.emitError(e);
         }
+    }
+
+    Meldingar meldingar() {
+        return meldingar;
     }
 }

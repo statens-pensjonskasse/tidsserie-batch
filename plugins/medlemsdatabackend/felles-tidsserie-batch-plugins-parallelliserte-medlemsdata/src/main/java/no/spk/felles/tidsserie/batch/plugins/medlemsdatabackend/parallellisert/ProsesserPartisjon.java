@@ -3,7 +3,6 @@ package no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.parallellisert;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
-import java.util.Map;
 
 import no.spk.felles.tidsserie.batch.core.medlem.GenererTidsserieCommand;
 
@@ -24,26 +23,24 @@ import no.spk.felles.tidsserie.batch.core.medlem.GenererTidsserieCommand;
  * @see CompositePartisjonListener
  */
 class ProsesserPartisjon {
-    private final Nodenummer node;
     private final Partisjon partisjon;
-    private final Context meldingar;
+    private final Context context;
 
-    ProsesserPartisjon(final Nodenummer node, final Partisjon partisjon) {
-        this.node = requireNonNull(node, "node er påkrevd, men var null");
+    ProsesserPartisjon(final Partisjon partisjon) {
         this.partisjon = requireNonNull(partisjon, "partisjon er påkrevd, men var null");
-        this.meldingar = new Context(partisjon.nummer());
+        this.context = new Context(partisjon.nummer());
     }
 
-    Context prosesser(
+    Meldingar prosesser(
             final GenererTidsserieCommand kommando,
             final CompositePartisjonListener partisjonListener,
             final MedlemFeilarListener medlemFeilarListener
     ) {
-        meldingar.inkluderFeilmeldingarFrå(
+        context.inkluderFeilmeldingarFrå(
                 () ->
                         partisjonListener.partisjonInitialisert(
                                 partisjon.nummer(),
-                                meldingar
+                                context
                         )
         );
         partisjon
@@ -56,7 +53,7 @@ class ProsesserPartisjon {
                                         medlemFeilarListener
                                 )
                 );
-        return meldingar;
+        return context.meldingar();
     }
 
     private void prosesserMedlem(
@@ -65,26 +62,18 @@ class ProsesserPartisjon {
             final List<List<String>> medlemsdata,
             final MedlemFeilarListener listener
     ) {
-        meldingar.emit("medlem");
+        context.emit("medlem");
         try {
             kommando.generer(
                     medlemsId,
                     medlemsdata,
-                    meldingar
+                    context
             );
         } catch (final RuntimeException | Error e) {
-            meldingar.emitError(e);
-            meldingar.inkluderFeilmeldingarFrå(
+            context.emitError(e);
+            context.inkluderFeilmeldingarFrå(
                     () -> listener.medlemFeila(medlemsId, e)
             );
         }
-    }
-
-    interface CompositePartisjonListener {
-        void partisjonInitialisert(Partisjonsnummer nummer, Context meldingar);
-    }
-
-    interface MedlemFeilarListener {
-        void medlemFeila(String medlemsId, final Throwable t);
     }
 }
