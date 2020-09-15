@@ -1,5 +1,6 @@
 package no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.parallellisert;
 
+import static java.util.Comparator.comparing;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
@@ -64,6 +65,7 @@ class ProsesserNode {
         return
                 partisjonar
                         .stream()
+                        .sorted(comparing(partisjon -> partisjon.nummer().index()))
                         .map(ProsesserPartisjon::new)
                         .map(
                                 partisjon -> partisjon.prosesser(

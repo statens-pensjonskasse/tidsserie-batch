@@ -1,12 +1,18 @@
 package no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.parallellisert;
 
+import static java.util.Comparator.comparing;
+import static java.util.stream.Collectors.toCollection;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.parallellisert.MedlemsdataBuilder.medlemsdata;
 import static no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.parallellisert.MedlemsdataBuilder.rad;
 import static no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.parallellisert.Partisjonsnummer.partisjonsnummer;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
@@ -124,5 +130,29 @@ public class ProsesserNodeTest {
                                 .containsEntry("errors_type_IllegalStateException", 1)
                                 .containsEntry("errors_message_NB: Viktig feilmelding her\nOg noko meir informasjon...", 1)
                 );
+    }
+
+    @Test
+    public void skal_prosessere_partisjonane_i_deterministisk_rekkefølge_frå_lavaste_til_høgaste_partisjonsnummer() {
+        final List<Partisjonsnummer> expected = Partisjonsnummer.stream().collect(toList());
+        final List<Partisjonsnummer> behandla = new ArrayList<>();
+
+        final ProsesserNode prosessering = new ProsesserNode(
+                expected
+                        .stream()
+                        .sorted(comparing(Partisjonsnummer::index).reversed())
+                        .map(Partisjon::new)
+                        .collect(toCollection(HashSet::new)),
+                (key, medlemsdata, context) -> {
+                },
+                (partisjon, meldingar) -> behandla.add(partisjon),
+                (medlemsId, t) -> {
+                }
+        );
+        prosessering
+                .start(new KommandoKjoerer.SynkronKjoerer<>())
+                .ventPåResultat();
+
+        assertThat(behandla).containsExactlyElementsOf(expected);
     }
 }
