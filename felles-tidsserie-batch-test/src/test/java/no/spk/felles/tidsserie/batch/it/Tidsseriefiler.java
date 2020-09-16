@@ -1,6 +1,5 @@
 package no.spk.felles.tidsserie.batch.it;
 
-import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 
 import java.io.File;
@@ -16,13 +15,13 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import cucumber.api.DataTable;
+import io.cucumber.datatable.DataTable;
 
 /**
  * {@link Tidsseriefiler} leser inn alle *.csv-filer som ligger i tidsserie-katalogen og gjør resultatet tilgjengelig for verifisering.
  */
 class Tidsseriefiler {
-    private List<String> ignorerteKolonner = new ArrayList<>();
+    private final List<String> ignorerteKolonner = new ArrayList<>();
 
     private final File utKatalog;
 
@@ -73,13 +72,12 @@ class Tidsseriefiler {
     private DataTable tilTabellUtenIgnorerteKolonner(List<String> kolonnenavn, List<List<String>> underlagsperiodeLinjer) {
         return DataTable.create(
                 Stream.concat(
-                        singletonList(
+                        Stream.of(
                                 kolonnenavn
                                         .stream()
                                         .filter(kunKolonnerSomIkkjeErIgnorert())
                                         .collect(toList())
-                        )
-                                .stream(),
+                        ),
                         underlagsperiodeLinjer.stream()
                 )
                         .collect(Collectors.toList())

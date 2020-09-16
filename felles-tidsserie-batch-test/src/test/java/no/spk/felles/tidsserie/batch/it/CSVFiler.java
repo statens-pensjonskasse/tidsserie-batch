@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.stream.Stream;
 import java.util.zip.GZIPOutputStream;
 
-import cucumber.api.DataTable;
+import io.cucumber.datatable.DataTable;
 
 /**
  * Lagring og lesing til og fra CSV-filer på komprimert og ukomprimert format.
@@ -21,7 +21,8 @@ class CSVFiler {
     void lagreLinjerTilFil(final DataTable source, final Path destination) {
         try {
             try (final GZIPOutputStream output = new GZIPOutputStream(new FileOutputStream(destination.toFile()))) {
-                source.asList(String.class)
+                source
+                        .asList()
                         .forEach(line -> {
                             try {
                                 output.write(line.getBytes());

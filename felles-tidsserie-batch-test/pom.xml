@@ -78,6 +78,11 @@
             <artifactId>cucumber-junit</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>datatable</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
