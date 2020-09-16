@@ -3,6 +3,7 @@ package no.spk.felles.tidsserie.batch.core.grunnlagsdata.csv;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Stream.of;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -21,7 +22,6 @@ import org.assertj.core.api.JUnitSoftAssertions;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.junit.rules.TestName;
 
@@ -33,9 +33,6 @@ public class CSVInputTest {
 
     @Rule
     public final TemporaryFolder folder = new TemporaryFolderWithDeleteVerification();
-
-    @Rule
-    public final ExpectedException e = ExpectedException.none();
 
     @Rule
     public final JUnitSoftAssertions softly = new JUnitSoftAssertions();
@@ -57,10 +54,11 @@ public class CSVInputTest {
 
     @Test
     public void skal_kreve_innkatalog_ved_konstruksjon() {
-        e.expect(NullPointerException.class);
-        e.expectMessage("innkatalog er påkrevd, men var null");
-
-        new CSVInput(null);
+        assertThatCode(
+                () ->new CSVInput(null)
+        )
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("innkatalog er påkrevd, men var null");
     }
 
     /**

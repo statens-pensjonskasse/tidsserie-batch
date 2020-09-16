@@ -70,11 +70,11 @@ public class Medlemsdatakopimodus implements Tidsseriemodus {
         }
 
         @Override
-        public void generer(final String key, List<List<String>> medlemsdata, TidsserieContext tidsserieContext) {
+        public void generer(final String key, final List<List<String>> medlemsdata, final TidsserieContext context) {
             medlemsdata
                     .stream()
                     .map(this::serialiser)
-                    .forEach(this::lagre);
+                    .forEach(linje -> lagre(linje, context.getSerienummer()));
         }
 
         private String serialiser(final List<String> rad) {
@@ -85,8 +85,16 @@ public class Medlemsdatakopimodus implements Tidsseriemodus {
                     .collect(joining(" "));
         }
 
-        private void lagre(final String linje) {
-            storage.lagre(e -> e.reset().buffer.append(linje).append('\n'));
+        private void lagre(final String linje, final long serienummer) {
+            storage.lagre(
+                    e ->
+                            e
+                                    .reset()
+                                    .serienummer(serienummer)
+                                    .buffer
+                                    .append(linje)
+                                    .append('\n')
+            );
         }
     }
 }

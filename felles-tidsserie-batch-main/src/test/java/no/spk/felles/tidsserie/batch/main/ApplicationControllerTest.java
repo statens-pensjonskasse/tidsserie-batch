@@ -38,7 +38,6 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoRule;
@@ -55,9 +54,6 @@ public class ApplicationControllerTest {
 
     @Rule
     public final TemporaryFolder temp = new TemporaryFolder();
-
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
 
     @Rule
     public final ServiceRegistryRule registry = new ServiceRegistryRule();
@@ -121,9 +117,12 @@ public class ApplicationControllerTest {
     public void testRyddOppFeilet() throws Exception {
         DirectoryCleaner cleaner = mock(DirectoryCleaner.class);
         doThrow(new HousekeepingException("blabla")).when(cleaner).deleteDirectories();
-        exception.expect(HousekeepingException.class);
 
-        controller.ryddOpp(cleaner);
+        assertThatCode(
+                () -> controller.ryddOpp(cleaner)
+        )
+                .isInstanceOf(HousekeepingException.class);
+
         verify(cleaner).deleteDirectories();
     }
 
@@ -220,21 +219,23 @@ public class ApplicationControllerTest {
 
     @Test
     public void skal_rekaste_feil_ved_opplasting() {
-        exception.expect(UncheckedIOException.class);
-        exception.expectMessage("MY CSV TASTES FUNNAY");
-
         final LastOppGrunnlagsdataKommando uploader = mock(LastOppGrunnlagsdataKommando.class);
         doThrow(new UncheckedIOException(new IOException("MY CSV TASTES FUNNAY"))).when(uploader).lastOpp(any());
 
         registry.registrer(LastOppGrunnlagsdataKommando.class, uploader);
 
-        controller.lastOpp();
+        assertThatCode(
+                () -> controller.lastOpp()
+        )
+                .isInstanceOf(UncheckedIOException.class)
+                .hasMessageContaining("MY CSV TASTES FUNNAY")
+        ;
     }
 
     @Test
     public void skal_vise_riktig_antall_feil() {
         Map<String, Integer> meldinger = new HashMap<>();
-        //noinspection RedundantStringConstructorCall
+        //noinspection StringOperationCanBeSimplified
         meldinger.put(new String("errors"), 12);
         lagerTidsserien("stillingsforholdunderlag", meldinger);
         console.assertStandardOutput().contains("Antall feil: 12");

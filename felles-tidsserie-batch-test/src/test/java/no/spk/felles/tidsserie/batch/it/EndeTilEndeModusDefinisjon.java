@@ -8,6 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,10 +25,10 @@ import no.spk.felles.tidsserie.batch.main.View;
 import no.spk.felles.tidsserie.batch.main.input.Modus;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
-import cucumber.api.DataTable;
-import cucumber.api.java.After;
-import cucumber.api.java.Before;
-import cucumber.api.java8.No;
+import io.cucumber.datatable.DataTable;
+import io.cucumber.java.After;
+import io.cucumber.java.Before;
+import io.cucumber.java8.No;
 import org.junit.rules.TemporaryFolder;
 
 /**
@@ -75,7 +76,7 @@ public class EndeTilEndeModusDefinisjon implements No {
         runas.put("out-of-process", registry -> new OutOfProcessBatchRunner());
         runas.put("in-process", InMemoryBatchRunner::new);
 
-        /**
+        /*
          * Fyllord for å gjere egenskapen meir lesbar når ein ønskjer å verifisere kva modusar som er tilgjengelig.
          */
         Gitt("^at brukaren ønskjer å generere ein tidsserie$", this::noop);
@@ -92,7 +93,9 @@ public class EndeTilEndeModusDefinisjon implements No {
     }
 
     private void verifiserKvaModusarSomErTilgjengelige(final DataTable modusar) {
-        final List<String> actual = modusar.transpose().topCells();
+        final List<String> actual = new ArrayList<>(
+                modusar.transpose().row(0)
+        );
         actual.remove("Navn");
         assertThat(
                 Modus
@@ -100,7 +103,7 @@ public class EndeTilEndeModusDefinisjon implements No {
                         .map(Modus::kode)
                         .collect(toList())
         )
-                .containsOnlyElementsOf(
+                .containsOnlyOnceElementsOf(
                         actual
                 )
         ;

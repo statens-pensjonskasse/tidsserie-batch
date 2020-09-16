@@ -3,7 +3,7 @@
     <parent>
         <artifactId>felles-tidsserie-batch</artifactId>
         <groupId>no.spk.felles</groupId>
-        <version>1.1.0</version>
+        <version>1.2.0</version>
     </parent>
     <packaging>jar</packaging>
     <modelVersion>4.0.0</modelVersion>
@@ -31,7 +31,7 @@
         </dependency>
         <dependency>
             <groupId>no.spk.felles</groupId>
-            <artifactId>felles-tidsserie-batch-plugins-hazelcast</artifactId>
+            <artifactId>felles-tidsserie-batch-plugins-parallelliserte-medlemsdata</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
