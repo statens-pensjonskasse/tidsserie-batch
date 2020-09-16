@@ -237,7 +237,7 @@
             <dependency>
                 <groupId>no.spk.pensjon.faktura</groupId>
                 <artifactId>faktura-bootstrap-lib</artifactId>
-                <version>1.0.17</version>
+                <version>1.0.18</version>
             </dependency>
             <dependency>
                 <groupId>no.spk.pensjon.faktura</groupId>
