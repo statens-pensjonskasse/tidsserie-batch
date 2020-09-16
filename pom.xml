@@ -225,7 +225,7 @@
             <dependency>
                 <groupId>no.spk.felles</groupId>
                 <artifactId>felles-tidsperiode-underlag-lib</artifactId>
-                <version>1.0.1</version>
+                <version>1.0.2</version>
             </dependency>
             <dependency>
                 <groupId>no.spk.felles</groupId>
