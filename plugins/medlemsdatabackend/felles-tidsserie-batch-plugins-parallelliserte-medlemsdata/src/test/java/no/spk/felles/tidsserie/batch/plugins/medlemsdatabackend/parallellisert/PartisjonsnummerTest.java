@@ -29,7 +29,7 @@ public class PartisjonsnummerTest {
         assertThat(
                 Partisjonsnummer.stream()
         )
-                .containsOnlyElementsOf(
+                .containsExactlyElementsOf(
                         IntStream
                                 .rangeClosed(1, 271)
                                 .mapToObj(Partisjonsnummer::partisjonsnummer)

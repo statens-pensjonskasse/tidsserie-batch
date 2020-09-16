@@ -3,6 +3,7 @@ package no.spk.felles.tidsserie.batch.core.registry;
 import static java.util.stream.Collectors.toList;
 import static no.spk.felles.tidsserie.batch.core.registry.Ranking.ranking;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
@@ -35,9 +36,6 @@ public class ExtensionpointTest {
 
     @Rule
     public final ServiceRegistryRule registry = new ServiceRegistryRule();
-
-    @Rule
-    public final ExpectedException e = ExpectedException.none();
 
     @Mock(name = "a")
     private TidsserieLivssyklus a;
@@ -98,12 +96,17 @@ public class ExtensionpointTest {
 
     @Test
     public void skal_kaste_exception_dersom_status_ikkje_er_ok() {
-        e.expect(IllegalArgumentException.class);
-        e.expectMessage("Antall feil er lik 1");
-
         doThrow(new RuntimeException("I don't care")).when(a).start(any());
 
-        invokeAll().orElseThrow(errors -> new IllegalArgumentException("Antall feil er lik " + errors.count()));
+        assertThatCode(
+                () ->
+                        invokeAll()
+                                .orElseThrow(
+                                        errors -> new IllegalArgumentException("Antall feil er lik " + errors.count())
+                                )
+        )
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Antall feil er lik 1");
     }
 
     @Test

@@ -1,17 +1,17 @@
 package no.spk.felles.tidsserie.batch.main.input;
 
+import static org.assertj.core.api.Assertions.assertThatCode;
+
 import java.util.stream.Stream;
 
 import com.beust.jcommander.ParameterException;
+import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 public class ModusValidatorTest {
-    @Rule
-    public final ExpectedException e = ExpectedException.none();
-
     @Rule
     public final ModusRule modusar = new ModusRule();
 
@@ -30,12 +30,16 @@ public class ModusValidatorTest {
 
     @Test
     public void skalAvviseUkjenteKoder() {
-        e.expect(ParameterException.class);
-        e.expectMessage("Modus 'whatever' er ikkje støtta av felles-tidsserie-batch.");
-        e.expectMessage("Følgjande modusar er støtta:");
+        final AbstractThrowableAssert<?, ?> assertion = assertThatCode(
+                () -> new ModusValidator().validate("modus", "whatever")
+        )
+                .isInstanceOf(ParameterException.class)
+                .hasMessageContaining("Modus 'whatever' er ikkje støtta av felles-tidsserie-batch.")
+                .hasMessageContaining("Følgjande modusar er støtta:");
 
-        Modus.stream().map(Modus::kode).forEach(e::expectMessage);
-
-        new ModusValidator().validate("modus", "whatever");
+        Modus
+                .stream()
+                .map(Modus::kode)
+                .forEach(assertion::hasMessageContaining);
     }
 }

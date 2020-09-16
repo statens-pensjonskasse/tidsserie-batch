@@ -103,7 +103,7 @@ public class EndeTilEndeModusDefinisjon implements No {
                         .map(Modus::kode)
                         .collect(toList())
         )
-                .containsOnlyElementsOf(
+                .containsOnlyOnceElementsOf(
                         actual
                 )
         ;

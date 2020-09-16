@@ -30,16 +30,12 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoRule;
 
 public class TidsserieagentTest {
     @Rule
     public final MockitoRule mockito = rule().strictness(STRICT_STUBS);
-
-    @Rule
-    public final ExpectedException e = ExpectedException.none();
 
     @Rule
     public final LogbackVerifier logback = new LogbackVerifier();
@@ -60,7 +56,7 @@ public class TidsserieagentTest {
     @Mock
     private com.hazelcast.mapreduce.Context<String, Integer> context;
 
-    private Tidsserieagent agent = new Tidsserieagent();
+    private final Tidsserieagent agent = new Tidsserieagent();
 
     @Before
     public void _before() {
@@ -82,7 +78,6 @@ public class TidsserieagentTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void skal_ikkje_feile_sjoelv_om_partisjons_listener_feilar() {
         final PartisjonsListener listener = mock(PartisjonsListener.class);
         registry.registrer(PartisjonsListener.class, listener);

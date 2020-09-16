@@ -2,6 +2,7 @@ package no.spk.felles.tidsserie.batch.plugins.grunnlagsdatavalidator;
 
 
 import static no.spk.felles.tidsserie.batch.plugins.grunnlagsdatavalidator.ChecksumValideringAvGrunnlagsdata.MD5_CHECKSUMS_FILENAME;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,10 +12,10 @@ import java.nio.file.Files;
 
 import no.spk.felles.tidsserie.batch.core.grunnlagsdata.UgyldigUttrekkException;
 
+import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.junit.rules.TestName;
 
@@ -22,9 +23,6 @@ import org.junit.rules.TestName;
  * @author Snorre E. Brekke - Computas
  */
 public class ChecksumValideringAvGrunnlagsdataTest {
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
-
     @Rule
     public TemporaryFolder testFolder = new TemporaryFolderWithDeleteVerification();
 
@@ -44,51 +42,37 @@ public class ChecksumValideringAvGrunnlagsdataTest {
 
     @Test
     public void testMissingChecksumfileThrowsException() {
-        exception.expect(UgyldigUttrekkException.class);
-        exception.expectMessage(MD5_CHECKSUMS_FILENAME + " mangler i katalogen");
-
-        validate();
+        assertValidate().hasMessageContaining(MD5_CHECKSUMS_FILENAME + " mangler i katalogen");
     }
 
     @Test
     public void testEmptyChecksumfileThrowsException() throws IOException {
-        exception.expect(UgyldigUttrekkException.class);
-        exception.expectMessage(MD5_CHECKSUMS_FILENAME + " er tom.");
-
         Files.createFile(md5sums.toPath());
 
-        validate();
+        assertValidate().hasMessageContaining(MD5_CHECKSUMS_FILENAME + " er tom.");
     }
 
     @Test
     public void testCorruptChecksumfileThrowsException() {
-        exception.expect(UgyldigUttrekkException.class);
-        exception.expectMessage(MD5_CHECKSUMS_FILENAME + " er korrupt.");
-
         writeMD5("invalid md5");
 
-        validate();
+        assertValidate().hasMessageContaining(MD5_CHECKSUMS_FILENAME + " er korrupt.");
     }
 
     @Test
     public void testMissingFileThrowsException() {
-        exception.expect(UgyldigUttrekkException.class);
-        exception.expectMessage("Følgende filer er oppført i " + MD5_CHECKSUMS_FILENAME + " men finnes ikke i ");
         writeMD5("123 *123.txt");
 
-        validate();
+        assertValidate().hasMessageContaining("Følgende filer er oppført i " + MD5_CHECKSUMS_FILENAME + " men finnes ikke i ");
     }
 
 
     @Test
     public void testInvalidChecksumThrowsException() {
-        exception.expect(UgyldigUttrekkException.class);
-        exception.expectMessage("Følgende filer har en annen m5d-sjekksum enn oppgitt");
-
         write("some;checksumFile;content", fil("test.csv"));
         writeMD5("deadbeef *test.csv");
 
-        validate();
+        assertValidate().hasMessageContaining("Følgende filer har en annen m5d-sjekksum enn oppgitt");
     }
 
     @Test
@@ -97,6 +81,10 @@ public class ChecksumValideringAvGrunnlagsdataTest {
         writeMD5("e0b562ed7f852b4f8a887c61484a9255 *test.csv");
 
         validate();
+    }
+
+    private AbstractThrowableAssert<?, ? extends Throwable> assertValidate() {
+        return assertThatCode(this::validate).isInstanceOf(UgyldigUttrekkException.class);
     }
 
     private void writeMD5(final String linje) {
