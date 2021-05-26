@@ -51,6 +51,12 @@ Standard lagringsmekanisme, implementert via ein ringbuffer vha. LMAX Disruptor 
 
 Standard medlemsdatabackend, tilbyr in-memory lagring uttrekkets medlemsdata med parallellisert prosessering av desse via tidsseriekommandoen modusen ønskjar å benytte.
 
+#### felles-tidsserie-batch-plugins-konfigurerbar-parallelliserte-medlemsdata
+
+Standard medlemsdatabackend, tilbyr in-memory lagring uttrekkets medlemsdata med parallellisert prosessering av desse via tidsseriekommandoen modusen ønskjar å benytte.
+Oppfører seg default likt som felles-tidsserie-batch-plugins-parallelliserte-medlemsdata, men det er mulig å velge forskjellige datalagrings strategier ved å legge det inn i service locator.
+Det er også mulig å implementere sine egne løsninger for datalagring på denne måten.
+
 #### felles-tidsserie-batch-plugins-triggerfil
 
 Plugin som genererer ei triggerfil i ut-katalogen kvar gang modusen har køyrt seg ferdig.
