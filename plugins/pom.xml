@@ -4,7 +4,7 @@
     <parent>
         <groupId>no.spk.felles</groupId>
         <artifactId>felles-tidsserie-batch</artifactId>
-        <version>1.3.0-SNAPSHOT</version>
+        <version>1.3.0</version>
     </parent>
     <artifactId>felles-tidsserie-batch-plugins-pom</artifactId>
     <packaging>pom</packaging>
