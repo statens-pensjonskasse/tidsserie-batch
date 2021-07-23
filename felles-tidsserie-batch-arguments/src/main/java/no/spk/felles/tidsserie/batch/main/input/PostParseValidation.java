@@ -9,11 +9,13 @@ import java.nio.file.Path;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import no.spk.faktura.input.DummyCommand;
 import no.spk.faktura.input.PostParseValidator;
 import no.spk.faktura.input.ReadablePathValidator;
 import no.spk.felles.tidsserie.batch.core.UttrekksId;
 
-import com.beust.jcommander.ParameterException;
+import picocli.CommandLine;
+import picocli.CommandLine.ParameterException;
 
 /**
  * Validerer programargumenter som har avhengigheter til hverandre, f.eks. at et argument ikke kan være større enn ett annet.
@@ -21,15 +23,18 @@ import com.beust.jcommander.ParameterException;
  * Før validering forsøker først {@link #validate(ProgramArguments)} å automatisk velge
  * det nyeste uttrekket fra underkatalogen(e) i innkatalogen til batchen.
  *
- * @author Snorre E. Brekke - Computas
  * @see TidsserieArgumentsFactory
  * @see ProgramArguments#velgUttrekkVissIkkeAngitt(Function)
  */
 class PostParseValidation implements PostParseValidator<ProgramArguments> {
-    public void validate(ProgramArguments programArguments) throws ParameterException {
+
+    public void validate(final ProgramArguments programArguments) throws ParameterException {
         if (programArguments.fraAar > programArguments.tilAar) {
-            throw new ParameterException("'-fraAar' kan ikke være større enn '-tilAar' (" +
-                    programArguments.fraAar + " > " + programArguments.tilAar + ")");
+            throw new ParameterException(
+                    new CommandLine(new DummyCommand()),
+                    "'-fraAar' kan ikke være større enn '-tilAar' (" +
+                    programArguments.fraAar + " > " + programArguments.tilAar + ")"
+            );
         }
 
         programArguments.velgUttrekkVissIkkeAngitt(this::velgNyesteUttrekk);
@@ -41,6 +46,7 @@ class PostParseValidation implements PostParseValidator<ProgramArguments> {
             return velgNyeste(list)
                     .orElseThrow(
                             () -> new ParameterException(
+                                    new CommandLine(new DummyCommand()),
                                     format(
                                             "Det finnes ingen underkataloger med uttrekk av grunnlagsdata i %s.",
                                             innkatalog.toAbsolutePath()
@@ -48,7 +54,7 @@ class PostParseValidation implements PostParseValidator<ProgramArguments> {
                             )
                     );
         } catch (final IOException e) {
-            throw new ParameterException(e);
+            throw new ParameterException(new CommandLine(new DummyCommand()), e.getMessage());
         }
     }
 }

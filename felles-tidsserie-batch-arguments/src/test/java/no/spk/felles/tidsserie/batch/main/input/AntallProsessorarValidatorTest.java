@@ -5,11 +5,11 @@ import static java.util.stream.IntStream.rangeClosed;
 
 import java.util.stream.Stream;
 
-import com.beust.jcommander.ParameterException;
 import org.assertj.core.api.AbstractThrowableAssert;
 import org.assertj.core.api.JUnitSoftAssertions;
 import org.junit.Rule;
 import org.junit.Test;
+import picocli.CommandLine.ParameterException;
 
 public class AntallProsessorarValidatorTest {
     @Rule

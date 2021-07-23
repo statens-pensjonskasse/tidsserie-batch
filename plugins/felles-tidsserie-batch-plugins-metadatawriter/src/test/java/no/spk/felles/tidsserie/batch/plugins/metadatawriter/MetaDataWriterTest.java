@@ -1,6 +1,5 @@
 package no.spk.felles.tidsserie.batch.plugins.metadatawriter;
 
-
 import static no.spk.felles.tidsserie.batch.core.BatchIdConstants.TIDSSERIE_PREFIX;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,9 +24,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.rules.TestName;
 
-/**
- * @author Snorre E. Brekke - Computas
- */
 public class MetaDataWriterTest {
     @Rule
     public final TestName name = new TestName();
@@ -42,24 +38,24 @@ public class MetaDataWriterTest {
 
     @Test
     public void testCreateMetadataFile() throws Exception {
-        File writeFolder = createTestFolders();
+        final File writeFolder = createTestFolders();
 
-        MetaDataWriter metaDataWriter = getMetaDataWriter(writeFolder);
-        BatchId batchId = new BatchId(TIDSSERIE_PREFIX, LocalDateTime.now());
+        final MetaDataWriter metaDataWriter = getMetaDataWriter(writeFolder);
+        final BatchId batchId = new BatchId(TIDSSERIE_PREFIX, LocalDateTime.now());
 
-        ProgramArguments programArguments = getProgramArguments(writeFolder);
-        Optional<File> metadataFile = metaDataWriter.createMetadataFile(programArguments, batchId, Duration.of(10, ChronoUnit.MILLIS));
+        final ProgramArguments programArguments = getProgramArguments(writeFolder);
+        final Optional<File> metadataFile = metaDataWriter.createMetadataFile(programArguments, batchId, Duration.of(10, ChronoUnit.MILLIS));
         assertThat(metadataFile.isPresent()).isTrue();
         assertThat(metadataFile.get()).exists();
 
-        String fileContent = new String(Files.readAllBytes(metadataFile.get().toPath()), StandardCharsets.UTF_8);
+        final String fileContent = new String(Files.readAllBytes(metadataFile.get().toPath()), StandardCharsets.UTF_8);
         assertThat(fileContent).contains("Batch-id: " + batchId);
     }
 
-    private ProgramArguments getProgramArguments(File writeFolder) throws UgyldigKommandolinjeArgumentException, BruksveiledningSkalVisesException {
-        String navn = "modus";
+    private ProgramArguments getProgramArguments(final File writeFolder) throws UgyldigKommandolinjeArgumentException, BruksveiledningSkalVisesException {
+        final String navn = "modus";
         this.modus.support(navn);
-        String file = writeFolder.getAbsolutePath();
+        final String file = writeFolder.getAbsolutePath();
         return (ProgramArguments) parser.parse(
                 "-b", "lager metadata",
                 "-i", file,
@@ -69,7 +65,7 @@ public class MetaDataWriterTest {
         );
     }
 
-    private MetaDataWriter getMetaDataWriter(File writeFolder) {
+    private MetaDataWriter getMetaDataWriter(final File writeFolder) {
         return new MetaDataWriter(TemplateConfigurationFactory.create(), writeFolder.toPath());
     }
 

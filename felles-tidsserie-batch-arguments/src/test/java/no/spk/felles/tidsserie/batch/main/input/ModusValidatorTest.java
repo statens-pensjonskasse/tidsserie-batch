@@ -4,12 +4,11 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.util.stream.Stream;
 
-import com.beust.jcommander.ParameterException;
 import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import picocli.CommandLine.ParameterException;
 
 public class ModusValidatorTest {
     @Rule

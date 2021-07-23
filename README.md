@@ -41,7 +41,7 @@ BOM med dependency management for versjonsstyring av alle modular tilknytta fell
 
 #### felles-tidsserie-batch-arguments
 
-Standard kommandolinjegrensesnitt for platformrammeverket. Implementert vha. JCommander, kan brukast av applikasjonar som ikkje har behov for fleire/andre kommandolinjeargument enn det minimum som platformrammeverket krever.
+Standard kommandolinjegrensesnitt for platformrammeverket. Implementert vha. picocli, kan brukast av applikasjonar som ikkje har behov for fleire/andre kommandolinjeargument enn det minimum som platformrammeverket krever.
 
 #### felles-tidsserie-batch-plugin-disruptor
 

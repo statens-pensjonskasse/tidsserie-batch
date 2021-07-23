@@ -7,8 +7,11 @@ import static no.spk.felles.tidsserie.batch.core.kommandolinje.AldersgrenseForSl
 import static no.spk.felles.tidsserie.batch.core.kommandolinje.AntallProsessorar.availableProcessors;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -20,6 +23,7 @@ import no.spk.faktura.input.IntegerValidator;
 import no.spk.faktura.input.LocalTimeConverter;
 import no.spk.faktura.input.LocalTimeValidator;
 import no.spk.faktura.input.PathStringValidator;
+import no.spk.faktura.input.PrintbareProgramargumenter;
 import no.spk.faktura.input.ReadablePathValidator;
 import no.spk.faktura.input.WritableDirectoryValidator;
 import no.spk.felles.tidsperiode.Aarstall;
@@ -31,94 +35,133 @@ import no.spk.felles.tidsserie.batch.core.kommandolinje.AntallProsessorar;
 import no.spk.felles.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenter;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
-import com.beust.jcommander.Parameter;
+import picocli.CommandLine.Option;
 
-/**
- * @author Snorre E. Brekke - Computas
- */
-@SuppressWarnings({ "WeakerAccess", "unused" })
-public class ProgramArguments implements Arguments, TidsserieBatchArgumenter {
-    @Parameter(names = { "-hjelp", "-?", "-h", "-help" },
-            help = true,
-            description = "Viser denne brukerveiledningen.")
-    boolean hjelp;
+@SuppressWarnings({"WeakerAccess", "unused"})
+public class ProgramArguments implements Arguments, TidsserieBatchArgumenter, PrintbareProgramargumenter {
 
-    @Parameter(names = { "-b" },
-            description = "Tekstlig beskrivelse av hensikten med kjøringen.",
-            required = true)
-    String beskrivelse;
-
-    @Parameter(names = { "-i" },
-            description = "En katalog som inneholder 1 eller flere uttrekkskataloger som batchen kan benytte for innlesing av grunnlagsdata.",
-            validateWith = PathStringValidator.class,
-            validateValueWith = ReadablePathValidator.class,
-            required = true
-    )
     Path innkatalog;
-
-    @Parameter(names = { "-id" },
-            validateWith = BatchIdValidator.class,
-            description = "En tekstlig kode som identifiserer hvilken uttrekkskatalog i inn-katalogen som kjøringen skal benytte. Dersom -id mangler benyttes det nyeste uttrekket.",
-            converter = UttrekksIdConverter.class
-    )
     UttrekksId uttrekk;
-
-    @Parameter(names = { "-o" },
-            description = "Utkatalogen der resultatet av kjøringen blir lagret.",
-            validateWith = PathStringValidator.class,
-            validateValueWith = WritableDirectoryValidator.class,
-            required = true
-    )
     Path utkatalog;
-
-    @Parameter(names = { "-log" },
-            description = "Batchen vil lage en ny katalog i -log katalogen hvor batch.log og metadata for kjøringen vil bli lagret.",
-            validateWith = PathStringValidator.class,
-            validateValueWith = WritableDirectoryValidator.class,
-            required = true
-    )
     Path logkatalog;
-
-    @Parameter(names = { "-fraAar" },
-            description = "Tidsserien lages fra og med 01.01 i angitt år.",
-            validateWith = IntegerValidator.class,
-            validateValueWith = YearValidator.class)
     int fraAar = new StandardBatchperiode(now()).fraAar();
-
-    @Parameter(names = { "-tilAar" },
-            description = "Tidsserien lages til og med 31.12 i angitt år.",
-            validateWith = IntegerValidator.class,
-            validateValueWith = YearValidator.class)
     int tilAar = new StandardBatchperiode(now()).tilAar();
-
-    @Parameter(names = { "-n" },
-            description = "Antall noder som skal brukes for å utgjøre grid for tidsserie-prossesering. Default er lik antall prosessorer på serveren minus 1.",
-            validateWith = AntallProsessorarValidator.class,
-            converter = AntallProsessorarConverter.class
-    )
     AntallProsessorar nodes = AntallProsessorar.standardAntallProsessorar();
-
-    @Parameter(names = { "-m" },
-            description = "Modusen batchen skal bruke for oppbygging av og lagring av tidsserien.",
-            validateWith = ModusValidator.class,
-            converter = ModusConverter.class,
-            required = true
-    )
+    int antallNoderForPrinting;
     Modus modus;
-
-    @Parameter(names = "-kjoeretid",
-            description = "Maks kjøretid på formatet HHmm.",
-            validateWith = DurationValidator.class)
     String kjoeretid = "0400";
-
-    @Parameter(names = { "-sluttid" },
-            description = "Klokkeslett på formen HHmm eller HHmmss for når kjøringen senest avsluttes.",
-            validateWith = LocalTimeValidator.class,
-            converter = LocalTimeConverter.class)
     LocalTime sluttidspunkt = LocalTime.parse("23:59");
 
-    @Parameter(names = { "-slettLog" },
-            description = "Sletter alle batch-kataloger i -log katalogen som er eldre enn n antall dager dersom n > 0.")
+    @Option(names = {"-hjelp", "-?", "-h", "-help"},
+            usageHelp = true,
+            description = "Viser denne brukerveiledningen."
+    )
+    boolean hjelp;
+
+    @Option(names = {"-b"},
+            description = "Tekstlig beskrivelse av hensikten med kjøringen.",
+            required = true
+    )
+    String beskrivelse;
+
+    @Option(names = {"-i"},
+            description = "En katalog som inneholder 1 eller flere uttrekkskataloger som batchen kan benytte for innlesing av grunnlagsdata.",
+            required = true
+    )
+    public void settInnkatalog(final String value) {
+        new PathStringValidator().validate("i", value);
+        final Path path = Paths.get(value);
+        new ReadablePathValidator().validate("i", path);
+        innkatalog = path;
+    }
+
+    @Option(names = {"-id"},
+            description = "En tekstlig kode som identifiserer hvilken uttrekkskatalog i inn-katalogen som kjøringen skal benytte. Dersom -id mangler benyttes det nyeste uttrekket."
+    )
+    public void settUttrekk(final String value) {
+        new BatchIdValidator().validate("id", value);
+        uttrekk = new UttrekksIdConverter().convert(value);
+    }
+
+    @Option(names = {"-o"},
+            description = "Utkatalogen der resultatet av kjøringen blir lagret.",
+            required = true
+    )
+    public void settUtkatalog(final String value) {
+        new PathStringValidator().validate("o", value);
+        final Path path = Paths.get(value);
+        new WritableDirectoryValidator().validate("o", path);
+        utkatalog = path;
+    }
+
+    @Option(names = {"-log"},
+            description = "Batchen vil lage en ny katalog i -log katalogen hvor batch.log og metadata for kjøringen vil bli lagret.",
+            required = true
+    )
+    public void settLogkatalog(final String value) {
+        new PathStringValidator().validate("log", value);
+        final Path path = Paths.get(value);
+        new WritableDirectoryValidator().validate("log", path);
+        logkatalog = path;
+    }
+
+    @Option(names = {"-fraAar"},
+            description = "Tidsserien lages fra og med 01.01 i angitt år."
+    )
+    public void settFraAar(final String value) {
+        new IntegerValidator().validate("fraAar", value);
+        final int heltall = Integer.parseInt(value);
+        new YearValidator().validate("fraAar", heltall);
+        fraAar = heltall;
+    }
+
+    @Option(names = {"-tilAar"},
+            description = "Tidsserien lages til og med 31.12 i angitt år."
+    )
+    public void settTilAar(final String value) {
+        new IntegerValidator().validate("tilAar", value);
+        final int heltall = Integer.parseInt(value);
+        new YearValidator().validate("tilAar", heltall);
+        tilAar = heltall;
+    }
+
+    @Option(names = {"-n"},
+            description = "Antall noder som skal brukes for å utgjøre grid for tidsserie-prossesering. Default er lik antall prosessorer på serveren minus 1."
+    )
+    public void settNoder(final String value) {
+        new AntallProsessorarValidator().validate("n", value);
+        nodes = new AntallProsessorarConverter().convert(value);
+        antallNoderForPrinting = Integer.parseInt(value);
+    }
+
+    @Option(names = {"-m"},
+            description = "Modusen batchen skal bruke for oppbygging av og lagring av tidsserien.",
+            required = true
+    )
+    public void settModus(final String value) {
+        new ModusValidator().validate("m", value);
+        modus = new ModusConverter().convert(value);
+    }
+
+    @Option(names = "-kjoeretid",
+            description = "Maks kjøretid på formatet HHmm."
+    )
+    public void settKjoeretid(final String value) {
+        new DurationValidator().validate("kjoeretid", value);
+        kjoeretid = value;
+    }
+
+    @Option(names = {"-sluttid"},
+            description = "Klokkeslett på formen HHmm eller HHmmss for når kjøringen senest avsluttes."
+    )
+    public void settSluttid(final String value) {
+        new LocalTimeValidator().validate("sluttid", value);
+        sluttidspunkt = new LocalTimeConverter().convert(value);
+    }
+
+    @Option(names = {"-slettLog"},
+            description = "Sletter alle batch-kataloger i -log katalogen som er eldre enn n antall dager dersom n > 0."
+    )
     int slettLogEldreEnn = 0;
 
     @Override
@@ -244,6 +287,24 @@ public class ProgramArguments implements Arguments, TidsserieBatchArgumenter {
         return new Observasjonsperiode(
                 new Aarstall(fraAar).atStartOfYear(),
                 new Aarstall(tilAar).atEndOfYear()
+        );
+    }
+
+    @Override
+    public List<String> argumenter() {
+        return Arrays.asList(
+                String.format("b: %s", beskrivelse),
+                String.format("kjoeretid: %s", kjoeretid),
+                String.format("sluttid: %s", sluttidspunkt),
+                String.format("i: %s", innkatalog != null ? innkatalog.toString() : ""),
+                String.format("o: %s", utkatalog != null ? utkatalog.toString() : ""),
+                String.format("log: %s", logkatalog != null ? logkatalog.toString() : ""),
+                String.format("fraAar: %d", fraAar),
+                String.format("tilAar: %d", tilAar),
+                String.format("n: %s", antallNoderForPrinting),
+                String.format("m: %s", modus != null ? modus.toString() : ""),
+                String.format("id: %s", uttrekk),
+                String.format("slettLog: %d", slettLogEldreEnn)
         );
     }
 }

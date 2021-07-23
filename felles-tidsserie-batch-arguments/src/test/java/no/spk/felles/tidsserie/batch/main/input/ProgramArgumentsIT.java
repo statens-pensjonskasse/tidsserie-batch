@@ -43,6 +43,7 @@ public class ProgramArgumentsIT {
         args.fraAar = 2009;
         args.tilAar = 2018;
         args.nodes = antallProsessorar(1);
+        args.antallNoderForPrinting = 1;
         args.slettLogEldreEnn = 14;
         args.kjoeretid = "0401";
         args.sluttidspunkt = LocalTime.MAX;

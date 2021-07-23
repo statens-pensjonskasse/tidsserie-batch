@@ -2,14 +2,12 @@ package no.spk.felles.tidsserie.batch.main.input;
 
 import static no.spk.felles.tidsserie.batch.main.input.ModusValidator.feilmelding;
 
-import com.beust.jcommander.IStringConverter;
+import picocli.CommandLine.ITypeConverter;
 
 /**
  * Konverterer modus-argument til {@link Modus}.
- *
- * @author Tarjei Skorgenes
  */
-public class ModusConverter implements IStringConverter<Modus> {
+public class ModusConverter implements ITypeConverter<Modus> {
     @Override
     public Modus convert(final String s) {
         return Modus

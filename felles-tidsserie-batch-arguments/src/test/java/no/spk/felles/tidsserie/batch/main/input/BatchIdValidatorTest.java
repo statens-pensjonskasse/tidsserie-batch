@@ -2,13 +2,10 @@ package no.spk.felles.tidsserie.batch.main.input;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 
-import com.beust.jcommander.ParameterException;
 import org.junit.Before;
 import org.junit.Test;
+import picocli.CommandLine.ParameterException;
 
-/**
- * @author Snorre E. Brekke - Computas
- */
 public class BatchIdValidatorTest {
     private static final String SOME_PARAMETER = "param";
 

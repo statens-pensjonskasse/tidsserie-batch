@@ -4,8 +4,10 @@ import static java.util.stream.Collectors.joining;
 
 import java.util.Optional;
 
-import com.beust.jcommander.IParameterValidator;
-import com.beust.jcommander.ParameterException;
+import no.spk.faktura.input.DummyCommand;
+
+import picocli.CommandLine;
+import picocli.CommandLine.ParameterException;
 
 /**
  * {@link ModusValidator} verifiserer
@@ -13,8 +15,7 @@ import com.beust.jcommander.ParameterException;
  *
  * @see Modus
  */
-public class ModusValidator implements IParameterValidator {
-    @Override
+public class ModusValidator {
     public void validate(final String name, final String value) throws ParameterException {
         final Optional<Modus> modus = Modus.parse(value);
         if (!modus.isPresent()) {
@@ -24,6 +25,7 @@ public class ModusValidator implements IParameterValidator {
 
     private void throwParameterException(final String value) {
         throw new ParameterException(
+                new CommandLine(new DummyCommand()),
                 feilmelding(value)
         );
     }
