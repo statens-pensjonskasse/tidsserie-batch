@@ -88,6 +88,13 @@ public class AntallProsessorarTest {
         assertStream(antallProsessorar(16)).hasSize(16).containsExactlyElementsOf(range("1->16"));
     }
 
+    @Test
+    public void skal_ha_en_getter_for_underliggende_verdi() {
+        assertThat(antallProsessorar(4).antall()).isEqualTo(4);
+        assertThat(antallProsessorar(14).antall()).isEqualTo(14);
+        assertThat(antallProsessorar(20).antall()).isEqualTo(20);
+    }
+
     private ProxyableListAssert<Integer> assertStream(final AntallProsessorar antall) {
         return softly.assertThat(
                 antall
