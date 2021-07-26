@@ -71,6 +71,10 @@ public class AntallProsessorar {
         return rangeClosed(1, verdi);
     }
 
+    public int antall() {
+        return verdi;
+    }
+
     @Override
     public int hashCode() {
         return verdi.hashCode();
