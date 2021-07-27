@@ -5,9 +5,9 @@ import static no.spk.felles.tidsserie.batch.core.kommandolinje.AntallProsessorar
 
 import no.spk.felles.tidsserie.batch.core.kommandolinje.AntallProsessorar;
 
-import com.beust.jcommander.IStringConverter;
+import picocli.CommandLine.ITypeConverter;
 
-public class AntallProsessorarConverter implements IStringConverter<AntallProsessorar> {
+public class AntallProsessorarConverter implements ITypeConverter<AntallProsessorar> {
     @Override
     public AntallProsessorar convert(final String value) {
         return antallProsessorar(parseInt(value));

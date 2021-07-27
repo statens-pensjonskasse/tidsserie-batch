@@ -5,11 +5,12 @@ import static java.util.stream.IntStream.rangeClosed;
 
 import java.util.stream.Stream;
 
-import com.beust.jcommander.ParameterException;
 import org.assertj.core.api.AbstractThrowableAssert;
 import org.assertj.core.api.JUnitSoftAssertions;
 import org.junit.Rule;
 import org.junit.Test;
+import picocli.CommandLine.Model.CommandSpec;
+import picocli.CommandLine.ParameterException;
 
 public class AntallProsessorarValidatorTest {
     @Rule
@@ -73,7 +74,7 @@ public class AntallProsessorarValidatorTest {
 
     private AbstractThrowableAssert<?, ? extends Throwable> assertValideringsfeil(final String verdi) {
         return softly.assertThatCode(
-                () -> validator.validate("n", verdi)
+                () -> validator.validate("n", verdi, CommandSpec.create())
         )
                 .as(
                         "%s.validate(\"n\", \"%s\"",

@@ -1,6 +1,5 @@
 package no.spk.felles.tidsserie.batch.main.input;
 
-
 import static java.lang.String.join;
 import static java.util.Arrays.stream;
 import static no.spk.felles.tidsserie.batch.core.UttrekksId.uttrekksId;
@@ -24,9 +23,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.rules.TestName;
 
-/**
- * @author Snorre E. Brekke - Computas
- */
 public class TidsserieArgumentsFactoryTest {
     @Rule
     public final JUnitSoftAssertions softly = new JUnitSoftAssertions();

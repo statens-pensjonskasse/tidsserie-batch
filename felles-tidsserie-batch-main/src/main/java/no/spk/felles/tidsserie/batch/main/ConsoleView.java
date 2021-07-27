@@ -20,7 +20,7 @@ import no.spk.felles.tidsserie.batch.core.kommandolinje.UgyldigKommandolinjeArgu
 
 import org.slf4j.Logger;
 
-public class ConsoleView implements View{
+public class ConsoleView implements View {
     private final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd - HH:mm:ss");
 
     private final Optional<Logger> logger;
@@ -49,7 +49,7 @@ public class ConsoleView implements View{
     @Override
     public void opplastingFullfoert() {
         println("Grunnlagsdata lastet.");
-}
+    }
 
     @Override
     public void startarTidsseriegenerering() {
@@ -63,7 +63,7 @@ public class ConsoleView implements View{
      * @param e hjelp-forespørslen som inneheld informasjon om tilgjengelige argument
      */
     @Override
-    public void visHjelp(BruksveiledningSkalVisesException e){
+    public void visHjelp(final BruksveiledningSkalVisesException e) {
         println(e.bruksveiledning());
     }
 
@@ -74,7 +74,7 @@ public class ConsoleView implements View{
      * @param e valideringsfeilen som inneheld informasjon om kva som er feil med argumentet
      */
     @Override
-    public void informerOmUgyldigKommandolinjeArgument(UgyldigKommandolinjeArgumentException e){
+    public void informerOmUgyldigKommandolinjeArgument(final UgyldigKommandolinjeArgumentException e) {
         println(e.getMessage());
         println(e.bruksveiledning());
     }
@@ -87,7 +87,7 @@ public class ConsoleView implements View{
     }
 
     @Override
-    public void informerOmSuksess(Path arbeidskatalog) {
+    public void informerOmSuksess(final Path arbeidskatalog) {
         println("Resultat av kjøringen ligger i katalogen " + arbeidskatalog);
         println("Tidsserie-batch avsluttet OK " + now());
     }
@@ -103,13 +103,13 @@ public class ConsoleView implements View{
     }
 
     @Override
-    public void informerOmKorrupteGrunnlagsdata(UgyldigUttrekkException e) {
+    public void informerOmKorrupteGrunnlagsdata(final UgyldigUttrekkException e) {
         println("Grunnlagsdata i inn-katalogen er korrupte - avbryter kjøringen.");
         println("Årsak: " + e.getMessage());
     }
 
     @Override
-    public void tidsseriegenereringFullfoert(Map<String, Integer> meldingar, String modusnavn) {
+    public void tidsseriegenereringFullfoert(final Map<String, Integer> meldingar, final String modusnavn) {
         println("Tidsseriegenerering fullført.");
         printMeldinger(meldingar, requireNonNull(modusnavn, "modusnavnet er påkrevd, men var null"));
     }
@@ -140,30 +140,30 @@ public class ConsoleView implements View{
         System.out.println(melding);
     }
 
-    private void printMeldinger(Map<String, Integer> meldinger, String modusnavn) {
+    private void printMeldinger(final Map<String, Integer> meldinger, final String modusnavn) {
         Map<String, Integer> sorterteMeldinger = sortereMeldinger(meldinger);
         System.out.println(lageModusmelding(sorterteMeldinger, modusnavn));
 
         Integer antallFeil = sorterteMeldinger.entrySet()
                 .stream()
-                .filter(map ->  "errors".equals(map.getKey()))
+                .filter(map -> "errors".equals(map.getKey()))
                 .map(Map.Entry::getValue)
                 .reduce(0, Integer::sum);
         System.out.println("Antall feil: " + antallFeil);
 
-        for(Map.Entry<String, Integer> entry : sorterteMeldinger.entrySet()) {
+        for (Map.Entry<String, Integer> entry : sorterteMeldinger.entrySet()) {
             logger.ifPresent(l -> l.info(entry.toString()));
         }
     }
 
-    private static Map<String, Integer> sortereMeldinger(Map<String, Integer> meldinger) {
+    private static Map<String, Integer> sortereMeldinger(final Map<String, Integer> meldinger) {
         return meldinger.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
                         (e1, e2) -> e2, LinkedHashMap::new));
     }
 
-    private String lageModusmelding(Map<String, Integer> meldinger, String modusnavn) {
+    private String lageModusmelding(final Map<String, Integer> meldinger, final String modusnavn) {
         String avtaleunderlag = "Antall avtaler behandlet: " + meldinger.get("avtaler");
         String andremoduser = "Antall medlemmer behandlet: " + meldinger.get("medlem");
         return modusnavn.equals("avtaleunderlag") ? avtaleunderlag : andremoduser;

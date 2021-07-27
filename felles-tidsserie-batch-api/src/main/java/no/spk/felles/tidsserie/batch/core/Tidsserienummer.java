@@ -21,7 +21,7 @@ import java.time.format.DateTimeFormatter;
  * @author Tarjei Skorgenes
  */
 public final class Tidsserienummer {
-    private static DateTimeFormatter yyyyMMdd = DateTimeFormatter.ofPattern("yyyyMMdd");
+    private static final DateTimeFormatter yyyyMMdd = DateTimeFormatter.ofPattern("yyyyMMdd");
 
     private final String id;
 

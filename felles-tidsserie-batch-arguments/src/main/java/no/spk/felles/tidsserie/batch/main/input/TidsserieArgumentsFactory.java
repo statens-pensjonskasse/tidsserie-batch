@@ -14,7 +14,6 @@ import no.spk.felles.tidsserie.batch.core.kommandolinje.UgyldigKommandolinjeArgu
  * Applikasjoner som ønsker å tilby færre/flere/andre argumenter kan plugge inn sin egen håndtering i form av en separat
  * {@link TidsserieBatchArgumenter}.
  *
- * @author Snorre E. Brekke - Computas
  * @see ProgramArguments
  * @see TidsserieBatchArgumenterParser
  */

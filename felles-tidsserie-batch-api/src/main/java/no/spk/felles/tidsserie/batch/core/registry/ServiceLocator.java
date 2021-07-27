@@ -15,7 +15,7 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
  * @author Tarjei Skorgenes
  */
 public class ServiceLocator {
-    private ServiceRegistry registry;
+    private final ServiceRegistry registry;
 
     /**
      * Konstruerer ein ny servicelocator som vil slå opp tjenester frå det angitte tjenesteregisteret.

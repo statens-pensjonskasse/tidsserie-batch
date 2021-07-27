@@ -3,7 +3,7 @@
     <parent>
         <artifactId>felles-tidsserie-batch</artifactId>
         <groupId>no.spk.felles</groupId>
-        <version>1.3.1-SNAPSHOT</version>
+        <version>2.0.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -18,8 +18,8 @@
             <artifactId>faktura-bootstrap-lib</artifactId>
             <exclusions>
                 <exclusion>
-                    <groupId>com.beust</groupId>
-                    <artifactId>jcommander</artifactId>
+                    <groupId>info.picocli</groupId>
+                    <artifactId>picocli</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

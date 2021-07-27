@@ -9,7 +9,7 @@ Beskrivelse: ${params.beskrivelse}
 <#--Avsluttet: ${job.endTime?string["dd.MM.yyyy - HH:mm:ss"]}-->
 <#--Kjøretid: ${jobDuration}-->
 
-Batch parametere:
+Batchparametere:
 * Fra og med år: ${params.fraAar}
 * Til og med år: ${params.tilAar}
 * Grunnlagsdata batch-id: ${params.grunnlagsdataBatchId}

@@ -19,14 +19,12 @@ import java.util.stream.Collectors;
 
 import no.spk.felles.tidsserie.batch.core.ServiceRegistryRule;
 import no.spk.felles.tidsserie.batch.core.TidsserieLivssyklus;
-import no.spk.pensjon.faktura.tjenesteregister.Constants;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 import org.assertj.core.api.AbstractBooleanAssert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoRule;
 

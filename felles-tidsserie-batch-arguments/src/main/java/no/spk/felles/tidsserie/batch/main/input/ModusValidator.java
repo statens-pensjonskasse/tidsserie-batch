@@ -4,8 +4,9 @@ import static java.util.stream.Collectors.joining;
 
 import java.util.Optional;
 
-import com.beust.jcommander.IParameterValidator;
-import com.beust.jcommander.ParameterException;
+import picocli.CommandLine;
+import picocli.CommandLine.Model.CommandSpec;
+import picocli.CommandLine.ParameterException;
 
 /**
  * {@link ModusValidator} verifiserer
@@ -13,17 +14,18 @@ import com.beust.jcommander.ParameterException;
  *
  * @see Modus
  */
-public class ModusValidator implements IParameterValidator {
-    @Override
-    public void validate(final String name, final String value) throws ParameterException {
+public class ModusValidator {
+
+    public void validate(final String name, final String value, final CommandSpec spec) throws ParameterException {
         final Optional<Modus> modus = Modus.parse(value);
         if (!modus.isPresent()) {
-            throwParameterException(value);
+            throwParameterException(value, spec);
         }
     }
 
-    private void throwParameterException(final String value) {
+    private void throwParameterException(final String value, final CommandSpec spec) {
         throw new ParameterException(
+                new CommandLine(spec),
                 feilmelding(value)
         );
     }

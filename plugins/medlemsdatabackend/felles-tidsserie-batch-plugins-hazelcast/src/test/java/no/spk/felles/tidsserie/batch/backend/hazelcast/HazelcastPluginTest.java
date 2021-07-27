@@ -3,13 +3,11 @@ package no.spk.felles.tidsserie.batch.backend.hazelcast;
 import static no.spk.felles.tidsserie.batch.backend.hazelcast.ServiceRegistryRule.erAvType;
 import static no.spk.felles.tidsserie.batch.core.kommandolinje.AntallProsessorar.antallProsessorar;
 import static org.mockito.BDDMockito.willReturn;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.junit.MockitoJUnit.rule;
 
 import java.util.ServiceLoader;
 
 import no.spk.felles.tidsserie.batch.core.TidsserieLivssyklus;
-import no.spk.felles.tidsserie.batch.core.kommandolinje.AntallProsessorar;
 import no.spk.felles.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenter;
 import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.felles.tidsserie.batch.core.registry.Plugin;
@@ -17,7 +15,6 @@ import no.spk.felles.tidsserie.batch.core.registry.Plugin;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 

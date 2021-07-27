@@ -17,7 +17,7 @@ public class ServiceRegistryRule extends ExternalResource {
     private ServiceLocator locator;
 
     @Override
-    protected void before() throws Throwable {
+    protected void before() {
         registry = ServiceLoader.load(ServiceRegistry.class).iterator().next();
         locator = new ServiceLocator(registry);
     }

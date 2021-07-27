@@ -1,19 +1,21 @@
 package no.spk.felles.tidsserie.batch.main.input;
 
-import com.beust.jcommander.IValueValidator;
-import com.beust.jcommander.ParameterException;
+import picocli.CommandLine;
+import picocli.CommandLine.Model.CommandSpec;
+import picocli.CommandLine.ParameterException;
 
 /**
- * Validerer at et år ikke er tidligere nn 2007. Benyttes for å begrense tillatt årstall for bruk i sql-spørringer på historikk.
- * @author Snorre E. Brekke - Computas
- * @see com.beust.jcommander.JCommander
+ * Validerer at et år ikke er tidligere enn 2007. Benyttes for å begrense tillatt årstall for bruk i sql-spørringer på historikk.
  * @see ProgramArguments
  */
-public class YearValidator implements IValueValidator<Integer> {
-    @Override
-    public void validate(String name, Integer value) throws ParameterException {
+public class YearValidator {
+
+    public void validate(final String name, final Integer value, final CommandSpec spec) throws ParameterException {
         if (value < 2007) {
-            throw new ParameterException("'" + name + "': kan ikke være mindre enn 2007.");
+            throw new ParameterException(
+                    new CommandLine(spec),
+                    "'" + name + "': kan ikke være mindre enn 2007."
+            );
         }
     }
 }

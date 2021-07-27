@@ -54,7 +54,7 @@ class MultiNodeSingleJVMBackend implements Server {
     private final AntallProsessorar antallNoder;
 
     private Optional<HazelcastInstance> master = empty();
-    private Config config;
+    private final Config config;
 
     public MultiNodeSingleJVMBackend(final ServiceRegistry registry, final AntallProsessorar antall) {
         this.registry = requireNonNull(registry, "registry er påkrevd, men var null");

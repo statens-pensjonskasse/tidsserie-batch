@@ -25,7 +25,7 @@ import no.spk.felles.tidsserie.batch.core.lagring.Tidsserierad;
 class FileWriterTidsserieradHandler implements TidsserieradHandler {
     private final FileTemplate template;
 
-    private Map<String, FileWriter> writers = new HashMap<>();
+    private final Map<String, FileWriter> writers = new HashMap<>();
 
     FileWriterTidsserieradHandler(final FileTemplate template) {
         this.template = template;
