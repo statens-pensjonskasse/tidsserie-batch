@@ -130,7 +130,6 @@ public class Activator implements Plugin {
                                     )
                     )
                     .orElseRethrowFirstFailure();
-            ;
         }
 
         private boolean modusHarRegistrertEinKommando(final ServiceRegistry registry) {

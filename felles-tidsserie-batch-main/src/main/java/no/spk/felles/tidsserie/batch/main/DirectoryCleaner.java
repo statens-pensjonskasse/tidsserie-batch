@@ -67,7 +67,7 @@ public class DirectoryCleaner {
 
     private static class BatchDirectoryDeleteVisitor extends SimpleFileVisitor<Path> {
         @Override
-        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
             return FileVisitResult.CONTINUE;
         }
 

@@ -4,9 +4,8 @@ import static java.util.stream.Collectors.joining;
 
 import java.util.Optional;
 
-import no.spk.faktura.input.DummyCommand;
-
 import picocli.CommandLine;
+import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.ParameterException;
 
 /**
@@ -16,16 +15,17 @@ import picocli.CommandLine.ParameterException;
  * @see Modus
  */
 public class ModusValidator {
-    public void validate(final String name, final String value) throws ParameterException {
+
+    public void validate(final String name, final String value, final CommandSpec spec) throws ParameterException {
         final Optional<Modus> modus = Modus.parse(value);
         if (!modus.isPresent()) {
-            throwParameterException(value);
+            throwParameterException(value, spec);
         }
     }
 
-    private void throwParameterException(final String value) {
+    private void throwParameterException(final String value, final CommandSpec spec) {
         throw new ParameterException(
-                new CommandLine(new DummyCommand()),
+                new CommandLine(spec),
                 feilmelding(value)
         );
     }

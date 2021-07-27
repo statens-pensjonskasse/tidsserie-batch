@@ -3,11 +3,8 @@ package no.spk.felles.tidsserie.batch.core.kommandolinje;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.rangeClosed;
 import static no.spk.felles.tidsserie.batch.core.kommandolinje.AntallProsessorar.*;
-import static no.spk.felles.tidsserie.batch.core.kommandolinje.AntallProsessorar.antallProsessorar;
-import static no.spk.felles.tidsserie.batch.core.kommandolinje.AntallProsessorar.standardAntallProsessorar;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.assertj.core.api.JUnitSoftAssertions;

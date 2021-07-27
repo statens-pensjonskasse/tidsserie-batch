@@ -38,7 +38,7 @@ public class FileWriterTidsserieradHandlerIT {
     private FileWriterTidsserieradHandler consumer;
 
     @Before
-    public void _before() throws IOException {
+    public void _before() {
         consumer = new FileWriterTidsserieradHandler(template);
     }
 

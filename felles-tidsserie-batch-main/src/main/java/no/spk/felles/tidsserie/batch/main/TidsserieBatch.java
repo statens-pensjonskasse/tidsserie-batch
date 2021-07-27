@@ -42,9 +42,6 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
  * <br>
  * Ved køyring av batchen må brukaren angi kva {@link Tidsseriemodus modus} som skal benyttast og som følge av dette valget, kva type tidsserie
  * som skal bli generert.
- *
- * @author Snorre E. Brekke - Computas
- * @author Tarjei Skorgenes
  */
 public class TidsserieBatch {
     private final Extensionpoint<TidsserieLivssyklus> livssyklus;
@@ -54,7 +51,7 @@ public class TidsserieBatch {
     private final ServiceRegistry registry;
     private final ExitCommand exiter;
 
-    private ApplicationController controller;
+    private final ApplicationController controller;
 
     /**
      * Konstruerer ein ny instans av platformrammeverket som skal brukast til å eksekvere batchen.

@@ -35,10 +35,15 @@ import no.spk.felles.tidsserie.batch.core.kommandolinje.AntallProsessorar;
 import no.spk.felles.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenter;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
+import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Option;
+import picocli.CommandLine.Spec;
 
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class ProgramArguments implements Arguments, TidsserieBatchArgumenter, PrintbareProgramargumenter {
+
+    @Spec
+    CommandSpec spec;
 
     Path innkatalog;
     UttrekksId uttrekk;
@@ -69,9 +74,9 @@ public class ProgramArguments implements Arguments, TidsserieBatchArgumenter, Pr
             required = true
     )
     public void settInnkatalog(final String value) {
-        new PathStringValidator().validate("i", value);
+        new PathStringValidator().validate("i", value, spec);
         final Path path = Paths.get(value);
-        new ReadablePathValidator().validate("i", path);
+        new ReadablePathValidator().validate("i", path, spec);
         innkatalog = path;
     }
 
@@ -79,7 +84,7 @@ public class ProgramArguments implements Arguments, TidsserieBatchArgumenter, Pr
             description = "En tekstlig kode som identifiserer hvilken uttrekkskatalog i inn-katalogen som kjøringen skal benytte. Dersom -id mangler benyttes det nyeste uttrekket."
     )
     public void settUttrekk(final String value) {
-        new BatchIdValidator().validate("id", value);
+        new BatchIdValidator().validate("id", value, spec);
         uttrekk = new UttrekksIdConverter().convert(value);
     }
 
@@ -88,9 +93,9 @@ public class ProgramArguments implements Arguments, TidsserieBatchArgumenter, Pr
             required = true
     )
     public void settUtkatalog(final String value) {
-        new PathStringValidator().validate("o", value);
+        new PathStringValidator().validate("o", value, spec);
         final Path path = Paths.get(value);
-        new WritableDirectoryValidator().validate("o", path);
+        new WritableDirectoryValidator().validate("o", path, spec);
         utkatalog = path;
     }
 
@@ -99,9 +104,9 @@ public class ProgramArguments implements Arguments, TidsserieBatchArgumenter, Pr
             required = true
     )
     public void settLogkatalog(final String value) {
-        new PathStringValidator().validate("log", value);
+        new PathStringValidator().validate("log", value, spec);
         final Path path = Paths.get(value);
-        new WritableDirectoryValidator().validate("log", path);
+        new WritableDirectoryValidator().validate("log", path, spec);
         logkatalog = path;
     }
 
@@ -109,9 +114,9 @@ public class ProgramArguments implements Arguments, TidsserieBatchArgumenter, Pr
             description = "Tidsserien lages fra og med 01.01 i angitt år."
     )
     public void settFraAar(final String value) {
-        new IntegerValidator().validate("fraAar", value);
+        new IntegerValidator().validate("fraAar", value, spec);
         final int heltall = Integer.parseInt(value);
-        new YearValidator().validate("fraAar", heltall);
+        new YearValidator().validate("fraAar", heltall, spec);
         fraAar = heltall;
     }
 
@@ -119,9 +124,9 @@ public class ProgramArguments implements Arguments, TidsserieBatchArgumenter, Pr
             description = "Tidsserien lages til og med 31.12 i angitt år."
     )
     public void settTilAar(final String value) {
-        new IntegerValidator().validate("tilAar", value);
+        new IntegerValidator().validate("tilAar", value, spec);
         final int heltall = Integer.parseInt(value);
-        new YearValidator().validate("tilAar", heltall);
+        new YearValidator().validate("tilAar", heltall, spec);
         tilAar = heltall;
     }
 
@@ -129,7 +134,7 @@ public class ProgramArguments implements Arguments, TidsserieBatchArgumenter, Pr
             description = "Antall noder som skal brukes for å utgjøre grid for tidsserie-prossesering. Default er lik antall prosessorer på serveren minus 1."
     )
     public void settNoder(final String value) {
-        new AntallProsessorarValidator().validate("n", value);
+        new AntallProsessorarValidator().validate("n", value, spec);
         nodes = new AntallProsessorarConverter().convert(value);
         antallNoderForPrinting = Integer.parseInt(value);
     }
@@ -139,7 +144,7 @@ public class ProgramArguments implements Arguments, TidsserieBatchArgumenter, Pr
             required = true
     )
     public void settModus(final String value) {
-        new ModusValidator().validate("m", value);
+        new ModusValidator().validate("m", value, spec);
         modus = new ModusConverter().convert(value);
     }
 
@@ -147,7 +152,7 @@ public class ProgramArguments implements Arguments, TidsserieBatchArgumenter, Pr
             description = "Maks kjøretid på formatet HHmm."
     )
     public void settKjoeretid(final String value) {
-        new DurationValidator().validate("kjoeretid", value);
+        new DurationValidator().validate("kjoeretid", value, spec);
         kjoeretid = value;
     }
 
@@ -155,7 +160,7 @@ public class ProgramArguments implements Arguments, TidsserieBatchArgumenter, Pr
             description = "Klokkeslett på formen HHmm eller HHmmss for når kjøringen senest avsluttes."
     )
     public void settSluttid(final String value) {
-        new LocalTimeValidator().validate("sluttid", value);
+        new LocalTimeValidator().validate("sluttid", value, spec);
         sluttidspunkt = new LocalTimeConverter().convert(value);
     }
 

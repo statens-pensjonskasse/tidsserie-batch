@@ -70,7 +70,7 @@ public class MetaDataWriterTest {
     }
 
     private File createTestFolders() throws IOException {
-        File writeFolder = testFolder.newFolder(name.getMethodName());
+        final File writeFolder = testFolder.newFolder(name.getMethodName());
         Paths.get(writeFolder.getAbsolutePath(), "grunnlagsdata_2015-01-01_01-01-01-01").toFile().mkdir();
         return writeFolder;
     }
