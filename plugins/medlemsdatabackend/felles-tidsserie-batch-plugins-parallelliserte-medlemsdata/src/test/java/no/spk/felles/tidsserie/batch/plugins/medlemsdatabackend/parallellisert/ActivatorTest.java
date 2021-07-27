@@ -8,9 +8,7 @@ import no.spk.felles.tidsserie.batch.core.kommandolinje.AntallProsessorar;
 import no.spk.felles.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenter;
 import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.felles.tidsserie.batch.core.registry.Ranking;
-import no.spk.felles.tidsserie.batch.core.registry.ServiceLocator;
 
-import org.assertj.core.api.Fail;
 import org.junit.Rule;
 import org.junit.Test;
 

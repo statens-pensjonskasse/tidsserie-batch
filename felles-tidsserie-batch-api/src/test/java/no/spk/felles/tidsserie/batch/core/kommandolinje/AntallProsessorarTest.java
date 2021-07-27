@@ -3,11 +3,8 @@ package no.spk.felles.tidsserie.batch.core.kommandolinje;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.rangeClosed;
 import static no.spk.felles.tidsserie.batch.core.kommandolinje.AntallProsessorar.*;
-import static no.spk.felles.tidsserie.batch.core.kommandolinje.AntallProsessorar.antallProsessorar;
-import static no.spk.felles.tidsserie.batch.core.kommandolinje.AntallProsessorar.standardAntallProsessorar;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.assertj.core.api.JUnitSoftAssertions;
@@ -86,6 +83,13 @@ public class AntallProsessorarTest {
         assertStream(antallProsessorar(4)).hasSize(4).containsExactlyElementsOf(range("1->4"));
         assertStream(antallProsessorar(8)).hasSize(8).containsExactlyElementsOf(range("1->8"));
         assertStream(antallProsessorar(16)).hasSize(16).containsExactlyElementsOf(range("1->16"));
+    }
+
+    @Test
+    public void skal_ha_en_getter_for_underliggende_verdi() {
+        assertThat(antallProsessorar(4).antall()).isEqualTo(4);
+        assertThat(antallProsessorar(14).antall()).isEqualTo(14);
+        assertThat(antallProsessorar(20).antall()).isEqualTo(20);
     }
 
     private ProxyableListAssert<Integer> assertStream(final AntallProsessorar antall) {

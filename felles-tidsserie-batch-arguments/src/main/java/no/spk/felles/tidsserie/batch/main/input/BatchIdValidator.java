@@ -2,15 +2,18 @@ package no.spk.felles.tidsserie.batch.main.input;
 
 import static no.spk.felles.tidsserie.batch.core.BatchIdConstants.GRUNNLAGSDATA_PATTERN;
 
-import com.beust.jcommander.IParameterValidator;
-import com.beust.jcommander.ParameterException;
+import picocli.CommandLine;
+import picocli.CommandLine.Model.CommandSpec;
+import picocli.CommandLine.ParameterException;
 
-public class BatchIdValidator implements IParameterValidator {
+public class BatchIdValidator {
 
-    @Override
-    public void validate(String name, String value) throws ParameterException {
+    public void validate(final String name, final String value, final CommandSpec spec) throws ParameterException {
         if (value != null && !GRUNNLAGSDATA_PATTERN.matcher(value).matches()) {
-            throw new ParameterException("'" + name + "': må oppgis på formatet grunnlagsdata_yyyy-MM-dd_HH-mm-ss-SS.");
+            throw new ParameterException(
+                    new CommandLine(spec),
+                    "'" + name + "': må oppgis på formatet grunnlagsdata_yyyy-MM-dd_HH-mm-ss-SS."
+            );
         }
     }
 }
