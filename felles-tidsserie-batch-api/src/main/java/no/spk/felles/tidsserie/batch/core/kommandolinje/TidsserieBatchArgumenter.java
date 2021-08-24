@@ -68,10 +68,14 @@ public interface TidsserieBatchArgumenter{
      * <p>
      * Dette tallet bør typisk ikkje overstige antall tilgjengelige CPU-kjerner på maskina batchen køyrer på,
      * forutsatt at ein følger modellen med å ikkje utføre nokon I/O på trådane som genererer tidsseriar.
+     * <p>
+     * Returnerer et standard antall prosessorer basert på maskinenes hardware, dersom metoden er uimplementert.
      *
      * @return antall CPU-kjerner batchen skal benytte ved genereing av tidsseriar
      */
-    AntallProsessorar antallProsessorar();
+    default AntallProsessorar antallProsessorar() {
+        return AntallProsessorar.standardAntallProsessorar();
+    }
 
     /**
      * Aldersgrense som regulerer kva loggkatalogar som skal bli automatisk sletta i
