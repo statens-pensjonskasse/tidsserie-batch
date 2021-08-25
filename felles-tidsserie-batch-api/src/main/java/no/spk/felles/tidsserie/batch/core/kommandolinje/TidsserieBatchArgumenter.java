@@ -1,10 +1,13 @@
 package no.spk.felles.tidsserie.batch.core.kommandolinje;
 
+import static no.spk.felles.tidsserie.batch.core.kommandolinje.AldersgrenseForSlettingAvLogKatalogar.aldersgrenseForSlettingAvLogKatalogar;
+
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.util.function.Function;
 
+import no.spk.faktura.input.DurationUtil;
 import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.felles.tidsserie.batch.core.UttrekksId;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
@@ -19,7 +22,7 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
  *
  * @since 1.1.0
  */
-public interface TidsserieBatchArgumenter {
+public interface TidsserieBatchArgumenter{
     /**
      * Oppsummerer kva argument batchen blir køyrt med, og eventuelle advarslar som brukaren kan ha interesse av å sjå
      * i UIet ved køyring av batchen.
@@ -65,18 +68,26 @@ public interface TidsserieBatchArgumenter {
      * <p>
      * Dette tallet bør typisk ikkje overstige antall tilgjengelige CPU-kjerner på maskina batchen køyrer på,
      * forutsatt at ein følger modellen med å ikkje utføre nokon I/O på trådane som genererer tidsseriar.
+     * <p>
+     * Returnerer et standard antall prosessorer basert på maskinenes hardware, dersom metoden er uimplementert.
      *
      * @return antall CPU-kjerner batchen skal benytte ved genereing av tidsseriar
      */
-    AntallProsessorar antallProsessorar();
+    default AntallProsessorar antallProsessorar() {
+        return AntallProsessorar.standardAntallProsessorar();
+    }
 
     /**
      * Aldersgrense som regulerer kva loggkatalogar som skal bli automatisk sletta i
      * oppryddingsfasen av oppstarten.
+     * <p>
+     * Har en default-verdi på 0 hvis uimplementert.
      *
      * @return aldersgrense for sletting av loggkatalogar
      */
-    AldersgrenseForSlettingAvLogKatalogar slettegrense();
+    default AldersgrenseForSlettingAvLogKatalogar slettegrense() {
+        return aldersgrenseForSlettingAvLogKatalogar(0);
+    }
 
     /**
      * Maksimal køyretid frå batchen startar til den seinast må ha avslutta køyringa.
@@ -86,11 +97,16 @@ public interface TidsserieBatchArgumenter {
      * <p>
      * Dersom dei to måtane for å avgrense køyretida endar opp med å ha forskjellige meiningar om kva som
      * skal vere køyretidspunktet batchen må avsluttast innan, vil det lavaste tidspunktet bli brukt.
+     * <p>
+     * Har en default-verdi på 24 timer hvis uimplementert.
      *
      * @return maksimal køyretid for batchkøyringa
      * @see #avsluttFørTidspunkt()
      */
-    Duration maksimalKjøretid();
+    default Duration maksimalKjøretid() {
+        //noinspection OptionalGetWithoutIsPresent
+        return DurationUtil.convert("2400").get();
+    }
 
     /**
      * Siste køyretidspunkt, batchen må ha avslutta køyringa innan dette tidspunktet.
@@ -100,11 +116,15 @@ public interface TidsserieBatchArgumenter {
      * <p>
      * Dersom dei to måtane for å avgrense køyretida endar opp med å ha forskjellige meiningar om kva som
      * skal vere køyretidspunktet batchen må avsluttast innan, vil det lavaste tidspunktet bli brukt.
+     * <p>
+     * Har en default-verdi på 23:59 hvis uimplementert.
      *
      * @return tidspunktet batchkøyringa må ha avslutta innan
      * @see #maksimalKjøretid()
      */
-    LocalTime avsluttFørTidspunkt();
+    default LocalTime avsluttFørTidspunkt() {
+        return LocalTime.parse("23:59");
+    }
 
     /**
      * {@link Tidsseriemodus Modusen} som implementerer den funksjonelle oppførselen til batchen.
