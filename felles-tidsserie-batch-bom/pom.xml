@@ -9,7 +9,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>no.spk.felles</groupId>
     <artifactId>felles-tidsserie-batch-bom</artifactId>
-    <version>2.0.3-SNAPSHOT</version>
+    <version>2.0.2</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -70,57 +70,57 @@
             <dependency>
                 <groupId>no.spk.felles</groupId>
                 <artifactId>felles-tidsserie-batch-api</artifactId>
-                <version>2.0.3-SNAPSHOT</version>
+                <version>2.0.2</version>
             </dependency>
             <dependency>
                 <groupId>no.spk.felles</groupId>
                 <artifactId>felles-tidsserie-batch-app</artifactId>
-                <version>2.0.3-SNAPSHOT</version>
+                <version>2.0.2</version>
             </dependency>
             <dependency>
                 <groupId>no.spk.felles</groupId>
                 <artifactId>felles-tidsserie-batch-arguments</artifactId>
-                <version>2.0.3-SNAPSHOT</version>
+                <version>2.0.2</version>
             </dependency>
             <dependency>
                 <groupId>no.spk.felles</groupId>
                 <artifactId>felles-tidsserie-batch-main</artifactId>
-                <version>2.0.3-SNAPSHOT</version>
+                <version>2.0.2</version>
             </dependency>
             <dependency>
                 <groupId>no.spk.felles</groupId>
                 <artifactId>felles-tidsserie-batch-plugins-disruptor</artifactId>
-                <version>2.0.3-SNAPSHOT</version>
+                <version>2.0.2</version>
             </dependency>
             <dependency>
                 <groupId>no.spk.felles</groupId>
                 <artifactId>felles-tidsserie-batch-plugins-grunnlagsdatavalidator</artifactId>
-                <version>2.0.3-SNAPSHOT</version>
+                <version>2.0.2</version>
             </dependency>
             <dependency>
                 <groupId>no.spk.felles</groupId>
                 <artifactId>felles-tidsserie-batch-plugins-hazelcast</artifactId>
-                <version>2.0.3-SNAPSHOT</version>
+                <version>2.0.2</version>
             </dependency>
             <dependency>
                 <groupId>no.spk.felles</groupId>
                 <artifactId>felles-tidsserie-batch-plugins-parallelliserte-medlemsdata</artifactId>
-                <version>2.0.3-SNAPSHOT</version>
+                <version>2.0.2</version>
             </dependency>
             <dependency>
                 <groupId>no.spk.felles</groupId>
                 <artifactId>felles-tidsserie-batch-plugins-konfigurerbar-parallelliserte-medlemsdata</artifactId>
-                <version>2.0.3-SNAPSHOT</version>
+                <version>2.0.2</version>
             </dependency>
             <dependency>
                 <groupId>no.spk.felles</groupId>
                 <artifactId>felles-tidsserie-batch-plugins-metadatawriter</artifactId>
-                <version>2.0.3-SNAPSHOT</version>
+                <version>2.0.2</version>
             </dependency>
             <dependency>
                 <groupId>no.spk.felles</groupId>
                 <artifactId>felles-tidsserie-batch-plugins-triggerfil</artifactId>
-                <version>2.0.3-SNAPSHOT</version>
+                <version>2.0.2</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
