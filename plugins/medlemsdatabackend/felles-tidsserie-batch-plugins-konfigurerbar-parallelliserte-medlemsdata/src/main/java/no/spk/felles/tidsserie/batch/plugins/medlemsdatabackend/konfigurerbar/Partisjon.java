@@ -7,18 +7,12 @@ import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BiConsumer;
 
 import no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.datalagring.DatalagringStrategi;
@@ -28,7 +22,7 @@ class Partisjon {
     private static final String DELIMITER_ROW = "\n";
     private static final String DELIMITER_COLUMN = ";";
 
-    private final ExecutorService threadpool = Executors.newFixedThreadPool(1);
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     Semaphore lock = new Semaphore(1, true);
 
@@ -46,7 +40,7 @@ class Partisjon {
         } catch (InterruptedException e) {
             throw new KlarteIkkeBehandleMedlemsdataIPartisjonException(nummer, e);
         }
-        threadpool.submit(() -> {
+        executor.submit(() -> {
             this.medlemsdata.merge(
                     key,
                     datalagringStrategi.medlemsdata(medlemsdata),
@@ -112,10 +106,17 @@ class Partisjon {
 
     @Override
     public String toString() {
+        try {
+            lock.acquire();
+        } catch (InterruptedException e) {
+            throw new KlarteIkkeLeseMedlemsdataIPartisjonException(nummer, e);
+        }
+        int size = medlemsdata.keySet().size();
+        lock.release();
         return format(
                 "%s (%d medlemmar)",
                 nummer.toString(),
-                medlemsdata.keySet().size()
+                size
         );
     }
 
@@ -143,7 +144,7 @@ class Partisjon {
     }
 
     void stop() {
-        threadpool.shutdownNow();
+        executor.shutdownNow();
         lock.drainPermits();
     }
 }
