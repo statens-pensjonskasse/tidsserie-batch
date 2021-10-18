@@ -89,11 +89,25 @@ class Partisjon {
     }
 
     boolean isEmpty() {
-        return medlemsdata.isEmpty();
+        try {
+            lock.acquire();
+        } catch (InterruptedException e) {
+            throw new KlarteIkkeLeseMedlemsdataIPartisjonException(nummer, e);
+        }
+        boolean empty = medlemsdata.isEmpty();
+        lock.release();
+        return empty;
     }
 
     int size() {
-        return medlemsdata.size();
+        try {
+            lock.acquire();
+        } catch (InterruptedException e) {
+            throw new KlarteIkkeLeseMedlemsdataIPartisjonException(nummer, e);
+        }
+        int size = medlemsdata.size();
+        lock.release();
+        return size;
     }
 
     @Override
