@@ -46,16 +46,14 @@ class Uploader implements MedlemsdataUploader {
                         .get(0)
                         .medlem()
                         .toString(),
-                datalagringStrategi.medlemsdata(
-                        medlemsdata
-                            .stream()
-                            .map(Medlemslinje::data)
-                            .collect(toList()).stream()
-                            .peek(this::valider)
-                            .map(row -> join(DELIMITER_COLUMN, row))
-                            .collect(joining(DELIMITER_ROW))
-                            .getBytes(StandardCharsets.UTF_8)
-                )
+                medlemsdata
+                        .stream()
+                        .map(Medlemslinje::data)
+                        .peek(this::valider)
+                        .map(row -> join(DELIMITER_COLUMN, row))
+                        .collect(joining(DELIMITER_ROW))
+                        .getBytes(StandardCharsets.UTF_8),
+                datalagringStrategi
         );
         this.medlemsdata.clear();
     }

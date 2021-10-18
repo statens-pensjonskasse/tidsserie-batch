@@ -17,6 +17,8 @@ import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.datalagring.DefaultDatalagringStrategi;
+
 import org.assertj.core.api.MapAssert;
 import org.junit.Test;
 
@@ -82,7 +84,7 @@ public class PartisjonstabellTest {
 
     @Test
     public void skal_tømme_backenden_for_data() {
-        partisjonstabell.put("Adam", medlemsdata(rad("Født som", "Jonas Kahnwald")));
+        partisjonstabell.put("Adam", medlemsdata(rad("Født som", "Jonas Kahnwald")).medlemsdata(), new DefaultDatalagringStrategi());
         partisjonstabell.clear();
         assertThat(partisjonstabell.partisjonarFor(nodenummer(1, 1))).hasSize(0);
     }
@@ -93,13 +95,13 @@ public class PartisjonstabellTest {
                 "Adam",
                 medlemsdata(
                         rad("Motto", "Sic Mundus Creatus Est")
-                )
+                ).medlemsdata(), new DefaultDatalagringStrategi()
         );
         partisjonstabell.put(
                 "Eva",
                 medlemsdata(
                         rad("Motto", "Erit Lux")
-                )
+                ).medlemsdata(), new DefaultDatalagringStrategi()
         );
 
         assertThat(

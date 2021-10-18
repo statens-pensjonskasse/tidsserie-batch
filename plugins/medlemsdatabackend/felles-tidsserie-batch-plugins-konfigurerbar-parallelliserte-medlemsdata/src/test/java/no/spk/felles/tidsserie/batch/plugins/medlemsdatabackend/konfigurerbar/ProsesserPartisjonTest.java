@@ -14,6 +14,7 @@ import java.util.function.Predicate;
 
 import no.spk.felles.tidsserie.batch.core.medlem.GenererTidsserieCommand;
 import no.spk.felles.tidsserie.batch.core.medlem.TidsserieContext;
+import no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.datalagring.DefaultDatalagringStrategi;
 
 import org.assertj.core.api.MapAssert;
 import org.junit.Test;
@@ -27,12 +28,12 @@ public class ProsesserPartisjonTest {
 
     @Test
     public void skal_behandle_medlemmar_i_deterministisk_rekkefølge_basert_på_rekkefølga_medlemmane_blir_lagt_til_i_partisjonen_første_gang() {
-        partisjon.put("Ulrich Nielsen", medlemsdata(rad("Litt")));
-        partisjon.put("Katharina Nielsen", medlemsdata(rad()));
-        partisjon.put("Eva", medlemsdata(rad()));
-        partisjon.put("Hannah Kahnwald", medlemsdata(rad()));
-        partisjon.put("Adam", medlemsdata(rad()));
-        partisjon.put("Ulrich Nielsen", medlemsdata(rad("Enda meir")));
+        partisjon.put("Ulrich Nielsen", medlemsdata(rad("Litt")).medlemsdata(), new DefaultDatalagringStrategi());
+        partisjon.put("Katharina Nielsen", medlemsdata(rad()).medlemsdata(), new DefaultDatalagringStrategi());
+        partisjon.put("Eva", medlemsdata(rad()).medlemsdata(), new DefaultDatalagringStrategi());
+        partisjon.put("Hannah Kahnwald", medlemsdata(rad()).medlemsdata(), new DefaultDatalagringStrategi());
+        partisjon.put("Adam", medlemsdata(rad()).medlemsdata(), new DefaultDatalagringStrategi());
+        partisjon.put("Ulrich Nielsen", medlemsdata(rad("Enda meir")).medlemsdata(), new DefaultDatalagringStrategi());
 
         final List<String> behandlingsrekkefølge = new ArrayList<>();
         prosessering.prosesser(
@@ -53,11 +54,11 @@ public class ProsesserPartisjonTest {
 
     @Test
     public void skal_emitte_antall_medlemmar_behandla() {
-        partisjon.put("Adam", medlemsdata(rad()));
-        partisjon.put("Eva", medlemsdata(rad()));
-        partisjon.put("Ulrich Nielsen", medlemsdata(rad()));
-        partisjon.put("Katharina Nielsen", medlemsdata(rad()));
-        partisjon.put("Hannah Kahnwald", medlemsdata(rad()));
+        partisjon.put("Adam", medlemsdata(rad()).medlemsdata(), new DefaultDatalagringStrategi());
+        partisjon.put("Eva", medlemsdata(rad()).medlemsdata(), new DefaultDatalagringStrategi());
+        partisjon.put("Ulrich Nielsen", medlemsdata(rad()).medlemsdata(), new DefaultDatalagringStrategi());
+        partisjon.put("Katharina Nielsen", medlemsdata(rad()).medlemsdata(), new DefaultDatalagringStrategi());
+        partisjon.put("Hannah Kahnwald", medlemsdata(rad()).medlemsdata(), new DefaultDatalagringStrategi());
 
         assertMeldingar(
                 enKommandoSomAldriFeilar(),
@@ -69,11 +70,11 @@ public class ProsesserPartisjonTest {
 
     @Test
     public void skal_emitte_antall_feil() {
-        partisjon.put("Adam", medlemsdata(rad()));
-        partisjon.put("Eva", medlemsdata(rad()));
-        partisjon.put("Ulrich Nielsen", medlemsdata(rad()));
-        partisjon.put("Katharina Nielsen", medlemsdata(rad()));
-        partisjon.put("Hannah Kahnwald", medlemsdata(rad()));
+        partisjon.put("Adam", medlemsdata(rad()).medlemsdata(), new DefaultDatalagringStrategi());
+        partisjon.put("Eva", medlemsdata(rad()).medlemsdata(), new DefaultDatalagringStrategi());
+        partisjon.put("Ulrich Nielsen", medlemsdata(rad()).medlemsdata(), new DefaultDatalagringStrategi());
+        partisjon.put("Katharina Nielsen", medlemsdata(rad()).medlemsdata(), new DefaultDatalagringStrategi());
+        partisjon.put("Hannah Kahnwald", medlemsdata(rad()).medlemsdata(), new DefaultDatalagringStrategi());
 
         assertMeldingar(
                 enKommandoSomAlltidFeilar(),
@@ -85,9 +86,9 @@ public class ProsesserPartisjonTest {
 
     @Test
     public void skal_prosessere_alle_medlemmar_sjølv_om_nokon_av_dei_feilar() {
-        partisjon.put("Feilfritt medlem #1", medlemsdata(rad("Masse fine saker")));
-        partisjon.put("Inkonsistent medlem", medlemsdata(rad("Masse ræl og tøv")));
-        partisjon.put("Feilfritt medlem #2", medlemsdata(rad("Fleire fine saker")));
+        partisjon.put("Feilfritt medlem #1", medlemsdata(rad("Masse fine saker")).medlemsdata(), new DefaultDatalagringStrategi());
+        partisjon.put("Inkonsistent medlem", medlemsdata(rad("Masse ræl og tøv")).medlemsdata(), new DefaultDatalagringStrategi());
+        partisjon.put("Feilfritt medlem #2", medlemsdata(rad("Fleire fine saker")).medlemsdata(), new DefaultDatalagringStrategi());
 
         assertMeldingar(
                 enKommandoSomFeilar("Inkonsistent medlem"::equals),
@@ -104,9 +105,9 @@ public class ProsesserPartisjonTest {
 
     @Test
     public void skal_kun_notifisere_medlemslyttar_om_medlemmar_som_feilar() {
-        partisjon.put("Feilfritt medlem #1", medlemsdata(rad("Masse fine saker")));
-        partisjon.put("Inkonsistent medlem", medlemsdata(rad("Masse ræl og tøv")));
-        partisjon.put("Feilfritt medlem #2", medlemsdata(rad("Fleire fine saker")));
+        partisjon.put("Feilfritt medlem #1", medlemsdata(rad("Masse fine saker")).medlemsdata(), new DefaultDatalagringStrategi());
+        partisjon.put("Inkonsistent medlem", medlemsdata(rad("Masse ræl og tøv")).medlemsdata(), new DefaultDatalagringStrategi());
+        partisjon.put("Feilfritt medlem #2", medlemsdata(rad("Fleire fine saker")).medlemsdata(), new DefaultDatalagringStrategi());
 
         final Map<String, Throwable> feilaMedlemmar = new HashMap<>();
 
@@ -127,7 +128,7 @@ public class ProsesserPartisjonTest {
 
     @Test
     public void skal_aldri_avbryte_prosessering_dersom_medlemslyttar_feilar() {
-        partisjon.put("Inkonsistent medlem", medlemsdata(rad("Masse ræl og tøv")));
+        partisjon.put("Inkonsistent medlem", medlemsdata(rad("Masse ræl og tøv")).medlemsdata(), new DefaultDatalagringStrategi());
 
         assertMeldingar(
                 enKommandoSomAlltidFeilar(),
@@ -148,7 +149,7 @@ public class ProsesserPartisjonTest {
 
     @Test
     public void skal_fange_og_rapportere_feil_frå_partisjonslyttaren_utan_sjølv_å_feile() {
-        partisjon.put("Agnes Nielsen", medlemsdata(rad("Født", "1910")));
+        partisjon.put("Agnes Nielsen", medlemsdata(rad("Født", "1910")).medlemsdata(), new DefaultDatalagringStrategi());
 
         assertMeldingar(
                 enKommandoSomAldriFeilar(),

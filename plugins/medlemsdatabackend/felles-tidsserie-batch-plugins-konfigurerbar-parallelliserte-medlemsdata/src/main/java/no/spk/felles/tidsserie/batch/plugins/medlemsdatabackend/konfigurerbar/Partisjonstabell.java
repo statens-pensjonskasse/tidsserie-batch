@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
+import no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.datalagring.DatalagringStrategi;
 import no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.datalagring.Medlemsdata;
 
 class Partisjonstabell {
@@ -31,6 +32,7 @@ class Partisjonstabell {
     }
 
     void clear() {
+        partisjonar.forEach((ignored, partisjon) -> partisjon.stop());
         partisjonar.clear();
     }
 
@@ -44,10 +46,10 @@ class Partisjonstabell {
                         .collect(toSet());
     }
 
-    void put(final String medlemsId, final Medlemsdata data) {
+    void put(final String medlemsId, final byte[] data, DatalagringStrategi datalagringStrategi) {
         partisjonar
                 .get(partisjon(medlemsId))
-                .put(medlemsId, data);
+                .put(medlemsId, data, datalagringStrategi);
     }
 
     Optional<List<List<String>>> get(final String medlemsId) {

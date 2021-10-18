@@ -39,7 +39,7 @@ public class PartisjonertMedlemsdataBackendTest {
 
     @Test
     public void skal_bevare_norske_tegn_i_medlemsdatane() {
-        backend.put("ABCD", medlemsdata(rad("ÆØÅæøå")));
+        backend.put("ABCD", medlemsdata(rad("ÆØÅæøå")).medlemsdata(), new DefaultDatalagringStrategi());
 
         final Map<String, List<List<String>>> actual = klargjerFangingAvMedlemsdata();
         backend.lagTidsserie();
@@ -50,8 +50,8 @@ public class PartisjonertMedlemsdataBackendTest {
 
     @Test
     public void skal_kalle_kommando_en_gang_pr_medlem() {
-        backend.put("Donald", medlemsdata(rad("ABCD")));
-        backend.put("Dolly", medlemsdata(rad("1234")));
+        backend.put("Donald", medlemsdata(rad("ABCD")).medlemsdata(), new DefaultDatalagringStrategi());
+        backend.put("Dolly", medlemsdata(rad("1234")).medlemsdata(), new DefaultDatalagringStrategi());
 
         final Map<String, List<List<String>>> actual = klargjerFangingAvMedlemsdata();
         backend.lagTidsserie();
@@ -64,7 +64,7 @@ public class PartisjonertMedlemsdataBackendTest {
 
     @Test
     public void skal_sluke_og_rapportere_alle_runtime_exceptions_frå_kommandoen() {
-        backend.put("Martha", medlemsdata(rad("Ende", "Anfang", "ende")));
+        backend.put("Martha", medlemsdata(rad("Ende", "Anfang", "ende")).medlemsdata(), new DefaultDatalagringStrategi());
 
         registrerKommando(
                 (key, medlemsdata, tidsserieContext) -> {
@@ -83,7 +83,7 @@ public class PartisjonertMedlemsdataBackendTest {
 
     @Test
     public void skal_sluke_og_rapportere_alle_errors_frå_kommandoen() {
-        backend.put("Martha", medlemsdata(rad("Ende", "Anfang", "ende")));
+        backend.put("Martha", medlemsdata(rad("Ende", "Anfang", "ende")).medlemsdata(), new DefaultDatalagringStrategi());
 
         registrerKommando(
                 (key, medlemsdata, tidsserieContext) -> {
