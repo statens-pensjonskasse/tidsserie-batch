@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
+import no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.datalagring.DefaultDatalagringStrategi;
+
 import org.junit.Test;
 
 public class ProsesserNodeTest {
@@ -53,7 +55,7 @@ public class ProsesserNodeTest {
                         .map(
                                 partisjonsnummer -> {
                                     final Partisjon partisjon = new Partisjon(partisjonsnummer);
-                                    partisjon.put(partisjon.toString(), medlemsdata(rad("ABCD")));
+                                    partisjon.put(partisjon.toString(), medlemsdata(rad("ABCD")).medlemsdata(), new DefaultDatalagringStrategi());
                                     return partisjon;
                                 }
                         )

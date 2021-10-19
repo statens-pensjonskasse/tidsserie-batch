@@ -76,8 +76,8 @@ class PartisjonertMedlemsdataBackend implements MedlemsdataBackend, TidsserieLiv
                         .toMap();
     }
 
-    void put(final String key, final Medlemsdata data) {
-        partisjonar.put(key, data);
+    void put(final String key, final byte[] data, final DatalagringStrategi datalagringStrategi) {
+        partisjonar.put(key, data, datalagringStrategi);
     }
 
     // For test-usage only

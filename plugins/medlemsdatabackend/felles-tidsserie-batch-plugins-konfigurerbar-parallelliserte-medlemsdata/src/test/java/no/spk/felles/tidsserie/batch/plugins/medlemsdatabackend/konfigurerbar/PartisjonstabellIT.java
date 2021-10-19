@@ -16,6 +16,7 @@ import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.datalagring.DefaultDatalagringStrategi;
 import no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.datalagring.Medlemsdata;
 
 import org.assertj.core.api.SoftAssertions;
@@ -67,7 +68,8 @@ public class PartisjonstabellIT {
                         medlemsId ->
                                 partisjonstabell.put(
                                         medlemsId,
-                                        tommeMedlemsdata
+                                        tommeMedlemsdata.medlemsdata(),
+                                        new DefaultDatalagringStrategi()
                                 )
                 );
 
