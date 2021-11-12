@@ -24,7 +24,7 @@ class Partisjon {
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
-    Semaphore lock = new Semaphore(1, true);
+    private final Semaphore lock = new Semaphore(1, true);
 
     private final LinkedHashMap<String, Medlemsdata> medlemsdata = new LinkedHashMap<>();
 
@@ -34,7 +34,7 @@ class Partisjon {
         this.nummer = requireNonNull(nummer, "nummer er påkrevd, men var null");
     }
 
-    void put(final String key, final byte[] medlemsdata, DatalagringStrategi datalagringStrategi) {
+    void put(final String key, final byte[] medlemsdata, final DatalagringStrategi datalagringStrategi) {
         try {
             lock.acquire();
         } catch (InterruptedException e) {
