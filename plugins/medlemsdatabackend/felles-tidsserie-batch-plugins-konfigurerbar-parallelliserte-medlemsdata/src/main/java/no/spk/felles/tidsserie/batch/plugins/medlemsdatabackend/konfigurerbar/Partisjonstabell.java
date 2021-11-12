@@ -46,7 +46,7 @@ class Partisjonstabell {
                         .collect(toSet());
     }
 
-    void put(final String medlemsId, final byte[] data, DatalagringStrategi datalagringStrategi) {
+    void put(final String medlemsId, final byte[] data, final DatalagringStrategi datalagringStrategi) {
         partisjonar
                 .get(partisjon(medlemsId))
                 .put(medlemsId, data, datalagringStrategi);

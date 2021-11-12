@@ -24,7 +24,7 @@ class Partisjon {
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
-    Semaphore lock = new Semaphore(1, true);
+    private final Semaphore lock = new Semaphore(1, true);
 
     private final LinkedHashMap<String, Medlemsdata> medlemsdata = new LinkedHashMap<>();
 
@@ -34,19 +34,22 @@ class Partisjon {
         this.nummer = requireNonNull(nummer, "nummer er påkrevd, men var null");
     }
 
-    void put(final String key, final byte[] medlemsdata, DatalagringStrategi datalagringStrategi) {
+    void put(final String key, final byte[] medlemsdata, final DatalagringStrategi datalagringStrategi) {
         try {
             lock.acquire();
         } catch (InterruptedException e) {
             throw new KlarteIkkeBehandleMedlemsdataIPartisjonException(nummer, e);
         }
         executor.submit(() -> {
-            this.medlemsdata.merge(
-                    key,
-                    datalagringStrategi.medlemsdata(medlemsdata),
-                    Medlemsdata::put
-            );
-            lock.release();
+            try {
+                this.medlemsdata.merge(
+                        key,
+                        datalagringStrategi.medlemsdata(medlemsdata),
+                        Medlemsdata::put
+                );
+            } finally {
+                lock.release();
+            }
         });
     }
 
@@ -56,11 +59,14 @@ class Partisjon {
         } catch (InterruptedException e) {
             throw new KlarteIkkeLeseMedlemsdataIPartisjonException(nummer, e);
         }
-        Optional<List<List<String>>> resultat = Optional
-                .ofNullable(medlemsdata.get(medlemsId))
-                .map(this::somMedlemsdata);
-        lock.release();
-        return resultat;
+        try {
+            Optional<List<List<String>>> resultat = Optional
+                    .ofNullable(medlemsdata.get(medlemsId))
+                    .map(this::somMedlemsdata);
+            return resultat;
+        } finally {
+            lock.release();
+        }
     }
 
     void forEach(final BiConsumer<String, List<List<String>>> consumer) {
@@ -69,13 +75,16 @@ class Partisjon {
         } catch (InterruptedException e) {
             throw new KlarteIkkeLeseMedlemsdataIPartisjonException(nummer, e);
         }
-        medlemsdata.forEach(
-                (key, bytes) -> consumer.accept(
-                        key,
-                        somMedlemsdata(bytes)
-                )
-        );
-        lock.release();
+        try {
+            medlemsdata.forEach(
+                    (key, bytes) -> consumer.accept(
+                            key,
+                            somMedlemsdata(bytes)
+                    )
+            );
+        } finally {
+            lock.release();
+        }
     }
 
     Partisjonsnummer nummer() {
@@ -88,9 +97,11 @@ class Partisjon {
         } catch (InterruptedException e) {
             throw new KlarteIkkeLeseMedlemsdataIPartisjonException(nummer, e);
         }
-        boolean empty = medlemsdata.isEmpty();
-        lock.release();
-        return empty;
+        try {
+            return medlemsdata.isEmpty();
+        } finally {
+            lock.release();
+        }
     }
 
     int size() {
@@ -99,9 +110,11 @@ class Partisjon {
         } catch (InterruptedException e) {
             throw new KlarteIkkeLeseMedlemsdataIPartisjonException(nummer, e);
         }
-        int size = medlemsdata.size();
-        lock.release();
-        return size;
+        try {
+            return medlemsdata.size();
+        } finally {
+            lock.release();
+        }
     }
 
     @Override
@@ -111,13 +124,15 @@ class Partisjon {
         } catch (InterruptedException e) {
             throw new KlarteIkkeLeseMedlemsdataIPartisjonException(nummer, e);
         }
-        int size = medlemsdata.keySet().size();
-        lock.release();
-        return format(
-                "%s (%d medlemmar)",
-                nummer.toString(),
-                size
-        );
+        try {
+            return format(
+                    "%s (%d medlemmar)",
+                    nummer.toString(),
+                    medlemsdata.keySet().size()
+            );
+        } finally {
+            lock.release();
+        }
     }
 
     private int ikkjeIgnorerTommeKolonnerPåSluttenAvRada() {
