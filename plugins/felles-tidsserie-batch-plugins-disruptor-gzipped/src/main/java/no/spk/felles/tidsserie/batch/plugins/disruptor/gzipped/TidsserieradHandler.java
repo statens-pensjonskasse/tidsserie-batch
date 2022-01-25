@@ -1,4 +1,4 @@
-package no.spk.felles.tidsserie.batch.plugins.disruptor;
+package no.spk.felles.tidsserie.batch.plugins.disruptor.gzipped;
 
 import java.io.IOException;
 

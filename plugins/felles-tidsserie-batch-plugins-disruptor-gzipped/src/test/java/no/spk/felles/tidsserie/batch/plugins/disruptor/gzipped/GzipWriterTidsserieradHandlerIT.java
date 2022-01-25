@@ -1,4 +1,4 @@
-package no.spk.felles.tidsserie.batch.plugins.disruptor;
+package no.spk.felles.tidsserie.batch.plugins.disruptor.gzipped;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.will;
@@ -6,9 +6,15 @@ import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.junit.MockitoJUnit.rule;
 import static org.mockito.quality.Strictness.STRICT_STUBS;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.zip.GZIPInputStream;
 
 import no.spk.felles.tidsserie.batch.core.lagring.Tidsserierad;
 
@@ -21,11 +27,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoRule;
 
 /**
- * Integrasjonstestar for {@link FileWriterTidsserieradHandler}.
+ * Integrasjonstestar for {@link GzipWriterTidsserieradHandler}.
  *
- * @author Tarjei Skorgenes
  */
-public class FileWriterTidsserieradHandlerIT {
+public class GzipWriterTidsserieradHandlerIT {
     @Rule
     public final TemporaryFolderWithDeleteVerification temp = new TemporaryFolderWithDeleteVerification();
 
@@ -35,11 +40,11 @@ public class FileWriterTidsserieradHandlerIT {
     @Mock
     private FileTemplate template;
 
-    private FileWriterTidsserieradHandler consumer;
+    private GzipWriterTidsserieradHandler consumer;
 
     @Before
     public void _before() {
-        consumer = new FileWriterTidsserieradHandler(template);
+        consumer = new GzipWriterTidsserieradHandler(template);
     }
 
     @After
@@ -48,8 +53,7 @@ public class FileWriterTidsserieradHandlerIT {
     }
 
     /**
-     * Dersom input-fila mot formodning eksisterer frå før, skal consumeren trunkere den slik
-     * at resultata av tidligare køyringar ikkje blir blanda med resultata frå neste køyring.
+     * Dersom input-fila mot formodning eksisterer frå før, skal consumeren trunkere den slik at resultata av tidligare køyringar ikkje blir blanda med resultata frå neste køyring.
      */
     @Test
     public void skalTrunkereOutputfilaVissDenEksistererFraFoer() throws IOException {
@@ -60,6 +64,7 @@ public class FileWriterTidsserieradHandlerIT {
         final Tidsserierad event = new Tidsserierad();
         event.buffer.append("MOAR MOAR MOAR\n");
         consumer.onEvent(event, 1, true);
+        consumer.close();
 
         assertFileContent(alreadyExists)
                 .hasSize(1)
@@ -78,6 +83,7 @@ public class FileWriterTidsserieradHandlerIT {
 
         event.serienummer(2L).medInnhold("YAY\n");
         consumer.onEvent(event, 1, true);
+        consumer.close();
 
         assertFileContent(new File(temp.getRoot(), "1")).hasSize(1).containsOnly("YEY");
         assertFileContent(new File(temp.getRoot(), "2")).hasSize(1).containsOnly("YAY");
@@ -95,14 +101,31 @@ public class FileWriterTidsserieradHandlerIT {
 
         event.serienummer(1L).medFilprefix("noeAnnet").medInnhold("YAY\n");
         consumer.onEvent(event, 1, true);
+        consumer.close();
 
         assertFileContent(new File(temp.getRoot(), "1")).hasSize(1).containsOnly("YEY");
         assertFileContent(new File(temp.getRoot(), "2")).hasSize(1).containsOnly("YAY");
     }
 
-    private ListAssert<String> assertFileContent(
-            final File file) throws IOException {
-        return assertThat(Files.readAllLines(file.toPath()))
+    private ListAssert<String> assertFileContent(final File file) throws IOException {
+        return assertThat(
+                decompressGzip(file)
+        )
                 .as("alle linjer i " + file);
+    }
+
+    List<String> decompressGzip(final File source) throws IOException {
+        final FileInputStream fin = new FileInputStream(source);
+        final GZIPInputStream gzis = new GZIPInputStream(fin);
+        final InputStreamReader xover = new InputStreamReader(gzis);
+        final BufferedReader is = new BufferedReader(xover);
+
+        String line;
+        final List<String> result = new ArrayList<>();
+        while ((line = is.readLine()) != null) {
+            result.add(line);
+        }
+
+        return result;
     }
 }

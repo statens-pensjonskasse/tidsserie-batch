@@ -1,4 +1,4 @@
-package no.spk.felles.tidsserie.batch.plugins.disruptor;
+package no.spk.felles.tidsserie.batch.plugins.disruptor.gzipped;
 
 import static java.util.concurrent.Executors.newCachedThreadPool;
 import static no.spk.felles.tidsserie.batch.core.TidsserieLivssyklus.onStop;
@@ -27,7 +27,7 @@ public class LmaxDisruptorPlugin implements Plugin {
         final Path utKatalog = locator.firstMandatory(Path.class, Katalog.UT.egenskap());
         final LmaxDisruptorPublisher disruptor = new LmaxDisruptorPublisher(
                 executors,
-                new FileTemplate(utKatalog, ".csv")
+                new FileTemplate(utKatalog, ".csv.gz")
         );
         registry.registerService(StorageBackend.class, disruptor);
         registry.registerService(TidsserieLivssyklus.class, disruptor);

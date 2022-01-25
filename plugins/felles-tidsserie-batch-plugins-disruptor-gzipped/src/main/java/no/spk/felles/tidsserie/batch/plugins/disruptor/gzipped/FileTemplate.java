@@ -1,4 +1,4 @@
-package no.spk.felles.tidsserie.batch.plugins.disruptor;
+package no.spk.felles.tidsserie.batch.plugins.disruptor.gzipped;
 
 import java.io.File;
 import java.io.Serializable;
@@ -6,9 +6,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
 
-/**
- * @author Snorre E. Brekke - Computas
- */
 public class FileTemplate implements Serializable {
     private final static long serialVersionUID = 1;
 

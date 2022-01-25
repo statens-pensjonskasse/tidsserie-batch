@@ -1,6 +1,6 @@
-package no.spk.felles.tidsserie.batch.plugins.disruptor;
+package no.spk.felles.tidsserie.batch.plugins.disruptor.gzipped;
 
-import static no.spk.felles.tidsserie.batch.plugins.disruptor.ServiceRegistryRule.erAvType;
+import static no.spk.felles.tidsserie.batch.plugins.disruptor.gzipped.ServiceRegistryRule.erAvType;
 
 import java.io.IOException;
 import java.nio.file.Path;

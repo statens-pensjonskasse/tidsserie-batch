@@ -1,4 +1,4 @@
-package no.spk.felles.tidsserie.batch.plugins.disruptor;
+package no.spk.felles.tidsserie.batch.plugins.disruptor.gzipped;
 
 import static java.util.Objects.requireNonNull;
 
@@ -39,7 +39,7 @@ public class LmaxDisruptorPublisher implements StorageBackend, TidsserieLivssykl
 
         disruptor = new Disruptor<>(factory, bufferSize, this.executor);
 
-        consumer = new FileWriterTidsserieradHandler(this.fileTemplate);
+        consumer = new GzipWriterTidsserieradHandler(this.fileTemplate);
         disruptor.handleEventsWith(consumer);
         // Start the Disruptor, starts all threads running
         disruptor.start();
