@@ -10,6 +10,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>felles-tidsserie-batch-plugins-disruptor</module>
+        <module>felles-tidsserie-batch-plugins-disruptor-gzipped</module>
         <module>felles-tidsserie-batch-plugins-grunnlagsdatavalidator</module>
         <module>felles-tidsserie-batch-plugins-metadatawriter</module>
         <module>felles-tidsserie-batch-plugins-triggerfil</module>

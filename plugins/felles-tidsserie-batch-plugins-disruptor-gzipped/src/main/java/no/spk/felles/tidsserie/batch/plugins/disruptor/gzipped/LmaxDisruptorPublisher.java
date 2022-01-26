@@ -35,7 +35,7 @@ public class LmaxDisruptorPublisher implements StorageBackend, TidsserieLivssykl
         final TidsserieradFactory factory = new TidsserieradFactory();
 
         // Specify the size of the ring buffer, must be power of 2.
-        int bufferSize = 1024 * 16;
+        int bufferSize = 1024 * 1024; // 1024kb, maksimalt antall bytes som kan skrives til SPK-mountet NFS om gangen
 
         disruptor = new Disruptor<>(factory, bufferSize, this.executor);
 
