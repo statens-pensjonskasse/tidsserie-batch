@@ -27,7 +27,7 @@ public class LmaxDisruptorPlugin implements Plugin {
         final Path utKatalog = locator.firstMandatory(Path.class, Katalog.UT.egenskap());
         final LmaxDisruptorPublisher disruptor = new LmaxDisruptorPublisher(
                 executors,
-                new FileTemplate(utKatalog, ".csv.gz")
+                new FileTemplate(utKatalog, GzipWriterTidsserieradHandler.SUFFIX)
         );
         registry.registerService(StorageBackend.class, disruptor);
         registry.registerService(TidsserieLivssyklus.class, disruptor);
