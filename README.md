@@ -55,7 +55,13 @@ Standard medlemsdatabackend, tilbyr in-memory lagring uttrekkets medlemsdata med
 
 Standard medlemsdatabackend, tilbyr in-memory lagring uttrekkets medlemsdata med parallellisert prosessering av desse via tidsseriekommandoen modusen ønskjar å benytte.
 Oppfører seg default likt som felles-tidsserie-batch-plugins-parallelliserte-medlemsdata, men det er mulig å velge forskjellige datalagrings strategier ved å legge det inn i service locator.
-Det er også mulig å implementere sine egne løsninger for datalagring på denne måten.
+Datalagringstrategiene spesifiserer hvordan innlest medlemsdata blir lagret i minnet før prossesering.
+Det er også mulig å implementere sine egne løsninger for datalagring på ved å implementere interface DatalagringStrategi og Medlemsdata og legge det på service locator.
+
+De 3 tilgjengelige datalagringstrategiene er som følger:
+* DefaultDatalagringStrategi: Oppfører seg likt som for plugin felles-tidsserie-batch-plugins-parallelliserte-medlemsdata og er strategien som blir valgt hvis ingen strategi er spesifisert.
+* KomprimertDatalagringStrategi: Vil komprimere dataene per medlem i minnet under innlesing og dekompimere dem når de hentes ut. Ment til å brukes når det er behov for å lese inn veldig store datamengder.
+* SkalertBufferDatalagringStrategi: Vil øke størrelsen på buffer array mer enn nødvendig for ny data som blir dyttet inn på medlemmet slik at det ikke trengs å opprette nytt array hver gang det kommer ny data. Dette er nyttig hvis data leses inn usortert mtp nøkkel.
 
 #### felles-tidsserie-batch-plugins-triggerfil
 
