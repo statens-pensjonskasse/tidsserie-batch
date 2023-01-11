@@ -1,6 +1,5 @@
 package no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar;
 
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.MedlemsdataBuilder.medlemsdata;
 import static no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.MedlemsdataBuilder.rad;
@@ -74,7 +73,7 @@ public class PartisjonstabellTest {
                                     .mapToObj(nodenummer -> nodenummer(nodenummer, antallNoder))
                                     .map(partisjonstabell::partisjonarFor)
                                     .flatMap(Set::stream)
-                                    .collect(toList())
+                                    .toList()
                     )
                             .as("alle partisjonar for alle noder (antall noder = %d)", antallNoder)
                             .doesNotHaveDuplicates();

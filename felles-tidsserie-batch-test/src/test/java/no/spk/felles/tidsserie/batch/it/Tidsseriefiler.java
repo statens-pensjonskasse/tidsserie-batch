@@ -1,7 +1,5 @@
 package no.spk.felles.tidsserie.batch.it;
 
-import static java.util.stream.Collectors.toList;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -72,14 +70,14 @@ class Tidsseriefiler {
     private DataTable tilTabellUtenIgnorerteKolonner(List<String> kolonnenavn, List<List<String>> underlagsperiodeLinjer) {
         return DataTable.create(
                 Stream.concat(
-                        Stream.of(
-                                kolonnenavn
-                                        .stream()
-                                        .filter(kunKolonnerSomIkkjeErIgnorert())
-                                        .collect(toList())
-                        ),
-                        underlagsperiodeLinjer.stream()
-                )
+                                Stream.of(
+                                        kolonnenavn
+                                                .stream()
+                                                .filter(kunKolonnerSomIkkjeErIgnorert())
+                                                .toList()
+                                ),
+                                underlagsperiodeLinjer.stream()
+                        )
                         .collect(Collectors.toList())
         );
     }
@@ -91,7 +89,7 @@ class Tidsseriefiler {
                 .map(line -> line.split(";", -1))
                 .map(Arrays::asList)
                 .map((felt) -> fjernIgnorerteKolonner(felt, kolonner))
-                .collect(toList());
+                .toList();
     }
 
     private List<String> finnKolonnenavn(final List<String> lines) {
@@ -118,7 +116,7 @@ class Tidsseriefiler {
                 .filter(kunKolonnerSomIkkjeErIgnorert())
                 .map(kolonner::indexOf)
                 .map(felt::get)
-                .collect(toList());
+                .toList();
     }
 
     private Error headerlinjeManglar() {

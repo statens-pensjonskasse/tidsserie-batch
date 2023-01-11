@@ -2,7 +2,6 @@ package no.spk.felles.tidsserie.batch.core.medlem;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
 import static no.spk.felles.tidsserie.batch.core.Validators.require;
 import static no.spk.felles.tidsserie.batch.core.medlem.MedlemsId.medlemsId;
 
@@ -20,8 +19,6 @@ import java.util.List;
  * <br>
  * Medlemslinjene validerer ikkje at datatypen er ein av datatypene som domenemodellen støttar, dette forventast utført
  * i og av domenemodellen på eit seinare tidspunkt i tidsseriegenereringa.
- *
- * @author Tarjei Skorgenes
  */
 public class Medlemslinje {
     private final List<String> medlemsdata;
@@ -41,7 +38,7 @@ public class Medlemslinje {
                 requireNonNull(values, "verdiar for medlemslinja er påkrevd, men var null")
                         .stream()
                         .skip(1)
-                        .collect(toList()),
+                        .toList(),
                 value -> values.size() >= 1,
                 value -> new IllegalArgumentException(
                         String.format(

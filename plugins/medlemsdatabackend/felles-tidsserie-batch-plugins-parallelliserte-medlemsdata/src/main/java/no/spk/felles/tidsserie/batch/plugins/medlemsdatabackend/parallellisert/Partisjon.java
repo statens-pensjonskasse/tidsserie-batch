@@ -6,7 +6,6 @@ import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
 
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
@@ -98,7 +97,7 @@ class Partisjon {
                                 )
                         )
                 )
-                .collect(toList());
+                .toList();
     }
 
     private byte[] append(final byte[] forrige, final byte[] neste) {

@@ -1,7 +1,5 @@
 package no.spk.felles.tidsserie.batch.it;
 
-import static java.util.stream.Collectors.toList;
-
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -47,6 +45,6 @@ class CSVFiler {
                     }
                 })
                 .flatMap(List::stream)
-                .collect(toList());
+                .toList();
     }
 }

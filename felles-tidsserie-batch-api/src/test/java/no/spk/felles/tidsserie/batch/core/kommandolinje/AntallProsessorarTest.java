@@ -1,14 +1,15 @@
 package no.spk.felles.tidsserie.batch.core.kommandolinje;
 
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.rangeClosed;
-import static no.spk.felles.tidsserie.batch.core.kommandolinje.AntallProsessorar.*;
+import static no.spk.felles.tidsserie.batch.core.kommandolinje.AntallProsessorar.antallProsessorar;
+import static no.spk.felles.tidsserie.batch.core.kommandolinje.AntallProsessorar.availableProcessors;
+import static no.spk.felles.tidsserie.batch.core.kommandolinje.AntallProsessorar.standardAntallProsessorar;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.stream.Stream;
 
 import org.assertj.core.api.JUnitSoftAssertions;
-import org.assertj.core.api.ProxyableListAssert;
+import org.assertj.core.api.ListAssert;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -92,12 +93,12 @@ public class AntallProsessorarTest {
         assertThat(antallProsessorar(20).antall()).isEqualTo(20);
     }
 
-    private ProxyableListAssert<Integer> assertStream(final AntallProsessorar antall) {
+    private ListAssert<Integer> assertStream(final AntallProsessorar antall) {
         return softly.assertThat(
                 antall
                         .stream()
                         .boxed()
-                        .collect(toList())
+                        .toList()
         )
                 .as("(%s).stream()", antall);
     }
@@ -106,6 +107,7 @@ public class AntallProsessorarTest {
         final int første = Integer.parseInt(expected.split("->")[0]);
         final int siste = Integer.parseInt(expected.split("->")[1]);
         return rangeClosed(første, siste)
-                .boxed().collect(toList());
+                .boxed()
+                .toList();
     }
 }

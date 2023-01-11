@@ -1,6 +1,5 @@
 package no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.parallellisert;
 
-import static java.util.stream.Collectors.toList;
 import static no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.parallellisert.Nodenummer.nodenummer;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -8,7 +7,7 @@ import java.util.Set;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import org.assertj.core.api.IterableAssert;
+import org.assertj.core.api.ListAssert;
 import org.assertj.core.api.MapAssert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -79,7 +78,7 @@ public class LastbalansertePartisjonarIT {
                                     }
                             )
                             .limit(limit)
-                            .collect(toList());
+                            .toList();
 
                     assertThat(spion.tasks()).hasSize(16);
                 }
@@ -109,15 +108,14 @@ public class LastbalansertePartisjonarIT {
                         );
     }
 
-    private IterableAssert<Partisjonsnummer> verifiserPartisjonar(
+    private ListAssert<Partisjonsnummer> verifiserPartisjonar(
             final int antallNoder,
             final Set<Partisjonsnummer> partisjonar,
             final int forventaAntallPartisjonar,
             final int fordelingsnøkkel
     ) {
-        return assertThat(partisjonar)
+        return assertThat(partisjonar.stream())
                 .hasSize(forventaAntallPartisjonar)
                 .allMatch(partisjonsnummer -> partisjonsnummer.index() % antallNoder == fordelingsnøkkel);
     }
-
 }

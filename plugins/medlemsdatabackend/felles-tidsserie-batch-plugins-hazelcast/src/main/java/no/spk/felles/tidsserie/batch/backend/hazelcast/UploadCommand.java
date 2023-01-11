@@ -1,7 +1,5 @@
 package no.spk.felles.tidsserie.batch.backend.hazelcast;
 
-import static java.util.stream.Collectors.toList;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -30,7 +28,7 @@ class UploadCommand implements MedlemsdataUploader {
     public void run() {
         final MedlemsId medlem = data.get(0).medlem();
 
-        final Endringer e = new Endringer(data.stream().map(Medlemslinje::data).collect(toList()));
+        final Endringer e = new Endringer(data.stream().map(Medlemslinje::data).toList());
         data.clear();
 
         medlemsdata.putAsync(

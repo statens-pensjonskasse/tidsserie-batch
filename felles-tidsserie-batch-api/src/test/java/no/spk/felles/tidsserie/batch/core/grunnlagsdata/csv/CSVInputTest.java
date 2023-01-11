@@ -1,6 +1,5 @@
 package no.spk.felles.tidsserie.batch.core.grunnlagsdata.csv;
 
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Stream.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -55,7 +54,7 @@ public class CSVInputTest {
     @Test
     public void skal_kreve_innkatalog_ved_konstruksjon() {
         assertThatCode(
-                () ->new CSVInput(null)
+                () -> new CSVInput(null)
         )
                 .isInstanceOf(NullPointerException.class)
                 .hasMessage("innkatalog er påkrevd, men var null");
@@ -107,7 +106,7 @@ public class CSVInputTest {
             assertThat(
                     referansedatafiler
                             .map(path -> path.getFileName().toString())
-                            .collect(toList())
+                            .toList()
             ).doesNotContain("medlemsdata.csv.gz");
         }
     }
@@ -117,8 +116,8 @@ public class CSVInputTest {
         write(newTemporaryFile("tjafs.csv"), of(DUMMYDATA));
 
         softly.assertThat(
-                fixture.referansedataFiler()
-        )
+                        fixture.referansedataFiler()
+                )
                 .as("referansedatafiler skal inkludere ukomprimerte CSV-filer")
                 .hasSize(1)
                 .extracting(e -> e.toFile().getName())
@@ -126,8 +125,8 @@ public class CSVInputTest {
 
         fixture.addOversettere(new FakeOversetter());
         softly.assertThat(
-                fixture.referansedata()
-        )
+                        fixture.referansedata()
+                )
                 .as("referansedata frå tjafs.csv")
                 .hasSize(1);
 
@@ -135,8 +134,8 @@ public class CSVInputTest {
 
         write(newTemporaryFile("medlemsdata.csv"), of(DUMMYDATA));
         softly.assertThat(
-                fixture.medlemsdata()
-        )
+                        fixture.medlemsdata()
+                )
                 .as("medlemsdata frå medlemsdata.csv")
                 .hasSize(1);
     }
@@ -148,10 +147,10 @@ public class CSVInputTest {
 
         //noinspection ResultOfMethodCallIgnored
         softly.assertThatCode(
-                () -> fixture
-                        .referansedata()
-                        .findAny()
-        )
+                        () -> fixture
+                                .referansedata()
+                                .findAny()
+                )
                 .as("referansedata for CSV-fil som eksisterer i både ukomprimert og komprimert versjon")
                 .isInstanceOf(DuplisertCSVFilException.class);
 
@@ -162,10 +161,10 @@ public class CSVInputTest {
 
         //noinspection ResultOfMethodCallIgnored
         softly.assertThatCode(
-                () -> fixture
-                        .medlemsdata()
-                        .findAny()
-        )
+                        () -> fixture
+                                .medlemsdata()
+                                .findAny()
+                )
                 .as("medlemsdata som eksisterer i både ukomprimert og komprimert versjon")
                 .isInstanceOf(DuplisertCSVFilException.class);
     }
@@ -202,5 +201,4 @@ public class CSVInputTest {
             throw new UncheckedIOException(e);
         }
     }
-
 }

@@ -1,6 +1,5 @@
 package no.spk.felles.tidsserie.batch.main;
 
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.file.Files;
@@ -13,9 +12,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.rules.TestName;
 
-/**
- * @author Snorre E. Brekke - Computas
- */
 public class DirectoryCleanerTest {
     @Rule
     public TemporaryFolder testFolder = new TemporaryFolderWithDeleteVerification();
@@ -44,7 +40,7 @@ public class DirectoryCleanerTest {
         new DirectoryCleaner(path1, path2).deleteDirectories();
 
         try (final Stream<Path> stream = Files.list(path)) {
-            List<String> list = stream.map(p -> p.toFile().getName()).collect(toList());
+            List<String> list = stream.map(p -> p.toFile().getName()).toList();
             assertThat(list).isEmpty();
         }
     }

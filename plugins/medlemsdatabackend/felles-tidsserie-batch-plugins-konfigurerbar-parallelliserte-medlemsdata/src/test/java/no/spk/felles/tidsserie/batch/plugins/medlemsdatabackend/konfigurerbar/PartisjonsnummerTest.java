@@ -1,6 +1,5 @@
 package no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar;
 
-import static java.util.stream.Collectors.toList;
 import static no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.Partisjonsnummer.partisjonsnummer;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -33,7 +32,7 @@ public class PartisjonsnummerTest {
                         IntStream
                                 .rangeClosed(1, 271)
                                 .mapToObj(Partisjonsnummer::partisjonsnummer)
-                                .collect(toList())
+                                .toList()
                 );
     }
 
