@@ -3,7 +3,6 @@ package no.spk.felles.tidsserie.batch.plugins.grunnlagsdatavalidator;
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static no.spk.felles.tidsserie.batch.core.Validators.require;
 
@@ -18,15 +17,12 @@ import java.util.stream.Stream;
 import no.spk.felles.tidsserie.batch.core.grunnlagsdata.UgyldigUttrekkException;
 import no.spk.felles.tidsserie.batch.core.grunnlagsdata.UttrekksValidator;
 
-
 /**
  * {@link ChecksumValideringAvGrunnlagsdata} verifiserer at filene i grunnlagsdatakatalogen ikkje har blitt endra
  * sidan dei vart generert.
  * <br>
  * Dette blir verifisert ved å sjekke om MD5-sjekksummane for alle filene framleis matchar det dei var når PU_FAK_BA_09
  * genererte filene.
- *
- * @author Snorre E. Brekke - Computas
  */
 public class ChecksumValideringAvGrunnlagsdata implements UttrekksValidator {
     static final String MD5_CHECKSUMS_FILENAME = "md5-checksums.txt";
@@ -88,7 +84,7 @@ public class ChecksumValideringAvGrunnlagsdata implements UttrekksValidator {
                         .keySet()
                         .stream()
                         .filter(f -> !uttrekk.resolve(f).toFile().exists())
-                        .collect(toList()),
+                        .toList(),
                 List::isEmpty,
                 manglendeFiler -> new UgyldigUttrekkException(
                         manglendeFiler
@@ -117,7 +113,7 @@ public class ChecksumValideringAvGrunnlagsdata implements UttrekksValidator {
                         .stream()
                         .filter(e -> !stemmerSjekksummen(e.getKey(), e.getValue()))
                         .map(Map.Entry::getKey)
-                        .collect(toList()),
+                        .toList(),
                 List::isEmpty,
                 filerMedFeilSjekksum -> new UgyldigUttrekkException(
                         filerMedFeilSjekksum

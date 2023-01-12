@@ -1,6 +1,5 @@
 package no.spk.felles.tidsserie.batch.core.registry;
 
-import static java.util.stream.Collectors.toList;
 import static no.spk.felles.tidsserie.batch.core.registry.Ranking.ranking;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -80,10 +79,9 @@ public class ExtensionpointTest {
 
         final ExtensionpointStatus status = invokeAll();
         assertHasFailed(status).isTrue();
-        assertThat(status.stream().collect(toList()))
+        assertThat(status.stream().toList())
                 .as("feil fra status " + status)
                 .hasSize(1);
-
     }
 
     @Test

@@ -3,7 +3,6 @@ package no.spk.felles.tidsserie.batch.it;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
@@ -101,7 +100,7 @@ public class EndeTilEndeModusDefinisjon implements No {
                 Modus
                         .stream()
                         .map(Modus::kode)
-                        .collect(toList())
+                        .toList()
         )
                 .containsOnlyOnceElementsOf(
                         actual
@@ -192,12 +191,12 @@ public class EndeTilEndeModusDefinisjon implements No {
 
     private FellesTidsserieBatch batch() {
         return batch.orElseThrow(
-                () -> new IllegalArgumentException(
-                        "Du har gløymt å angit korleis batchen skal køyrast, " +
-                                "bruk \"batchen blir køyrt TYPE\" som syntax " +
-                                "(lovlige typer: " + runas.keySet() + ")"
+                        () -> new IllegalArgumentException(
+                                "Du har gløymt å angit korleis batchen skal køyrast, " +
+                                        "bruk \"batchen blir køyrt TYPE\" som syntax " +
+                                        "(lovlige typer: " + runas.keySet() + ")"
+                        )
                 )
-        )
                 .apply(registry);
     }
 

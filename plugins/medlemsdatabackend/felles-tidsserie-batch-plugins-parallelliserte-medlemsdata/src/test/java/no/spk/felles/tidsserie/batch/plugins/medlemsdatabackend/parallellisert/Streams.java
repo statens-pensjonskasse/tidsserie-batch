@@ -1,7 +1,5 @@
 package no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.parallellisert;
 
-import static java.util.stream.Collectors.toList;
-
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -20,7 +18,7 @@ class Streams {
             final Stream<T2> _2,
             final BiConsumer<T1, T2> handling
     ) {
-        final List<T2> tmp = _2.collect(toList());
+        final List<T2> tmp = _2.toList();
         _1.forEach(
                 t1 -> tmp.forEach(
                         t2 -> handling.accept(t1, t2)

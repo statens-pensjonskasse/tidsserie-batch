@@ -1,7 +1,6 @@
 package no.spk.felles.tidsserie.batch.core.grunnlagsdata.csv;
 
 import static java.util.Objects.requireNonNull;
-import static java.util.stream.Collectors.toList;
 import static no.spk.felles.tidsserie.batch.core.grunnlagsdata.csv.DuplisertCSVFilException.sjekkForDuplikat;
 
 import java.io.BufferedInputStream;
@@ -25,7 +24,6 @@ import java.util.zip.GZIPInputStream;
 
 import no.spk.felles.tidsperiode.Tidsperiode;
 import no.spk.felles.tidsserie.batch.core.grunnlagsdata.GrunnlagsdataRepository;
-import no.spk.felles.tidsserie.batch.core.grunnlagsdata.csv.CsvOversetter;
 
 /**
  * {@link CSVInput} støttar deserialisering av {@link #referansedata() tidsperioder} og {@link #medlemsdata() medlemsdata} frå
@@ -45,8 +43,6 @@ import no.spk.felles.tidsserie.batch.core.grunnlagsdata.csv.CsvOversetter;
  * Medlemsdata blir kun lest frå fila medlemsdata.csv.gz i tenestas innkatalog. Alle andre filer av type csv.gz forventast å
  * tilhøyre {@link #referansedata() referansedata}-kategorien og blir forventa å inneholde {@link Tidsperiode tidsperioder} av
  * forskjelliger typer.
- *
- * @author Tarjei Skorgenes
  */
 public class CSVInput implements GrunnlagsdataRepository {
     private static final int DO_NOT_STRIP_TRAILING_SEPARATORS = -1;
@@ -130,15 +126,15 @@ public class CSVInput implements GrunnlagsdataRepository {
                 .filter(path -> path.toString().endsWith("csv.gz") || path.toString().endsWith(".csv"))
                 .filter(path -> !path.toFile().getName().startsWith("medlemsdata.csv"))
                 .peek(DuplisertCSVFilException::sjekkForDuplikat)) {
-            return filer.collect(toList()).stream();
+            return filer.toList().stream();
         }
     }
 
     private Optional<Path> medlemsdataFil() {
         return Stream.of(
-                "medlemsdata.csv",
-                "medlemsdata.csv.gz"
-        )
+                        "medlemsdata.csv",
+                        "medlemsdata.csv.gz"
+                )
                 .map(filename -> new File(directory.toFile(), filename))
                 .filter(File::exists)
                 .map(File::toPath)
@@ -207,5 +203,4 @@ public class CSVInput implements GrunnlagsdataRepository {
         }
         return input;
     }
-
 }

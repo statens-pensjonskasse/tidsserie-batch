@@ -1,7 +1,6 @@
 package no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.parallellisert;
 
 import static java.util.Objects.requireNonNull;
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 import java.util.ArrayList;
@@ -40,7 +39,7 @@ class Uploader implements MedlemsdataUploader {
                 this.medlemsdata
                         .stream()
                         .map(Medlemslinje::data)
-                        .collect(toList())
+                        .toList()
         );
         this.medlemsdata.clear();
     }

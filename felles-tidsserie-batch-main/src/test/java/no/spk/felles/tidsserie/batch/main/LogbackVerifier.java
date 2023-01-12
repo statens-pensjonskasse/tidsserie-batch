@@ -2,7 +2,6 @@ package no.spk.felles.tidsserie.batch.main;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collection;
@@ -25,8 +24,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Klasse som kan brukes som class-rule i JUnit-tester for å sjekke etter spesifikke logg-hendelser.
- *
- * @author Snorre E. Brekke - Computas
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class LogbackVerifier extends ExternalResource {
@@ -68,7 +65,7 @@ public class LogbackVerifier extends ExternalResource {
                 events()
                         .filter(e -> tmp.contains(e.getLevel()))
                         .map(ILoggingEvent::getFormattedMessage)
-                        .collect(toList())
+                        .toList()
         )
                 .as(
                         "messages with level %s",
@@ -91,7 +88,7 @@ public class LogbackVerifier extends ExternalResource {
                         .map(ILoggingEvent::getThrowableProxy)
                         .filter(t -> isSubtypeOf(t, expectedExeptions))
                         .map(IThrowableProxy::getMessage)
-                        .collect(toList())
+                        .toList()
         )
                 .as(
                         "exceptions with subtype of %s",
@@ -124,5 +121,4 @@ public class LogbackVerifier extends ExternalResource {
             throw new RuntimeException(e);
         }
     }
-
 }

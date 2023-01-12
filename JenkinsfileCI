@@ -1,0 +1,13 @@
+#!groovy
+@Library('jenkins-pipeline-library')
+import no.spk.jenkins.pipeline.ci.config.CIPipelineConfig
+
+ciPipeline {
+    config = CIPipelineConfig.get()
+            .useMaven(jdk: 'jdk-latest17', build: 'clean install -DskipTests') // Dropper test under bygg, da bygg er et eget steg
+            .withPublish(branches: 'develop')                                  // Snapshots lages fra develop
+         // .withRelease() er ikke nødvendig, da panda-releasebot lager release-artefakter
+            .withEmailNotifications(recipients: 'ITO-TeamSterope@spk.no')
+            .withTriggers(cron: '@monthly', fromBranches: 'develop')           // Trigges også på commit ved hjelp av webhook i Bitbucket
+            .withNoSonarQube()
+}

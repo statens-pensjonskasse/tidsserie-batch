@@ -2,7 +2,6 @@ package no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar;
 
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toCollection;
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.MedlemsdataBuilder.medlemsdata;
 import static no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.MedlemsdataBuilder.rad;
@@ -49,9 +48,9 @@ public class ProsesserNodeTest {
     public void skal_aggregere_meldingar_frå_alle_partisjonar() {
         final ProsesserNode prosessering = new ProsesserNode(
                 Stream.of(
-                        partisjonsnummer(1),
-                        partisjonsnummer(2)
-                )
+                                partisjonsnummer(1),
+                                partisjonsnummer(2)
+                        )
                         .map(
                                 partisjonsnummer -> {
                                     final Partisjon partisjon = new Partisjon(partisjonsnummer);
@@ -136,7 +135,7 @@ public class ProsesserNodeTest {
 
     @Test
     public void skal_prosessere_partisjonane_i_deterministisk_rekkefølge_frå_lavaste_til_høgaste_partisjonsnummer() {
-        final List<Partisjonsnummer> expected = Partisjonsnummer.stream().collect(toList());
+        final List<Partisjonsnummer> expected = Partisjonsnummer.stream().toList();
         final List<Partisjonsnummer> behandla = new ArrayList<>();
 
         final ProsesserNode prosessering = new ProsesserNode(
