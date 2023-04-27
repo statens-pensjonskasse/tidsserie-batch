@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import ch.qos.logback.classic.ClassicConstants;
 import no.spk.faktura.input.BatchId;
 import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.felles.tidsserie.batch.core.grunnlagsdata.LastOppGrunnlagsdataKommando;
@@ -26,7 +27,6 @@ import no.spk.felles.tidsserie.batch.core.registry.ServiceLocator;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.util.ContextInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -74,7 +74,7 @@ public class ApplicationController {
 
     public void initialiserLogging(final BatchId id, final Path utKatalog) {
         System.setProperty("batchKatalog", utKatalog.toString());
-        System.setProperty(ContextInitializer.CONFIG_FILE_PROPERTY, "logback/logback.xml");
+        System.setProperty(ClassicConstants.CONFIG_FILE_PROPERTY, "logback/logback.xml");
         MDC.put("batchId", id.toString());
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdownLogger, "Batch shutdown"));
 
