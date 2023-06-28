@@ -157,6 +157,10 @@ class Partisjon {
                 .toList();
     }
 
+    void tøm() {
+        medlemsdata.clear();
+    }
+
     void stop() {
         executor.shutdownNow();
         lock.drainPermits();

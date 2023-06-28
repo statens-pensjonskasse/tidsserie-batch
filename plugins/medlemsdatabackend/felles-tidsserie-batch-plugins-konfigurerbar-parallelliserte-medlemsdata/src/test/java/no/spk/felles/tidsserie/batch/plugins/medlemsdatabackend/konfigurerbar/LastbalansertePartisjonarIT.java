@@ -7,6 +7,8 @@ import java.util.Set;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import no.spk.pensjon.faktura.tjenesteregister.support.SimpleServiceRegistry;
+
 import org.assertj.core.api.ListAssert;
 import org.assertj.core.api.MapAssert;
 import org.junit.Rule;
@@ -20,6 +22,8 @@ public class LastbalansertePartisjonarIT {
 
     private final CompositePartisjonListener partisjonListeners = (serienummer, meldingar) -> {
     };
+
+    private final PartisjonertMedlemsdataOpplaster partisjonertOpplaster = new PartisjonertMedlemsdataOpplaster(new SimpleServiceRegistry());
 
     @Test
     public void skal_lastbalansere_partisjonar_basert_på_nodenummer_og_partisjonsnummer() {
@@ -75,8 +79,8 @@ public class LastbalansertePartisjonarIT {
                                     },
                                     partisjonListeners,
                                     (medlemsId, t) -> {
-                                    }
-                            )
+                                    },
+                                    partisjonertOpplaster)
                             .limit(limit)
                             .toList();
 

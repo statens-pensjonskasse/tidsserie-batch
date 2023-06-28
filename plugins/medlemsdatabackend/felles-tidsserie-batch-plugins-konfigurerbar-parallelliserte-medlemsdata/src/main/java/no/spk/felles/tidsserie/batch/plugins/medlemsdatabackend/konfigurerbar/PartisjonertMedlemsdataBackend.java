@@ -3,6 +3,7 @@ package no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Map;
+import java.util.Optional;
 
 import no.spk.felles.tidsserie.batch.core.TidsserieLivssyklus;
 import no.spk.felles.tidsserie.batch.core.kommandolinje.AntallProsessorar;
@@ -10,7 +11,6 @@ import no.spk.felles.tidsserie.batch.core.medlem.GenererTidsserieCommand;
 import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataUploader;
 import no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.datalagring.DatalagringStrategi;
-import no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.datalagring.Medlemsdata;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 class PartisjonertMedlemsdataBackend implements MedlemsdataBackend, TidsserieLivssyklus {
@@ -23,19 +23,24 @@ class PartisjonertMedlemsdataBackend implements MedlemsdataBackend, TidsserieLiv
     private final MedlemFeilarListener medlemFeilarListener;
     private final DatalagringStrategi datalagringStrategi;
 
+    private final PartisjonertMedlemsdataOpplaster partisjonertOpplaster;
+
     public PartisjonertMedlemsdataBackend(
             final AntallProsessorar antallNoder,
             final KommandoKjoerer<Meldingar> kommandoKjører,
             final CompositePartisjonListener partisjonsListeners,
             final GenererTidsserieCommand kommando,
             final MedlemFeilarListener medlemFeilarListener,
-            final DatalagringStrategi datalagringStrategi) {
+            final DatalagringStrategi datalagringStrategi,
+            final PartisjonertMedlemsdataOpplaster partisjonertOpplaster
+    ) {
         this.kommandoKjører = requireNonNull(kommandoKjører, "kommandoKjører er påkrevd, men var null");
         this.antallNoder = requireNonNull(antallNoder, "antallNoder er påkrevd, men var null");
         this.partisjonsListeners = requireNonNull(partisjonsListeners, "partisjonsListeners er påkrevd, men var null");
         this.kommando = requireNonNull(kommando, "kommando er påkrevd, men var null");
         this.medlemFeilarListener = requireNonNull(medlemFeilarListener, "medlemFeilarListener er påkrevd, men var null");
         this.datalagringStrategi = requireNonNull(datalagringStrategi, "datalagringStrategi er påkrevd, men var null");
+        this.partisjonertOpplaster = requireNonNull(partisjonertOpplaster, "partisjonertOpplaster er påkrevd, men var null");
     }
 
     @Override
@@ -66,8 +71,8 @@ class PartisjonertMedlemsdataBackend implements MedlemsdataBackend, TidsserieLiv
                                 prosessering,
                                 kommando,
                                 partisjonsListeners,
-                                medlemFeilarListener
-                        )
+                                medlemFeilarListener,
+                                partisjonertOpplaster)
                         .map(ProsesserNode.AsyncResultat::ventPåResultat)
                         .reduce(
                                 new Meldingar(),

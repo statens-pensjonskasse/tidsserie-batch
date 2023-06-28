@@ -13,6 +13,7 @@ import java.util.Map;
 
 import no.spk.felles.tidsserie.batch.core.medlem.GenererTidsserieCommand;
 import no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.datalagring.DefaultDatalagringStrategi;
+import no.spk.pensjon.faktura.tjenesteregister.support.SimpleServiceRegistry;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -21,6 +22,8 @@ public class PartisjonertMedlemsdataBackendTest {
     private PartisjonertMedlemsdataBackend backend;
 
     private GenererTidsserieCommand kommando;
+
+    private PartisjonertMedlemsdataOpplaster partisjonertOpplaster = new PartisjonertMedlemsdataOpplaster(new SimpleServiceRegistry());
 
     @Before
     public void _before() {
@@ -34,7 +37,7 @@ public class PartisjonertMedlemsdataBackendTest {
                                 .generer(key, medlemsdata, context),
                 (medlemsId, t) -> {
                 },
-                new DefaultDatalagringStrategi());
+                new DefaultDatalagringStrategi(), partisjonertOpplaster);
     }
 
     @Test

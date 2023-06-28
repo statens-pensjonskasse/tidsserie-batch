@@ -36,8 +36,8 @@ class LastbalansertePartisjonar {
             final KommandoKjoerer<Meldingar> executor,
             final GenererTidsserieCommand kommando,
             final CompositePartisjonListener partisjonsListeners,
-            final MedlemFeilarListener medlemFeilarListener
-    ) {
+            final MedlemFeilarListener medlemFeilarListener,
+            final PartisjonertMedlemsdataOpplaster partisjonertOpplaster) {
         return
                 lastbalansering
                         .values()
@@ -47,8 +47,8 @@ class LastbalansertePartisjonar {
                                         partisjonar,
                                         kommando,
                                         partisjonsListeners,
-                                        medlemFeilarListener
-                                )
+                                        medlemFeilarListener,
+                                        partisjonertOpplaster)
                         )
                         .map(node -> node.start(executor))
                         .toList()
