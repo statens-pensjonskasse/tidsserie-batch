@@ -158,7 +158,16 @@ class Partisjon {
     }
 
     void tøm() {
-        medlemsdata.clear();
+        try {
+            lock.acquire();
+        } catch (InterruptedException e) {
+            throw new KlarteIkkeBehandleMedlemsdataIPartisjonException(nummer, e);
+        }
+        try {
+            medlemsdata.clear();
+        } finally {
+            lock.release();
+        }
     }
 
     void stop() {
