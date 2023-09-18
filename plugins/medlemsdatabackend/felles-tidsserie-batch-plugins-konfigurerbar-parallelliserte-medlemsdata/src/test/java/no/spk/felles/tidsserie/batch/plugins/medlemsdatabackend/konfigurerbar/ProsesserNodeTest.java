@@ -16,10 +16,13 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
 import no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.datalagring.DefaultDatalagringStrategi;
+import no.spk.pensjon.faktura.tjenesteregister.support.SimpleServiceRegistry;
 
 import org.junit.Test;
 
 public class ProsesserNodeTest {
+
+    private final PartisjonertMedlemsdataOpplaster partisjonertOpplaster = new PartisjonertMedlemsdataOpplaster(new SimpleServiceRegistry());
     @Test
     public void skal_starte_ei_køyring_pr_kall() {
         final ProsesserNode prosessering = new ProsesserNode(
@@ -29,8 +32,8 @@ public class ProsesserNodeTest {
                 (nummer, meldingar) -> {
                 },
                 (medlemsId, t) -> {
-                }
-        );
+                },
+                partisjonertOpplaster);
 
         final KommandoKjoerer.Spion<Meldingar> spion = new KommandoKjoerer.Spion<>();
 
@@ -74,8 +77,8 @@ public class ProsesserNodeTest {
                 (nummer, meldingar) -> {
                 },
                 (medlemsId, t) -> {
-                }
-        );
+                },
+                partisjonertOpplaster);
         assertThat(
                 prosessering
                         .start(new KommandoKjoerer.SynkronKjoerer<>()).ventPåResultat()
@@ -148,8 +151,8 @@ public class ProsesserNodeTest {
                 },
                 (partisjon, meldingar) -> behandla.add(partisjon),
                 (medlemsId, t) -> {
-                }
-        );
+                },
+                partisjonertOpplaster);
         prosessering
                 .start(new KommandoKjoerer.SynkronKjoerer<>())
                 .ventPåResultat();

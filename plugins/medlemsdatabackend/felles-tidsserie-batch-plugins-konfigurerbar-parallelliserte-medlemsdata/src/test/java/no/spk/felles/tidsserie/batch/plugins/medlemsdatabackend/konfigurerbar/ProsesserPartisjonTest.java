@@ -15,6 +15,7 @@ import java.util.function.Predicate;
 import no.spk.felles.tidsserie.batch.core.medlem.GenererTidsserieCommand;
 import no.spk.felles.tidsserie.batch.core.medlem.TidsserieContext;
 import no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.datalagring.DefaultDatalagringStrategi;
+import no.spk.pensjon.faktura.tjenesteregister.support.SimpleServiceRegistry;
 
 import org.assertj.core.api.MapAssert;
 import org.junit.Test;
@@ -25,6 +26,8 @@ public class ProsesserPartisjonTest {
     private final ProsesserPartisjon prosessering = new ProsesserPartisjon(
             partisjon
     );
+
+    private final PartisjonertMedlemsdataOpplaster partisjonertOpplaster = new PartisjonertMedlemsdataOpplaster(new SimpleServiceRegistry());
 
     @Test
     public void skal_behandle_medlemmar_i_deterministisk_rekkefølge_basert_på_rekkefølga_medlemmane_blir_lagt_til_i_partisjonen_første_gang() {
@@ -39,8 +42,8 @@ public class ProsesserPartisjonTest {
         prosessering.prosesser(
                 (key, medlemsdata, context) -> behandlingsrekkefølge.add(key),
                 enPartisjonsLyttarSomAldriFeilar(),
-                enMedlemFeilarLyttarSomAldriFeilar()
-        );
+                enMedlemFeilarLyttarSomAldriFeilar(),
+                partisjonertOpplaster);
 
         assertThat(behandlingsrekkefølge)
                 .containsExactly(
@@ -177,8 +180,8 @@ public class ProsesserPartisjonTest {
                 prosessering.prosesser(
                         kommando,
                         partisjonListener,
-                        medlemFeilarListener
-                )
+                        medlemFeilarListener,
+                                partisjonertOpplaster)
                         .toMap()
         );
     }

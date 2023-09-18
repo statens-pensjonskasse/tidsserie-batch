@@ -3,6 +3,7 @@ package no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
+import java.util.Optional;
 
 import no.spk.felles.tidsserie.batch.core.TidsserieLivssyklus;
 import no.spk.felles.tidsserie.batch.core.kommandolinje.AntallProsessorar;
@@ -37,6 +38,8 @@ public class Activator implements Plugin {
 
         final AntallProsessorar antallNoder = antallProsessorar(locator);
         final DatalagringStrategi datalagringStrategi = new DatalagringStrategiWrapper(locator);
+        final PartisjonertMedlemsdataOpplaster partisjonertOpplaster = new PartisjonertMedlemsdataOpplaster(registry);
+
         final PartisjonertMedlemsdataBackend backend = new PartisjonertMedlemsdataBackend(
                 antallNoder,
                 KommandoKjoerer.velgFlertrådskjøring(
@@ -56,7 +59,9 @@ public class Activator implements Plugin {
                         medlemFeilarListeners
                                 .invokeAll(listener -> listener.medlemFeila(medlemsId, t))
                                 .orElseRethrowFirstFailure(),
-                datalagringStrategi);
+                datalagringStrategi,
+                partisjonertOpplaster
+        );
         registry.registerService(
                 MedlemsdataBackend.class,
                 backend
