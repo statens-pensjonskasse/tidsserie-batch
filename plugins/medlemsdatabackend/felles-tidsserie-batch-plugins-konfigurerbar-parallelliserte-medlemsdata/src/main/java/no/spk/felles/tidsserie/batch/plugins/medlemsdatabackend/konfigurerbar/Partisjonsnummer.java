@@ -31,6 +31,10 @@ class Partisjonsnummer {
         return partisjonsnummer - 1;
     }
 
+    long partisjonsnummer() {
+        return partisjonsnummer;
+    }
+
     @Override
     public int hashCode() {
         return Long.hashCode(partisjonsnummer);

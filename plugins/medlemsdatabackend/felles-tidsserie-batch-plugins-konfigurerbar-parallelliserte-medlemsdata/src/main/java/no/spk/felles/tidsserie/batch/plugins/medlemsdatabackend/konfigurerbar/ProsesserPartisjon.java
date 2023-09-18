@@ -34,8 +34,8 @@ class ProsesserPartisjon {
     Meldingar prosesser(
             final GenererTidsserieCommand kommando,
             final CompositePartisjonListener partisjonListener,
-            final MedlemFeilarListener medlemFeilarListener
-    ) {
+            final MedlemFeilarListener medlemFeilarListener,
+            final PartisjonertMedlemsdataOpplaster partisjonertOpplaster) {
         context.inkluderFeilmeldingarFrå(
                 () ->
                         partisjonListener.partisjonInitialisert(
@@ -43,6 +43,9 @@ class ProsesserPartisjon {
                                 context
                         )
         );
+
+        partisjonertOpplaster.lastOppPartisjonertMedlemsdata(partisjon.nummer());
+
         partisjon
                 .forEach(
                         (medlemsId, medlemsdata) ->
@@ -53,6 +56,9 @@ class ProsesserPartisjon {
                                         medlemFeilarListener
                                 )
                 );
+
+        partisjon.tøm();
+
         return context.meldingar();
     }
 

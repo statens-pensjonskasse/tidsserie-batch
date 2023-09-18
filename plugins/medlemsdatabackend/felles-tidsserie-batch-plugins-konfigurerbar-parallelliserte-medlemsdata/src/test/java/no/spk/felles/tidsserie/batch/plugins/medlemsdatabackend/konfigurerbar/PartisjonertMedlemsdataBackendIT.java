@@ -17,6 +17,7 @@ import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataUploader;
 import no.spk.felles.tidsserie.batch.core.medlem.Medlemslinje;
 import no.spk.felles.tidsserie.batch.core.medlem.PartisjonsListener;
 import no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.datalagring.DefaultDatalagringStrategi;
+import no.spk.pensjon.faktura.tjenesteregister.support.SimpleServiceRegistry;
 
 import org.assertj.core.util.Lists;
 import org.junit.Before;
@@ -29,6 +30,8 @@ public class PartisjonertMedlemsdataBackendIT {
 
     private PartisjonsListener partisjonsListener = serienummer -> {
     };
+
+    private PartisjonertMedlemsdataOpplaster partisjonertOpplaster = new PartisjonertMedlemsdataOpplaster(new SimpleServiceRegistry());
 
     @Before
     public void _before() {
@@ -43,7 +46,7 @@ public class PartisjonertMedlemsdataBackendIT {
                                 .generer(medlemsId, medlemsdata, context),
                 (medlemsId, t) -> {
                 },
-                new DefaultDatalagringStrategi());
+                new DefaultDatalagringStrategi(), partisjonertOpplaster);
     }
 
     @Test

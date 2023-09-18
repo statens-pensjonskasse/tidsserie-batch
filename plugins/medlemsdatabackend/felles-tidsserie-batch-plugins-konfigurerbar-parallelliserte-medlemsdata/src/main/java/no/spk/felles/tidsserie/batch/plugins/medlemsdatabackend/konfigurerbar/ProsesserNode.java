@@ -4,6 +4,7 @@ import static java.util.Comparator.comparing;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -38,17 +39,19 @@ class ProsesserNode {
     private final GenererTidsserieCommand kommando;
     private final CompositePartisjonListener partisjonsListeners;
     private final MedlemFeilarListener medlemFeilarListener;
+    private final PartisjonertMedlemsdataOpplaster partisjonertOpplaster;
 
     ProsesserNode(
             final Set<Partisjon> partisjonar,
             final GenererTidsserieCommand kommando,
             final CompositePartisjonListener partisjonsListeners,
-            final MedlemFeilarListener medlemFeilarListener
-    ) {
+            final MedlemFeilarListener medlemFeilarListener,
+            final PartisjonertMedlemsdataOpplaster partisjonertOpplaster) {
         this.partisjonar = requireNonNull(partisjonar, "partisjonar er påkrevd, men var null");
         this.kommando = requireNonNull(kommando, "kommando er påkrevd, men var null");
         this.partisjonsListeners = requireNonNull(partisjonsListeners, "partisjonsListeners er påkrevd, men var null");
         this.medlemFeilarListener = requireNonNull(medlemFeilarListener, "medlemFeilarListener er påkrevd, men var null");
+        this.partisjonertOpplaster = requireNonNull(partisjonertOpplaster, "partisjonertOpplaster er påkrevd, men var null");
     }
 
     AsyncResultat start(final KommandoKjoerer<Meldingar> executor) {
@@ -71,8 +74,8 @@ class ProsesserNode {
                                 partisjon -> partisjon.prosesser(
                                         kommando,
                                         partisjonsListeners,
-                                        medlemFeilarListener
-                                )
+                                        medlemFeilarListener,
+                                        partisjonertOpplaster)
                         )
                         .reduce(
                                 new Meldingar(),
