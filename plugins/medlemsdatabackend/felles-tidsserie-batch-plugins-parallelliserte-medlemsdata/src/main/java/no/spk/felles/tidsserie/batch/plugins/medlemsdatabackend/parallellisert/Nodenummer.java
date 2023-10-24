@@ -2,6 +2,8 @@ package no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.parallellisert;
 
 import java.util.Objects;
 
+import no.spk.felles.tidsserie.batch.core.grunnlagsdata.Partisjonsnummer;
+
 class Nodenummer {
     private final int nodenummer;
     private final int antallNoder;

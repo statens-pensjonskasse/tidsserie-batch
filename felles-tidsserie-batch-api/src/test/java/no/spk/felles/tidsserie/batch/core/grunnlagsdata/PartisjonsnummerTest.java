@@ -1,6 +1,7 @@
-package no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.parallellisert;
+package no.spk.felles.tidsserie.batch.core.grunnlagsdata;
 
-import static no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.parallellisert.Partisjonsnummer.partisjonsnummer;
+import static no.spk.felles.tidsserie.batch.core.grunnlagsdata.Partisjonsnummer.partisjonsnummer;
+import static no.spk.felles.tidsserie.batch.core.grunnlagsdata.Partisjonsnummer.tilhørendePartisjonForMedlem;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 

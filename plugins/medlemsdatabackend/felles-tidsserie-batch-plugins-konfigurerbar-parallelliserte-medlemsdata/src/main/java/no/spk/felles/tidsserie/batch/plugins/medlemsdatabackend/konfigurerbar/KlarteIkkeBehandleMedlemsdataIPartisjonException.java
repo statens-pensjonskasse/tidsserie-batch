@@ -4,6 +4,7 @@ import static java.lang.String.format;
 
 import java.util.Objects;
 
+import no.spk.felles.tidsserie.batch.core.grunnlagsdata.Partisjonsnummer;
 import no.spk.felles.tidsserie.batch.core.medlem.GenererTidsserieCommand;
 
 class KlarteIkkeBehandleMedlemsdataIPartisjonException extends RuntimeException {

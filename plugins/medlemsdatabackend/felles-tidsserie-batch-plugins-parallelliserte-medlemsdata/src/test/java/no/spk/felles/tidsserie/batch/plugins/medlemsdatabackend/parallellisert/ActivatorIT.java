@@ -1,8 +1,8 @@
 package no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.parallellisert;
 
+import static no.spk.felles.tidsserie.batch.core.grunnlagsdata.Partisjonsnummer.partisjonsnummer;
 import static no.spk.felles.tidsserie.batch.core.kommandolinje.AntallProsessorar.antallProsessorar;
 import static no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.parallellisert.MedlemsdataBuilder.rad;
-import static no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.parallellisert.Partisjonsnummer.partisjonsnummer;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 

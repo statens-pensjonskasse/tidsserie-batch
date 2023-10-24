@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 
+import no.spk.felles.tidsserie.batch.core.grunnlagsdata.Partisjonsnummer;
+
 class Partisjon {
     private static final String DELIMITER_COLUMN = ";";
 

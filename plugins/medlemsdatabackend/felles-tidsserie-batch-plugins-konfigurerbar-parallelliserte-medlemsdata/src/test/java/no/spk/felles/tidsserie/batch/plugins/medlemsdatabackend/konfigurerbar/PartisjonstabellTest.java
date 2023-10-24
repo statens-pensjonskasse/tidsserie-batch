@@ -1,10 +1,10 @@
 package no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar;
 
 import static java.util.stream.Collectors.toMap;
+import static no.spk.felles.tidsserie.batch.core.grunnlagsdata.Partisjonsnummer.partisjonsnummer;
 import static no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.MedlemsdataBuilder.medlemsdata;
 import static no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.MedlemsdataBuilder.rad;
 import static no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.Nodenummer.nodenummer;
-import static no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.Partisjonsnummer.partisjonsnummer;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collections;
@@ -16,6 +16,7 @@ import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import no.spk.felles.tidsserie.batch.core.grunnlagsdata.Partisjonsnummer;
 import no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.datalagring.DefaultDatalagringStrategi;
 
 import org.assertj.core.api.MapAssert;

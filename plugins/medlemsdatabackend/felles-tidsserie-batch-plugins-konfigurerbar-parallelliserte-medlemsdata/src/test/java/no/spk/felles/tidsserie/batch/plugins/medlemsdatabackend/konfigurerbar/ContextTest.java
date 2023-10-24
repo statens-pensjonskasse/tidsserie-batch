@@ -3,6 +3,8 @@ package no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar;
 import static no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.Streams.forEach;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import no.spk.felles.tidsserie.batch.core.grunnlagsdata.Partisjonsnummer;
+
 import org.junit.Test;
 
 public class ContextTest {

@@ -4,6 +4,8 @@ import static java.lang.String.format;
 
 import java.util.Objects;
 
+import no.spk.felles.tidsserie.batch.core.grunnlagsdata.Partisjonsnummer;
+
 class KlarteIkkeLeseMedlemsdataIPartisjonException extends RuntimeException {
     private static final long serialVersionUID = 0L;
 
