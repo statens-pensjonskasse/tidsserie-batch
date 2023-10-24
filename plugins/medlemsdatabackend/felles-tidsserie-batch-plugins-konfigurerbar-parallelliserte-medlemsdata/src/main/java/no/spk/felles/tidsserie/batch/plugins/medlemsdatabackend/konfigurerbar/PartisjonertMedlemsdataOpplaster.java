@@ -4,6 +4,7 @@ import java.util.Objects;
 
 
 import no.spk.felles.tidsserie.batch.core.grunnlagsdata.LastOppGrunnlagsdataPartisjonertKommando;
+import no.spk.felles.tidsserie.batch.core.grunnlagsdata.Partisjonsnummer;
 import no.spk.felles.tidsserie.batch.core.registry.ServiceLocator;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 

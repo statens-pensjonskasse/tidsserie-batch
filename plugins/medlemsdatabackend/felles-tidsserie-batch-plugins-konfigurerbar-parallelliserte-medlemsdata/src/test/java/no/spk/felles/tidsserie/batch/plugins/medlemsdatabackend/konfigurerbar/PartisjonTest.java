@@ -1,8 +1,8 @@
 package no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar;
 
+import static no.spk.felles.tidsserie.batch.core.grunnlagsdata.Partisjonsnummer.partisjonsnummer;
 import static no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.MedlemsdataBuilder.medlemsdata;
 import static no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.MedlemsdataBuilder.rad;
-import static no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.Partisjonsnummer.partisjonsnummer;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collections;

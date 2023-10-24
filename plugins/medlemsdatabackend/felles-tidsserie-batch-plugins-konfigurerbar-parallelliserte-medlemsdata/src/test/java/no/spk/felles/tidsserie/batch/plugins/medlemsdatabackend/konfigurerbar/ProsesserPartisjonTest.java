@@ -1,9 +1,9 @@
 package no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar;
 
 import static java.util.Objects.requireNonNull;
+import static no.spk.felles.tidsserie.batch.core.grunnlagsdata.Partisjonsnummer.partisjonsnummer;
 import static no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.MedlemsdataBuilder.medlemsdata;
 import static no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.MedlemsdataBuilder.rad;
-import static no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.Partisjonsnummer.partisjonsnummer;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
+import no.spk.felles.tidsserie.batch.core.grunnlagsdata.Partisjonsnummer;
 import no.spk.felles.tidsserie.batch.core.medlem.GenererTidsserieCommand;
 import no.spk.felles.tidsserie.batch.core.medlem.TidsserieContext;
 import no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.datalagring.DefaultDatalagringStrategi;

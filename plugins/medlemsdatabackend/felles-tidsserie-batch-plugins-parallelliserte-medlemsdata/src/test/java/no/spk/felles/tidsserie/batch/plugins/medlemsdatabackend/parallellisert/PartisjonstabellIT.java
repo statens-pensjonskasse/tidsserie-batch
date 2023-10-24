@@ -17,6 +17,8 @@ import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import no.spk.felles.tidsserie.batch.core.grunnlagsdata.Partisjonsnummer;
+
 import org.assertj.core.api.SoftAssertions;
 import org.junit.Test;
 

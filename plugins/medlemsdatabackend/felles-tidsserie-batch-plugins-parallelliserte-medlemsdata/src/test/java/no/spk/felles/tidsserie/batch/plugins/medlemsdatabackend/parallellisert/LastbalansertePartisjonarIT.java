@@ -7,6 +7,8 @@ import java.util.Set;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import no.spk.felles.tidsserie.batch.core.grunnlagsdata.Partisjonsnummer;
+
 import org.assertj.core.api.ListAssert;
 import org.assertj.core.api.MapAssert;
 import org.junit.Rule;

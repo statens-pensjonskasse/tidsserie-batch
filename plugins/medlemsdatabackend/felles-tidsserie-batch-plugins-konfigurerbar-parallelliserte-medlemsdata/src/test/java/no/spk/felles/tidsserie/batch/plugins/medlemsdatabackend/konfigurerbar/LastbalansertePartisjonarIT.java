@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import no.spk.felles.tidsserie.batch.core.grunnlagsdata.Partisjonsnummer;
 import no.spk.pensjon.faktura.tjenesteregister.support.SimpleServiceRegistry;
 
 import org.assertj.core.api.ListAssert;

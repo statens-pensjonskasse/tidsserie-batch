@@ -1,4 +1,4 @@
-package no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar;
+package no.spk.felles.tidsserie.batch.core.grunnlagsdata;
 
 
 /**
