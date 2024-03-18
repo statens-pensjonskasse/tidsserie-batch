@@ -98,8 +98,8 @@ public class Activator implements Plugin {
 
         @Override
         public void medlemFeila(final String medlemsId, final Throwable t) {
-            log.warn("Periodisering av medlem {} feila: {}", medlemsId, t.getMessage());
-            log.info("Feilkilde:", t);
+            log.error("Periodisering av medlem {} feila: {}", medlemsId, t.getMessage());
+            log.error("Feilkilde:", t);
         }
     }
 
