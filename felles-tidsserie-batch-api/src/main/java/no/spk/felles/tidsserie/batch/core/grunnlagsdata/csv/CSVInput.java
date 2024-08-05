@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 
@@ -92,9 +93,7 @@ public class CSVInput implements GrunnlagsdataRepository {
 
     @Override
     public Stream<List<String>> medlemsdata() {
-        return medlemsdataFil()
-                .map(Stream::of)
-                .orElseGet(Stream::empty)
+        return medlemsdataFiler()
                 .flatMap(this::readLinesFrom);
     }
 
@@ -130,16 +129,22 @@ public class CSVInput implements GrunnlagsdataRepository {
         }
     }
 
-    private Optional<Path> medlemsdataFil() {
-        return Stream.of(
-                        "medlemsdata.csv",
-                        "medlemsdata.csv.gz"
+    private Stream<Path> medlemsdataFiler() {
+        return Arrays.stream(
+                        requireNonNull(
+                                directory
+                                        .toFile()
+                                        .listFiles()
+                        )
                 )
-                .map(filename -> new File(directory.toFile(), filename))
-                .filter(File::exists)
+                .filter(CSVInput::erMedlemsdataFil)
                 .map(File::toPath)
-                .peek(DuplisertCSVFilException::sjekkForDuplikat)
-                .findAny();
+                .peek(DuplisertCSVFilException::sjekkForDuplikat);
+    }
+
+    private static boolean erMedlemsdataFil(final File fil) {
+        final Pattern regex = Pattern.compile("^medlemsdata(\\d+(-.+)?)?\\.csv(\\.gz)?$");
+        return regex.matcher(fil.getName()).find();
     }
 
     private Stream<? extends Tidsperiode<?>> oversettLinje(final List<String> linje) {
