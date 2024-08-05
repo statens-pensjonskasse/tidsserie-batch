@@ -1,5 +1,6 @@
 package no.spk.felles.tidsserie.batch.core.grunnlagsdata.csv;
 
+import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 import static no.spk.felles.tidsserie.batch.core.grunnlagsdata.csv.DuplisertCSVFilException.sjekkForDuplikat;
 
@@ -134,7 +135,8 @@ public class CSVInput implements GrunnlagsdataRepository {
                         requireNonNull(
                                 directory
                                         .toFile()
-                                        .listFiles()
+                                        .listFiles(),
+                                format("Inputmappe %s finnes ikke", directory)
                         )
                 )
                 .filter(CSVInput::erMedlemsdataFil)
