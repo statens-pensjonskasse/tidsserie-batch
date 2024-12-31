@@ -104,11 +104,6 @@
             </dependency>
             <dependency>
                 <groupId>no.spk.felles</groupId>
-                <artifactId>felles-tidsserie-batch-plugins-hazelcast</artifactId>
-                <version>2.1.6-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>no.spk.felles</groupId>
                 <artifactId>felles-tidsserie-batch-plugins-parallelliserte-medlemsdata</artifactId>
                 <version>2.1.6-SNAPSHOT</version>
             </dependency>

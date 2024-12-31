@@ -95,7 +95,6 @@
                     <!-- Aka, vi ønskjer ikkje å måtte deklarere compile-avhengigheiter til noko vi ikkje brukar direkte -->
                     <!-- Og nei, test-scope fungerer ikkje sidan dei då blir utelatt frå shade-jaren som vi testar mot :/ -->
                     <ignoredDependencies>
-                        <ignoredDependency>com.hazelcast:hazelcast</ignoredDependency>
                         <ignoredDependency>no.spk.pensjon.faktura:faktura-bootstrap-lib</ignoredDependency>
                     </ignoredDependencies>
                 </configuration>
