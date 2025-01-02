@@ -30,7 +30,7 @@
 
         <slf4j.version>2.0.7</slf4j.version>
         <ch.qos.logback.version>1.4.7</ch.qos.logback.version>
-        <logstash.version>7.3</logstash.version>
+        <logstash.version>8.0</logstash.version>
 
         <cucumber.version>7.11.2</cucumber.version>
 
