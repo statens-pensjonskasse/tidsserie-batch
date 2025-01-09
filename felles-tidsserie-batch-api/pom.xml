@@ -84,21 +84,6 @@
                         </goals>
                     </execution>
                 </executions>
-                <dependencies>
-                    <!-- Inkludert for å bli kvitt irriterande XML-warnings ved køyring av pluginet grunna xerces -->
-                    <!-- http://stackoverflow.com/questions/25453042/how-to-disable-accessexternaldtd-and-entityexpansionlimit-warnings-with-logback -->
-                    <dependency>
-                        <groupId>org.apache.maven.doxia</groupId>
-                        <artifactId>doxia-core</artifactId>
-                        <version>1.2</version>
-                        <exclusions>
-                            <exclusion>
-                                <groupId>xerces</groupId>
-                                <artifactId>xercesImpl</artifactId>
-                            </exclusion>
-                        </exclusions>
-                    </dependency>
-                </dependencies>
             </plugin>
         </plugins>
     </build>
