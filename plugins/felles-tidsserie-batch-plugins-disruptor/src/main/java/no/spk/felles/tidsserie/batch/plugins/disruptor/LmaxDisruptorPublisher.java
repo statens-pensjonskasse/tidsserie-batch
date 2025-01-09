@@ -3,7 +3,7 @@ package no.spk.felles.tidsserie.batch.plugins.disruptor;
 import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadFactory;
 import java.util.function.Consumer;
 
 import no.spk.felles.tidsserie.batch.core.TidsserieLivssyklus;
@@ -16,19 +16,18 @@ import com.lmax.disruptor.dsl.Disruptor;
 import org.slf4j.LoggerFactory;
 
 public class LmaxDisruptorPublisher implements StorageBackend, TidsserieLivssyklus {
-    private final ExecutorService executor;
+    private final ThreadFactory threadFactory;
     private final FileTemplate fileTemplate;
 
     private Disruptor<Tidsserierad> disruptor;
     private RingBuffer<Tidsserierad> ringBuffer;
     private TidsserieradHandler consumer;
 
-    public LmaxDisruptorPublisher(final ExecutorService executor, final FileTemplate fileTemplate) {
-        this.executor = executor;
+    public LmaxDisruptorPublisher(final ThreadFactory threadFactory, final FileTemplate fileTemplate) {
+        this.threadFactory = threadFactory;
         this.fileTemplate = requireNonNull(fileTemplate, "fileTemplate er påkrevd, men var null");
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void start(final ServiceRegistry registry) {
         // The factory for the buffer
@@ -37,7 +36,7 @@ public class LmaxDisruptorPublisher implements StorageBackend, TidsserieLivssykl
         // Specify the size of the ring buffer, must be power of 2.
         int bufferSize = 1024 * 16;
 
-        disruptor = new Disruptor<>(factory, bufferSize, this.executor);
+        disruptor = new Disruptor<>(factory, bufferSize, this.threadFactory);
 
         consumer = new FileWriterTidsserieradHandler(this.fileTemplate);
         disruptor.handleEventsWith(consumer);
