@@ -3,7 +3,7 @@
     <parent>
         <artifactId>spk-root-pom</artifactId>
         <groupId>no.spk</groupId>
-        <version>131.0.0</version>
+        <version>131.0.1</version>
         <relativePath />
     </parent>
     <modelVersion>4.0.0</modelVersion>
