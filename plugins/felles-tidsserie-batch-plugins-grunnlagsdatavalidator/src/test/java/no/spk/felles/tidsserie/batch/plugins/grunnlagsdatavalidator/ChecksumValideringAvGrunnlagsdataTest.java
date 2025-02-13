@@ -7,60 +7,64 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Optional;
 
 import no.spk.felles.tidsserie.batch.core.grunnlagsdata.UgyldigUttrekkException;
 
 import org.assertj.core.api.AbstractThrowableAssert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.rules.TestName;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.io.TempDir;
 
 /**
  * @author Snorre E. Brekke - Computas
  */
 public class ChecksumValideringAvGrunnlagsdataTest {
-    @Rule
-    public TemporaryFolder testFolder = new TemporaryFolderWithDeleteVerification();
 
-    @Rule
-    public final TestName name = new TestName();
+    @TempDir
+    public File testFolder;
+
+    
+    public String name;
 
     private ChecksumValideringAvGrunnlagsdata validator;
     private File uttrekkskatalog;
     private File md5sums;
 
-    @Before
-    public void _before() throws IOException {
-        uttrekkskatalog = testFolder.newFolder(name.getMethodName());
+    @BeforeEach
+    void _before(TestInfo testInfo) throws IOException {
+        Optional<Method> testMethod = testInfo.getTestMethod();
+        testMethod.ifPresentOrElse(method -> this.name = method.getName(), () -> this.name = "unknown");
+        uttrekkskatalog = newFolder(testFolder, name);
         md5sums = fil(MD5_CHECKSUMS_FILENAME);
         validator = new ChecksumValideringAvGrunnlagsdata(uttrekkskatalog.toPath());
     }
 
     @Test
-    public void testMissingChecksumfileThrowsException() {
+    void missingChecksumfileThrowsException() {
         assertValidate().hasMessageContaining(MD5_CHECKSUMS_FILENAME + " mangler i katalogen");
     }
 
     @Test
-    public void testEmptyChecksumfileThrowsException() throws IOException {
+    void emptyChecksumfileThrowsException() throws IOException {
         Files.createFile(md5sums.toPath());
 
         assertValidate().hasMessageContaining(MD5_CHECKSUMS_FILENAME + " er tom.");
     }
 
     @Test
-    public void testCorruptChecksumfileThrowsException() {
+    void corruptChecksumfileThrowsException() {
         writeMD5("invalid md5");
 
         assertValidate().hasMessageContaining(MD5_CHECKSUMS_FILENAME + " er korrupt.");
     }
 
     @Test
-    public void testMissingFileThrowsException() {
+    void missingFileThrowsException() {
         writeMD5("123 *123.txt");
 
         assertValidate().hasMessageContaining("Følgende filer er oppført i " + MD5_CHECKSUMS_FILENAME + " men finnes ikke i ");
@@ -68,7 +72,7 @@ public class ChecksumValideringAvGrunnlagsdataTest {
 
 
     @Test
-    public void testInvalidChecksumThrowsException() {
+    void invalidChecksumThrowsException() {
         write("some;checksumFile;content", fil("test.csv"));
         writeMD5("deadbeef *test.csv");
 
@@ -76,7 +80,7 @@ public class ChecksumValideringAvGrunnlagsdataTest {
     }
 
     @Test
-    public void testHappyday() {
+    void happyday() {
         write("some;checksumFile;content", fil("test.csv"));
         writeMD5("e0b562ed7f852b4f8a887c61484a9255 *test.csv");
 
@@ -108,5 +112,14 @@ public class ChecksumValideringAvGrunnlagsdataTest {
         } catch (final IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    private static File newFolder(File root, String... subDirs) throws IOException {
+        String subFolder = String.join("/", subDirs);
+        File result = new File(root, subFolder);
+        if (!result.mkdirs()) {
+            throw new IOException("Couldn't create folders " + root);
+        }
+        return result;
     }
 }

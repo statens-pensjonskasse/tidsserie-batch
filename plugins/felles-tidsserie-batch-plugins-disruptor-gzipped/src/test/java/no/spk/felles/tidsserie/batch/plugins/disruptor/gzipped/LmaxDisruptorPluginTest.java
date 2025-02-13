@@ -1,7 +1,8 @@
 package no.spk.felles.tidsserie.batch.plugins.disruptor.gzipped;
 
-import static no.spk.felles.tidsserie.batch.plugins.disruptor.gzipped.ServiceRegistryRule.erAvType;
+import static no.spk.felles.tidsserie.batch.plugins.disruptor.gzipped.ServiceRegistryExtension.erAvType;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ServiceLoader;
@@ -12,31 +13,29 @@ import no.spk.felles.tidsserie.batch.core.TidsserieLivssyklus;
 import no.spk.felles.tidsserie.batch.core.lagring.StorageBackend;
 import no.spk.felles.tidsserie.batch.core.registry.Plugin;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.io.TempDir;
 
 public class LmaxDisruptorPluginTest {
-    @Rule
-    public final ServiceRegistryRule registry = new ServiceRegistryRule();
+    @RegisterExtension
+    public final ServiceRegistryExtension registry = new ServiceRegistryExtension();
 
-    @Rule
-    public final TemporaryFolder temp = new TemporaryFolder();
 
     private final Plugin plugin = new LmaxDisruptorPlugin();
 
-    @Before
-    public void _before() throws IOException {
+    @BeforeEach
+    void _before(@TempDir File temp) throws IOException {
         registry.registrer(
                 Path.class,
-                temp.newFolder("ut").toPath(),
+                newFolder(temp, "ut").toPath(),
                 Katalog.UT.egenskap()
         );
     }
 
     @Test
-    public void skal_vere_tilgjengelig_via_service_loader_APIen() {
+    void skal_vere_tilgjengelig_via_service_loader_APIen() {
         Plugin.registrerAlle(
                 registry.registry(),
                 ServiceLoader.load(Plugin.class)
@@ -49,7 +48,7 @@ public class LmaxDisruptorPluginTest {
     }
 
     @Test
-    public void skal_registrere_disruptor_backend_som_plugin() {
+    void skal_registrere_disruptor_backend_som_plugin() {
         plugin.aktiver(registry.registry());
 
         registry
@@ -65,5 +64,14 @@ public class LmaxDisruptorPluginTest {
         registry
                 .assertFirstService(ExecutorService.class)
                 .isNotEmpty();
+    }
+
+    private static File newFolder(File root, String... subDirs) throws IOException {
+        String subFolder = String.join("/", subDirs);
+        File result = new File(root, subFolder);
+        if (!result.mkdirs()) {
+            throw new IOException("Couldn't create folders " + root);
+        }
+        return result;
     }
 }

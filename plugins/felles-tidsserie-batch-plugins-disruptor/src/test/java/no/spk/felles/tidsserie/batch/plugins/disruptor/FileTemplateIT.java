@@ -3,13 +3,14 @@ package no.spk.felles.tidsserie.batch.plugins.disruptor;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
+import java.lang.reflect.Method;
+import java.util.Optional;
 
 import org.assertj.core.api.AbstractCharSequenceAssert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.rules.TestName;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.io.TempDir;
 
 /**
  * Integrasjonstestar for {@link FileTemplate}.
@@ -17,24 +18,25 @@ import org.junit.rules.TestName;
  * @author Tarjei Skorgenes
  */
 public class FileTemplateIT {
-    @Rule
-    public final TemporaryFolder temp = new TemporaryFolderWithDeleteVerification();
+    @TempDir
+    public File temp;
 
-    @Rule
-    public final TestName name = new TestName();
+    public String name;
 
     private FileTemplate template;
 
-    @Before
-    public void _before() {
+    @BeforeEach
+    void _before(TestInfo testInfo) {
+        Optional<Method> testMethod = testInfo.getTestMethod();
+        testMethod.ifPresent(method -> this.name = method.getName());
         template = new FileTemplate(
-                temp.getRoot().toPath(),
+                temp.toPath(),
                 suffix()
         );
     }
 
     @Test
-    public void skalGenerereForskjelligeFilnavnForKvartKall() {
+    void skalGenerereForskjelligeFilnavnForKvartKall() {
         assertFilename(1L)
                 .isNotEqualTo(
                         create(1L).getName()
@@ -42,7 +44,7 @@ public class FileTemplateIT {
     }
 
     @Test
-    public void skalInkludereSerienummerIKvartFilnavn() {
+    void skalInkludereSerienummerIKvartFilnavn() {
         assertFilename(1762)
                 .startsWith(prefix() + "1762-");
     }
@@ -62,6 +64,6 @@ public class FileTemplateIT {
     }
 
     private String prefix() {
-        return FileTemplateIT.class.getSimpleName() + "-" + name.getMethodName() + "-";
+        return FileTemplateIT.class.getSimpleName() + "-" + name + "-";
     }
 }

@@ -9,30 +9,27 @@ import java.time.LocalDateTime;
 
 import no.spk.faktura.input.BatchId;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 /**
  * @author Snorre E. Brekke - Computas
  */
 public class TriggerfileCreatorTest {
-    @Rule
-    public final TemporaryFolder temp = new TemporaryFolder();
 
     private Path utKatalog;
 
     private TriggerfileCreator creator;
 
-    @Before
-    public void _before() {
-        utKatalog = temp.getRoot().toPath();
+    @BeforeEach
+    void _before(@TempDir Path temp) {
+        utKatalog = temp;
         creator = new TriggerfileCreator(utKatalog);
     }
 
     @Test
-    public void testCreateTriggerFile() {
+    void createTriggerFile() {
         generer();
 
         assertThat(utKatalog.resolve("ok.trg"))
