@@ -21,8 +21,8 @@
     </dependencyManagement>
     <dependencies>
         <dependency>
-            <groupId>no.spk.felles</groupId>
-            <artifactId>felles-tidsperiode-underlag-lib</artifactId>
+            <groupId>no.spk</groupId>
+            <artifactId>tidsperiode-underlag-lib</artifactId>
         </dependency>
         <dependency>
             <groupId>no.spk.felles</groupId>
