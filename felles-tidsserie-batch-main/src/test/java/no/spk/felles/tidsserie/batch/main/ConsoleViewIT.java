@@ -9,13 +9,14 @@ import java.util.function.Supplier;
 import no.spk.felles.tidsserie.batch.main.input.ProgramArguments;
 
 import org.assertj.core.api.AbstractCharSequenceAssert;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 public class ConsoleViewIT {
-    @Rule
+
+    @RegisterExtension
     public final StandardOutputAndError console = new StandardOutputAndError();
 
     private final ConsoleView view = new ConsoleView().overstyr(klokke());
@@ -24,18 +25,18 @@ public class ConsoleViewIT {
 
     private LocalDateTime tidspunkt = LocalDateTime.now();
 
-    @Before
-    public void _before() {
+    @BeforeEach
+    void _before() {
         stillKlokka("1970-01-01 - 00:00:00");
     }
 
-    @After
-    public void _after() {
+    @AfterEach
+    void _after() {
         console.assertStandardError().isEmpty();
     }
 
     @Test
-    public void skal_inkludere_tidspunkt_ved_oppstart() {
+    void skal_inkludere_tidspunkt_ved_oppstart() {
         stillKlokka("2018-08-13 - 01:05:28");
 
         informerOmOppstart();
@@ -44,7 +45,7 @@ public class ConsoleViewIT {
     }
 
     @Test
-    public void skal_inkludere_oppsummering_av_kommandolinjeargument_ved_oppstart() {
+    void skal_inkludere_oppsummering_av_kommandolinjeargument_ved_oppstart() {
         informerOmOppstart();
 
         assertStandardOutput().contains("Følgende programargumenter blir brukt:");
@@ -60,7 +61,7 @@ public class ConsoleViewIT {
     }
 
     @Test
-    public void skal_advare_ved_oppstart_dersom_antall_prosessorar_er_lik_antall_tilgjengelige_prosessorar() {
+    void skal_advare_ved_oppstart_dersom_antall_prosessorar_er_lik_antall_tilgjengelige_prosessorar() {
         arguments.antallProsessorar(availableProcessors());
 
         informerOmOppstart();

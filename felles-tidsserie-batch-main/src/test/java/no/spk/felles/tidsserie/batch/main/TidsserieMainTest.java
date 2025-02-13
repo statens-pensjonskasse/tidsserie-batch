@@ -2,11 +2,12 @@ package no.spk.felles.tidsserie.batch.main;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class TidsserieMainTest {
+class TidsserieMainTest {
+
     @Test
-    public void skal_gi_ei_forståelig_feilmelding_dersom_classpath_manglar_teneste_av_ønska_type() {
+    void skal_gi_ei_forståelig_feilmelding_dersom_classpath_manglar_teneste_av_ønska_type() {
         assertThatCode(
                 () -> TidsserieMain.finnFørsteTjeneste(Dummy.class)
         )

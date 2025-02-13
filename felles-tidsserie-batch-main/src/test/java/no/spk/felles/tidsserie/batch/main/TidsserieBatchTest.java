@@ -12,8 +12,6 @@ import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.junit.MockitoJUnit.rule;
-import static org.mockito.quality.Strictness.STRICT_STUBS;
 
 import java.nio.file.Path;
 import java.time.LocalDateTime;
@@ -32,21 +30,22 @@ import no.spk.felles.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenter
 import no.spk.felles.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenterParser;
 import no.spk.felles.tidsserie.batch.core.kommandolinje.UgyldigKommandolinjeArgumentException;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoRule;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
 public class TidsserieBatchTest {
-    @Rule
-    public final MockitoRule mockito = rule().strictness(STRICT_STUBS);
 
-    @Rule
+    @RegisterExtension
     public final ServiceRegistryRule registry = new ServiceRegistryRule();
 
-    @Rule
-    public final TemporaryFolderWithDeleteVerification temp = new TemporaryFolderWithDeleteVerification();
+    @TempDir
+    public Path temp;
 
     @Mock
     private Bruksveiledning bruksveiledning;
@@ -71,8 +70,8 @@ public class TidsserieBatchTest {
 
     private TidsserieBatch main;
 
-    @Before
-    public void _before() {
+    @BeforeEach
+    void _before() {
         main = new TidsserieBatch(
                 registry.registry(),
                 exitCode -> {
@@ -83,16 +82,16 @@ public class TidsserieBatchTest {
         registry.registrer(TidsserieLivssyklus.class, b);
         registry.registrer(TidsserieLivssyklus.class, c);
 
-        registry.registrer(Path.class, temp.getRoot().toPath(), Katalog.UT.egenskap());
-        registry.registrer(Path.class, temp.getRoot().toPath(), Katalog.LOG.egenskap());
-        registry.registrer(Path.class, temp.getRoot().toPath(), Katalog.GRUNNLAGSDATA.egenskap());
+        registry.registrer(Path.class, temp, Katalog.UT.egenskap());
+        registry.registrer(Path.class, temp, Katalog.LOG.egenskap());
+        registry.registrer(Path.class, temp, Katalog.GRUNNLAGSDATA.egenskap());
 
         lenient().doReturn(antallProsessorar(1)).when(argumenter).antallProsessorar();
         registry.registrer(TidsserieBatchArgumenter.class, argumenter);
     }
 
     @Test
-    public void skal_ikkje_fange_error_frå_oppretting_av_kommandolinjeargument_parser() {
+    void skal_ikkje_fange_error_frå_oppretting_av_kommandolinjeargument_parser() {
         final ManglandeServiceLoaderOppsettError expected = new ManglandeServiceLoaderOppsettError(TidsserieBatchArgumenterParser.class);
 
         assertThatCode(
@@ -104,7 +103,7 @@ public class TidsserieBatchTest {
     }
 
     @Test
-    public void skal_informere_brukaren_om_ugyldige_kommandolinjeargument() {
+    void skal_informere_brukaren_om_ugyldige_kommandolinjeargument() {
         final UgyldigKommandolinjeArgumentException expected = new UgyldigKommandolinjeArgumentException(
                 "Yada yada",
                 bruksveiledning
@@ -123,7 +122,7 @@ public class TidsserieBatchTest {
     }
 
     @Test
-    public void skal_vise_bruksveiledning_når_forespurt_av_brukaren() {
+    void skal_vise_bruksveiledning_når_forespurt_av_brukaren() {
         final BruksveiledningSkalVisesException expected = new BruksveiledningSkalVisesException(bruksveiledning);
 
         assertThatCode(
@@ -139,7 +138,7 @@ public class TidsserieBatchTest {
     }
 
     @Test
-    public void skal_fange_uventa_exceptions_frå_parsing_av_kommandolinjeargument_og_informere_brukaren_om_ukjent_feil() {
+    void skal_fange_uventa_exceptions_frå_parsing_av_kommandolinjeargument_og_informere_brukaren_om_ukjent_feil() {
         final RuntimeException e = new RuntimeException("Oops, I didn't mean to do it again");
         final TidsserieBatchArgumenterParser parser = args -> {
             throw e;
@@ -158,7 +157,7 @@ public class TidsserieBatchTest {
     }
 
     @Test
-    public void skal_registrere_argumenter_i_tjenesteregisteret() {
+    void skal_registrere_argumenter_i_tjenesteregisteret() {
         main.run(
                 () -> args -> argumenter
         );
@@ -168,7 +167,7 @@ public class TidsserieBatchTest {
     }
 
     @Test
-    public void skal_kaste_exception_ved_feil_paa_ein_av_start_livssyklusane() {
+    void skal_kaste_exception_ved_feil_paa_ein_av_start_livssyklusane() {
         final IllegalArgumentException expected = new IllegalArgumentException("this is the message");
         doThrow(expected).when(a).start(any());
 
@@ -176,7 +175,7 @@ public class TidsserieBatchTest {
     }
 
     @Test
-    public void skal_ikkje_kaste_exception_ved_feil_paa_ein_av_stop_livssyklusane() {
+    void skal_ikkje_kaste_exception_ved_feil_paa_ein_av_stop_livssyklusane() {
         final IllegalArgumentException expected = new IllegalArgumentException("this is the message");
         doThrow(expected).when(a).stop(any());
 
@@ -184,7 +183,7 @@ public class TidsserieBatchTest {
     }
 
     @Test
-    public void skal_notifisere_controlleren_ved_feil_paa_ein_av_stop_livssyklusane() {
+    void skal_notifisere_controlleren_ved_feil_paa_ein_av_stop_livssyklusane() {
         final IllegalArgumentException expected = new IllegalArgumentException("this is the message");
         doThrow(expected).when(a).stop(any());
 
@@ -194,7 +193,7 @@ public class TidsserieBatchTest {
     }
 
     @Test
-    public void skal_kaste_exception_ved_feil_paa_controlleren_ved_lag_tidsserie() {
+    void skal_kaste_exception_ved_feil_paa_controlleren_ved_lag_tidsserie() {
         final IllegalArgumentException expected = new IllegalArgumentException("this is the message");
         doThrow(expected).when(controller).lagTidsserie(any(), any());
 
@@ -202,7 +201,7 @@ public class TidsserieBatchTest {
     }
 
     @Test
-    public void skal_kalle_stop_paa_alle_livssyklusar_sjoelv_om_start_feila() {
+    void skal_kalle_stop_paa_alle_livssyklusar_sjoelv_om_start_feila() {
         final RuntimeException expected = new RuntimeException("b says hello!");
         doThrow(expected).when(b).start(any());
 
@@ -214,7 +213,7 @@ public class TidsserieBatchTest {
     }
 
     @Test
-    public void skal_kalle_alle_generer_tidsserie_callback_selv_om_foerste_feilet() {
+    void skal_kalle_alle_generer_tidsserie_callback_selv_om_foerste_feilet() {
         final RuntimeException expected = new RuntimeException("callback error");
 
         final TidsserieGenerertCallback2 firstCallback = mock(TidsserieGenerertCallback2.class);
@@ -232,7 +231,7 @@ public class TidsserieBatchTest {
 
     @SuppressWarnings("deprecation")
     @Test
-    public void skal_kalle_alle_gamle_generer_tidsserie_callback_selv_om_foerste_feilet() {
+    void skal_kalle_alle_gamle_generer_tidsserie_callback_selv_om_foerste_feilet() {
         final RuntimeException expected = new RuntimeException("callback error");
 
         final no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback firstCallback = mock(no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback.class);
@@ -250,7 +249,7 @@ public class TidsserieBatchTest {
 
 
     @Test
-    public void skal_kalle_stop_paa_alle_livssyklusar_sjoelv_om_generer_tidsserie_callback_feila() {
+    void skal_kalle_stop_paa_alle_livssyklusar_sjoelv_om_generer_tidsserie_callback_feila() {
         final RuntimeException expected = new RuntimeException("callback error");
 
         final TidsserieGenerertCallback2 callback = mock(TidsserieGenerertCallback2.class);
@@ -267,7 +266,7 @@ public class TidsserieBatchTest {
 
     @SuppressWarnings("deprecation")
     @Test
-    public void skal_kalle_stop_paa_alle_livssyklusar_sjoelv_om_gamle_generer_tidsserie_callback_feila() {
+    void skal_kalle_stop_paa_alle_livssyklusar_sjoelv_om_gamle_generer_tidsserie_callback_feila() {
         final RuntimeException expected = new RuntimeException("callback error");
 
         final no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback callback = mock(no.spk.felles.tidsserie.batch.core.TidsserieGenerertCallback.class);
@@ -283,7 +282,7 @@ public class TidsserieBatchTest {
     }
 
     @Test
-    public void skal_ikkje_kalle_kontrolleren_dersom_start_feila() {
+    void skal_ikkje_kalle_kontrolleren_dersom_start_feila() {
         final RuntimeException expected = new RuntimeException("b says hello!");
         doThrow(expected).when(a).start(any());
 
@@ -293,7 +292,7 @@ public class TidsserieBatchTest {
     }
 
     @Test
-    public void skal_kalle_start_paa_alle_livssyklusar_sjoelv_om_start_feila_paa_tidligare_tjeneste() {
+    void skal_kalle_start_paa_alle_livssyklusar_sjoelv_om_start_feila_paa_tidligare_tjeneste() {
         final RuntimeException expected = new RuntimeException("a says hello!");
         doThrow(expected).when(a).start(any());
 
@@ -305,7 +304,7 @@ public class TidsserieBatchTest {
     }
 
     @Test
-    public void skal_kalle_stop_paa_alle_livssyklusar_sjoelv_om_stop_feila_paa_tidligare_tjeneste() {
+    void skal_kalle_stop_paa_alle_livssyklusar_sjoelv_om_stop_feila_paa_tidligare_tjeneste() {
         final RuntimeException expected = new RuntimeException("b says hello!");
         doThrow(expected).when(b).stop(any());
 
@@ -317,7 +316,7 @@ public class TidsserieBatchTest {
     }
 
     @Test
-    public void skal_kalle_stop_paa_alle_livssyklusar_sjoelv_om_controller_feilar() {
+    void skal_kalle_stop_paa_alle_livssyklusar_sjoelv_om_controller_feilar() {
         final RuntimeException expected = new RuntimeException("b says hello!");
         doThrow(expected).when(controller).lagTidsserie(any(), any());
 

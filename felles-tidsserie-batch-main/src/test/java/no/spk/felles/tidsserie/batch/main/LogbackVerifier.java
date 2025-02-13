@@ -19,18 +19,20 @@ import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.read.ListAppender;
 import org.assertj.core.api.AbstractCharSequenceAssert;
 import org.assertj.core.api.ListAssert;
-import org.junit.rules.ExternalResource;
+import org.junit.jupiter.api.extension.AfterEachCallback;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.slf4j.LoggerFactory;
 
 /**
  * Klasse som kan brukes som class-rule i JUnit-tester for å sjekke etter spesifikke logg-hendelser.
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
-public class LogbackVerifier extends ExternalResource {
+public class LogbackVerifier implements BeforeEachCallback, AfterEachCallback {
     private ListAppender<ILoggingEvent> appender;
 
     @Override
-    protected void before() {
+    public void beforeEach(ExtensionContext context) {
         appender = new ListAppender<>();
         appender.setName("MOCK");
         appender.start();
@@ -41,7 +43,7 @@ public class LogbackVerifier extends ExternalResource {
     }
 
     @Override
-    protected void after() {
+    public void afterEach(ExtensionContext ctx)  {
         final LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
         try {
             final JoranConfigurator configurator = new JoranConfigurator();
@@ -121,4 +123,6 @@ public class LogbackVerifier extends ExternalResource {
             throw new RuntimeException(e);
         }
     }
+
+
 }
