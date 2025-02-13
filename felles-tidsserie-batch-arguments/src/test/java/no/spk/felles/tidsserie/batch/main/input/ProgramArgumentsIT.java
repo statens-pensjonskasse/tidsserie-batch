@@ -6,6 +6,7 @@ import static no.spk.felles.tidsserie.batch.core.kommandolinje.AntallProsessorar
 import static no.spk.felles.tidsserie.batch.main.input.Datoar.dato;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.File;
 import java.io.IOException;
 import java.time.LocalTime;
 
@@ -13,32 +14,35 @@ import no.spk.felles.tidsperiode.Aarstall;
 import no.spk.felles.tidsperiode.underlag.Observasjonsperiode;
 import no.spk.felles.tidsserie.batch.core.UttrekksId;
 
-import org.assertj.core.api.JUnitSoftAssertions;
+import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.StringAssert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
+import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.io.TempDir;
 
+@ExtendWith(SoftAssertionsExtension.class)
 public class ProgramArgumentsIT {
-    @Rule
-    public final ServiceRegistryRule registry = new ServiceRegistryRule();
 
-    @Rule
-    public final TemporaryFolderWithDeleteVerification temp = new TemporaryFolderWithDeleteVerification();
+    @RegisterExtension
+    public final ServiceRegistryExtension registry = new ServiceRegistryExtension();
 
-    @Rule
-    public final ModusRule modus = new ModusRule();
+    @RegisterExtension
+    public final ModusExtension modus = new ModusExtension();
 
-    @Rule
-    public final JUnitSoftAssertions softly = new JUnitSoftAssertions();
+    @InjectSoftAssertions
+    private SoftAssertions softly;
 
     private final ProgramArguments args = new ProgramArguments();
 
-    @Before
-    public void _before() throws IOException {
-        args.innkatalog = temp.newFolder("inn").toPath();
-        args.utkatalog = temp.newFolder("ut").toPath();
-        args.logkatalog = temp.newFolder("log").toPath();
+    @BeforeEach
+    void _before(@TempDir File temp) throws IOException {
+        args.innkatalog = newFolder(temp, "inn").toPath();
+        args.utkatalog = newFolder(temp, "ut").toPath();
+        args.logkatalog = newFolder(temp, "log").toPath();
         args.beskrivelse = "Min beskrivelse";
         args.fraAar = 2009;
         args.tilAar = 2018;
@@ -51,7 +55,7 @@ public class ProgramArgumentsIT {
     }
 
     @Test
-    public void skal_oppsummere_alle_argument_med_verdiar_i_toString() {
+    void skal_oppsummere_alle_argument_med_verdiar_i_toString() {
         modus.support("min_modus");
         Modus.parse("min_modus").ifPresent(m -> args.modus = m);
 
@@ -74,7 +78,7 @@ public class ProgramArgumentsIT {
     }
 
     @Test
-    public void skal_generere_observasjonsperiode_fra_1_januar_til_31_desember_i_fra_og_til_aarstalla() {
+    void skal_generere_observasjonsperiode_fra_1_januar_til_31_desember_i_fra_og_til_aarstalla() {
         args.fraAar = 2010;
         args.tilAar = 2015;
         assertThat(args.observasjonsperiode())
@@ -82,14 +86,14 @@ public class ProgramArgumentsIT {
     }
 
     @Test
-    public void skal_bruke_1_mindre_enn_antall_tilgjengelide_prosessorar_som_standardverdi() {
+    void skal_bruke_1_mindre_enn_antall_tilgjengelide_prosessorar_som_standardverdi() {
         assertThat(new ProgramArguments().nodes)
                 .as("standardverdi når antall prosessorar ikkje blir overstyrt på kommandolinja")
                 .isEqualTo(standardAntallProsessorar());
     }
 
     @Test
-    public void skal_registrere_observasjonsperiode_i_tenesteregisteret() {
+    void skal_registrere_observasjonsperiode_i_tenesteregisteret() {
         args.fraAar = 1917;
         args.tilAar = 2037;
 
@@ -107,7 +111,7 @@ public class ProgramArgumentsIT {
     }
 
     @Test
-    public void skal_ikkje_velge_eit_uttrekk_automatisk_viss_brukaren_allereie_har_angitt_kva_uttrekk_som_skal_brukast() {
+    void skal_ikkje_velge_eit_uttrekk_automatisk_viss_brukaren_allereie_har_angitt_kva_uttrekk_som_skal_brukast() {
         final UttrekksId expected = uttrekksId("grunnlagsdata_1970-01-01_00-00-00-00");
         brukUttrekk(expected);
 
@@ -117,7 +121,7 @@ public class ProgramArgumentsIT {
     }
 
     @Test
-    public void skal_velge_eit_uttrekk_automatisk_dersom_brukaren_ikkje_angir_kva_uttrekk_som_skal_brukast() {
+    void skal_velge_eit_uttrekk_automatisk_dersom_brukaren_ikkje_angir_kva_uttrekk_som_skal_brukast() {
         final UttrekksId expected = uttrekksId("grunnlagsdata_1980-01-01_00-00-00-00");
         brukUttrekk(null);
 
@@ -132,5 +136,14 @@ public class ProgramArgumentsIT {
 
     private StringAssert assertToString() {
         return softly.assertThat(args.toString());
+    }
+
+    private static File newFolder(File root, String... subDirs) throws IOException {
+        String subFolder = String.join("/", subDirs);
+        File result = new File(root, subFolder);
+        if (!result.mkdirs()) {
+            throw new IOException("Couldn't create folders " + root);
+        }
+        return result;
     }
 }

@@ -6,20 +6,24 @@ import static java.util.stream.IntStream.rangeClosed;
 import java.util.stream.Stream;
 
 import org.assertj.core.api.AbstractThrowableAssert;
-import org.assertj.core.api.JUnitSoftAssertions;
-import org.junit.Rule;
-import org.junit.Test;
+import org.assertj.core.api.SoftAssertions;
+import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
+import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.ParameterException;
 
+@ExtendWith(SoftAssertionsExtension.class)
 public class AntallProsessorarValidatorTest {
-    @Rule
-    public final JUnitSoftAssertions softly = new JUnitSoftAssertions();
+
+    @InjectSoftAssertions
+    private SoftAssertions softly;
 
     private final AntallProsessorarValidator validator = new AntallProsessorarValidator();
 
     @Test
-    public void skal_godta_tall_mellom_1_og_antall_tilgjengelige_prosessorar() {
+    void skal_godta_tall_mellom_1_og_antall_tilgjengelige_prosessorar() {
         rangeClosed(1, tilgjengeligeProsessorar())
                 .boxed()
                 .forEach(
@@ -28,7 +32,7 @@ public class AntallProsessorarValidatorTest {
     }
 
     @Test
-    public void skal_feile_når_verdi_inneholder_et_desimaltall() {
+    void skal_feile_når_verdi_inneholder_et_desimaltall() {
         assertValideringsfeil("1.2")
                 .isInstanceOf(ParameterException.class)
                 .hasMessageContaining("'n': er ikke et gyldig tall (fant 1.2)")
@@ -36,7 +40,7 @@ public class AntallProsessorarValidatorTest {
     }
 
     @Test
-    public void skal_feile_når_verdi_ikke_inneholder_en_integer() {
+    void skal_feile_når_verdi_ikke_inneholder_en_integer() {
         assertValideringsfeil("t")
                 .isInstanceOf(ParameterException.class)
                 .hasMessageContaining("'n': er ikke et gyldig tall (fant t)")
@@ -44,7 +48,7 @@ public class AntallProsessorarValidatorTest {
     }
 
     @Test
-    public void skal_feile_når_verdi_ikke_er_gyldig_som_antall_prosessorer() {
+    void skal_feile_når_verdi_ikke_er_gyldig_som_antall_prosessorer() {
         Stream.of("-1", "0")
                 .forEach(
                         verdi -> assertValideringsfeil(verdi)
@@ -55,7 +59,7 @@ public class AntallProsessorarValidatorTest {
     }
 
     @Test
-    public void skal_feile_når_verdi_er_større_enn_antall_tilgjengelige_prosessorar_på_maskina() {
+    void skal_feile_når_verdi_er_større_enn_antall_tilgjengelige_prosessorar_på_maskina() {
         int antallProsessorar = tilgjengeligeProsessorar();
         assertValideringsfeil(
                 "" + (antallProsessorar + 1)
