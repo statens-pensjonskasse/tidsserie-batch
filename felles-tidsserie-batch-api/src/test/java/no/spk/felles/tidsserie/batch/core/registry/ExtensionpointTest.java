@@ -11,28 +11,26 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.junit.MockitoJUnit.rule;
-import static org.mockito.quality.Strictness.STRICT_STUBS;
 
 import java.util.stream.Collectors;
 
-import no.spk.felles.tidsserie.batch.core.ServiceRegistryRule;
+import no.spk.felles.tidsserie.batch.core.ServiceRegistryExtension;
 import no.spk.felles.tidsserie.batch.core.TidsserieLivssyklus;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 import org.assertj.core.api.AbstractBooleanAssert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoRule;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
 public class ExtensionpointTest {
-    @Rule
-    public final MockitoRule mockito = rule().strictness(STRICT_STUBS);
 
-    @Rule
-    public final ServiceRegistryRule registry = new ServiceRegistryRule();
+    @RegisterExtension
+    public final ServiceRegistryExtension registry = new ServiceRegistryExtension();
 
     @Mock(name = "a")
     private TidsserieLivssyklus a;
@@ -46,7 +44,7 @@ public class ExtensionpointTest {
     private Extensionpoint<TidsserieLivssyklus> extensionpoint;
 
     @Test
-    public void skal_kun_kalle_hoegast_rangerte_tjeneste() {
+    void skal_kun_kalle_hoegast_rangerte_tjeneste() {
         final TidsserieLivssyklus d = mock(TidsserieLivssyklus.class, "d");
         registry.registrer(TidsserieLivssyklus.class, d, ranking(1000).egenskap());
 
@@ -59,7 +57,7 @@ public class ExtensionpointTest {
     }
 
     @Test
-    public void skal_kalle_alle_extensions_sjoelv_om_ein_av_dei_feilar() {
+    void skal_kalle_alle_extensions_sjoelv_om_ein_av_dei_feilar() {
         // Setter her opp rekkefølga a (feilar), b (ok), c(ok) for å illustrere
         // ein situasjon der vi ønskjer at både b og c skal få callbacks sjølv
         // ein høgare rangert/tidligare extension feilar
@@ -74,7 +72,7 @@ public class ExtensionpointTest {
     }
 
     @Test
-    public void skal_fange_feil_og_indikere_at_ein_extension_har_feila_via_status() {
+    void skal_fange_feil_og_indikere_at_ein_extension_har_feila_via_status() {
         doThrow(new RuntimeException("skal_fange_feil_og_indikere_at_ein_extension_har_feila_via_status")).when(a).start(any());
 
         final ExtensionpointStatus status = invokeAll();
@@ -85,13 +83,13 @@ public class ExtensionpointTest {
     }
 
     @Test
-    public void skal_ikkje_kaste_exception_dersom_status_er_ok() {
+    void skal_ikkje_kaste_exception_dersom_status_er_ok() {
         final ExtensionpointStatus status = invokeAll();
         status.orElseThrow(errors -> new AssertionError("Skulle ikkje blitt kasta"));
     }
 
     @Test
-    public void skal_kaste_exception_dersom_status_ikkje_er_ok() {
+    void skal_kaste_exception_dersom_status_ikkje_er_ok() {
         doThrow(new RuntimeException("I don't care")).when(a).start(any());
 
         assertThatCode(
@@ -106,7 +104,7 @@ public class ExtensionpointTest {
     }
 
     @Test
-    public void skal_merge_to_ok_som_ok() {
+    void skal_merge_to_ok_som_ok() {
         final ExtensionpointStatus status = ExtensionpointStatus.merge(
                 ExtensionpointStatus.ok(),
                 ExtensionpointStatus.ok()
@@ -115,7 +113,7 @@ public class ExtensionpointTest {
     }
 
     @Test
-    public void skal_merge_feil_fra_begge_sjoelv_om_kun_ein_feilar() {
+    void skal_merge_feil_fra_begge_sjoelv_om_kun_ein_feilar() {
         final RuntimeException expected = new RuntimeException("first");
         doThrow(expected).when(a).start(any());
         final ExtensionpointStatus x = invokeAll();
@@ -135,7 +133,7 @@ public class ExtensionpointTest {
     }
 
     @Test
-    public void skal_merge_feil_fra_begge_statusane_om_dei_feilar() {
+    void skal_merge_feil_fra_begge_statusane_om_dei_feilar() {
         final RuntimeException first = new RuntimeException("first");
         doThrow(first).when(a).start(any());
         final ExtensionpointStatus x = invokeAll();
@@ -151,7 +149,7 @@ public class ExtensionpointTest {
     }
 
     @Test
-    public void skal_ikkje_fange_non_runtime_exceptions() {
+    void skal_ikkje_fange_non_runtime_exceptions() {
         class SneakyThrowingLivssyklus implements TidsserieLivssyklus {
 
             private final Exception expected;
@@ -181,7 +179,7 @@ public class ExtensionpointTest {
     }
 
     @Test
-    public void skal_ikkje_fange_errors() {
+    void skal_ikkje_fange_errors() {
         final Error expected = new Error("OH GOD, MY LEG, MY LEG!");
         doThrow(expected).when(a).start(any());
 
@@ -194,7 +192,7 @@ public class ExtensionpointTest {
     }
 
     @Test
-    public void skal_rethrowe_foerste_feil_as_is() {
+    void skal_rethrowe_foerste_feil_as_is() {
         final RuntimeException expected = new RuntimeException("DEN FYRSTE FEIL EG HØYRA FEKK VAR RUNTIMEEXCEPTION I VOGGA");
         doThrow(expected).when(a).start(any());
 
@@ -206,8 +204,8 @@ public class ExtensionpointTest {
         }
     }
 
-    @Before
-    public void _before() {
+    @BeforeEach
+    void _before() {
         extensionpoint = new Extensionpoint<>(TidsserieLivssyklus.class, registry.registry());
 
         registry.registrer(TidsserieLivssyklus.class, a);

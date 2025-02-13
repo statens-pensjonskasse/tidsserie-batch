@@ -9,32 +9,34 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
+import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 import java.util.zip.GZIPOutputStream;
 
 import no.spk.felles.tidsperiode.Tidsperiode;
 
 import org.assertj.core.api.AbstractBooleanAssert;
-import org.assertj.core.api.JUnitSoftAssertions;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.rules.TestName;
+import org.assertj.core.api.SoftAssertions;
+import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
+import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 
+@ExtendWith(SoftAssertionsExtension.class)
 public class CSVInputTest {
     private static final String DUMMYDATA = "1;2;3;4;5;6;7;8;9;0";
 
-    @Rule
-    public final TestName name = new TestName();
+    String name;
 
-    @Rule
-    public final TemporaryFolder folder = new TemporaryFolderWithDeleteVerification();
 
-    @Rule
-    public final JUnitSoftAssertions softly = new JUnitSoftAssertions();
+    @InjectSoftAssertions
+    private SoftAssertions softly;
 
     private CSVInput fixture;
 
@@ -42,17 +44,18 @@ public class CSVInputTest {
 
     private File baseDir;
 
-    @Before
-    public void _before() throws IOException {
-        baseDir = folder.newFolder(name.getMethodName());
+    @BeforeEach
+    void _before(TestInfo testInfo, @TempDir File tempDir) throws IOException {
+        Optional<Method> testMethod = testInfo.getTestMethod();
+        testMethod.ifPresent(method -> this.name = method.getName());
+        baseDir = newFolder(tempDir, name);
 
         medlemsdata = newTemporaryFile("medlemsdata.csv.gz");
-
         fixture = new CSVInput(baseDir.toPath());
     }
 
     @Test
-    public void skal_kreve_innkatalog_ved_konstruksjon() {
+    void skal_kreve_innkatalog_ved_konstruksjon() {
         assertThatCode(
                 () -> new CSVInput(null)
         )
@@ -64,7 +67,7 @@ public class CSVInputTest {
      * Verifiserer at medlemsdatafila blir lukka når straumen med innleste linjer blir lukka.
      */
     @Test
-    public void skalLukkeMedlemsdatafilVedLukkingAvStream() throws IOException {
+    void skalLukkeMedlemsdatafilVedLukkingAvStream() throws IOException {
         write(medlemsdata, of(DUMMYDATA));
 
         try (final Stream<List<String>> medlemsdata = fixture.medlemsdata()) {
@@ -79,7 +82,7 @@ public class CSVInputTest {
      * blir lukka.
      */
     @Test
-    public void skalLukkeReferansefilerVedLukkingAvStream() throws IOException {
+    void skalLukkeReferansefilerVedLukkingAvStream() throws IOException {
         fixture.addOversettere(new FakeOversetter());
 
         final File referanse1 = newTemporaryFile("referansedata1.csv.gz");
@@ -101,7 +104,7 @@ public class CSVInputTest {
      * Verifiserer at CSV-fila med medlemsdata ikkje blir lest inn og tatt tatt med som en del av referansedatane.
      */
     @Test
-    public void skalEkskludereMedlemsdataFraReferansedataFilListe() throws IOException {
+    void skalEkskludereMedlemsdataFraReferansedataFilListe() throws IOException {
         try (final Stream<Path> referansedatafiler = fixture.referansedataFiler()) {
             assertThat(
                     referansedatafiler
@@ -112,7 +115,7 @@ public class CSVInputTest {
     }
 
     @Test
-    public void skal_støtte_ukomprimerte_csv_filer() throws IOException {
+    void skal_støtte_ukomprimerte_csv_filer() throws IOException {
         write(newTemporaryFile("tjafs.csv"), of(DUMMYDATA));
 
         softly.assertThat(
@@ -141,7 +144,7 @@ public class CSVInputTest {
     }
 
     @Test
-    public void skal_ikkje_godta_filer_som_eksisterer_i_både_komprimert_og_ukomprimert_versjon() throws IOException {
+    void skal_ikkje_godta_filer_som_eksisterer_i_både_komprimert_og_ukomprimert_versjon() throws IOException {
         write(newTemporaryFile("filnavn.csv.gz"), of(DUMMYDATA));
         write(newTemporaryFile("filnavn.csv"), of(DUMMYDATA));
 
@@ -200,5 +203,14 @@ public class CSVInputTest {
         } catch (final IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    private static File newFolder(File root, String... subDirs) throws IOException {
+        String subFolder = String.join("/", subDirs);
+        File result = new File(root, subFolder);
+        if (!result.mkdirs()) {
+            throw new IOException("Couldn't create folders " + root);
+        }
+        return result;
     }
 }

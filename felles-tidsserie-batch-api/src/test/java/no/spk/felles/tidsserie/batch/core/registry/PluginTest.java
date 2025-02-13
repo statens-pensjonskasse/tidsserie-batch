@@ -6,8 +6,6 @@ import static java.util.stream.Collectors.toSet;
 import static no.spk.felles.tidsserie.batch.core.registry.Plugin.registrerAlle;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.atIndex;
-import static org.mockito.junit.MockitoJUnit.rule;
-import static org.mockito.quality.Strictness.STRICT_STUBS;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -18,25 +16,30 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import no.spk.felles.tidsserie.batch.core.ServiceRegistryRule;
+import no.spk.felles.tidsserie.batch.core.ServiceRegistryExtension;
 
 import org.assertj.core.api.AbstractThrowableAssert;
-import org.assertj.core.api.JUnitSoftAssertions;
+import org.assertj.core.api.SoftAssertions;
+import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
+import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.assertj.core.data.Index;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoRule;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
+@ExtendWith(SoftAssertionsExtension.class)
 public class PluginTest {
-    @Rule
-    public final JUnitSoftAssertions softly = new JUnitSoftAssertions();
 
-    @Rule
-    public final ServiceRegistryRule registry = new ServiceRegistryRule();
+    @InjectSoftAssertions
+    private SoftAssertions softly;
 
-    @Rule
-    public final MockitoRule mockito = rule().strictness(STRICT_STUBS);
+
+
+    @RegisterExtension
+    public final ServiceRegistryExtension registry = new ServiceRegistryExtension();
 
     @Mock
     private Plugin plugin_a;
@@ -45,7 +48,7 @@ public class PluginTest {
     private Plugin plugin_b;
 
     @Test
-    public void skal_registrere_kvart_plugin_i_tjenesteregisteret() {
+    void skal_registrere_kvart_plugin_i_tjenesteregisteret() {
         registrerAlle(registry.registry(), asList(plugin_a, plugin_b));
 
         registry
@@ -55,7 +58,7 @@ public class PluginTest {
     }
 
     @Test
-    public void skal_registrere_feilande_plugin_i_tjenesteregisteret_men_utsette_kasting_av_feil_til_registrer_blir_kalla_seinare_i_oppstarten() {
+    void skal_registrere_feilande_plugin_i_tjenesteregisteret_men_utsette_kasting_av_feil_til_registrer_blir_kalla_seinare_i_oppstarten() {
         assertThatCode(
                 () -> registrerAlle(
                         registry.registry(),

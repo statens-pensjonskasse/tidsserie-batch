@@ -9,18 +9,18 @@ import java.util.stream.Stream;
 import no.spk.felles.tidsserie.batch.core.registry.ServiceLocator;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistration;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
-
 import org.assertj.core.api.ListAssert;
 import org.assertj.core.api.OptionalAssert;
-import org.junit.rules.ExternalResource;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
 @SuppressWarnings({ "UnusedReturnValue", "WeakerAccess" })
-public class ServiceRegistryRule extends ExternalResource {
+public class ServiceRegistryExtension implements BeforeEachCallback {
     private ServiceRegistry registry;
     private ServiceLocator locator;
 
     @Override
-    protected void before() {
+    public void beforeEach(ExtensionContext context) {
         registry = ServiceLoader.load(ServiceRegistry.class).iterator().next();
         locator = new ServiceLocator(registry);
     }

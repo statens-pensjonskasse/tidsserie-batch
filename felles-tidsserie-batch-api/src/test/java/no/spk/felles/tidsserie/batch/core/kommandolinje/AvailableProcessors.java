@@ -1,14 +1,16 @@
 package no.spk.felles.tidsserie.batch.core.kommandolinje;
 
-import org.junit.rules.ExternalResource;
+import org.junit.jupiter.api.extension.AfterEachCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
-class AvailableProcessors extends ExternalResource {
-    @Override
-    protected void after() {
-        AntallProsessorar.reset();
-    }
+class AvailableProcessors implements AfterEachCallback {
 
     void overstyr(final int antall) {
         AntallProsessorar.overstyr(() -> antall);
+    }
+
+    @Override
+    public void afterEach(ExtensionContext context) {
+        AntallProsessorar.reset();
     }
 }

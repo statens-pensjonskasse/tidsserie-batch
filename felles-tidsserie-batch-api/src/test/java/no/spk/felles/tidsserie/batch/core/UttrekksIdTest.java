@@ -5,27 +5,32 @@ import static no.spk.felles.tidsserie.batch.core.UttrekksId.uttrekksId;
 import static no.spk.felles.tidsserie.batch.core.UttrekksId.velgNyeste;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
 import org.assertj.core.api.AbstractThrowableAssert;
-import org.assertj.core.api.JUnitSoftAssertions;
 import org.assertj.core.api.OptionalAssert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.assertj.core.api.SoftAssertions;
+import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
+import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 
+@ExtendWith(SoftAssertionsExtension.class)
 public class UttrekksIdTest {
-    @Rule
-    public final JUnitSoftAssertions softly = new JUnitSoftAssertions();
 
-    @Rule
-    public final TemporaryFolder temp = new TemporaryFolder();
+    @InjectSoftAssertions
+    private SoftAssertions softly;
+
+    @TempDir
+    public File temp;
 
     @Test
-    public void skal_kun_godta_gyldige_navn_på_uttrekk() {
+    void skal_kun_godta_gyldige_navn_på_uttrekk() {
         assertUttrekksId("grunnlagsdata_").isInstanceOf(IllegalArgumentException.class);
         assertUttrekksId("_1970-01-01_00-00-00-00").isInstanceOf(IllegalArgumentException.class);
         assertUttrekksId("grunnlagsdata_1970-01-01_0-0-0-0").isInstanceOf(IllegalArgumentException.class);
@@ -37,12 +42,12 @@ public class UttrekksIdTest {
     }
 
     @Test
-    public void skal_ikke_velge_nyeste_uttrekk_dersom_det_ikke_eksisterer_noen_kandidater() {
+    void skal_ikke_velge_nyeste_uttrekk_dersom_det_ikke_eksisterer_noen_kandidater() {
         assertVelgNyeste().isEmpty();
     }
 
     @Test
-    public void skal_ikke_velge_et_uttrekk_dersom_kandidaten_ikke_er_en_katalog() {
+    void skal_ikke_velge_et_uttrekk_dersom_kandidaten_ikke_er_en_katalog() {
         assertVelgNyeste(
                 katalog("grunnlagsdata_1970-01-01_00-00-00-00"),
                 fil("grunnlagsdata_2018-01-01_23-59-59-00")
@@ -51,7 +56,7 @@ public class UttrekksIdTest {
     }
 
     @Test
-    public void skal_ikke_velge_et_uttrekk_dersom_navnet_på_kandidaten_ikke_starter_på_grunnlagsdata_() {
+    void skal_ikke_velge_et_uttrekk_dersom_navnet_på_kandidaten_ikke_starter_på_grunnlagsdata_() {
         assertVelgNyeste(
                 katalog("uttrekk_1970-01-01_00-00-00-00"),
                 katalog("grunnlatsdata_1970-01-01_00-00-00-00"),
@@ -61,7 +66,7 @@ public class UttrekksIdTest {
     }
 
     @Test
-    public void skal_ikke_velge_et_uttrekk_dersom_navnet_på_kandidaten_ikke_slutter_med_et_tidspunkt() {
+    void skal_ikke_velge_et_uttrekk_dersom_navnet_på_kandidaten_ikke_slutter_med_et_tidspunkt() {
         assertVelgNyeste(
                 katalog("grunnlagsdata_1970-01-01"),
                 katalog("grunnlagsdata_1970-01-01_00-00"),
@@ -73,7 +78,7 @@ public class UttrekksIdTest {
     }
 
     @Test
-    public void skal_velge_det_nyeste_uttrekket_basert_på_tidspunkt_i_navnet_til_kandidatene() {
+    void skal_velge_det_nyeste_uttrekket_basert_på_tidspunkt_i_navnet_til_kandidatene() {
         assertVelgNyeste(
                 katalog("grunnlagsdata_2120-01-01_00-00-00-99"),
                 katalog("grunnlagsdata_1970-01-01_00-00-00-00"),
@@ -84,7 +89,7 @@ public class UttrekksIdTest {
     }
 
     @Test
-    public void skal_returnere_full_sti_til_uttrekket() {
+    void skal_returnere_full_sti_til_uttrekket() {
         final Path innKatalog = katalog("inn");
         assertThat(
                 uttrekksId("grunnlagsdata_2120-01-01_00-00-00-99")
@@ -100,7 +105,7 @@ public class UttrekksIdTest {
 
     private Path fil(final String fil) {
         try {
-            return temp.newFile(fil).toPath();
+            return File.createTempFile(fil, null, temp).toPath();
         } catch (final IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -108,7 +113,7 @@ public class UttrekksIdTest {
 
     private Path katalog(final String katalog) {
         try {
-            return temp.newFolder(katalog).toPath();
+            return newFolder(temp, katalog).toPath();
         } catch (final IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -134,5 +139,14 @@ public class UttrekksIdTest {
                         UttrekksId.class.getSimpleName(),
                         uttrekksId
                 );
+    }
+
+    private static File newFolder(File root, String... subDirs) throws IOException {
+        String subFolder = String.join("/", subDirs);
+        File result = new File(root, subFolder);
+        if (!result.mkdirs()) {
+            throw new IOException("Couldn't create folders " + root);
+        }
+        return result;
     }
 }

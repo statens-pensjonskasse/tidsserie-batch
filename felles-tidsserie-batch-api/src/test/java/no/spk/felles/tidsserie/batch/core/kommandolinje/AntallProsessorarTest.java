@@ -8,20 +8,25 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.stream.Stream;
 
-import org.assertj.core.api.JUnitSoftAssertions;
 import org.assertj.core.api.ListAssert;
-import org.junit.Rule;
-import org.junit.Test;
+import org.assertj.core.api.SoftAssertions;
+import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
+import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
+@ExtendWith(SoftAssertionsExtension.class)
 public class AntallProsessorarTest {
-    @Rule
-    public final JUnitSoftAssertions softly = new JUnitSoftAssertions();
 
-    @Rule
-    public final AvailableProcessors prosessorar = new AvailableProcessors();
+    @RegisterExtension
+    private final AvailableProcessors prosessorar = new AvailableProcessors();
+
+    @InjectSoftAssertions
+    private SoftAssertions softly;
 
     @Test
-    public void skal_takle_maskiner_som_har_1_kjerne() {
+    void skal_takle_maskiner_som_har_1_kjerne() {
         prosessorar.overstyr(1);
         softly.assertThat(
                 standardAntallProsessorar()
@@ -30,7 +35,7 @@ public class AntallProsessorarTest {
     }
 
     @Test
-    public void skal_ikkje_bruke_alle_prosessorar_som_standard() {
+    void skal_ikkje_bruke_alle_prosessorar_som_standard() {
         rangeClosed(2, 1000)
                 .peek(prosessorar::overstyr)
                 .map(antall -> antall - 1)
@@ -45,13 +50,13 @@ public class AntallProsessorarTest {
     }
 
     @Test
-    public void skal_hente_antall_tilgjengelige_prosessorar_via_JVMen() {
+    void skal_hente_antall_tilgjengelige_prosessorar_via_JVMen() {
         assertThat(availableProcessors())
                 .isEqualTo(antallProsessorar(Runtime.getRuntime().availableProcessors()));
     }
 
     @Test
-    public void skal_ikkje_tillate_verdiar_mindre_enn_1() {
+    void skal_ikkje_tillate_verdiar_mindre_enn_1() {
         Stream.of(0, -1, Integer.MIN_VALUE).forEach(
                 antall -> softly
                         .assertThatCode(() -> antallProsessorar(0))
@@ -60,7 +65,7 @@ public class AntallProsessorarTest {
     }
 
     @Test
-    public void skal_godta_verdiar_frå_1_og_oppover() {
+    void skal_godta_verdiar_frå_1_og_oppover() {
         Stream.of(1, 2, 3, 4).forEach(
                 antall -> softly
                         .assertThat(antallProsessorar(antall))
@@ -69,7 +74,7 @@ public class AntallProsessorarTest {
     }
 
     @Test
-    public void skal_tillate_verdiar_over_antall_kjerner_på_maskina() {
+    void skal_tillate_verdiar_over_antall_kjerner_på_maskina() {
         final int veldigVeldigMange = Runtime.getRuntime().availableProcessors() * 1024;
         softly
                 .assertThat(antallProsessorar(veldigVeldigMange))
@@ -77,7 +82,7 @@ public class AntallProsessorarTest {
     }
 
     @Test
-    public void skal_generere_ein_range_frå_1_til_antall_prosessorar() {
+    void skal_generere_ein_range_frå_1_til_antall_prosessorar() {
         assertStream(antallProsessorar(1)).hasSize(1).containsExactlyElementsOf(range("1->1"));
         assertStream(antallProsessorar(2)).hasSize(2).containsExactlyElementsOf(range("1->2"));
         assertStream(antallProsessorar(3)).hasSize(3).containsExactlyElementsOf(range("1->3"));
@@ -87,7 +92,7 @@ public class AntallProsessorarTest {
     }
 
     @Test
-    public void skal_ha_en_getter_for_underliggende_verdi() {
+    void skal_ha_en_getter_for_underliggende_verdi() {
         assertThat(antallProsessorar(4).antall()).isEqualTo(4);
         assertThat(antallProsessorar(14).antall()).isEqualTo(14);
         assertThat(antallProsessorar(20).antall()).isEqualTo(20);

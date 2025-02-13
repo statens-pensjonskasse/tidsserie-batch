@@ -8,11 +8,12 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import java.time.LocalDate;
 
 import org.assertj.core.api.AbstractCharSequenceAssert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class TidsserienummerTest {
+class TidsserienummerTest {
+
     @Test
-    public void skalGenerereTidsserienummerBasertDatoen() {
+    void skalGenerereTidsserienummerBasertDatoen() {
         assertTidsserienummer(dato("1917.01.01")).isEqualTo("19170101");
         assertTidsserienummer(dato("2015.11.08")).isEqualTo("20151108");
         assertTidsserienummer(LocalDate.of(1, 1, 1)).isEqualTo("00010101");
@@ -20,7 +21,7 @@ public class TidsserienummerTest {
     }
 
     @Test
-    public void skalIkkjeGodtaNummerLengreEnn8Siffer() {
+    void skalIkkjeGodtaNummerLengreEnn8Siffer() {
         assertThatCode(
                 () -> Tidsserienummer.genererForDato(LocalDate.of(99999, 1, 1))
         )
