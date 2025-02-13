@@ -1,4 +1,4 @@
-package no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.parallellisert;
+package no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar;
 
 import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,14 +18,15 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 import org.assertj.core.api.AbstractIntegerAssert;
 import org.assertj.core.api.AbstractListAssert;
 import org.assertj.core.api.ObjectAssert;
-import org.junit.rules.ExternalResource;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
-public class ServiceRegistryRule extends ExternalResource {
+public class ServiceRegistryExtension implements BeforeEachCallback {
     private ServiceRegistry registry;
     private ServiceLocator locator;
 
     @Override
-    protected void before() {
+    public void beforeEach(ExtensionContext context) {
         registry = ServiceLoader.load(ServiceRegistry.class).iterator().next();
         locator = new ServiceLocator(registry);
     }
@@ -51,7 +52,7 @@ public class ServiceRegistryRule extends ExternalResource {
                         .flatMap(o -> o.map(Stream::of).orElseGet(Stream::empty));
     }
 
-    public <T> ServiceRegistryRule assertFirstService(
+    public <T> ServiceRegistryExtension assertFirstService(
             final Class<T> tjenestetype,
             final Consumer<ServiceAssert<T>> assertion
     ) {

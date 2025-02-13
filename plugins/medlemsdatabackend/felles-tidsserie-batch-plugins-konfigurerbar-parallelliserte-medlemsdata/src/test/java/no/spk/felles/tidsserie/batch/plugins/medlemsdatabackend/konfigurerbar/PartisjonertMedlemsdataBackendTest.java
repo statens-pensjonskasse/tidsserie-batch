@@ -15,18 +15,18 @@ import no.spk.felles.tidsserie.batch.core.medlem.GenererTidsserieCommand;
 import no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.datalagring.DefaultDatalagringStrategi;
 import no.spk.pensjon.faktura.tjenesteregister.support.SimpleServiceRegistry;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class PartisjonertMedlemsdataBackendTest {
+class PartisjonertMedlemsdataBackendTest {
     private PartisjonertMedlemsdataBackend backend;
 
     private GenererTidsserieCommand kommando;
 
     private PartisjonertMedlemsdataOpplaster partisjonertOpplaster = new PartisjonertMedlemsdataOpplaster(new SimpleServiceRegistry());
 
-    @Before
-    public void _before() {
+    @BeforeEach
+    void _before() {
         backend = new PartisjonertMedlemsdataBackend(
                 antallProsessorar(1),
                 new KommandoKjoerer.SynkronKjoerer<>(),
@@ -41,7 +41,7 @@ public class PartisjonertMedlemsdataBackendTest {
     }
 
     @Test
-    public void skal_bevare_norske_tegn_i_medlemsdatane() {
+    void skal_bevare_norske_tegn_i_medlemsdatane() {
         backend.put("ABCD", medlemsdata(rad("ÆØÅæøå")).medlemsdata(), new DefaultDatalagringStrategi());
 
         final Map<String, List<List<String>>> actual = klargjerFangingAvMedlemsdata();
@@ -52,7 +52,7 @@ public class PartisjonertMedlemsdataBackendTest {
     }
 
     @Test
-    public void skal_kalle_kommando_en_gang_pr_medlem() {
+    void skal_kalle_kommando_en_gang_pr_medlem() {
         backend.put("Donald", medlemsdata(rad("ABCD")).medlemsdata(), new DefaultDatalagringStrategi());
         backend.put("Dolly", medlemsdata(rad("1234")).medlemsdata(), new DefaultDatalagringStrategi());
 
@@ -66,7 +66,7 @@ public class PartisjonertMedlemsdataBackendTest {
     }
 
     @Test
-    public void skal_sluke_og_rapportere_alle_runtime_exceptions_frå_kommandoen() {
+    void skal_sluke_og_rapportere_alle_runtime_exceptions_frå_kommandoen() {
         backend.put("Martha", medlemsdata(rad("Ende", "Anfang", "ende")).medlemsdata(), new DefaultDatalagringStrategi());
 
         registrerKommando(
@@ -85,7 +85,7 @@ public class PartisjonertMedlemsdataBackendTest {
     }
 
     @Test
-    public void skal_sluke_og_rapportere_alle_errors_frå_kommandoen() {
+    void skal_sluke_og_rapportere_alle_errors_frå_kommandoen() {
         backend.put("Martha", medlemsdata(rad("Ende", "Anfang", "ende")).medlemsdata(), new DefaultDatalagringStrategi());
 
         registrerKommando(

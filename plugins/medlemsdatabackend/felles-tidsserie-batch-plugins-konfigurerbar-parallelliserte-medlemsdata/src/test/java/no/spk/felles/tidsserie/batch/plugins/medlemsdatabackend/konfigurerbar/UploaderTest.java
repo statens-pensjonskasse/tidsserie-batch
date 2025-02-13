@@ -12,15 +12,15 @@ import no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.da
 
 import org.assertj.core.api.OptionalAssert;
 import org.assertj.core.util.Lists;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class UploaderTest {
+class UploaderTest {
     private final Partisjonstabell partisjonstabell = new Partisjonstabell();
 
     private final Uploader uploader = new Uploader(partisjonstabell, new DefaultDatalagringStrategi());
 
     @Test
-    public void skal_akkumulere_medlemsdata_fram_til_opplasting_skal_utførast() {
+    void skal_akkumulere_medlemsdata_fram_til_opplasting_skal_utførast() {
         uploader.append(new Medlemslinje(rad("Adam", "Født", "2003")));
         uploader.append(new Medlemslinje(rad("Adam", "Eksisterer i", "Tidslinje A, Tidslinje B")));
 
@@ -38,7 +38,7 @@ public class UploaderTest {
     }
 
     @Test
-    public void skal_ikkje_akkumulere_medlemsdata_på_tvers_av_forskjellige_medlemmar() {
+    void skal_ikkje_akkumulere_medlemsdata_på_tvers_av_forskjellige_medlemmar() {
         uploader.append(new Medlemslinje(rad("Adam", "Født", "2003")));
         uploader.run();
 
@@ -50,12 +50,12 @@ public class UploaderTest {
     }
 
     @Test
-    public void skal_eksplodere_om_opplasting_blir_gjort_uten_medlemsdata() {
+    void skal_eksplodere_om_opplasting_blir_gjort_uten_medlemsdata() {
         assertThatCode(uploader::run).isInstanceOf(OpplastingAvMedlemsdataKreverMinst1RadException.class);
     }
 
     @Test
-    public void skal_eksplodere_om_medlemsdata_inneheld_forskjellige_medlemsidar() {
+    void skal_eksplodere_om_medlemsdata_inneheld_forskjellige_medlemsidar() {
         uploader.append(new Medlemslinje(rad("Adam")));
         uploader.append(new Medlemslinje(rad("Eva")));
         assertThatCode(uploader::run).isInstanceOf(ForskjelligeMedlemmarForsoektLastaOppSammenException.class);
@@ -69,7 +69,7 @@ public class UploaderTest {
     }
 
     @Test
-    public void skal_ikkje_støtte_semikolon_i_verdiar_som_blir_lasta_opp() {
+    void skal_ikkje_støtte_semikolon_i_verdiar_som_blir_lasta_opp() {
         uploader.append(new Medlemslinje(rad("medlem", ";A;B;C;")));
         assertThatCode(
                 uploader::run
@@ -78,7 +78,7 @@ public class UploaderTest {
     }
 
     @Test
-    public void skal_ikkje_støtte_linjeskift_i_verdiar_som_blir_lasta_opp() {
+    void skal_ikkje_støtte_linjeskift_i_verdiar_som_blir_lasta_opp() {
         uploader.append(new Medlemslinje(rad("medlem", "\nHei\nDu\nDer\n")));
         assertThatCode(
                 uploader::run

@@ -10,13 +10,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class PartisjonTest {
+class PartisjonTest {
     private final Partisjon partisjon = new Partisjon(partisjonsnummer(1));
 
     @Test
-    public void skal_godta_opplasting_av_samme_medlem_fleire_gangar_og_appende_kvart_sett_med_medlemsdata_på_medlemmet_dei_tilhøyrer() {
+    void skal_godta_opplasting_av_samme_medlem_fleire_gangar_og_appende_kvart_sett_med_medlemsdata_på_medlemmet_dei_tilhøyrer() {
         partisjon.put("Et medlem", medlemsdata(rad("A", "2")));
         partisjon.put("Ulikt medlem", medlemsdata(rad("X", "24")));
         partisjon.put("Et medlem", medlemsdata(rad("C", "3")));
@@ -37,7 +37,7 @@ public class PartisjonTest {
     }
 
     @Test
-    public void skal_bevare_antal_kolonner_inntakt_sjølv_om_kolonner_på_slutten_av_rada_er_tomme() {
+    void skal_bevare_antal_kolonner_inntakt_sjølv_om_kolonner_på_slutten_av_rada_er_tomme() {
         partisjon.put(
                 "Et medlem",
                 medlemsdata(
@@ -57,7 +57,7 @@ public class PartisjonTest {
     }
 
     @Test
-    public void skal_godta_variasjon_i_antall_kolonner() {
+    void skal_godta_variasjon_i_antall_kolonner() {
         partisjon.put(
                 "Et medlem",
                 medlemsdata(
@@ -85,7 +85,7 @@ public class PartisjonTest {
     }
 
     @Test
-    public void skal_konvertere_rader_uten_kolonner_til_rader_med_1_tom_kolonne() {
+    void skal_konvertere_rader_uten_kolonner_til_rader_med_1_tom_kolonne() {
         partisjon.put(
                 "Et medlem",
                 medlemsdata(
@@ -105,7 +105,7 @@ public class PartisjonTest {
     }
 
     @Test
-    public void skal_støtte_norske_tegn() {
+    void skal_støtte_norske_tegn() {
         partisjon.put(
                 "ÆØÅ",
                 medlemsdata(
@@ -125,7 +125,7 @@ public class PartisjonTest {
     }
 
     @Test
-    public void skal_ikkje_støtte_semikolon_i_verdiar_som_blir_lasta_opp() {
+    void skal_ikkje_støtte_semikolon_i_verdiar_som_blir_lasta_opp() {
         assertThatCode(
                 () -> partisjon.put("Nok eit medlem", medlemsdata(rad(";A;B;C;")))
         )
@@ -133,7 +133,7 @@ public class PartisjonTest {
     }
 
     @Test
-    public void skal_ikkje_støtte_linjeskift_i_verdiar_som_blir_lasta_opp() {
+    void skal_ikkje_støtte_linjeskift_i_verdiar_som_blir_lasta_opp() {
         assertThatCode(
                 () -> partisjon.put("Nok eit medlem", medlemsdata(rad("\nHei\nDu\nDer\n")))
         )
@@ -141,7 +141,7 @@ public class PartisjonTest {
     }
 
     @Test
-    public void skal_ha_menneskevennlig_toString() {
+    void skal_ha_menneskevennlig_toString() {
         partisjon.put("1", medlemsdata(rad()));
         partisjon.put("2", medlemsdata(rad()));
 

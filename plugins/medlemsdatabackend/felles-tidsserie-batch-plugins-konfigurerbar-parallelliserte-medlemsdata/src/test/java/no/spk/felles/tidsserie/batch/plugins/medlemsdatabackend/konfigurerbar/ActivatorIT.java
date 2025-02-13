@@ -20,15 +20,16 @@ import no.spk.felles.tidsserie.batch.core.medlem.Medlemslinje;
 import no.spk.felles.tidsserie.batch.core.registry.Extensionpoint;
 import no.spk.felles.tidsserie.batch.core.registry.ServiceLocator;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 public class ActivatorIT {
-    @Rule
-    public final ServiceRegistryRule registry = new ServiceRegistryRule();
+
+    @RegisterExtension
+    public final ServiceRegistryExtension registry = new ServiceRegistryExtension();
 
     @Test
-    public void skal_kaste_alle_feil_frå_tidsseriekommando_vidare_uten_anna_behandling_i_wrapper() {
+    void skal_kaste_alle_feil_frå_tidsseriekommando_vidare_uten_anna_behandling_i_wrapper() {
         final GenererTidsserieCommand kommando = new Activator().nyWrapper(registry.registry());
 
         final RuntimeException expected = new RuntimeException("Ein feil gitt");
@@ -56,7 +57,7 @@ public class ActivatorIT {
     }
 
     @Test
-    public void skal_notifisere_om_manglande_kommando_uten_sjølv_å_feile() {
+    void skal_notifisere_om_manglande_kommando_uten_sjølv_å_feile() {
         medArgumenter(antallProsessorar(1));
 
         aktiver();

@@ -18,10 +18,10 @@ import no.spk.felles.tidsserie.batch.core.medlem.MedlemsdataUploader;
 import no.spk.felles.tidsserie.batch.core.medlem.Medlemslinje;
 import no.spk.felles.tidsserie.batch.core.medlem.PartisjonsListener;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class PartisjonertMedlemsdataBackendIT {
+class PartisjonertMedlemsdataBackendIT {
     private PartisjonertMedlemsdataBackend backend;
 
     private GenererTidsserieCommand kommando;
@@ -29,8 +29,8 @@ public class PartisjonertMedlemsdataBackendIT {
     private PartisjonsListener partisjonsListener = serienummer -> {
     };
 
-    @Before
-    public void _before() {
+    @BeforeEach
+    void _before() {
         backend = new PartisjonertMedlemsdataBackend(
                 antallProsessorar(1),
                 KommandoKjoerer.velgFlertrådskjøring(1),
@@ -46,7 +46,7 @@ public class PartisjonertMedlemsdataBackendIT {
     }
 
     @Test
-    public void skal_gjere_alle_medlemsdata_lasta_opp_til_backenden_tilgjengelig_for_kommandoen() {
+    void skal_gjere_alle_medlemsdata_lasta_opp_til_backenden_tilgjengelig_for_kommandoen() {
         upload(
                 backend.uploader(),
                 "Martha A;FØDT;2003",
@@ -79,7 +79,7 @@ public class PartisjonertMedlemsdataBackendIT {
     }
 
     @Test
-    public void skal_ta_vare_på_alle_medlemsdatane_for_et_medlem_sjølv_for_uttrekk_som_ikkje_er_sortert_på_medlemsid() {
+    void skal_ta_vare_på_alle_medlemsdatane_for_et_medlem_sjølv_for_uttrekk_som_ikkje_er_sortert_på_medlemsid() {
         upload(
                 backend.uploader(),
                 "Martha A;DØD;2020.06.27",
@@ -112,7 +112,7 @@ public class PartisjonertMedlemsdataBackendIT {
     }
 
     @Test
-    public void skal_notifisere_lyttarane_kvar_gang_behandling_av_ein_ny_partisjon_startar() {
+    void skal_notifisere_lyttarane_kvar_gang_behandling_av_ein_ny_partisjon_startar() {
         final Map<Long, Boolean> partisjonInitialisert = new ConcurrentHashMap<>();
 
         partisjonsListener = serienummer -> partisjonInitialisert.put(serienummer, true);
@@ -123,7 +123,7 @@ public class PartisjonertMedlemsdataBackendIT {
     }
 
     @Test
-    public void skal_notifisere_partisjonslyttarane_frå_samme_tråd_som_partisjonen_blir_behandla_av() {
+    void skal_notifisere_partisjonslyttarane_frå_samme_tråd_som_partisjonen_blir_behandla_av() {
         final Map<Long, String> partisjonInitialisert = new ConcurrentHashMap<>();
 
         partisjonsListener = serienummer -> partisjonInitialisert.put(serienummer, Thread.currentThread().getName());

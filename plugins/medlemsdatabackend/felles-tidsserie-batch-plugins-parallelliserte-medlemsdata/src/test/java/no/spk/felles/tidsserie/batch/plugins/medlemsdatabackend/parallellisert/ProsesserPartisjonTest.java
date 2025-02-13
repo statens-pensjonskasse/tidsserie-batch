@@ -17,9 +17,9 @@ import no.spk.felles.tidsserie.batch.core.medlem.GenererTidsserieCommand;
 import no.spk.felles.tidsserie.batch.core.medlem.TidsserieContext;
 
 import org.assertj.core.api.MapAssert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class ProsesserPartisjonTest {
+class ProsesserPartisjonTest {
     private final Partisjon partisjon = new Partisjon(partisjonsnummer(1));
 
     private final ProsesserPartisjon prosessering = new ProsesserPartisjon(
@@ -27,7 +27,7 @@ public class ProsesserPartisjonTest {
     );
 
     @Test
-    public void skal_behandle_medlemmar_i_deterministisk_rekkefølge_basert_på_rekkefølga_medlemmane_blir_lagt_til_i_partisjonen_første_gang() {
+    void skal_behandle_medlemmar_i_deterministisk_rekkefølge_basert_på_rekkefølga_medlemmane_blir_lagt_til_i_partisjonen_første_gang() {
         partisjon.put("Ulrich Nielsen", medlemsdata(rad("Litt")));
         partisjon.put("Katharina Nielsen", medlemsdata(rad()));
         partisjon.put("Eva", medlemsdata(rad()));
@@ -53,7 +53,7 @@ public class ProsesserPartisjonTest {
     }
 
     @Test
-    public void skal_emitte_antall_medlemmar_behandla() {
+    void skal_emitte_antall_medlemmar_behandla() {
         partisjon.put("Adam", medlemsdata(rad()));
         partisjon.put("Eva", medlemsdata(rad()));
         partisjon.put("Ulrich Nielsen", medlemsdata(rad()));
@@ -69,7 +69,7 @@ public class ProsesserPartisjonTest {
     }
 
     @Test
-    public void skal_emitte_antall_feil() {
+    void skal_emitte_antall_feil() {
         partisjon.put("Adam", medlemsdata(rad()));
         partisjon.put("Eva", medlemsdata(rad()));
         partisjon.put("Ulrich Nielsen", medlemsdata(rad()));
@@ -85,7 +85,7 @@ public class ProsesserPartisjonTest {
     }
 
     @Test
-    public void skal_prosessere_alle_medlemmar_sjølv_om_nokon_av_dei_feilar() {
+    void skal_prosessere_alle_medlemmar_sjølv_om_nokon_av_dei_feilar() {
         partisjon.put("Feilfritt medlem #1", medlemsdata(rad("Masse fine saker")));
         partisjon.put("Inkonsistent medlem", medlemsdata(rad("Masse ræl og tøv")));
         partisjon.put("Feilfritt medlem #2", medlemsdata(rad("Fleire fine saker")));
@@ -104,7 +104,7 @@ public class ProsesserPartisjonTest {
     }
 
     @Test
-    public void skal_kun_notifisere_medlemslyttar_om_medlemmar_som_feilar() {
+    void skal_kun_notifisere_medlemslyttar_om_medlemmar_som_feilar() {
         partisjon.put("Feilfritt medlem #1", medlemsdata(rad("Masse fine saker")));
         partisjon.put("Inkonsistent medlem", medlemsdata(rad("Masse ræl og tøv")));
         partisjon.put("Feilfritt medlem #2", medlemsdata(rad("Fleire fine saker")));
@@ -127,7 +127,7 @@ public class ProsesserPartisjonTest {
     }
 
     @Test
-    public void skal_aldri_avbryte_prosessering_dersom_medlemslyttar_feilar() {
+    void skal_aldri_avbryte_prosessering_dersom_medlemslyttar_feilar() {
         partisjon.put("Inkonsistent medlem", medlemsdata(rad("Masse ræl og tøv")));
 
         assertMeldingar(
@@ -148,7 +148,7 @@ public class ProsesserPartisjonTest {
     }
 
     @Test
-    public void skal_fange_og_rapportere_feil_frå_partisjonslyttaren_utan_sjølv_å_feile() {
+    void skal_fange_og_rapportere_feil_frå_partisjonslyttaren_utan_sjølv_å_feile() {
         partisjon.put("Agnes Nielsen", medlemsdata(rad("Født", "1910")));
 
         assertMeldingar(

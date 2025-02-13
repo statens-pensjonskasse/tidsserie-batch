@@ -21,13 +21,13 @@ import no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.da
 import no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.datalagring.Medlemsdata;
 
 import org.assertj.core.api.SoftAssertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class PartisjonstabellIT {
+class PartisjonstabellIT {
     private final Partisjonstabell partisjonstabell = new Partisjonstabell();
 
     @Test
-    public void skal_fordele_medlemsdata_ut_over_partisjonane_uten_at_variasjonen_i_antall_medlemmar_pr_partisjon_blir_disproposjonalt_høg() {
+    void skal_fordele_medlemsdata_ut_over_partisjonane_uten_at_variasjonen_i_antall_medlemmar_pr_partisjon_blir_disproposjonalt_høg() {
         final int antallMedlemmar = 500_000;
         final int antallPersonarPrFødselsdato = 11;
         final String førsteFødselsdato = "1917-01-01";

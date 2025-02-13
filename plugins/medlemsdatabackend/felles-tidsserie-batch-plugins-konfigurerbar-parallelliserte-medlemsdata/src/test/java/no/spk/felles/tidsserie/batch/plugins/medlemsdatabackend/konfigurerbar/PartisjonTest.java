@@ -13,13 +13,13 @@ import java.util.Map;
 import no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.datalagring.DefaultDatalagringStrategi;
 
 import org.assertj.core.util.Lists;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class PartisjonTest {
+class PartisjonTest {
     private final Partisjon partisjon = new Partisjon(partisjonsnummer(1));
 
     @Test
-    public void skal_godta_opplasting_av_samme_medlem_fleire_gangar_og_appende_kvart_sett_med_medlemsdata_på_medlemmet_dei_tilhøyrer() {
+    void skal_godta_opplasting_av_samme_medlem_fleire_gangar_og_appende_kvart_sett_med_medlemsdata_på_medlemmet_dei_tilhøyrer() {
         partisjon.put("Et medlem", medlemsdata(rad("A", "2")).medlemsdata(), new DefaultDatalagringStrategi());
         partisjon.put("Ulikt medlem", medlemsdata(rad("X", "24")).medlemsdata(), new DefaultDatalagringStrategi());
         partisjon.put("Et medlem", medlemsdata(rad("C", "3")).medlemsdata(), new DefaultDatalagringStrategi());
@@ -40,7 +40,7 @@ public class PartisjonTest {
     }
 
     @Test
-    public void skal_bevare_antal_kolonner_inntakt_sjølv_om_kolonner_på_slutten_av_rada_er_tomme() {
+    void skal_bevare_antal_kolonner_inntakt_sjølv_om_kolonner_på_slutten_av_rada_er_tomme() {
         partisjon.put(
                 "Et medlem",
                 medlemsdata(
@@ -61,7 +61,7 @@ public class PartisjonTest {
     }
 
     @Test
-    public void skal_godta_variasjon_i_antall_kolonner() {
+    void skal_godta_variasjon_i_antall_kolonner() {
         partisjon.put(
                 "Et medlem",
                 medlemsdata(
@@ -90,7 +90,7 @@ public class PartisjonTest {
     }
 
     @Test
-    public void skal_konvertere_rader_uten_kolonner_til_rader_med_1_tom_kolonne() {
+    void skal_konvertere_rader_uten_kolonner_til_rader_med_1_tom_kolonne() {
         partisjon.put(
                 "Et medlem",
                 medlemsdata(
@@ -111,7 +111,7 @@ public class PartisjonTest {
     }
 
     @Test
-    public void skal_støtte_norske_tegn() {
+    void skal_støtte_norske_tegn() {
         partisjon.put(
                 "ÆØÅ",
                 medlemsdata(
@@ -132,7 +132,7 @@ public class PartisjonTest {
     }
 
     @Test
-    public void skal_ha_menneskevennlig_toString() {
+    void skal_ha_menneskevennlig_toString() {
         partisjon.put("1", medlemsdata(rad()).medlemsdata(), new DefaultDatalagringStrategi());
         partisjon.put("2", medlemsdata(rad()).medlemsdata(), new DefaultDatalagringStrategi());
 

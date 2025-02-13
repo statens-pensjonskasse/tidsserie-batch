@@ -12,12 +12,13 @@ import no.spk.pensjon.faktura.tjenesteregister.support.SimpleServiceRegistry;
 
 import org.assertj.core.api.ListAssert;
 import org.assertj.core.api.MapAssert;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 public class LastbalansertePartisjonarIT {
-    @Rule
-    public final ServiceRegistryRule registry = new ServiceRegistryRule();
+
+    @RegisterExtension
+    public final ServiceRegistryExtension registry = new ServiceRegistryExtension();
 
     private final Partisjonstabell partisjonstabell = new Partisjonstabell();
 
@@ -27,7 +28,7 @@ public class LastbalansertePartisjonarIT {
     private final PartisjonertMedlemsdataOpplaster partisjonertOpplaster = new PartisjonertMedlemsdataOpplaster(new SimpleServiceRegistry());
 
     @Test
-    public void skal_lastbalansere_partisjonar_basert_på_nodenummer_og_partisjonsnummer() {
+    void skal_lastbalansere_partisjonar_basert_på_nodenummer_og_partisjonsnummer() {
         assertPartisjonarPrNode(
                 byggNoder(1)
         )
@@ -66,7 +67,7 @@ public class LastbalansertePartisjonarIT {
     }
 
     @Test
-    public void skal_starte_prosessering_av_alle_noder_for_å_unngå_at_nodene_blir_behandla_sekvensielt_etterkvart_som_ein_itererer_over_resultata() {
+    void skal_starte_prosessering_av_alle_noder_for_å_unngå_at_nodene_blir_behandla_sekvensielt_etterkvart_som_ein_itererer_over_resultata() {
         final LastbalansertePartisjonar lastbalansering = lastbalanser(byggNoder(16));
 
         IntStream.rangeClosed(1, 16).forEach(
