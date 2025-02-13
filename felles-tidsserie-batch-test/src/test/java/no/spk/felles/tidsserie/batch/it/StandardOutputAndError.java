@@ -7,17 +7,15 @@ import java.io.PrintStream;
 
 import org.assertj.core.api.AbstractBooleanAssert;
 import org.assertj.core.api.AbstractCharSequenceAssert;
-import org.junit.rules.ExternalResource;
 
-public class StandardOutputAndError extends ExternalResource {
+public class StandardOutputAndError {
     private ByteArrayOutputStream stderr = new ByteArrayOutputStream();
     private ByteArrayOutputStream stdout = new ByteArrayOutputStream();
 
     private PrintStream oldStdout;
     private PrintStream oldStderror;
 
-    @Override
-    public void before() {
+    public void setup() {
         oldStdout = System.out;
         oldStderror = System.err;
 
@@ -28,8 +26,7 @@ public class StandardOutputAndError extends ExternalResource {
         System.setErr(new PrintStream(stderr));
     }
 
-    @Override
-    public void after() {
+    public void teardown() {
         System.setOut(oldStdout);
         System.setErr(oldStderror);
     }

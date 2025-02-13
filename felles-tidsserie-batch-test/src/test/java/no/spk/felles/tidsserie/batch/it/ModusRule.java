@@ -9,16 +9,13 @@ import java.util.stream.Stream;
 import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.felles.tidsserie.batch.main.input.Modus;
 
-import org.junit.rules.ExternalResource;
-
 /**
  * Metoderegel som tømmer {@link Modus} for modusar innlagt av den nyligast køyrte testen.
  * <br>
  * Merk at sidan {@link Modus} er ein global JVM-singleton, kan ein ikkje køyre testar som benyttar den,
  * i parallell.
  */
-class ModusRule extends ExternalResource {
-    @Override
+class ModusRule  {
     public void after() {
         Modus.reload(Stream.empty());
     }

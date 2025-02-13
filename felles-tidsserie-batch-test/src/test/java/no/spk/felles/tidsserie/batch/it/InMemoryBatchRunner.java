@@ -45,7 +45,7 @@ class InMemoryBatchRunner implements FellesTidsserieBatch {
     @Override
     public void run(final File innKatalog, final File utKatalog, final Observasjonsperiode periode, final Modus modus) {
         try {
-            outputAndError.before();
+            outputAndError.setup();
             Plugin.registrerAlle(registry, ServiceLoader.load(Plugin.class));
             batch.run(
                     TidsserieArgumentsFactory::new,
@@ -59,7 +59,7 @@ class InMemoryBatchRunner implements FellesTidsserieBatch {
                     "-n", "1" // Speedar opp køyringa astronomisk mykje sidan vi ikkje ønskjer å vente på slave-shutdown med failover og partisjons-rebalansering
             );
         } finally {
-            outputAndError.after();
+            outputAndError.teardown();
             outputAndError.assertStandardOutput().contains("Antall feil: 0");
             outputAndError.assertBoolean("Har batchen avslutta OK?", exitCode == 0f).isTrue();
         }
