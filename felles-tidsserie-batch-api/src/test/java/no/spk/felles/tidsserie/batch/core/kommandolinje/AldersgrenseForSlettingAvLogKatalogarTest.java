@@ -9,8 +9,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.junit.MockitoJUnit.rule;
-import static org.mockito.quality.Strictness.STRICT_STUBS;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -23,25 +21,27 @@ import no.spk.felles.tidsserie.batch.core.kommandolinje.AldersgrenseForSlettingA
 
 import org.assertj.core.api.AbstractLocalDateTimeAssert;
 import org.assertj.core.api.AbstractThrowableAssert;
-import org.assertj.core.api.JUnitSoftAssertions;
 import org.assertj.core.api.ListAssert;
-import org.junit.Rule;
-import org.junit.Test;
+import org.assertj.core.api.SoftAssertions;
+import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
+import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoRule;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
+@ExtendWith(SoftAssertionsExtension.class)
 public class AldersgrenseForSlettingAvLogKatalogarTest {
-    @Rule
-    public final MockitoRule mockito = rule().strictness(STRICT_STUBS);
 
-    @Rule
-    public final JUnitSoftAssertions softly = new JUnitSoftAssertions();
+    @InjectSoftAssertions
+    private SoftAssertions softly;
 
     @Mock
     private FinnLogkatalogerOperasjon søkeoperasjon;
 
     @Test
-    public void skal_godta_aldersgrenser_på_0_dagar_og_større() {
+    void skal_godta_aldersgrenser_på_0_dagar_og_større() {
         range(0, 366)
                 .boxed()
                 .map(this::assertNewAldersgrense)
@@ -49,7 +49,7 @@ public class AldersgrenseForSlettingAvLogKatalogarTest {
     }
 
     @Test
-    public void skal_ikkje_godta_negative_aldersgrenser() {
+    void skal_ikkje_godta_negative_aldersgrenser() {
         Stream.of(-1, -5, -7, -14, -365, -366)
                 .map(this::assertNewAldersgrense)
                 .forEach(
@@ -58,7 +58,7 @@ public class AldersgrenseForSlettingAvLogKatalogarTest {
     }
 
     @Test
-    public void skal_eksekvere_søkeoperasjon_dersom_aldersgrense_er_over_0_dagar() throws IOException {
+    void skal_eksekvere_søkeoperasjon_dersom_aldersgrense_er_over_0_dagar() throws IOException {
         final Path expected = Paths.get("yadayada");
         when(søkeoperasjon.finn(any())).thenReturn(Stream.of(expected));
 
@@ -68,14 +68,14 @@ public class AldersgrenseForSlettingAvLogKatalogarTest {
     }
 
     @Test
-    public void skal_ikkje_eksekvere_søkeoperasjon_dersom_aldersgrense_er_lik_0_dagar() throws IOException {
+    void skal_ikkje_eksekvere_søkeoperasjon_dersom_aldersgrense_er_lik_0_dagar() throws IOException {
         assertFinnSlettbareLogkatalogar(0).isEmpty();
 
         verify(søkeoperasjon, never()).finn(any());
     }
 
     @Test
-    public void skal_regne_ut_klokkeslettet_som_regulerer_at_logkatalogar_eldre_enn_klokkeslettet_vil_bli_sletta() {
+    void skal_regne_ut_klokkeslettet_som_regulerer_at_logkatalogar_eldre_enn_klokkeslettet_vil_bli_sletta() {
         assertCutoff(5, "2017.08.15").isEqualTo("2017-08-11T00:00:00");
 
         assertCutoff(0, "2016.02.29").isEqualTo("2016-03-01T00:00:00");
@@ -86,7 +86,7 @@ public class AldersgrenseForSlettingAvLogKatalogarTest {
     }
 
     @Test
-    public void skal_regne_ut_klokkeslett_relativt_til_dagens_dato() throws IOException {
+    void skal_regne_ut_klokkeslett_relativt_til_dagens_dato() throws IOException {
         final int antallDagar = 2173;
         final LocalDateTime expected = LocalDate.now().atStartOfDay().plusDays(1).minusDays(antallDagar);
 

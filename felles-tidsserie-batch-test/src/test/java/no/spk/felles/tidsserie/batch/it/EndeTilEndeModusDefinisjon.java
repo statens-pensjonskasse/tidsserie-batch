@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import no.spk.faktura.input.BatchId;
 import no.spk.felles.tidsperiode.Aarstall;
@@ -28,7 +29,6 @@ import io.cucumber.datatable.DataTable;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java8.No;
-import org.junit.rules.TemporaryFolder;
 
 /**
  * Cucumber-definisjonar som støttar egenskapar som ønskjer å verifisere
@@ -49,11 +49,9 @@ import org.junit.rules.TemporaryFolder;
 public class EndeTilEndeModusDefinisjon implements No {
     private final Map<String, Function<ServiceRegistry, FellesTidsserieBatch>> runas = new HashMap<>();
 
-    private final MyTemporaryFolder temp = new MyTemporaryFolder();
+    public final TemporaryFolder temp = new TemporaryFolder();
 
     private final Md5Checksums checksums = new Md5Checksums();
-
-    private final ModusRule modusar = new ModusRule();
 
     private final CSVFiler lagring = new CSVFiler();
 
@@ -155,7 +153,7 @@ public class EndeTilEndeModusDefinisjon implements No {
     private void genererTidsserie() {
         checksums.generer(grunnlagsdata);
         batch().run(
-                requireNonNull(temp.getRoot()),
+                requireNonNull(temp.getRoot().getAbsoluteFile()),
                 requireNonNull(utKatalog),
                 requireNonNull(periode, "observasjonsperioder er påkrevd, men har ikke blitt satt opp av egenskapen"),
                 requireNonNull(modus, "modus er påkrevd, men har ikke blitt satt opp av egenskapen")
@@ -164,12 +162,10 @@ public class EndeTilEndeModusDefinisjon implements No {
 
     @Before
     public void _before() throws Throwable {
-        temp.before();
-
+        temp.create();
         // Vi må autodetektere kva modusar som er tilgjengelig på samme måte som main-klassa gjer det
-        modusar.autodetect();
-
-        this.utKatalog = temp.getRoot();
+        Modus.autodetect();
+        this.utKatalog = temp.newFolder();
 
         this.grunnlagsdata = new BatchId(BatchIdConstants.GRUNNLAGSDATA_PREFIX, LocalDateTime.now()).tilArbeidskatalog(temp.getRoot().toPath()).toFile();
         assertThat(grunnlagsdata.mkdir()).isTrue();
@@ -185,8 +181,8 @@ public class EndeTilEndeModusDefinisjon implements No {
 
     @After
     public void _after() {
-        temp.after();
-        modusar.after();
+        temp.delete();
+        Modus.reload(Stream.empty());
     }
 
     private FellesTidsserieBatch batch() {
@@ -202,17 +198,5 @@ public class EndeTilEndeModusDefinisjon implements No {
 
     private Aarstall parse(final String fraOgMed) {
         return of(fraOgMed).map(Integer::valueOf).map(Aarstall::new).get();
-    }
-
-    private static class MyTemporaryFolder extends TemporaryFolder {
-        @Override
-        public void before() throws Throwable {
-            super.before();
-        }
-
-        @Override
-        public void after() {
-            super.after();
-        }
     }
 }

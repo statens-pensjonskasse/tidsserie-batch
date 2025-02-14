@@ -10,16 +10,20 @@ import no.spk.felles.tidsserie.batch.core.medlem.MedlemsId;
 import no.spk.felles.tidsserie.batch.core.medlem.Medlemslinje;
 
 import org.assertj.core.api.BooleanAssert;
-import org.assertj.core.api.JUnitSoftAssertions;
-import org.junit.Rule;
-import org.junit.Test;
+import org.assertj.core.api.SoftAssertions;
+import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
+import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+@ExtendWith(SoftAssertionsExtension.class)
 public class MedlemslinjeTest {
-    @Rule
-    public final JUnitSoftAssertions softly = new JUnitSoftAssertions();
+
+    @InjectSoftAssertions
+    private SoftAssertions softly;
 
     @Test
-    public void skal_godta_kva_som_helst_utenom_ingenting_i_kolonne_1() {
+    void skal_godta_kva_som_helst_utenom_ingenting_i_kolonne_1() {
         final String id = "Medlem X";
         final Medlemslinje linje = new Medlemslinje(
                 asList(id, "18763187263", "127631827631872")
@@ -29,7 +33,7 @@ public class MedlemslinjeTest {
     }
 
     @Test
-    public void skal_ikkje_kreve_fleire_kolonner_enn_1() {
+    void skal_ikkje_kreve_fleire_kolonner_enn_1() {
         final String id = "Medlem Y";
         final Medlemslinje linje = new Medlemslinje(
                 singletonList(id)
@@ -39,7 +43,7 @@ public class MedlemslinjeTest {
     }
 
     @Test
-    public void skal_ikkje_godta_tomme_linjer() {
+    void skal_ikkje_godta_tomme_linjer() {
         softly.assertThatCode(
                 () -> new Medlemslinje(emptyList())
         )
@@ -51,7 +55,7 @@ public class MedlemslinjeTest {
     }
 
     @Test
-    public void skal_ikkje_godta_null_som_medlemsid() {
+    void skal_ikkje_godta_null_som_medlemsid() {
         softly.assertThatCode(
                 () -> new Medlemslinje(asList(null, "ABCD"))
         )
@@ -63,7 +67,7 @@ public class MedlemslinjeTest {
     }
 
     @Test
-    public void skal_ikkje_godta_tom_string_som_medlemsid() {
+    void skal_ikkje_godta_tom_string_som_medlemsid() {
         softly.assertThatCode(
                 () -> new Medlemslinje(asList("  ", "ABCD"))
         )
@@ -75,7 +79,7 @@ public class MedlemslinjeTest {
     }
 
     @Test
-    public void skal_trimme_medlemsidentifikatoren() {
+    void skal_trimme_medlemsidentifikatoren() {
         assertThat(
                 new Medlemslinje(singletonList("   Medlem W "))
                         .medlem()
@@ -84,7 +88,7 @@ public class MedlemslinjeTest {
     }
 
     @Test
-    public void skal_godta_tom_string_i_medlemsdata_kolonnene_etter_medlemsid() {
+    void skal_godta_tom_string_i_medlemsdata_kolonnene_etter_medlemsid() {
         assertThat(
                 new Medlemslinje(asList("Medlem W", "A", "  ", ""))
                         .data()
@@ -93,7 +97,7 @@ public class MedlemslinjeTest {
     }
 
     @Test
-    public void skalVerifisereAtInputIkkjeErNull() {
+    void skalVerifisereAtInputIkkjeErNull() {
         softly.assertThatCode(
                 () -> new Medlemslinje(null)
         )
@@ -104,7 +108,7 @@ public class MedlemslinjeTest {
 
 
     @Test
-    public void skal_populere_medlemsId_fra_kolonne_for_medlemsidentifikator() {
+    void skal_populere_medlemsId_fra_kolonne_for_medlemsidentifikator() {
         final String expected = "ABCD-BDEF-QXY";
         assertThat(
                 new Medlemslinje(
@@ -129,7 +133,7 @@ public class MedlemslinjeTest {
      * at den ikkje blir med vidare inn i domenemodellen.
      */
     @Test
-    public void skalStrippeBortKolonneNr1FraaMedlemslinjasDataliste() {
+    void skalStrippeBortKolonneNr1FraaMedlemslinjasDataliste() {
         assertThat(
                 new Medlemslinje(
                         asList(
@@ -146,7 +150,7 @@ public class MedlemslinjeTest {
     }
 
     @Test
-    public void skal_kun_tilhøyre_linjer_med_samme_id() {
+    void skal_kun_tilhøyre_linjer_med_samme_id() {
         final Medlemslinje linje = new Medlemslinje(singletonList("ABCD"));
         assertTilhøyrer(linje, "ABCD").isTrue();
         assertTilhøyrer(linje, "12345").isFalse();

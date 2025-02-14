@@ -18,18 +18,18 @@ import java.util.stream.Stream;
 import no.spk.felles.tidsserie.batch.core.grunnlagsdata.Partisjonsnummer;
 
 import org.assertj.core.api.MapAssert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class PartisjonstabellTest {
+class PartisjonstabellTest {
     private final Partisjonstabell partisjonstabell = new Partisjonstabell();
 
     @Test
-    public void skal_fordele_medlemsdata_på_271_partisjonar_for_å_videreføre_samme_oppførsel_som_hazelcast_pluginet() {
+    void skal_fordele_medlemsdata_på_271_partisjonar_for_å_videreføre_samme_oppførsel_som_hazelcast_pluginet() {
         assertThat(partisjonstabell.partisjonarFor(nodenummer(1, 1))).hasSize(271);
     }
 
     @Test
-    public void skal_fordele_antall_partisjonar_på_noder_basert_på_enkel_modulo_hashing_ikkje_konsistent_hashing() {
+    void skal_fordele_antall_partisjonar_på_noder_basert_på_enkel_modulo_hashing_ikkje_konsistent_hashing() {
         assertThat(partisjonstabell.partisjonarFor(nodenummer(1, 1))).hasSize(271);
 
         assertThat(partisjonstabell.partisjonarFor(nodenummer(1, 2))).hasSize(136);
@@ -63,9 +63,9 @@ public class PartisjonstabellTest {
     }
 
     @Test
-    public void skal_aldri_fordele_samme_partisjon_til_fleire_noder() {
+    void skal_aldri_fordele_samme_partisjon_til_fleire_noder() {
         IntStream.rangeClosed(1, 128).forEach(
-                antallNoder -> {
+                antallNoder ->
                     assertThat(
                             IntStream
                                     .rangeClosed(1, antallNoder)
@@ -75,20 +75,19 @@ public class PartisjonstabellTest {
                                     .toList()
                     )
                             .as("alle partisjonar for alle noder (antall noder = %d)", antallNoder)
-                            .doesNotHaveDuplicates();
-                }
+                            .doesNotHaveDuplicates()
         );
     }
 
     @Test
-    public void skal_tømme_backenden_for_data() {
+    void skal_tømme_backenden_for_data() {
         partisjonstabell.put("Adam", medlemsdata(rad("Født som", "Jonas Kahnwald")));
         partisjonstabell.clear();
         assertThat(partisjonstabell.partisjonarFor(nodenummer(1, 1))).hasSize(0);
     }
 
     @Test
-    public void skal_ta_vare_på_alle_medlemmar_som_blir_lagt_til_i_partisjonstabellen() {
+    void skal_ta_vare_på_alle_medlemmar_som_blir_lagt_til_i_partisjonstabellen() {
         partisjonstabell.put(
                 "Adam",
                 medlemsdata(

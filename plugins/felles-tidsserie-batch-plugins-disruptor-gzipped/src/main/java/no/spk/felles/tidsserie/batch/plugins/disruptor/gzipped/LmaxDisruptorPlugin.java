@@ -5,6 +5,7 @@ import static no.spk.felles.tidsserie.batch.core.TidsserieLivssyklus.onStop;
 
 import java.nio.file.Path;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadFactory;
 
 import no.spk.felles.tidsserie.batch.core.Katalog;
 import no.spk.felles.tidsserie.batch.core.TidsserieLivssyklus;
@@ -18,15 +19,15 @@ public class LmaxDisruptorPlugin implements Plugin {
     public void aktiver(final ServiceRegistry registry) {
         final ServiceLocator locator = new ServiceLocator(registry);
         // Lagring
-        final ExecutorService executors = newCachedThreadPool(
-                r -> new Thread(r, "lmax-disruptor-" + System.currentTimeMillis())
-        );
+        final ThreadFactory threadFactory = r -> new Thread(r, "lmax-disruptor-" + System.currentTimeMillis());
+
+        final ExecutorService executors = newCachedThreadPool(threadFactory);
         registry.registerService(ExecutorService.class, executors);
         registry.registerService(TidsserieLivssyklus.class, onStop(executors::shutdown));
 
         final Path utKatalog = locator.firstMandatory(Path.class, Katalog.UT.egenskap());
         final LmaxDisruptorPublisher disruptor = new LmaxDisruptorPublisher(
-                executors,
+                threadFactory,
                 new FileTemplate(utKatalog, GzipWriterTidsserieradHandler.SUFFIX)
         );
         registry.registerService(StorageBackend.class, disruptor);

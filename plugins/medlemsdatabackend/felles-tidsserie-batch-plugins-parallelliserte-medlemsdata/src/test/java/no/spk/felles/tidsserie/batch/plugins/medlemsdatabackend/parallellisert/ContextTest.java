@@ -5,11 +5,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import no.spk.felles.tidsserie.batch.core.grunnlagsdata.Partisjonsnummer;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class ContextTest {
+class ContextTest {
     @Test
-    public void skal_foreløpig_basere_serienummer_på_partisjonsnummeret() {
+    void skal_foreløpig_basere_serienummer_på_partisjonsnummeret() {
         forEach(
                 Partisjonsnummer.stream(),
                 partisjonsnummer ->

@@ -20,19 +20,16 @@ public final class Datoar {
             if (trimmed.isEmpty()) {
                 return null;
             } else {
-                switch (trimmed.length()) {
-                    case 8:
-                        return yyyyMMddFormatUtenPunktum.parse(trimmed).query(localDate());
-                    case 10:
-                        return yyyyMMddFormat.parse(trimmed).query(localDate());
-                    default:
-                        throw new IllegalArgumentException(
-                                "Teksten \'"
-                                        + trimmed
-                                        + "\' inneheld ikkje ein gyldig dato, "
-                                        + "det er kun datoar på formata yyyy.MM.dd / yyyyMMdd som er støtta."
-                        );
-                }
+                return switch (trimmed.length()) {
+                    case 8 -> yyyyMMddFormatUtenPunktum.parse(trimmed).query(localDate());
+                    case 10 -> yyyyMMddFormat.parse(trimmed).query(localDate());
+                    default -> throw new IllegalArgumentException(
+                            "Teksten \'"
+                                    + trimmed
+                                    + "\' inneheld ikkje ein gyldig dato, "
+                                    + "det er kun datoar på formata yyyy.MM.dd / yyyyMMdd som er støtta."
+                    );
+                };
             }
         }
     }

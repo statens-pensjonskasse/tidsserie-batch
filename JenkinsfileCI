@@ -6,7 +6,7 @@ ciPipeline {
     config = CIPipelineConfig
             .getGitflowConfig(prod: 'master', dev: 'develop', shortLived: '')
             .withTriggers(cron: '@daily', fromBranches: 'develop') // Trigges også på commit ved hjelp av webhook i Bitbucket
-            .useMaven(jdkVersion: 17, build: 'clean install -DskipTests', publish: 'deploy -DskipTests')
+            .useMaven(jdkVersion: 21, build: 'clean install -DskipTests', publish: 'deploy -DskipTests')
             .withPublish(branches: 'develop')                                  // Snapshots lages fra develop
             .withEmailNotifications(recipients: 'ITO-TeamPremie@spk.no')
             .withNoSonarQube()

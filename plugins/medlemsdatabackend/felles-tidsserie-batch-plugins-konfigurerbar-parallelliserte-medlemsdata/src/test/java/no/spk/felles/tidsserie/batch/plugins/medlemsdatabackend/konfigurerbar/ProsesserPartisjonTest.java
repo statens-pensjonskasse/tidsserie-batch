@@ -19,9 +19,9 @@ import no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.da
 import no.spk.pensjon.faktura.tjenesteregister.support.SimpleServiceRegistry;
 
 import org.assertj.core.api.MapAssert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class ProsesserPartisjonTest {
+class ProsesserPartisjonTest {
     private final Partisjon partisjon = new Partisjon(partisjonsnummer(1));
 
     private final ProsesserPartisjon prosessering = new ProsesserPartisjon(
@@ -31,7 +31,7 @@ public class ProsesserPartisjonTest {
     private final PartisjonertMedlemsdataOpplaster partisjonertOpplaster = new PartisjonertMedlemsdataOpplaster(new SimpleServiceRegistry());
 
     @Test
-    public void skal_behandle_medlemmar_i_deterministisk_rekkefølge_basert_på_rekkefølga_medlemmane_blir_lagt_til_i_partisjonen_første_gang() {
+    void skal_behandle_medlemmar_i_deterministisk_rekkefølge_basert_på_rekkefølga_medlemmane_blir_lagt_til_i_partisjonen_første_gang() {
         partisjon.put("Ulrich Nielsen", medlemsdata(rad("Litt")).medlemsdata(), new DefaultDatalagringStrategi());
         partisjon.put("Katharina Nielsen", medlemsdata(rad()).medlemsdata(), new DefaultDatalagringStrategi());
         partisjon.put("Eva", medlemsdata(rad()).medlemsdata(), new DefaultDatalagringStrategi());
@@ -57,7 +57,7 @@ public class ProsesserPartisjonTest {
     }
 
     @Test
-    public void skal_emitte_antall_medlemmar_behandla() {
+    void skal_emitte_antall_medlemmar_behandla() {
         partisjon.put("Adam", medlemsdata(rad()).medlemsdata(), new DefaultDatalagringStrategi());
         partisjon.put("Eva", medlemsdata(rad()).medlemsdata(), new DefaultDatalagringStrategi());
         partisjon.put("Ulrich Nielsen", medlemsdata(rad()).medlemsdata(), new DefaultDatalagringStrategi());
@@ -73,7 +73,7 @@ public class ProsesserPartisjonTest {
     }
 
     @Test
-    public void skal_emitte_antall_feil() {
+    void skal_emitte_antall_feil() {
         partisjon.put("Adam", medlemsdata(rad()).medlemsdata(), new DefaultDatalagringStrategi());
         partisjon.put("Eva", medlemsdata(rad()).medlemsdata(), new DefaultDatalagringStrategi());
         partisjon.put("Ulrich Nielsen", medlemsdata(rad()).medlemsdata(), new DefaultDatalagringStrategi());
@@ -89,7 +89,7 @@ public class ProsesserPartisjonTest {
     }
 
     @Test
-    public void skal_prosessere_alle_medlemmar_sjølv_om_nokon_av_dei_feilar() {
+    void skal_prosessere_alle_medlemmar_sjølv_om_nokon_av_dei_feilar() {
         partisjon.put("Feilfritt medlem #1", medlemsdata(rad("Masse fine saker")).medlemsdata(), new DefaultDatalagringStrategi());
         partisjon.put("Inkonsistent medlem", medlemsdata(rad("Masse ræl og tøv")).medlemsdata(), new DefaultDatalagringStrategi());
         partisjon.put("Feilfritt medlem #2", medlemsdata(rad("Fleire fine saker")).medlemsdata(), new DefaultDatalagringStrategi());
@@ -108,7 +108,7 @@ public class ProsesserPartisjonTest {
     }
 
     @Test
-    public void skal_kun_notifisere_medlemslyttar_om_medlemmar_som_feilar() {
+    void skal_kun_notifisere_medlemslyttar_om_medlemmar_som_feilar() {
         partisjon.put("Feilfritt medlem #1", medlemsdata(rad("Masse fine saker")).medlemsdata(), new DefaultDatalagringStrategi());
         partisjon.put("Inkonsistent medlem", medlemsdata(rad("Masse ræl og tøv")).medlemsdata(), new DefaultDatalagringStrategi());
         partisjon.put("Feilfritt medlem #2", medlemsdata(rad("Fleire fine saker")).medlemsdata(), new DefaultDatalagringStrategi());
@@ -131,7 +131,7 @@ public class ProsesserPartisjonTest {
     }
 
     @Test
-    public void skal_aldri_avbryte_prosessering_dersom_medlemslyttar_feilar() {
+    void skal_aldri_avbryte_prosessering_dersom_medlemslyttar_feilar() {
         partisjon.put("Inkonsistent medlem", medlemsdata(rad("Masse ræl og tøv")).medlemsdata(), new DefaultDatalagringStrategi());
 
         assertMeldingar(
@@ -152,7 +152,7 @@ public class ProsesserPartisjonTest {
     }
 
     @Test
-    public void skal_fange_og_rapportere_feil_frå_partisjonslyttaren_utan_sjølv_å_feile() {
+    void skal_fange_og_rapportere_feil_frå_partisjonslyttaren_utan_sjølv_å_feile() {
         partisjon.put("Agnes Nielsen", medlemsdata(rad("Født", "1910")).medlemsdata(), new DefaultDatalagringStrategi());
 
         assertMeldingar(

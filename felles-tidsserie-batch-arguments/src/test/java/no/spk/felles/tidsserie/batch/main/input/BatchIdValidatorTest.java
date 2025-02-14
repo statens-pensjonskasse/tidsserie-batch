@@ -2,23 +2,23 @@ package no.spk.felles.tidsserie.batch.main.input;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.ParameterException;
 
-public class BatchIdValidatorTest {
+class BatchIdValidatorTest {
     private static final String SOME_PARAMETER = "param";
 
     private BatchIdValidator validator;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         validator = new BatchIdValidator();
     }
 
     @Test
-    public void testInvalidFormat() {
+    void invalidFormat() {
         assertThatCode(
                 () -> validator.validate(SOME_PARAMETER, "12", CommandSpec.create())
         )
@@ -27,7 +27,7 @@ public class BatchIdValidatorTest {
     }
 
     @Test
-    public void testValidFormat() {
+    void validFormat() {
         validator.validate(SOME_PARAMETER, "grunnlagsdata_2015-01-01_01-01-01-01", CommandSpec.create());
     }
 }

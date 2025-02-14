@@ -1,13 +1,13 @@
 package no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.datalagring;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class MedlemsdataTest {
+class MedlemsdataTest {
 
     @Test
-    public void test_put_data_default() {
+    void put_data_default() {
         Medlemsdata medlemsdata = DefaultMedlemsdata.medlemsdata("heisann".getBytes());
 
         assertEquals("heisann", new String(medlemsdata.medlemsdata()));
@@ -18,7 +18,7 @@ public class MedlemsdataTest {
     }
 
     @Test
-    public void test_put_data_skalert_buffer() {
+    void put_data_skalert_buffer() {
         Medlemsdata medlemsdata = SkalertBufferMedlemsdata.medlemsdata("heisann".getBytes());
 
         assertEquals("heisann", new String(medlemsdata.medlemsdata()));
@@ -29,7 +29,7 @@ public class MedlemsdataTest {
     }
 
     @Test
-    public void test_put_data_komprimert() {
+    void put_data_komprimert() {
         Medlemsdata medlemsdata = KomprimertMedlemsdata.medlemsdata("heisann".getBytes());
 
         assertEquals("heisann", new String(medlemsdata.medlemsdata()));

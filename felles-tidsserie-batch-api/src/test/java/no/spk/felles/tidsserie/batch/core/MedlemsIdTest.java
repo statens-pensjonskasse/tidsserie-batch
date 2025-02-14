@@ -6,18 +6,23 @@ import java.util.stream.Stream;
 
 import no.spk.felles.tidsserie.batch.core.medlem.MedlemsId;
 
-import org.assertj.core.api.JUnitSoftAssertions;
-import org.junit.Rule;
-import org.junit.Test;
+import org.assertj.core.api.SoftAssertions;
+import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
+import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 @SuppressWarnings("deprecation")
+@ExtendWith(SoftAssertionsExtension.class)
 public class MedlemsIdTest {
-    @Rule
-    public final JUnitSoftAssertions softly = new JUnitSoftAssertions();
+
+
+    @InjectSoftAssertions
+    private SoftAssertions softly;
 
 
     @Test
-    public void skalVerifisereFoedselsdatoSyntaktisk() {
+    void skalVerifisereFoedselsdatoSyntaktisk() {
         final String description = "Fødselsdato må vere eit 8-sifra tall";
 
         softly.assertThatThrownBy(() -> new MedlemsId(
@@ -67,7 +72,7 @@ public class MedlemsIdTest {
     }
 
     @Test
-    public void skalVerifiserePersonnummerSyntaktisk() {
+    void skalVerifiserePersonnummerSyntaktisk() {
         final String description = "Personnummer må vere eit 5-sifra tall";
         final String dato = "19790101";
 
@@ -110,7 +115,7 @@ public class MedlemsIdTest {
     }
 
     @Test
-    public void skalEkspanderePersonnummerTil5SifferAutomatisk() {
+    void skalEkspanderePersonnummerTil5SifferAutomatisk() {
         final String dato = "19790706";
 
         softly.assertThat(new MedlemsId(dato, "1")).isEqualTo(new MedlemsId(dato, "00001"));
@@ -131,7 +136,7 @@ public class MedlemsIdTest {
      * whitespace i front/slutt før validering og vidare bruk.
      */
     @Test
-    public void skalTrimmeBortWhitespaceOgsaaFraaFoedselsdato() {
+    void skalTrimmeBortWhitespaceOgsaaFraaFoedselsdato() {
         final String pnr = "12345";
         final MedlemsId expected = new MedlemsId("19760503", pnr);
         softly.assertThat(new MedlemsId("  19760503", pnr)).isEqualTo(expected);
@@ -140,7 +145,7 @@ public class MedlemsIdTest {
     }
 
     @Test
-    public void skalSjekkeForNullVerdiarVedKonstruksjon() {
+    void skalSjekkeForNullVerdiarVedKonstruksjon() {
         softly.assertThatThrownBy(
                 () -> new MedlemsId(null, "12345")
         )
@@ -174,7 +179,7 @@ public class MedlemsIdTest {
     }
 
     @Test
-    public void skal_ikkje_godta_tom_id() {
+    void skal_ikkje_godta_tom_id() {
         softly.assertThatCode(
                 () -> medlemsId("")
         )
@@ -188,12 +193,12 @@ public class MedlemsIdTest {
     }
 
     @Test
-    public void skal_trimme_unødvendig_whitespace_frå_id() {
+    void skal_trimme_unødvendig_whitespace_frå_id() {
         softly.assertThat(medlemsId("   Medlemet ")).isEqualTo(medlemsId("Medlemet"));
     }
 
     @Test
-    public void skal_godta_kva_som_helst_som_id() {
+    void skal_godta_kva_som_helst_som_id() {
         Stream.of("Medlem X", "asiuhgaisgci", "1876182763", "ÆØÅ").forEach(
                 verdi -> softly
                         .assertThat(medlemsId(verdi))
@@ -202,7 +207,7 @@ public class MedlemsIdTest {
     }
 
     @Test
-    public void skal_ikkje_padde_id() {
+    void skal_ikkje_padde_id() {
         softly.assertThat(medlemsId("123"))
                 .isNotEqualTo(medlemsId("00123"))
                 .hasToString("123");

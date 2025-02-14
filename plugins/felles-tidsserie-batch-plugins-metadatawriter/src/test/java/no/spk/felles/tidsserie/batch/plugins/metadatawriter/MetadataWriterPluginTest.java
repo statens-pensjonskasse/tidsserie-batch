@@ -1,7 +1,8 @@
 package no.spk.felles.tidsserie.batch.plugins.metadatawriter;
 
-import static no.spk.felles.tidsserie.batch.plugins.metadatawriter.ServiceRegistryRule.erAvType;
+import static no.spk.felles.tidsserie.batch.plugins.metadatawriter.ServiceRegistryExtension.erAvType;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ServiceLoader;
@@ -12,31 +13,28 @@ import no.spk.felles.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenter
 import no.spk.felles.tidsserie.batch.core.registry.Plugin;
 import no.spk.felles.tidsserie.batch.main.input.ProgramArguments;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.io.TempDir;
 
 public class MetadataWriterPluginTest {
-    @Rule
-    public final ServiceRegistryRule registry = new ServiceRegistryRule();
-
-    @Rule
-    public final TemporaryFolder temp = new TemporaryFolderWithDeleteVerification();
+    @RegisterExtension
+    public final ServiceRegistryExtension registry = new ServiceRegistryExtension();
 
     private final Plugin plugin = new MetadataWriterPlugin();
 
-    @Before
-    public void _before() throws IOException {
+    @BeforeEach
+    void _before(@TempDir File temp) throws IOException {
         registry.registrer(
                 Path.class,
-                temp.newFolder("log").toPath(),
+                newFolder(temp, "log").toPath(),
                 Katalog.LOG.egenskap()
         );
     }
 
     @Test
-    public void skal_vere_tilgjengelig_via_service_loader_APIen() {
+    void skal_vere_tilgjengelig_via_service_loader_APIen() {
         Plugin.registrerAlle(
                 registry.registry(),
                 ServiceLoader.load(Plugin.class)
@@ -50,7 +48,7 @@ public class MetadataWriterPluginTest {
 
     @SuppressWarnings("deprecation")
     @Test
-    public void skal_registrere_metadatawriter_som_plugin() {
+    void skal_registrere_metadatawriter_som_plugin() {
         registry.registrer(
                 TidsserieBatchArgumenter.class,
                 new ProgramArguments()
@@ -68,5 +66,14 @@ public class MetadataWriterPluginTest {
                 .assertTenesterAvType(TidsserieGenerertCallback2.class)
                 .filteredOn(callback -> erAvType(callback, LagreMetadata.class))
                 .hasSize(1);
+    }
+
+    private static File newFolder(File root, String... subDirs) throws IOException {
+        String subFolder = String.join("/", subDirs);
+        File result = new File(root, subFolder);
+        if (!result.mkdirs()) {
+            throw new IOException("Couldn't create folders " + root);
+        }
+        return result;
     }
 }

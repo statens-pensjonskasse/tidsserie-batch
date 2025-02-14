@@ -5,23 +5,24 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import java.util.stream.Stream;
 
 import org.assertj.core.api.AbstractThrowableAssert;
-import org.junit.After;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.ParameterException;
 
 public class ModusValidatorTest {
-    @Rule
-    public final ModusRule modusar = new ModusRule();
 
-    @After
-    public void _after() {
+    @RegisterExtension
+    public final ModusExtension modusar = new ModusExtension();
+
+    @AfterEach
+    void _after() {
         Modus.reload(Stream.empty());
     }
 
     @Test
-    public void skalGodtaAlleKjenteModusarSineKoder() {
+    void skalGodtaAlleKjenteModusarSineKoder() {
         final String navn = "navn på modus";
         modusar.support(navn);
 
@@ -29,7 +30,7 @@ public class ModusValidatorTest {
     }
 
     @Test
-    public void skalAvviseUkjenteKoder() {
+    void skalAvviseUkjenteKoder() {
         final AbstractThrowableAssert<?, ?> assertion = assertThatCode(
                 () -> new ModusValidator().validate("modus", "whatever", CommandSpec.create())
         )

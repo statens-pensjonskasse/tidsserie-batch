@@ -3,8 +3,6 @@ package no.spk.felles.tidsserie.batch.plugins.disruptor.gzipped;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.will;
 import static org.mockito.BDDMockito.willReturn;
-import static org.mockito.junit.MockitoJUnit.rule;
-import static org.mockito.quality.Strictness.STRICT_STUBS;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -19,36 +17,33 @@ import java.util.zip.GZIPInputStream;
 import no.spk.felles.tidsserie.batch.core.lagring.Tidsserierad;
 
 import org.assertj.core.api.ListAssert;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoRule;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  * Integrasjonstestar for {@link GzipWriterTidsserieradHandler}.
  *
  */
+@ExtendWith(MockitoExtension.class)
 public class GzipWriterTidsserieradHandlerIT {
-    @Rule
-    public final TemporaryFolderWithDeleteVerification temp = new TemporaryFolderWithDeleteVerification();
-
-    @Rule
-    public final MockitoRule mockito = rule().strictness(STRICT_STUBS);
 
     @Mock
     private FileTemplate template;
 
     private GzipWriterTidsserieradHandler consumer;
 
-    @Before
-    public void _before() {
+    @BeforeEach
+    void _before() {
         consumer = new GzipWriterTidsserieradHandler(template);
     }
 
-    @After
-    public void _after() throws IOException {
+    @AfterEach
+    void _after() throws IOException {
         consumer.close();
     }
 
@@ -56,8 +51,8 @@ public class GzipWriterTidsserieradHandlerIT {
      * Dersom input-fila mot formodning eksisterer frå før, skal consumeren trunkere den slik at resultata av tidligare køyringar ikkje blir blanda med resultata frå neste køyring.
      */
     @Test
-    public void skalTrunkereOutputfilaVissDenEksistererFraFoer() throws IOException {
-        final File alreadyExists = temp.newFile();
+    void skalTrunkereOutputfilaVissDenEksistererFraFoer(@TempDir File temp) throws IOException {
+        final File alreadyExists = File.createTempFile("junit", null, temp);
         Files.write(alreadyExists.toPath(), "YADA YADA\n".getBytes());
         willReturn(alreadyExists).given(template).createUniqueFile(1L, "tidsserie");
 
@@ -72,9 +67,10 @@ public class GzipWriterTidsserieradHandlerIT {
     }
 
     @Test
-    public void skalSkriveEventenTilForskjelligeFilerBasertPaaEventserien() throws IOException {
-        will(a -> temp.newFile("1")).given(template).createUniqueFile(1L, "tidsserie");
-        will(a -> temp.newFile("2")).given(template).createUniqueFile(2L, "tidsserie");
+    void skalSkriveEventenTilForskjelligeFilerBasertPaaEventserien(@TempDir File temp) throws IOException {
+        will(a -> new File( temp, "1") ).given(template).createUniqueFile(1L, "tidsserie");
+        will(a -> new File( temp, "2")).given(template).createUniqueFile(2L, "tidsserie");
+
 
         final Tidsserierad event = new Tidsserierad();
 
@@ -85,14 +81,14 @@ public class GzipWriterTidsserieradHandlerIT {
         consumer.onEvent(event, 1, true);
         consumer.close();
 
-        assertFileContent(new File(temp.getRoot(), "1")).hasSize(1).containsOnly("YEY");
-        assertFileContent(new File(temp.getRoot(), "2")).hasSize(1).containsOnly("YAY");
+        assertFileContent(new File(temp, "1")).hasSize(1).containsOnly("YEY");
+        assertFileContent(new File(temp, "2")).hasSize(1).containsOnly("YAY");
     }
 
     @Test
-    public void skalSkriveEventenTilForskjelligeFilerBasertPaaPrefix() throws IOException {
-        will(a -> temp.newFile("1")).given(template).createUniqueFile(1L, "tidsserie");
-        will(a -> temp.newFile("2")).given(template).createUniqueFile(1L, "noeAnnet");
+    void skalSkriveEventenTilForskjelligeFilerBasertPaaPrefix(@TempDir File temp) throws IOException {
+        will(a -> new File(temp, "1")).given(template).createUniqueFile(1L, "tidsserie");
+        will(a -> new File(temp, "2")).given(template).createUniqueFile(1L, "noeAnnet");
 
         final Tidsserierad event = new Tidsserierad();
 
@@ -103,8 +99,8 @@ public class GzipWriterTidsserieradHandlerIT {
         consumer.onEvent(event, 1, true);
         consumer.close();
 
-        assertFileContent(new File(temp.getRoot(), "1")).hasSize(1).containsOnly("YEY");
-        assertFileContent(new File(temp.getRoot(), "2")).hasSize(1).containsOnly("YAY");
+        assertFileContent(new File(temp, "1")).hasSize(1).containsOnly("YEY");
+        assertFileContent(new File(temp, "2")).hasSize(1).containsOnly("YAY");
     }
 
     private ListAssert<String> assertFileContent(final File file) throws IOException {

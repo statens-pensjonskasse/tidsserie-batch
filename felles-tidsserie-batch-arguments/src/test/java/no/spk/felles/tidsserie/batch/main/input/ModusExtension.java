@@ -1,28 +1,29 @@
-package no.spk.felles.tidsserie.batch.it;
+package no.spk.felles.tidsserie.batch.main.input;
 
-import static java.util.Arrays.stream;
+import static java.util.Arrays.asList;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.stream.Stream;
 
 import no.spk.felles.tidsserie.batch.core.Tidsseriemodus;
-import no.spk.felles.tidsserie.batch.main.input.Modus;
 
-import org.junit.rules.ExternalResource;
+import org.junit.jupiter.api.extension.AfterEachCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
 /**
  * Metoderegel som tømmer {@link Modus} for modusar innlagt av den nyligast køyrte testen.
  * <br>
  * Merk at sidan {@link Modus} er ein global JVM-singleton, kan ein ikkje køyre testar som benyttar den,
  * i parallell.
+ *
  */
-class ModusRule extends ExternalResource {
+public class ModusExtension implements AfterEachCallback {
+
     @Override
-    public void after() {
+    public void afterEach(ExtensionContext context) {
         Modus.reload(Stream.empty());
     }
-
     /**
      * Populerer {@link Modus} basert på {@link Tidsseriemodus}-mockar for kvart av dei angitte modusnavna.
      *
@@ -31,7 +32,8 @@ class ModusRule extends ExternalResource {
      */
     public void support(final String... modusnavn) {
         Modus.reload(
-                stream(modusnavn)
+                asList(modusnavn)
+                        .stream()
                         .map(this::create)
         );
     }
@@ -51,4 +53,6 @@ class ModusRule extends ExternalResource {
         when(modus.navn()).thenReturn(navn);
         return modus;
     }
+
+
 }

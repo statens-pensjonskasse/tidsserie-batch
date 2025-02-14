@@ -5,9 +5,12 @@ import static java.util.Arrays.stream;
 import static no.spk.felles.tidsserie.batch.core.UttrekksId.uttrekksId;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.lang.reflect.Method;
 import java.nio.file.Path;
+import java.util.Optional;
 
 import no.spk.felles.tidsserie.batch.core.UttrekksId;
 import no.spk.felles.tidsserie.batch.core.kommandolinje.BruksveiledningSkalVisesException;
@@ -15,26 +18,30 @@ import no.spk.felles.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenter
 import no.spk.felles.tidsserie.batch.core.kommandolinje.UgyldigKommandolinjeArgumentException;
 
 import org.assertj.core.api.AbstractThrowableAssert;
-import org.assertj.core.api.JUnitSoftAssertions;
 import org.assertj.core.api.ObjectAssert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.rules.TestName;
+import org.assertj.core.api.SoftAssertions;
+import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
+import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.io.TempDir;
 
+@ExtendWith(SoftAssertionsExtension.class)
 public class TidsserieArgumentsFactoryTest {
-    @Rule
-    public final JUnitSoftAssertions softly = new JUnitSoftAssertions();
 
-    @Rule
-    public TemporaryFolder testFolder = new TemporaryFolderWithDeleteVerification();
+    @InjectSoftAssertions
+    private SoftAssertions softly;
 
-    @Rule
-    public final TestName name = new TestName();
+    @TempDir
+    public File testFolder;
 
-    @Rule
-    public final ModusRule modusar = new ModusRule();
+    public String name;
+
+    @RegisterExtension
+    public final ModusExtension modusar = new ModusExtension();
 
     private final TidsserieArgumentsFactory parser = new TidsserieArgumentsFactory();
 
@@ -44,8 +51,10 @@ public class TidsserieArgumentsFactoryTest {
     private Path logKatalog;
     private Path utKatalog;
 
-    @Before
-    public void _before() {
+    @BeforeEach
+    void _before(TestInfo testInfo) {
+        Optional<Method> testMethod = testInfo.getTestMethod();
+        testMethod.ifPresentOrElse(method -> this.name = method.getName(), () -> this.name = "ukjentMetodenavn");
         modusar.support(defaultModus);
 
         innKatalog = newFolder("inn");
@@ -54,25 +63,25 @@ public class TidsserieArgumentsFactoryTest {
     }
 
     @Test
-    public void skal_kreve_verdi_for_modus_parameter() {
+    void skal_kreve_verdi_for_modus_parameter() {
         assertFeilFraParsingAvArgumenter(
                 "-i", innKatalog,
                 "-o", utKatalog,
                 "-log", logKatalog,
-                "-b", name.getMethodName()
+                "-b", name
         )
                 .isInstanceOf(UgyldigKommandolinjeArgumentException.class)
                 .hasMessageContaining("Følgende valg er påkrevd: -m");
     }
 
     @Test
-    public void skalAvviseUgyldigeTidsseriemodusar() {
+    void skalAvviseUgyldigeTidsseriemodusar() {
         assertFeilFraParsingAvArgumenter(
                 "-m", "lol",
                 "-i", innKatalog,
                 "-o", utKatalog,
                 "-log", logKatalog,
-                "-b", name.getMethodName()
+                "-b", name
         )
                 .isInstanceOf(UgyldigKommandolinjeArgumentException.class)
                 .hasMessageContaining("Modus 'lol' er ikkje støtta")
@@ -81,7 +90,7 @@ public class TidsserieArgumentsFactoryTest {
     }
 
     @Test
-    public void testBeskrivelseInputOutputRequired() {
+    void beskrivelseInputOutputRequired() {
         assertFeilFraParsingAvArgumenter()
                 .isInstanceOf(UgyldigKommandolinjeArgumentException.class)
                 .hasMessageContaining("Følgende valg er påkrevd:")
@@ -93,7 +102,7 @@ public class TidsserieArgumentsFactoryTest {
     }
 
     @Test
-    public void testArgsMedFraAarFoerTilAarThrowsException() {
+    void argsMedFraAarFoerTilAarThrowsException() {
         assertFeilFraParsingAvArgumenter(
                 "-b", "test",
                 "-i", innKatalog,
@@ -109,12 +118,12 @@ public class TidsserieArgumentsFactoryTest {
     }
 
     @Test
-    public void testInvalidKjoeretidLettersThrowsException() {
+    void invalidKjoeretidLettersThrowsException() {
         testInvalidKjoeretid("abcd");
     }
 
     @Test
-    public void testInvalidKjoeretidNumbersThrowsException() {
+    void invalidKjoeretidNumbersThrowsException() {
         testInvalidKjoeretid("123");
     }
 
@@ -131,7 +140,7 @@ public class TidsserieArgumentsFactoryTest {
     }
 
     @Test
-    public void testInvalidSluttidWithlLettersThrowsException() {
+    void invalidSluttidWithlLettersThrowsException() {
         assertFeilFraParsingAvArgumenter(
                 "-b", "test",
                 "-i", innKatalog,
@@ -144,7 +153,7 @@ public class TidsserieArgumentsFactoryTest {
     }
 
     @Test
-    public void testArgsMedBeskrivelseOgHjelpThrowsUsageRequestedException() {
+    void argsMedBeskrivelseOgHjelpThrowsUsageRequestedException() {
         assertFeilFraParsingAvArgumenter("-help").isInstanceOf(BruksveiledningSkalVisesException.class);
         assertFeilFraParsingAvArgumenter("-hjelp").isInstanceOf(BruksveiledningSkalVisesException.class);
         assertFeilFraParsingAvArgumenter("-h").isInstanceOf(BruksveiledningSkalVisesException.class);
@@ -152,7 +161,7 @@ public class TidsserieArgumentsFactoryTest {
     }
 
     @Test
-    public void skal_feile_dersom_ingen_uttrekkskatalogar_eksisterer() {
+    void skal_feile_dersom_ingen_uttrekkskatalogar_eksisterer() {
         assertFeilFraParsingAvArgumenter(
                 "-b", "Test batch id missing",
                 "-i", innKatalog,
@@ -181,7 +190,7 @@ public class TidsserieArgumentsFactoryTest {
     }
 
     @Test
-    public void skal_automatisk_velge_nyeste_uttrekkskatalog_dersom_uttrekk_ikke_er_angitt() {
+    void skal_automatisk_velge_nyeste_uttrekkskatalog_dersom_uttrekk_ikke_er_angitt() {
         final Path expected = nyttUttrekk(uttrekksId("grunnlagsdata_2999-01-01_01-00-00-01"));
         nyttUttrekk(uttrekksId("grunnlagsdata_2015-01-01_01-00-00-00"));
 
@@ -238,9 +247,18 @@ public class TidsserieArgumentsFactoryTest {
 
     private Path newFolder(final String navn) {
         try {
-            return testFolder.newFolder(navn).toPath();
+            return newFolder(testFolder, navn).toPath();
         } catch (final IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    private static File newFolder(File root, String... subDirs) throws IOException {
+        String subFolder = String.join("/", subDirs);
+        File result = new File(root, subFolder);
+        if (!result.mkdirs()) {
+            throw new IOException("Couldn't create folders " + root);
+        }
+        return result;
     }
 }

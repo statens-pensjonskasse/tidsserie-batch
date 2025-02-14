@@ -2,6 +2,7 @@ package no.spk.felles.tidsserie.batch.plugins.grunnlagsdatavalidator;
 
 import static no.spk.felles.tidsserie.batch.plugins.grunnlagsdatavalidator.ServiceRegistryRule.erAvType;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ServiceLoader;
@@ -10,31 +11,29 @@ import no.spk.felles.tidsserie.batch.core.Katalog;
 import no.spk.felles.tidsserie.batch.core.grunnlagsdata.UttrekksValidator;
 import no.spk.felles.tidsserie.batch.core.registry.Plugin;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.io.TempDir;
 
 public class ChecksumValidatorPluginTest {
-    @Rule
-    public final ServiceRegistryRule registry = new ServiceRegistryRule();
 
-    @Rule
-    public final TemporaryFolder temp = new TemporaryFolderWithDeleteVerification();
+    @RegisterExtension
+    public final ServiceRegistryRule registry = new ServiceRegistryRule();
 
     private final Plugin plugin = new ChecksumValidatorPlugin();
 
-    @Before
-    public void _before() throws IOException {
+    @BeforeEach
+    void _before(@TempDir File temp) throws IOException {
         registry.registrer(
                 Path.class,
-                temp.newFolder("inn").toPath(),
+                newFolder(temp, "inn").toPath(),
                 Katalog.GRUNNLAGSDATA.egenskap()
         );
     }
 
     @Test
-    public void skal_vere_tilgjengelig_via_service_loader_APIen() {
+    void skal_vere_tilgjengelig_via_service_loader_APIen() {
         Plugin.registrerAlle(
                 registry.registry(),
                 ServiceLoader.load(Plugin.class)
@@ -47,12 +46,21 @@ public class ChecksumValidatorPluginTest {
     }
 
     @Test
-    public void skal_registrere_standard_uttrekksvalidator_som_plugin() {
+    void skal_registrere_standard_uttrekksvalidator_som_plugin() {
         plugin.aktiver(registry.registry());
 
         registry
                 .assertTenesterAvType(UttrekksValidator.class)
                 .filteredOn(callback -> erAvType(callback, ChecksumValideringAvGrunnlagsdata.class))
                 .hasSize(1);
+    }
+
+    private static File newFolder(File root, String... subDirs) throws IOException {
+        String subFolder = String.join("/", subDirs);
+        File result = new File(root, subFolder);
+        if (!result.mkdirs()) {
+            throw new IOException("Couldn't create folders " + root);
+        }
+        return result;
     }
 }

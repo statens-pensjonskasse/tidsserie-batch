@@ -7,7 +7,9 @@ import java.io.PrintStream;
 
 import org.assertj.core.api.AbstractBooleanAssert;
 import org.assertj.core.api.AbstractCharSequenceAssert;
-import org.junit.rules.ExternalResource;
+import org.junit.jupiter.api.extension.AfterEachCallback;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
 /**
  * Regel som fangar inn alt som blir printa på standard output og -error og gjer det tilgjengelig for testane uten å
@@ -15,15 +17,16 @@ import org.junit.rules.ExternalResource;
  *
  * @author Tarjei Skorgenes
  */
-public class StandardOutputAndError extends ExternalResource {
+public class StandardOutputAndError implements BeforeEachCallback, AfterEachCallback {
     private ByteArrayOutputStream stderr = new ByteArrayOutputStream();
     private ByteArrayOutputStream stdout = new ByteArrayOutputStream();
 
     private PrintStream oldStdout;
     private PrintStream oldStderror;
 
+
     @Override
-    public void before() {
+    public void beforeEach(ExtensionContext context) throws Exception {
         oldStdout = System.out;
         oldStderror = System.err;
 
@@ -35,10 +38,11 @@ public class StandardOutputAndError extends ExternalResource {
     }
 
     @Override
-    public void after() {
+    public void afterEach(ExtensionContext context) throws Exception {
         System.setOut(oldStdout);
         System.setErr(oldStderror);
     }
+
 
     /**
      * Verifiserer alt innsamla innhold som testen har skreve til standard output.

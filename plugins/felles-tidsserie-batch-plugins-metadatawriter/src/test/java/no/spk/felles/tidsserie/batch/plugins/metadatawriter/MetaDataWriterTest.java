@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -19,26 +18,22 @@ import no.spk.felles.tidsserie.batch.core.kommandolinje.UgyldigKommandolinjeArgu
 import no.spk.felles.tidsserie.batch.main.input.ProgramArguments;
 import no.spk.felles.tidsserie.batch.main.input.TidsserieArgumentsFactory;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.rules.TestName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.io.TempDir;
 
 public class MetaDataWriterTest {
-    @Rule
-    public final TestName name = new TestName();
 
-    @Rule
-    public TemporaryFolder testFolder = new TemporaryFolderWithDeleteVerification();
 
-    @Rule
-    public final ModusRule modus = new ModusRule();
+    @RegisterExtension
+    public final ModusExtension modus = new ModusExtension();
 
     private final TidsserieArgumentsFactory parser = new TidsserieArgumentsFactory();
 
     @Test
-    public void testCreateMetadataFile() throws Exception {
-        final File writeFolder = createTestFolders();
+    public void testCreateMetadataFile(@TempDir File temp) throws Exception {
+        final File writeFolder = newFolder(temp, "inn");
+        newFolder(writeFolder, "grunnlagsdata_2015-01-01_01-01-01-01");
 
         final MetaDataWriter metaDataWriter = getMetaDataWriter(writeFolder);
         final BatchId batchId = new BatchId(TIDSSERIE_PREFIX, LocalDateTime.now());
@@ -69,9 +64,12 @@ public class MetaDataWriterTest {
         return new MetaDataWriter(TemplateConfigurationFactory.create(), writeFolder.toPath());
     }
 
-    private File createTestFolders() throws IOException {
-        final File writeFolder = testFolder.newFolder(name.getMethodName());
-        Paths.get(writeFolder.getAbsolutePath(), "grunnlagsdata_2015-01-01_01-01-01-01").toFile().mkdir();
-        return writeFolder;
+    private static File newFolder(File root, String... subDirs) throws IOException {
+        String subFolder = String.join("/", subDirs);
+        File result = new File(root, subFolder);
+        if (!result.mkdirs()) {
+            throw new IOException("Couldn't create folders " + root);
+        }
+        return result;
     }
 }

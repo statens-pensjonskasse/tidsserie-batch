@@ -5,13 +5,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.stream.IntStream;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class MeldingarTest {
+class MeldingarTest {
     private final Meldingar meldingar = new Meldingar();
 
     @Test
-    public void skal_emitte_antall_feil() {
+    void skal_emitte_antall_feil() {
         final RuntimeException e = new RuntimeException();
         forEach(
                 IntStream.range(0, 1000).boxed(),
@@ -24,7 +24,7 @@ public class MeldingarTest {
     }
 
     @Test
-    public void skal_emitte_antall_pr_feiltype() {
+    void skal_emitte_antall_pr_feiltype() {
         meldingar.emitError(new NullPointerException());
         meldingar.emitError(new IndexOutOfBoundsException());
         meldingar.emitError(new UnsupportedOperationException());
@@ -40,7 +40,7 @@ public class MeldingarTest {
     }
 
     @Test
-    public void skal_emitte_antall_pr_feilmelding() {
+    void skal_emitte_antall_pr_feilmelding() {
         meldingar.emitError(new RuntimeException("Wir sind falsch"));
         meldingar.emitError(new StackOverflowError("Der anfang ist das ende"));
         meldingar.emitError(new StackOverflowError("Das ende ist der anfang"));
@@ -54,7 +54,7 @@ public class MeldingarTest {
     }
 
     @Test
-    public void skal_inkludere_meldingar_frå_begge() {
+    void skal_inkludere_meldingar_frå_begge() {
         final Meldingar forrige = new Meldingar();
         forrige.emit("A");
         forrige.emit("C");
@@ -68,7 +68,7 @@ public class MeldingarTest {
     }
 
     @Test
-    public void skal_legge_saman_antall_meldingar_pr_type_frå_begge() {
+    void skal_legge_saman_antall_meldingar_pr_type_frå_begge() {
         final Meldingar forrige = new Meldingar();
         forrige.emit("A");
         forrige.emit("C");

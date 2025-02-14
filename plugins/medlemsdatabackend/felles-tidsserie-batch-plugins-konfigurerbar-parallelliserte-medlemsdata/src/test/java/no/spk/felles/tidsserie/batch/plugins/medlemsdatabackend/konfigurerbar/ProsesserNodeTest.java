@@ -19,13 +19,14 @@ import no.spk.felles.tidsserie.batch.core.grunnlagsdata.Partisjonsnummer;
 import no.spk.felles.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.datalagring.DefaultDatalagringStrategi;
 import no.spk.pensjon.faktura.tjenesteregister.support.SimpleServiceRegistry;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class ProsesserNodeTest {
+class ProsesserNodeTest {
 
     private final PartisjonertMedlemsdataOpplaster partisjonertOpplaster = new PartisjonertMedlemsdataOpplaster(new SimpleServiceRegistry());
+
     @Test
-    public void skal_starte_ei_køyring_pr_kall() {
+    void skal_starte_ei_køyring_pr_kall() {
         final ProsesserNode prosessering = new ProsesserNode(
                 Collections.singleton(new Partisjon(partisjonsnummer(1))),
                 (key, medlemsdata, tidsserieContext) -> {
@@ -49,7 +50,7 @@ public class ProsesserNodeTest {
     }
 
     @Test
-    public void skal_aggregere_meldingar_frå_alle_partisjonar() {
+    void skal_aggregere_meldingar_frå_alle_partisjonar() {
         final ProsesserNode prosessering = new ProsesserNode(
                 Stream.of(
                                 partisjonsnummer(1),
@@ -96,7 +97,7 @@ public class ProsesserNodeTest {
     }
 
     @Test
-    public void skal_ikkje_feile_om_bakgrunnskøyringa_blir_avbrutt() {
+    void skal_ikkje_feile_om_bakgrunnskøyringa_blir_avbrutt() {
         final ProsesserNode.AsyncResultat avbrutt = new ProsesserNode.AsyncResultat(
                 () -> {
                     throw new InterruptedException();
@@ -116,7 +117,7 @@ public class ProsesserNodeTest {
     }
 
     @Test
-    public void skal_ikkje_feile_om_bakgrunnskøyringa_kræsjar() {
+    void skal_ikkje_feile_om_bakgrunnskøyringa_kræsjar() {
         final ProsesserNode.AsyncResultat kræsja = new ProsesserNode.AsyncResultat(
                 () -> {
                     throw new ExecutionException(
@@ -138,7 +139,7 @@ public class ProsesserNodeTest {
     }
 
     @Test
-    public void skal_prosessere_partisjonane_i_deterministisk_rekkefølge_frå_lavaste_til_høgaste_partisjonsnummer() {
+    void skal_prosessere_partisjonane_i_deterministisk_rekkefølge_frå_lavaste_til_høgaste_partisjonsnummer() {
         final List<Partisjonsnummer> expected = Partisjonsnummer.stream().toList();
         final List<Partisjonsnummer> behandla = new ArrayList<>();
 

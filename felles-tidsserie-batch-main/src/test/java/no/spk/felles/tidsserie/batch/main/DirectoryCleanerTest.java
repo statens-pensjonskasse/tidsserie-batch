@@ -7,24 +7,17 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.rules.TestName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 
+@ExtendWith(StandardOutputAndError.class)
 public class DirectoryCleanerTest {
-    @Rule
-    public TemporaryFolder testFolder = new TemporaryFolderWithDeleteVerification();
-
-    @Rule
-    public final TestName name = new TestName();
-
-    @Rule
-    public final StandardOutputAndError console = new StandardOutputAndError();
 
     @Test
-      public void testDeleteDirectories() throws Exception {
-        Path path = testFolder.newFolder(name.getMethodName()).toPath();
+    void deleteDirectories(@TempDir Path path) throws Exception {
+
+        //Path path = newFolder(testFolder, name).toPath();
 
         //slettes
         Path path1 = path.resolve("tidsserie");
@@ -46,12 +39,12 @@ public class DirectoryCleanerTest {
     }
 
     @Test
-    public void testDeleteMissingDirectories() throws Exception {
-        Path path = testFolder.newFolder(name.getMethodName()).toPath();
+    void deleteMissingDirectories(@TempDir Path path) throws Exception {
 
         Path path1 = path.resolve("tidsserie");
         Path path2 = path.resolve("tidsserie_2015-01-01_01-00-00-00");
 
         new DirectoryCleaner(path1, path2).deleteDirectories();
     }
+
 }
