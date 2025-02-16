@@ -239,7 +239,7 @@
                 <!-- Dette er tidsperiode underlag lib som er hentet fra GitHub                -->
                 <groupId>no.spk</groupId>
                 <artifactId>tidsperiode-underlag-lib</artifactId>
-                <version>1.0.3</version>
+                <version>1.0.4</version>
             </dependency>
             <dependency>
                 <groupId>no.spk.felles</groupId>
