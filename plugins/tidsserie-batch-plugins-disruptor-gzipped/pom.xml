@@ -4,7 +4,7 @@
     <parent>
         <groupId>no.spk.premie</groupId>
         <artifactId>tidsserie-batch</artifactId>
-        <version>2.1.7-SNAPSHOT</version>
+        <version>3.0.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>tidsserie-batch-plugins-disruptor-gzipped</artifactId>
