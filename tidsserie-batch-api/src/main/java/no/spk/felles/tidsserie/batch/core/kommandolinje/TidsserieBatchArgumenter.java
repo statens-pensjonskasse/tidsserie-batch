@@ -14,7 +14,7 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**
  * {@link TidsserieBatchArgumenter} representerer kommandolinjeargumenta som applikasjonar som overstyrer
- * felles-tidsserie-batch må støtte.
+ * tidsserie-batch må støtte.
  * <p>
  * Modusar / applikasjonar som har behov for fleire argument står fritt til å støtte fleire argument.
  * Dei står og fritt til å støtte færre så lenge dei gjennom utledning eller hardkoding, likevel er i stand
@@ -149,7 +149,7 @@ public interface TidsserieBatchArgumenter{
      * som ein del av den generelle APIen for kommandolinjeargument.
      * <p>
      * Applikasjonar som overstyrer parsinga av kommandolinjeargument for å kunne tilby fleire typer innstillingar
-     * enn det felles-tidsserie-batch tilbyr out-of-the-box, kan registrere tjenester som gir tilgang til verdiane
+     * enn det tidsserie-batch tilbyr out-of-the-box, kan registrere tjenester som gir tilgang til verdiane
      * av dei applikasjonsspesifikke argumenta via denne metoda.
      *
      * @param registry tjenesteregisteret som argumentspesifikke tjenester kan registrerast i

@@ -16,14 +16,14 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 /**
  * {@link Plugin} er ein {@link Extensionpoint utvidelse} som gir modular muligheita til å
  * {@link #aktiver(ServiceRegistry) registrere} ekstra tenester i tenesteregisteret under oppstart av
- * felles-tidsserie-batch.
+ * tidsserie-batch.
  * <h2>Når i oppstarten blir {@link Plugin#aktiver(ServiceRegistry)} kalla?</h2>
  * Batchen kallar alle plugin si {@link #aktiver(ServiceRegistry)}-metode rett før modusen får muligheita
  * til å {@link Tidsseriemodus#registerServices(ServiceRegistry) registrere} modus-spesifikke tenester under
  * oppstarten av batchen.
  * <h2>Korleis blir plugins gjort tilgjengelig for batchen?</h2>
  * <p>
- * {@link Plugin} sitt hovedformål er å dynamisk utvide felles-tidsserie-batch sin funksjonalitet, uten at batchen sjølv
+ * {@link Plugin} sitt hovedformål er å dynamisk utvide tidsserie-batch sin funksjonalitet, uten at batchen sjølv
  * kjenner til eller er avhengig av funksjonaliteten som blir plugga inn. Målet er altså å kunne kompilere og bruke
  * batchens API og applikasjonsmodul uten å få med alle avhengigheiter som eventuelle valfrie plugins kan måtte ha
  * behov for, dersom ein ikkje har tenkt å anvende seg av desse plugina sin funksjonalitet.
@@ -68,7 +68,7 @@ public interface Plugin {
      * <li>{@link AntallProsessorar}: Antall CPU-kjerner som brukaren vil at batchen skal benytte for tidsseriegenerering</li>
      * <li>{@link Tidsseriemodus}: Modusen brukaren har angitt at batchen skal bruke for å generere tidsseriar</li>
      * <li>Andre {@link TidsserieBatchArgumenter#registrer(ServiceRegistry) kommandolinjeargument} som er spesifikke for
-     * applikasjonen som felles-tidsserie-batch inngår som ein del av</li>
+     * applikasjonen som tidsserie-batch inngår som ein del av</li>
      * </ul>
      * Denne delen av eit plugin kan ikkje slå opp/vere avhengig av tenester som har blitt/vil bli registrert av andre
      * plugins, rekkefølga plugina blir initialisert i er uspesifisert og kan for alle praktiske formål sjåast på som

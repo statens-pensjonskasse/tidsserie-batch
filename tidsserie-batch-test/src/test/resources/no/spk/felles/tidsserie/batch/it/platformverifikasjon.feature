@@ -14,7 +14,7 @@ Egenskap: Smoketest av platformrammeverket
 
   For å vere robuste mot classpathen-problematikk blir batchen og køyrt ein gang out-of-process, då via sist bygde versjon
   av JAR-fila. Får du problem med at batchen ikkje plukkar opp endringar når du køyrer testane på nytt så er det typisk
-  fordi du har gløymt å bygge heile felles-tidsserie-batch reaktoren via Maven før du køyrte testen frå din IDE.
+  fordi du har gløymt å bygge heile tidsserie-batch reaktoren via Maven før du køyrte testen frå din IDE.
 
   Bakgrunn: Litt semi random grunnlagsdata som input til batchen
 

@@ -9,7 +9,7 @@ import no.spk.felles.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenter
 import no.spk.felles.tidsserie.batch.core.kommandolinje.UgyldigKommandolinjeArgumentException;
 
 /**
- * Parser som støtter parsing av alle kommandolinjeargumenter som felles-tidsserie-batch støtter direkte selv.
+ * Parser som støtter parsing av alle kommandolinjeargumenter som tidsserie-batch støtter direkte selv.
  * <p>
  * Applikasjoner som ønsker å tilby færre/flere/andre argumenter kan plugge inn sin egen håndtering i form av en separat
  * {@link TidsserieBatchArgumenter}.

@@ -35,7 +35,7 @@ public class ModusValidatorTest {
                 () -> new ModusValidator().validate("modus", "whatever", CommandSpec.create())
         )
                 .isInstanceOf(ParameterException.class)
-                .hasMessageContaining("Modus 'whatever' er ikkje støtta av felles-tidsserie-batch.")
+                .hasMessageContaining("Modus 'whatever' er ikkje støtta av tidsserie-batch.")
                 .hasMessageContaining("Følgjande modusar er støtta:");
 
         Modus

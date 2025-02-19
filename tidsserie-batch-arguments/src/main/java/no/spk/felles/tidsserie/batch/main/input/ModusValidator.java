@@ -31,7 +31,7 @@ public class ModusValidator {
     }
 
     static String feilmelding(final String value) {
-        return "Modus '" + value + "' er ikkje støtta av felles-tidsserie-batch.\n"
+        return "Modus '" + value + "' er ikkje støtta av tidsserie-batch.\n"
                 + "\nFølgjande modusar er støtta:\n"
                 + Modus.stream()
                 .map(Modus::kode)

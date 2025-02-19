@@ -10,7 +10,7 @@ import no.spk.felles.tidsserie.batch.main.spi.ExitCommand;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 
 /**
- * {@link TidsserieMain} er oppstartsklassa for felles-tidsserie-batch.
+ * {@link TidsserieMain} er oppstartsklassa for tidsserie-batch.
  * <p>
  * Klassa er ansvarlig for å instansiere det minimum av ytre tenester som krevest for å boostrappe
  * {@link TidsserieBatch platformrammeverket} og kunne {@link TidsserieBatch#run(Supplier, String...) starte opp}
