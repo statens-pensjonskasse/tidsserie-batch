@@ -6,13 +6,13 @@ Rammeverket tar seg av:
 
 * Innlasting av medlemsavhengige og/eller medlemsuavhengige grunnlagsdata frå GZIP-komprimerte CSV-filer
 * Tilrettelegging for påfølgjande in-memory prosessering av desse, typisk ved hjelp av blant
-  anna [felles-tidsperiode-underlag-lib](http://git.spk.no/projects/FELLESJAVA/repos/felles-tidsperiode-underlag-lib)
+  anna [tidsperiode-underlag-lib](https://github.com/statens-pensjonskasse/tidsperiode-underlag-lib)
 * Tilrettelegging for lagring av modus-avhengige tidsrelaterte verdiar til CSV-filer.
 
 Batchapplikasjonar som ønskjer å benytte seg av platformrammeverket er ansvarlig for å:
 
 * Plugge inn funksjonalitet for konvertering av dei medlemsavhengige og -uavhengige grunnlagsdatane frå CSV til tidsperioder klare for prosessering via
-  felles-tidsperiode-underlag-lib.
+  tidsperiode-underlag-lib.
 * Plugge inn Tidsseriemodus(ar) som implementerer den funksjonelle genereringa av resultata som skal produserast, inkludert spesifikasjon og implementasjon
   av serialiseringa tilbake til CSV-filer.
 * Plugge inn kva modusar som skal kunne benyttast

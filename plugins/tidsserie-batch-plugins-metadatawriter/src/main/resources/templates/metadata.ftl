@@ -1,6 +1,6 @@
 <#-- @ftlvariable name="outputDirectory" type="java.lang.String" -->
 <#-- @ftlvariable name="jobDuration" type="java.lang.String" -->
-<#-- @ftlvariable name="params" type="no.spk.felles.tidsserie.batch.main.input.ProgramArguments" -->
+<#-- @ftlvariable name="params" type="no.spk.premie.tidsserie.batch.main.input.ProgramArguments" -->
 Batch-id: ${batchId}
 Beskrivelse: ${params.beskrivelse}
 

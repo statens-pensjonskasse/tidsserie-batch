@@ -9,7 +9,7 @@
         <relativePath/>
     </parent>
 
-    <groupId>no.spk.felles</groupId>
+    <groupId>no.spk.premie</groupId>
     <artifactId>tidsserie-batch</artifactId>
 
     <version>2.1.7-SNAPSHOT</version>
@@ -26,6 +26,9 @@
     </modules>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
         <java.version>21</java.version>
         <slf4j.version>2.0.16</slf4j.version>
         <ch.qos.logback.version>1.5.16</ch.qos.logback.version>
@@ -44,7 +47,7 @@
                 <version>1.0.4</version>
             </dependency>
             <dependency>
-                <groupId>no.spk.felles</groupId>
+                <groupId>no.spk.premie</groupId>
                 <artifactId>tidsserie-batch-bom</artifactId>
                 <version>2.1.7-SNAPSHOT</version>
                 <type>pom</type>
@@ -401,7 +404,7 @@
     <distributionManagement>
         <repository>
             <id>github</id>
-            <url>https://maven.pkg.github.com/statens-pensjonskasse/felles-tidsserie-batch</url>
+            <url>https://maven.pkg.github.com/statens-pensjonskasse/tidsserie-batch</url>
         </repository>
     </distributionManagement>
 </project>
