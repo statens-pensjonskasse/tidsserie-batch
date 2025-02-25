@@ -1,0 +1,29 @@
+name: Build and Publish Library with Maven
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: statens-pensjonskasse/github-actions-library/.github/workflows/build-library-maven.yaml@4a9a85428b96d42dce8e47ada1439a13f605cb2d # v1.6.3
+    permissions:
+      contents: write
+      packages: write
+    secrets: inherit
+    with:
+      java-version: 21
+      runner-tag: 'spk-test-runner'
+
+  notify:
+    needs: build
+    runs-on: ubuntu-latest
+    if: ${{ always() && github.ref == 'refs/heads/main' }}
+    steps:
+      - uses: actions/checkout@v4 #v4.2.2
+      - name: report to slack
+        uses: statens-pensjonskasse/gal-components/send-slack-notification@09f4ad5640b8e4bac7db7d66d7738f5dd0c231d6 # v0.1.2
+        with:
+          channel: '#panda-ci'
+          status: ${{ needs.build.result }}
+          message: ${{ env.commit_msg }}
+          token: ${{ secrets.SLACK_BOT_TOKEN }}

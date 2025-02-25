@@ -2,19 +2,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>no.spk.felles</groupId>
-        <artifactId>felles-tidsserie-batch</artifactId>
-        <version>2.1.7-SNAPSHOT</version>
+        <groupId>no.spk.tidsserie</groupId>
+        <artifactId>tidsserie-batch</artifactId>
+        <version>3.0.0-SNAPSHOT</version>
     </parent>
-    <artifactId>felles-tidsserie-batch-plugins-pom</artifactId>
+    <artifactId>tidsserie-batch-plugins-pom</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>felles-tidsserie-batch-plugins-disruptor</module>
-        <module>felles-tidsserie-batch-plugins-disruptor-gzipped</module>
-        <module>felles-tidsserie-batch-plugins-grunnlagsdatavalidator</module>
-        <module>felles-tidsserie-batch-plugins-metadatawriter</module>
-        <module>felles-tidsserie-batch-plugins-triggerfil</module>
-        <module>medlemsdatabackend/felles-tidsserie-batch-plugins-parallelliserte-medlemsdata</module>
-        <module>medlemsdatabackend/felles-tidsserie-batch-plugins-konfigurerbar-parallelliserte-medlemsdata</module>
+        <module>tidsserie-batch-plugins-disruptor</module>
+        <module>tidsserie-batch-plugins-disruptor-gzipped</module>
+        <module>tidsserie-batch-plugins-grunnlagsdatavalidator</module>
+        <module>tidsserie-batch-plugins-metadatawriter</module>
+        <module>tidsserie-batch-plugins-triggerfil</module>
+        <module>medlemsdatabackend/tidsserie-batch-plugins-parallelliserte-medlemsdata</module>
+        <module>medlemsdatabackend/tidsserie-batch-plugins-konfigurerbar-parallelliserte-medlemsdata</module>
     </modules>
 </project>
