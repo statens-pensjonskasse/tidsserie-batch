@@ -12,7 +12,7 @@
     <groupId>no.spk.tidsserie</groupId>
     <artifactId>tidsserie-batch</artifactId>
 
-    <version>3.0.0</version>
+    <version>3.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -50,7 +50,7 @@
             <dependency>
                 <groupId>no.spk.tidsserie</groupId>
                 <artifactId>tidsserie-batch-bom</artifactId>
-                <version>3.0.0</version>
+                <version>3.0.1-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
