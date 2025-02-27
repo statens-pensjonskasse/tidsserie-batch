@@ -4,7 +4,7 @@
     <parent>
         <groupId>no.spk.tidsserie</groupId>
         <artifactId>tidsserie-batch</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>4.0.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>tidsserie-batch-plugins-grunnlagsdatavalidator</artifactId>
