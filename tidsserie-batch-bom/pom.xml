@@ -4,7 +4,7 @@
 
     <groupId>no.spk.tidsserie</groupId>
     <artifactId>tidsserie-batch-bom</artifactId>
-    <version>3.0.1</version>
+    <version>3.0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <dependencyManagement>
@@ -12,57 +12,57 @@
             <dependency>
                 <groupId>no.spk.tidsserie</groupId>
                 <artifactId>tidsserie-batch-api</artifactId>
-                <version>3.0.1</version>
+                <version>3.0.2-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>no.spk.tidsserie</groupId>
                 <artifactId>tidsserie-batch-app</artifactId>
-                <version>3.0.1</version>
+                <version>3.0.2-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>no.spk.tidsserie</groupId>
                 <artifactId>tidsserie-batch-arguments</artifactId>
-                <version>3.0.1</version>
+                <version>3.0.2-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>no.spk.tidsserie</groupId>
                 <artifactId>tidsserie-batch-main</artifactId>
-                <version>3.0.1</version>
+                <version>3.0.2-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>no.spk.tidsserie</groupId>
                 <artifactId>tidsserie-batch-plugins-disruptor</artifactId>
-                <version>3.0.1</version>
+                <version>3.0.2-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>no.spk.tidsserie</groupId>
                 <artifactId>tidsserie-batch-plugins-disruptor-gzipped</artifactId>
-                <version>3.0.1</version>
+                <version>3.0.2-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>no.spk.tidsserie</groupId>
                 <artifactId>tidsserie-batch-plugins-grunnlagsdatavalidator</artifactId>
-                <version>3.0.1</version>
+                <version>3.0.2-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>no.spk.tidsserie</groupId>
                 <artifactId>tidsserie-batch-plugins-parallelliserte-medlemsdata</artifactId>
-                <version>3.0.1</version>
+                <version>3.0.2-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>no.spk.tidsserie</groupId>
                 <artifactId>tidsserie-batch-plugins-konfigurerbar-parallelliserte-medlemsdata</artifactId>
-                <version>3.0.1</version>
+                <version>3.0.2-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>no.spk.tidsserie</groupId>
                 <artifactId>tidsserie-batch-plugins-metadatawriter</artifactId>
-                <version>3.0.1</version>
+                <version>3.0.2-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>no.spk.tidsserie</groupId>
                 <artifactId>tidsserie-batch-plugins-triggerfil</artifactId>
-                <version>3.0.1</version>
+                <version>3.0.2-SNAPSHOT</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
