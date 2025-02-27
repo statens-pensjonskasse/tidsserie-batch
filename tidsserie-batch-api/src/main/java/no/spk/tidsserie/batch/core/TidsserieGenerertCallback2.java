@@ -4,8 +4,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.time.Duration;
 
-import no.spk.faktura.input.BatchId;
-import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
+import no.spk.tidsserie.input.BatchId;
+import no.spk.tidsserie.tjenesteregister.ServiceRegistry;
 
 /**
  * Extension-interface for tjenestetilbydere som ønsker å bli notifisert når generering av tidsserien

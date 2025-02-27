@@ -6,7 +6,7 @@ import java.util.Objects;
 import no.spk.tidsserie.batch.core.grunnlagsdata.LastOppGrunnlagsdataPartisjonertKommando;
 import no.spk.tidsserie.batch.core.grunnlagsdata.Partisjonsnummer;
 import no.spk.tidsserie.batch.core.registry.ServiceLocator;
-import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
+import no.spk.tidsserie.tjenesteregister.ServiceRegistry;
 
 class PartisjonertMedlemsdataOpplaster {
 

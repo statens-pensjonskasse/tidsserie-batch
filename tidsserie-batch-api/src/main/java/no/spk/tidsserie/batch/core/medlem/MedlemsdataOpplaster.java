@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 import no.spk.tidsserie.batch.core.grunnlagsdata.GrunnlagsdataRepository;
 import no.spk.tidsserie.batch.core.grunnlagsdata.LastOppGrunnlagsdataKommando;
 import no.spk.tidsserie.batch.core.registry.ServiceLocator;
-import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
+import no.spk.tidsserie.tjenesteregister.ServiceRegistry;
 
 /**
  * {@link MedlemsdataOpplaster} koordinerer innlesing og opplasting av data frå

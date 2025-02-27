@@ -7,8 +7,8 @@ import java.util.ServiceLoader;
 import java.util.stream.Stream;
 
 import no.spk.tidsserie.batch.core.registry.ServiceLocator;
-import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistration;
-import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
+import no.spk.tidsserie.tjenesteregister.ServiceRegistration;
+import no.spk.tidsserie.tjenesteregister.ServiceRegistry;
 import org.assertj.core.api.ListAssert;
 import org.assertj.core.api.OptionalAssert;
 import org.junit.jupiter.api.extension.BeforeEachCallback;

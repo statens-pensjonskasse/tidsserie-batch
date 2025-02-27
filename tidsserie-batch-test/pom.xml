@@ -37,9 +37,14 @@
             <groupId>no.spk.tidsserie</groupId>
             <artifactId>tidsserie-batch-plugins-grunnlagsdatavalidator</artifactId>
         </dependency>
+
         <dependency>
-            <groupId>no.spk.pensjon.faktura</groupId>
-            <artifactId>faktura-tjenesteregister-lib</artifactId>
+            <groupId>no.spk.tidsserie</groupId>
+            <artifactId>tjenesteregister-lib</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.spk.tidsserie</groupId>
+            <artifactId>bootstrap-lib</artifactId>
         </dependency>
 
         <!-- test-->

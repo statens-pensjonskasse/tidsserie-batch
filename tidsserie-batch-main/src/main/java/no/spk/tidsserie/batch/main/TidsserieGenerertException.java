@@ -2,7 +2,7 @@ package no.spk.tidsserie.batch.main;
 
 import java.util.stream.Stream;
 
-import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
+import no.spk.tidsserie.tjenesteregister.ServiceRegistry;
 import no.spk.tidsserie.batch.core.TidsserieGenerertCallback;
 
 /**

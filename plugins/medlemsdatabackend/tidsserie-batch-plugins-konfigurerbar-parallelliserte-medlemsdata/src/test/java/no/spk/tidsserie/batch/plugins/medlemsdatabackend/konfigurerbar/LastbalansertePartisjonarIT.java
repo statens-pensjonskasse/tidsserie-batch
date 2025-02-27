@@ -8,7 +8,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import no.spk.tidsserie.batch.core.grunnlagsdata.Partisjonsnummer;
-import no.spk.pensjon.faktura.tjenesteregister.support.SimpleServiceRegistry;
+import no.spk.tidsserie.tjenesteregister.support.SimpleServiceRegistry;
 
 import org.assertj.core.api.ListAssert;
 import org.assertj.core.api.MapAssert;

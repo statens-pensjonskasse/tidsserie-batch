@@ -7,10 +7,10 @@ import java.time.Duration;
 import java.time.LocalTime;
 import java.util.function.Function;
 
-import no.spk.faktura.input.DurationUtil;
+import no.spk.tidsserie.input.DurationUtil;
 import no.spk.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.tidsserie.batch.core.UttrekksId;
-import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
+import no.spk.tidsserie.tjenesteregister.ServiceRegistry;
 
 /**
  * {@link TidsserieBatchArgumenter} representerer kommandolinjeargumenta som applikasjonar som overstyrer

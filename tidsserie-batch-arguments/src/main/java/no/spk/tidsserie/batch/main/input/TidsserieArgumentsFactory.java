@@ -1,8 +1,8 @@
 package no.spk.tidsserie.batch.main.input;
 
-import no.spk.faktura.input.InvalidParameterException;
-import no.spk.faktura.input.ProgramArgumentsFactory;
-import no.spk.faktura.input.UsageRequestedException;
+import no.spk.tidsserie.input.InvalidParameterException;
+import no.spk.tidsserie.input.ProgramArgumentsFactory;
+import no.spk.tidsserie.input.UsageRequestedException;
 import no.spk.tidsserie.batch.core.kommandolinje.BruksveiledningSkalVisesException;
 import no.spk.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenter;
 import no.spk.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenterParser;

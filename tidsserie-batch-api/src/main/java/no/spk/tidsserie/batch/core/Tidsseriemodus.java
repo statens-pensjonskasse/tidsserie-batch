@@ -7,7 +7,7 @@ import no.spk.tidsserie.batch.core.grunnlagsdata.TidsperiodeFactory;
 import no.spk.tidsserie.batch.core.lagring.StorageBackend;
 import no.spk.tidsserie.batch.core.medlem.GenererTidsserieCommand;
 import no.spk.tidsserie.batch.core.medlem.PartisjonsListener;
-import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
+import no.spk.tidsserie.tjenesteregister.ServiceRegistry;
 
 /**
  * {@link Tidsseriemodus} er integrasjonspunktet mellom tidsserieplatformen og den funksjonelle logikken som

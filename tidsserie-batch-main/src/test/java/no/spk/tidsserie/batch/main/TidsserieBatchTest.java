@@ -17,7 +17,7 @@ import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.function.Supplier;
 
-import no.spk.faktura.input.BatchId;
+import no.spk.tidsserie.input.BatchId;
 import no.spk.tidsserie.batch.core.BatchIdConstants;
 import no.spk.tidsserie.batch.core.Katalog;
 import no.spk.tidsserie.batch.core.TidsserieGenerertCallback;

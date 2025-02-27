@@ -16,7 +16,7 @@ import no.spk.tidsserie.batch.core.medlem.MedlemsdataOpplaster;
 import no.spk.tidsserie.batch.core.medlem.PartisjonsListener;
 import no.spk.tidsserie.batch.core.medlem.TidsserieContext;
 import no.spk.tidsserie.batch.core.registry.ServiceLocator;
-import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
+import no.spk.tidsserie.tjenesteregister.ServiceRegistry;
 
 public class MedlemsIdModus implements Tidsseriemodus {
     @Override

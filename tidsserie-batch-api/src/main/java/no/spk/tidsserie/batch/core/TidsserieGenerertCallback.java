@@ -1,6 +1,6 @@
 package no.spk.tidsserie.batch.core;
 
-import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
+import no.spk.tidsserie.tjenesteregister.ServiceRegistry;
 
 /**
  * @see TidsserieGenerertCallback2

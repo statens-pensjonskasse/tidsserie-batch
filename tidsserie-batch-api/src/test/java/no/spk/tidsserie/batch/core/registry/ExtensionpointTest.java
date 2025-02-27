@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 import no.spk.tidsserie.batch.core.ServiceRegistryExtension;
 import no.spk.tidsserie.batch.core.TidsserieLivssyklus;
-import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
+import no.spk.tidsserie.tjenesteregister.ServiceRegistry;
 
 import org.assertj.core.api.AbstractBooleanAssert;
 import org.junit.jupiter.api.BeforeEach;

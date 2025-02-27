@@ -11,7 +11,7 @@ import no.spk.tidsserie.batch.core.TidsserieLivssyklus;
 import no.spk.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.tidsserie.batch.core.kommandolinje.AntallProsessorar;
 import no.spk.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenter;
-import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
+import no.spk.tidsserie.tjenesteregister.ServiceRegistry;
 
 /**
  * {@link Plugin} er ein {@link Extensionpoint utvidelse} som gir modular muligheita til å

@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-import no.spk.faktura.input.BatchId;
+import no.spk.tidsserie.input.BatchId;
 import no.spk.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.tidsserie.batch.core.grunnlagsdata.LastOppGrunnlagsdataKommando;
 import no.spk.tidsserie.batch.core.grunnlagsdata.UgyldigUttrekkException;
@@ -32,7 +32,7 @@ import no.spk.tidsserie.batch.core.kommandolinje.UgyldigKommandolinjeArgumentExc
 import no.spk.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.tidsserie.batch.core.registry.Plugin;
 import no.spk.tidsserie.batch.main.input.ProgramArguments;
-import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
+import no.spk.tidsserie.tjenesteregister.ServiceRegistry;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

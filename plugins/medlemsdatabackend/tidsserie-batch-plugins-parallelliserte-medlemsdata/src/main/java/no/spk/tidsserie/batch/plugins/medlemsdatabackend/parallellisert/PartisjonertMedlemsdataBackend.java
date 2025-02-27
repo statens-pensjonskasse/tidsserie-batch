@@ -10,7 +10,7 @@ import no.spk.tidsserie.batch.core.kommandolinje.AntallProsessorar;
 import no.spk.tidsserie.batch.core.medlem.GenererTidsserieCommand;
 import no.spk.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.tidsserie.batch.core.medlem.MedlemsdataUploader;
-import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
+import no.spk.tidsserie.tjenesteregister.ServiceRegistry;
 
 class PartisjonertMedlemsdataBackend implements MedlemsdataBackend, TidsserieLivssyklus {
     private final Partisjonstabell partisjonar = new Partisjonstabell();

@@ -7,7 +7,7 @@ import no.spk.tidsserie.batch.core.TidsserieGenerertCallback2;
 import no.spk.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenter;
 import no.spk.tidsserie.batch.core.registry.Plugin;
 import no.spk.tidsserie.batch.core.registry.ServiceLocator;
-import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
+import no.spk.tidsserie.tjenesteregister.ServiceRegistry;
 
 public class MetadataWriterPlugin implements Plugin {
     @Override

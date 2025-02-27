@@ -6,7 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import no.spk.tidsserie.batch.core.TidsserieGenerertCallback2;
-import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
+import no.spk.tidsserie.tjenesteregister.ServiceRegistry;
 
 /**
  * Datavarehus har behov for at en trigger-fil med navn 'ok.trg' opprettes i tidsseriekatalogen

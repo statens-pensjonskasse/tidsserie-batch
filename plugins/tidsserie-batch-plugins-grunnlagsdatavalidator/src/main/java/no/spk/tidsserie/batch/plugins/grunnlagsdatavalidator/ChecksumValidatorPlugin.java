@@ -6,7 +6,7 @@ import no.spk.tidsserie.batch.core.Katalog;
 import no.spk.tidsserie.batch.core.grunnlagsdata.UttrekksValidator;
 import no.spk.tidsserie.batch.core.registry.Plugin;
 import no.spk.tidsserie.batch.core.registry.ServiceLocator;
-import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
+import no.spk.tidsserie.tjenesteregister.ServiceRegistry;
 
 public class ChecksumValidatorPlugin implements Plugin {
     @Override

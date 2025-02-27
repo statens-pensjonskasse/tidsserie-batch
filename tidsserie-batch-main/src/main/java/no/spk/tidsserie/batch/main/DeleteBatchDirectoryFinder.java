@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.stream.Stream;
 
-import no.spk.faktura.input.BatchId;
+import no.spk.tidsserie.input.BatchId;
 import no.spk.tidsserie.batch.core.kommandolinje.AldersgrenseForSlettingAvLogKatalogar;
 
 /**

@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Optional;
 
-import no.spk.faktura.input.BatchId;
+import no.spk.tidsserie.input.BatchId;
 import no.spk.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenter;
 
 import freemarker.template.Configuration;

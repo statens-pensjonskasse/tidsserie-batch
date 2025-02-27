@@ -18,7 +18,7 @@ import no.spk.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.tidsserie.batch.core.medlem.MedlemsdataOpplaster;
 import no.spk.tidsserie.batch.core.medlem.TidsserieContext;
 import no.spk.tidsserie.batch.core.registry.ServiceLocator;
-import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
+import no.spk.tidsserie.tjenesteregister.ServiceRegistry;
 
 /**
  * Tidsseriemodus som kopierer alt innhold direkte frå {@link GrunnlagsdataRepository#medlemsdata()}

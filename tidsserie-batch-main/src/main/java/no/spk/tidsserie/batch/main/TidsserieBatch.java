@@ -15,9 +15,9 @@ import java.time.LocalDateTime;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import no.spk.faktura.input.BatchId;
-import no.spk.faktura.timeout.BatchTimeout;
-import no.spk.faktura.timeout.BatchTimeoutTaskrunner;
+import no.spk.tidsserie.input.BatchId;
+import no.spk.tidsserie.timeout.BatchTimeout;
+import no.spk.tidsserie.timeout.BatchTimeoutTaskrunner;
 import no.spk.tidsserie.batch.core.Katalog;
 import no.spk.tidsserie.batch.core.TidsserieGenerertCallback;
 import no.spk.tidsserie.batch.core.TidsserieGenerertCallback2;
@@ -33,7 +33,7 @@ import no.spk.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenterParser;
 import no.spk.tidsserie.batch.core.kommandolinje.UgyldigKommandolinjeArgumentException;
 import no.spk.tidsserie.batch.core.registry.Extensionpoint;
 import no.spk.tidsserie.batch.main.spi.ExitCommand;
-import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
+import no.spk.tidsserie.tjenesteregister.ServiceRegistry;
 
 /**
  * Platformrammeverk for generering av tidsseriar ved hjelp av felles-tidsperiode-underlag-lib og plugbare {@link Tidsseriemodus modusar}.

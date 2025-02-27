@@ -29,12 +29,12 @@
             <artifactId>tidsserie-batch-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>no.spk.pensjon.faktura</groupId>
-            <artifactId>faktura-bootstrap-lib</artifactId>
+            <groupId>no.spk.tidsserie</groupId>
+            <artifactId>bootstrap-lib</artifactId>
         </dependency>
         <dependency>
-            <groupId>no.spk.pensjon.faktura</groupId>
-            <artifactId>faktura-tjenesteregister-lib</artifactId>
+            <groupId>no.spk.tidsserie</groupId>
+            <artifactId>tjenesteregister-lib</artifactId>
         </dependency>
         <dependency>
             <groupId>info.picocli</groupId>

@@ -7,7 +7,7 @@ import java.util.function.Supplier;
 import no.spk.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenterParser;
 import no.spk.tidsserie.batch.core.registry.Plugin;
 import no.spk.tidsserie.batch.main.spi.ExitCommand;
-import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
+import no.spk.tidsserie.tjenesteregister.ServiceRegistry;
 
 /**
  * {@link TidsserieMain} er oppstartsklassa for tidsserie-batch.

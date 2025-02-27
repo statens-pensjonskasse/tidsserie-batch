@@ -9,7 +9,7 @@ import java.util.function.Consumer;
 import no.spk.tidsserie.batch.core.TidsserieLivssyklus;
 import no.spk.tidsserie.batch.core.lagring.StorageBackend;
 import no.spk.tidsserie.batch.core.lagring.Tidsserierad;
-import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
+import no.spk.tidsserie.tjenesteregister.ServiceRegistry;
 
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;

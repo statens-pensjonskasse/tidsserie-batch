@@ -6,8 +6,8 @@ import static java.util.Objects.requireNonNull;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import no.spk.pensjon.faktura.tjenesteregister.ServiceReference;
-import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
+import no.spk.tidsserie.tjenesteregister.ServiceReference;
+import no.spk.tidsserie.tjenesteregister.ServiceRegistry;
 
 /**
  * ServiceLocator tilbyr oppslag av standardtjenesta for angitte tjenestetyper via tjenesteregisteret.

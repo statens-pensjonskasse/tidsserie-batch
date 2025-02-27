@@ -8,7 +8,7 @@ import no.spk.tidsserie.batch.core.registry.Plugin;
 import no.spk.tidsserie.batch.main.ApplicationController;
 import no.spk.tidsserie.batch.main.input.Modus;
 import no.spk.tidsserie.batch.main.input.TidsserieArgumentsFactory;
-import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
+import no.spk.tidsserie.tjenesteregister.ServiceRegistry;
 
 /**
  * {@link InMemoryBatchRunner} køyrer tidsserie-batch direkte i samme prosess som testane køyrer via.

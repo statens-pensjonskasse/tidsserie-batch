@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 
 import no.spk.tidsserie.batch.core.grunnlagsdata.Partisjonsnummer;
 import no.spk.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.datalagring.DefaultDatalagringStrategi;
-import no.spk.pensjon.faktura.tjenesteregister.support.SimpleServiceRegistry;
+import no.spk.tidsserie.tjenesteregister.support.SimpleServiceRegistry;
 
 import org.junit.jupiter.api.Test;
 

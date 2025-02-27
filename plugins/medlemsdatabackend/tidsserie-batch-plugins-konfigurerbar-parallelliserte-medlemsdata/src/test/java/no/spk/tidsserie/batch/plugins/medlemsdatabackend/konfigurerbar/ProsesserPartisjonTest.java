@@ -16,7 +16,7 @@ import no.spk.tidsserie.batch.core.grunnlagsdata.Partisjonsnummer;
 import no.spk.tidsserie.batch.core.medlem.GenererTidsserieCommand;
 import no.spk.tidsserie.batch.core.medlem.TidsserieContext;
 import no.spk.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.datalagring.DefaultDatalagringStrategi;
-import no.spk.pensjon.faktura.tjenesteregister.support.SimpleServiceRegistry;
+import no.spk.tidsserie.tjenesteregister.support.SimpleServiceRegistry;
 
 import org.assertj.core.api.MapAssert;
 import org.junit.jupiter.api.Test;

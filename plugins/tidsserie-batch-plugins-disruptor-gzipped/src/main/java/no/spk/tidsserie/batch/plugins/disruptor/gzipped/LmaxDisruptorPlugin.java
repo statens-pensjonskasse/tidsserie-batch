@@ -12,7 +12,7 @@ import no.spk.tidsserie.batch.core.TidsserieLivssyklus;
 import no.spk.tidsserie.batch.core.lagring.StorageBackend;
 import no.spk.tidsserie.batch.core.registry.Plugin;
 import no.spk.tidsserie.batch.core.registry.ServiceLocator;
-import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
+import no.spk.tidsserie.tjenesteregister.ServiceRegistry;
 
 public class LmaxDisruptorPlugin implements Plugin {
     @Override

@@ -16,14 +16,14 @@ import java.util.ServiceLoader;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import no.spk.faktura.input.BatchId;
+import no.spk.tidsserie.input.BatchId;
 import no.spk.tidsserie.tidsperiode.Aarstall;
 import no.spk.tidsserie.tidsperiode.underlag.Observasjonsperiode;
 import no.spk.tidsserie.batch.core.BatchIdConstants;
 import no.spk.tidsserie.batch.main.ConsoleView;
 import no.spk.tidsserie.batch.main.View;
 import no.spk.tidsserie.batch.main.input.Modus;
-import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
+import no.spk.tidsserie.tjenesteregister.ServiceRegistry;
 
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.After;

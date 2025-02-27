@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import ch.qos.logback.classic.ClassicConstants;
-import no.spk.faktura.input.BatchId;
+import no.spk.tidsserie.input.BatchId;
 import no.spk.tidsserie.batch.core.Tidsseriemodus;
 import no.spk.tidsserie.batch.core.grunnlagsdata.LastOppGrunnlagsdataKommando;
 import no.spk.tidsserie.batch.core.grunnlagsdata.UgyldigUttrekkException;
@@ -24,7 +24,7 @@ import no.spk.tidsserie.batch.core.medlem.MedlemsdataBackend;
 import no.spk.tidsserie.batch.core.registry.Extensionpoint;
 import no.spk.tidsserie.batch.core.registry.Plugin;
 import no.spk.tidsserie.batch.core.registry.ServiceLocator;
-import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
+import no.spk.tidsserie.tjenesteregister.ServiceRegistry;
 
 import ch.qos.logback.classic.LoggerContext;
 import org.slf4j.Logger;

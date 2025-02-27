@@ -4,7 +4,7 @@ import java.io.UncheckedIOException;
 
 import no.spk.tidsserie.batch.core.TidsserieLivssyklus;
 import no.spk.tidsserie.batch.core.medlem.MedlemsdataBackend;
-import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
+import no.spk.tidsserie.tjenesteregister.ServiceRegistry;
 
 /**
  * {@link LastOppGrunnlagsdataKommando} lar modusane plugge inn tenester som har

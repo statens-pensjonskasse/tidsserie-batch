@@ -9,8 +9,8 @@ import java.nio.file.Path;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import no.spk.faktura.input.PostParseValidator;
-import no.spk.faktura.input.ReadablePathValidator;
+import no.spk.tidsserie.input.PostParseValidator;
+import no.spk.tidsserie.input.ReadablePathValidator;
 import no.spk.tidsserie.batch.core.UttrekksId;
 
 import picocli.CommandLine;

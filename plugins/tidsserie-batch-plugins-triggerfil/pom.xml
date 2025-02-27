@@ -14,8 +14,8 @@
             <artifactId>tidsserie-batch-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>no.spk.pensjon.faktura</groupId>
-            <artifactId>faktura-bootstrap-lib</artifactId>
+            <groupId>no.spk.tidsserie</groupId>
+            <artifactId>bootstrap-lib</artifactId>
             <exclusions>
                 <exclusion>
                     <groupId>info.picocli</groupId>
@@ -24,8 +24,8 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>no.spk.pensjon.faktura</groupId>
-            <artifactId>faktura-tjenesteregister-lib</artifactId>
+            <groupId>no.spk.tidsserie</groupId>
+            <artifactId>tjenesteregister-lib</artifactId>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>

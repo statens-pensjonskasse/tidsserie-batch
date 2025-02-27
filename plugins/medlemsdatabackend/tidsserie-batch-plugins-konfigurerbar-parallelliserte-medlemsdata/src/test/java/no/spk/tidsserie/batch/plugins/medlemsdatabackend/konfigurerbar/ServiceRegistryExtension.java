@@ -12,8 +12,8 @@ import java.util.stream.Stream;
 
 import no.spk.tidsserie.batch.core.registry.Ranking;
 import no.spk.tidsserie.batch.core.registry.ServiceLocator;
-import no.spk.pensjon.faktura.tjenesteregister.ServiceReference;
-import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
+import no.spk.tidsserie.tjenesteregister.ServiceReference;
+import no.spk.tidsserie.tjenesteregister.ServiceRegistry;
 
 import org.assertj.core.api.AbstractIntegerAssert;
 import org.assertj.core.api.AbstractListAssert;

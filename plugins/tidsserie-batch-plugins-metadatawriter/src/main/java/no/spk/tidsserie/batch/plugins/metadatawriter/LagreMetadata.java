@@ -7,7 +7,7 @@ import java.nio.file.Path;
 
 import no.spk.tidsserie.batch.core.TidsserieGenerertCallback2;
 import no.spk.tidsserie.batch.core.kommandolinje.TidsserieBatchArgumenter;
-import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
+import no.spk.tidsserie.tjenesteregister.ServiceRegistry;
 
 class LagreMetadata implements TidsserieGenerertCallback2 {
     private final Path logKatalog;

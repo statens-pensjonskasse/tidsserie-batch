@@ -17,7 +17,7 @@ import no.spk.tidsserie.batch.core.medlem.MedlemsdataUploader;
 import no.spk.tidsserie.batch.core.medlem.Medlemslinje;
 import no.spk.tidsserie.batch.core.medlem.PartisjonsListener;
 import no.spk.tidsserie.batch.plugins.medlemsdatabackend.konfigurerbar.datalagring.DefaultDatalagringStrategi;
-import no.spk.pensjon.faktura.tjenesteregister.support.SimpleServiceRegistry;
+import no.spk.tidsserie.tjenesteregister.support.SimpleServiceRegistry;
 
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;

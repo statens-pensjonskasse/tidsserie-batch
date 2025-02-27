@@ -1,10 +1,10 @@
 package no.spk.tidsserie.batch.core.registry;
 
 import static java.lang.String.format;
-import static no.spk.pensjon.faktura.tjenesteregister.Constants.SERVICE_RANKING;
+import static no.spk.tidsserie.tjenesteregister.Constants.SERVICE_RANKING;
 
-import no.spk.pensjon.faktura.tjenesteregister.Constants;
-import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
+import no.spk.tidsserie.tjenesteregister.Constants;
+import no.spk.tidsserie.tjenesteregister.ServiceRegistry;
 
 /**
  * {@link Ranking} tilbyr funksjonalitet for å overstyre rankingen
