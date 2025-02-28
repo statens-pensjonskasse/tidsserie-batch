@@ -12,7 +12,7 @@
     <groupId>no.spk.tidsserie</groupId>
     <artifactId>tidsserie-batch</artifactId>
 
-    <version>4.0.1-SNAPSHOT</version>
+    <version>4.0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -27,6 +27,7 @@
 
     <properties>
         <java.version>21</java.version>
+        <tidsserie.version>${project.version}</tidsserie.version>
 
         <slf4j.version>2.0.16</slf4j.version>
         <ch.qos.logback.version>1.5.17</ch.qos.logback.version>
@@ -40,15 +41,15 @@
         <dependencies>
             <dependency>
                 <groupId>no.spk.tidsserie</groupId>
-                <artifactId>tidsperiode-underlag-lib</artifactId>
-                <version>3.0.1</version>
+                <artifactId>tidsserie-batch-bom</artifactId>
+                <version>${project.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>no.spk.tidsserie</groupId>
-                <artifactId>tidsserie-batch-bom</artifactId>
-                <version>4.0.1-SNAPSHOT</version>
-                <type>pom</type>
-                <scope>import</scope>
+                <artifactId>tidsperiode-underlag-lib</artifactId>
+                <version>3.0.1</version>
             </dependency>
             <dependency>
                 <groupId>no.spk.tidsserie</groupId>
