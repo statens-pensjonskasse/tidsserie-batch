@@ -34,7 +34,7 @@ Modulen inneheld hovedsaklig grensesnitt for extension pointa som modusane kan p
 livssyklushandteringa til rammeverket viss ein har behov for å klargjere eller rydde opp før/etter tidsseriegenereringa blir køyrt.
 
 Stort sett all integrasjon mellom klientane av rammeverket og platformrammeverket skjer ved hjelp av
-eit [in-memory tjenesteregister](http://git.spk.no/projects/FF/repos/faktura-tjenesteregister-lib). Modulen inneheld og eit fåtalls støtteklasser for
+eit [in-memory tjenesteregister](https://github.com/statens-pensjonskasse/tidsserie-tjenesteregister-lib). Modulen inneheld og eit fåtalls støtteklasser for
 definisjon og bruk av tjenesteregisteret, enten via extension points eller via service locator-mekanisma.
 
 #### tidsserie-batch-main
