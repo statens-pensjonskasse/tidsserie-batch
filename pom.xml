@@ -29,12 +29,12 @@
         <java.version>21</java.version>
         <tidsserie.version>${project.version}</tidsserie.version>
 
-        <slf4j.version>2.0.16</slf4j.version>
-        <ch.qos.logback.version>1.5.17</ch.qos.logback.version>
-        <logstash.version>8.0</logstash.version>
-        <junit-5.version>5.12.0</junit-5.version>
+        <slf4j.version>2.0.17</slf4j.version>
+        <ch.qos.logback.version>1.5.18</ch.qos.logback.version>
+        <logstash.version>8.1</logstash.version>
+        <junit-5.version>5.12.2</junit-5.version>
         <mockito.version>5.15.2</mockito.version>
-        <cucumber.version>7.21.1</cucumber.version>
+        <cucumber.version>7.22.0</cucumber.version>
     </properties>
 
     <dependencyManagement>
@@ -49,17 +49,17 @@
             <dependency>
                 <groupId>no.spk.tidsserie</groupId>
                 <artifactId>tidsperiode-underlag-lib</artifactId>
-                <version>3.0.1</version>
+                <version>3.0.2</version>
             </dependency>
             <dependency>
                 <groupId>no.spk.tidsserie</groupId>
                 <artifactId>bootstrap-lib</artifactId>
-                <version>4.0.0</version>
+                <version>4.0.4</version>
             </dependency>
             <dependency>
                 <groupId>no.spk.tidsserie</groupId>
                 <artifactId>tjenesteregister-lib</artifactId>
-                <version>3.0.0</version>
+                <version>3.0.1</version>
             </dependency>
             <dependency>
                 <groupId>ch.qos.logback</groupId>
@@ -101,12 +101,12 @@
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
-                <version>5.15.2</version>
+                <version>5.17.0</version>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-junit-jupiter</artifactId>
-                <version>5.15.2</version>
+                <version>5.17.0</version>
             </dependency>
             <dependency>
                 <groupId>io.cucumber</groupId>
@@ -121,7 +121,7 @@
             <dependency>
                 <groupId>net.java.dev.jna</groupId>
                 <artifactId>jna</artifactId>
-                <version>5.16.0</version>
+                <version>5.17.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
