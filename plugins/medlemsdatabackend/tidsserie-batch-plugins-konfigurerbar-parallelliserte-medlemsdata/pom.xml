@@ -4,7 +4,7 @@
     <parent>
         <groupId>no.spk.tidsserie</groupId>
         <artifactId>tidsserie-batch-plugins-pom</artifactId>
-        <version>4.0.6-SNAPSHOT</version>
+        <version>4.0.6</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>tidsserie-batch-plugins-konfigurerbar-parallelliserte-medlemsdata</artifactId>
