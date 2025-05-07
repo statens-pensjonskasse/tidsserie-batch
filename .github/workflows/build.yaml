@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    uses: statens-pensjonskasse/github-actions-library/.github/workflows/build-library-maven.yaml@fb0c09dd23612b245f1abb637a0537e93ab8d1c2 # v1.20.3
+    uses: statens-pensjonskasse/github-actions-library/.github/workflows/build-library-maven.yaml@8f3926b640e73a13823151832d1177596b3cd0b4 # v1.20.8
     permissions:
       contents: write
       packages: write
@@ -14,5 +14,6 @@ jobs:
     with:
       java-version: '21'
       slack-channel: '#panda-ci'
+      test-goals: 'verify -Djacoco.skip=false'
       slack-bot-name: "GitHub Actions"
       slack-bot-icon: ':panda_face:'
