@@ -14,6 +14,5 @@ jobs:
     with:
       java-version: '21'
       slack-channel: '#panda-ci'
-      test-goals: 'verify -Djacoco.skip=false'
       slack-bot-name: "GitHub Actions"
       slack-bot-icon: ':panda_face:'
