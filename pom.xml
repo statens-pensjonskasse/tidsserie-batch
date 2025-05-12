@@ -34,7 +34,7 @@
         <logstash.version>8.1</logstash.version>
         <junit-5.version>5.12.2</junit-5.version>
         <mockito.version>5.15.2</mockito.version>
-        <cucumber.version>7.22.1</cucumber.version>
+        <cucumber.version>7.22.2</cucumber.version>
     </properties>
 
     <dependencyManagement>
@@ -49,17 +49,17 @@
             <dependency>
                 <groupId>no.spk.tidsserie</groupId>
                 <artifactId>tidsperiode-underlag-lib</artifactId>
-                <version>3.0.5</version>
+                <version>3.0.7</version>
             </dependency>
             <dependency>
                 <groupId>no.spk.tidsserie</groupId>
                 <artifactId>bootstrap-lib</artifactId>
-                <version>4.0.7</version>
+                <version>4.0.9</version>
             </dependency>
             <dependency>
                 <groupId>no.spk.tidsserie</groupId>
                 <artifactId>tjenesteregister-lib</artifactId>
-                <version>3.0.4</version>
+                <version>3.0.6</version>
             </dependency>
             <dependency>
                 <groupId>ch.qos.logback</groupId>
