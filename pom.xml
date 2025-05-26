@@ -12,7 +12,7 @@
     <groupId>no.spk.tidsserie</groupId>
     <artifactId>tidsserie-batch</artifactId>
 
-    <version>4.0.9</version>
+    <version>4.0.10-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
