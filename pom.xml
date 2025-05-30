@@ -32,9 +32,9 @@
         <slf4j.version>2.0.17</slf4j.version>
         <ch.qos.logback.version>1.5.18</ch.qos.logback.version>
         <logstash.version>8.1</logstash.version>
-        <junit-5.version>5.12.2</junit-5.version>
+        <junit-5.version>5.13.0</junit-5.version>
         <mockito.version>5.15.2</mockito.version>
-        <cucumber.version>7.22.2</cucumber.version>
+        <cucumber.version>7.23.0</cucumber.version>
     </properties>
 
     <dependencyManagement>
@@ -49,17 +49,17 @@
             <dependency>
                 <groupId>no.spk.tidsserie</groupId>
                 <artifactId>tidsperiode-underlag-lib</artifactId>
-                <version>3.0.8</version>
+                <version>3.0.9</version>
             </dependency>
             <dependency>
                 <groupId>no.spk.tidsserie</groupId>
                 <artifactId>bootstrap-lib</artifactId>
-                <version>4.0.10</version>
+                <version>4.0.11</version>
             </dependency>
             <dependency>
                 <groupId>no.spk.tidsserie</groupId>
                 <artifactId>tjenesteregister-lib</artifactId>
-                <version>3.0.7</version>
+                <version>3.0.8</version>
             </dependency>
             <dependency>
                 <groupId>ch.qos.logback</groupId>
