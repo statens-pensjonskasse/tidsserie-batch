@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    uses: statens-pensjonskasse/github-actions-library/.github/workflows/build-library-maven.yaml@78fccbebc0179505b28200aed5496db0f6fc3ab5 # v1.26.0
+    uses: statens-pensjonskasse/github-actions-library/.github/workflows/build-library-maven.yaml@c0b167fac3e975fc2e55e160f30076f192d78692 # v1.27.1
     permissions:
       contents: write
       packages: write
