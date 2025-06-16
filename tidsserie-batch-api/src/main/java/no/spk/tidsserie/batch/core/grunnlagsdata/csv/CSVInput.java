@@ -23,12 +23,12 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 
-import no.spk.tidsserie.tidsperiode.Tidsperiode;
 import no.spk.tidsserie.batch.core.grunnlagsdata.GrunnlagsdataRepository;
+import no.spk.tidsserie.tidsperiode.Tidsperiode;
 
 /**
- * {@link CSVInput} støttar deserialisering av {@link #referansedata() tidsperioder} og {@link #medlemsdata() medlemsdata} frå
- * flate filer på CSV-format.
+ * {@link CSVInput} støttar deserialisering av {@link #referansedata() tidsperioder} og
+ * {@link #medlemsdata() medlemsdata} frå flate filer på CSV-format.
  * <br>
  * Tenesta er parametriserbar via {@link #addOversettere(CsvOversetter)} / {@link #addOversettere(Stream)}, sjølve
  * deserialiseringa blir plugga inn i form av {@link CsvOversetter oversettere} som støttar ei bestemt type CSV-rad,
@@ -55,8 +55,8 @@ public class CSVInput implements GrunnlagsdataRepository {
     private final Path directory;
 
     /**
-     * Konstruerer ei ny teneste som forventar å finne referanse- og medlemsdata i csv.gz-filer
-     * lagra direkte under den angitte katalogen.
+     * Konstruerer ei ny teneste som forventar å finne referanse- og medlemsdata i csv.gz-filer lagra direkte under den
+     * angitte katalogen.
      *
      * @param innkatalog innkatalogen tenesta skal lese csv.gz-filer frå
      * @throws NullPointerException dersom <code>innkatalog</code> er <code>null</code>
@@ -66,8 +66,8 @@ public class CSVInput implements GrunnlagsdataRepository {
     }
 
     /**
-     * Legger til ein <code>oversetter</code> som blir forsøkt brukt ved konvertering
-     * av linjer frå referansedata-filer til tidsperioder.
+     * Legger til ein <code>oversetter</code> som blir forsøkt brukt ved konvertering av linjer frå referansedata-filer
+     * til tidsperioder.
      *
      * @param oversetter ein oversetter som tenesta skal kunne benytte seg av
      * @return <code>this</code>
@@ -79,8 +79,8 @@ public class CSVInput implements GrunnlagsdataRepository {
     }
 
     /**
-     * Legger til eit sett med <code>oversettere</code> som blir forsøkt brukt ved konvertering
-     * av linjer frå referansedata-filer til tidsperioder.
+     * Legger til eit sett med <code>oversettere</code> som blir forsøkt brukt ved konvertering av linjer frå
+     * referansedata-filer til tidsperioder.
      *
      * @param oversettere ein samling oversettere som tenesta skal kunne benytte seg av
      * @return <code>this</code>
@@ -109,11 +109,10 @@ public class CSVInput implements GrunnlagsdataRepository {
     }
 
     /**
-     * Returnerer stien til alle komprimerte CSV-filer som inneheld referansedata som ikkje er
-     * medlemsspesifikke.
+     * Returnerer stien til alle komprimerte CSV-filer som inneheld referansedata som ikkje er medlemsspesifikke.
      * <br>
-     * Referansedatafiler blir plukka basert på at dei har filending <code>csv.gz</code> og ikkje
-     * har filnavn medlemsdata.csv.gz.
+     * Referansedatafiler blir plukka basert på at dei har filending <code>csv.gz</code> og ikkje har filnavn
+     * medlemsdata.csv.gz.
      * <br>
      *
      * @return ein straum med stien til alle referansedatafiler generert av faktura-grunnlagsdata-batch
@@ -130,17 +129,25 @@ public class CSVInput implements GrunnlagsdataRepository {
     }
 
     private Stream<Path> medlemsdataFiler() {
-        return Arrays.stream(
-                        requireNonNull(
-                                directory
-                                        .toFile()
-                                        .listFiles(),
-                                format("Inputmappe %s finnes ikke", directory)
-                        )
+        return Stream.concat(
+                        Arrays.stream(requireNonNull(directory.toFile().listFiles(), format("Inputmappe %s finnes ikke", directory))),
+                        medlemsdataFilerFraMedlemsdatamappe()
                 )
                 .filter(CSVInput::erMedlemsdataFil)
                 .map(File::toPath)
                 .peek(DuplisertCSVFilException::sjekkForDuplikat);
+    }
+
+    private Stream<File> medlemsdataFilerFraMedlemsdatamappe() {
+        if (Files.exists(directory.resolve("medlemsdata"))) {
+            try {
+                return Files.walk(directory.resolve("medlemsdata")).map(Path::toFile);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            return Stream.empty();
+        }
     }
 
     private static boolean erMedlemsdataFil(final File fil) {
