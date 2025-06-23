@@ -1,6 +1,7 @@
 package no.spk.tidsserie.batch.core.grunnlagsdata.csv;
 
 import static java.lang.String.format;
+import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static no.spk.tidsserie.batch.core.grunnlagsdata.csv.DuplisertCSVFilException.sjekkForDuplikat;
 
@@ -41,9 +42,11 @@ import no.spk.tidsserie.tidsperiode.Tidsperiode;
  * <li>{@link #medlemsdata() medlemsdata}</li>
  * </ul>
  * <br>
- * Medlemsdata blir kun lest frå fila medlemsdata.csv.gz i tenestas innkatalog. Alle andre filer av type csv.gz forventast å
- * tilhøyre {@link #referansedata() referansedata}-kategorien og blir forventa å inneholde {@link Tidsperiode tidsperioder} av
- * forskjelliger typer.
+ * Medlemsdata kan lesast frå fila medlemsdata.csv.gz i tenestas innkatalog. Det er støtte for at medlemsdata.csv.gz er
+ * partisjonert på fleire filer så lenge dei startar med medlemsdata. Når ein jobbar med partisjonerte medlemsdata vil ein
+ * kunne gruppere desse ved å leggje dei i ein eigjen katalog med namnet medlemsdata i tenestas innkatalog.
+ * Alle andre filer av type csv.gz forventast å tilhøyre {@link #referansedata() referansedata}-kategorien og blir
+ * forventa å inneholde {@link Tidsperiode tidsperioder} av forskjelliger typer.
  */
 public class CSVInput implements GrunnlagsdataRepository {
     private static final int DO_NOT_STRIP_TRAILING_SEPARATORS = -1;
@@ -131,22 +134,22 @@ public class CSVInput implements GrunnlagsdataRepository {
     private Stream<Path> medlemsdataFiler() {
         return Stream.concat(
                         Arrays.stream(requireNonNull(directory.toFile().listFiles(), format("Inputmappe %s finnes ikke", directory))),
-                        medlemsdataFilerFraMedlemsdatamappe()
+                        medlemsdataFilerFraMedlemsdatamappe().stream()
                 )
                 .filter(CSVInput::erMedlemsdataFil)
                 .map(File::toPath)
                 .peek(DuplisertCSVFilException::sjekkForDuplikat);
     }
 
-    private Stream<File> medlemsdataFilerFraMedlemsdatamappe() {
+    private List<File> medlemsdataFilerFraMedlemsdatamappe() {
         if (Files.exists(directory.resolve("medlemsdata"))) {
-            try {
-                return Files.walk(directory.resolve("medlemsdata")).map(Path::toFile);
+            try (Stream<Path> paths = Files.walk(directory.resolve("medlemsdata"))) {
+                return paths.map(Path::toFile).toList();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new UncheckedIOException(e);
             }
         } else {
-            return Stream.empty();
+            return emptyList();
         }
     }
 
