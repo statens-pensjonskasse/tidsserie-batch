@@ -16,3 +16,4 @@ jobs:
       slack-channel: '#panda-ci'
       slack-bot-name: "GitHub Actions"
       slack-bot-icon: ':panda_face:'
+      require-release-flag: true
