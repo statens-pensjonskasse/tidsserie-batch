@@ -1,6 +1,7 @@
 package no.spk.tidsserie.batch.core.grunnlagsdata.csv;
 
 import static java.lang.String.format;
+import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static no.spk.tidsserie.batch.core.grunnlagsdata.csv.DuplisertCSVFilException.sjekkForDuplikat;
 
@@ -23,12 +24,12 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 
-import no.spk.tidsserie.tidsperiode.Tidsperiode;
 import no.spk.tidsserie.batch.core.grunnlagsdata.GrunnlagsdataRepository;
+import no.spk.tidsserie.tidsperiode.Tidsperiode;
 
 /**
- * {@link CSVInput} støttar deserialisering av {@link #referansedata() tidsperioder} og {@link #medlemsdata() medlemsdata} frå
- * flate filer på CSV-format.
+ * {@link CSVInput} støttar deserialisering av {@link #referansedata() tidsperioder} og
+ * {@link #medlemsdata() medlemsdata} frå flate filer på CSV-format.
  * <br>
  * Tenesta er parametriserbar via {@link #addOversettere(CsvOversetter)} / {@link #addOversettere(Stream)}, sjølve
  * deserialiseringa blir plugga inn i form av {@link CsvOversetter oversettere} som støttar ei bestemt type CSV-rad,
@@ -41,9 +42,11 @@ import no.spk.tidsserie.batch.core.grunnlagsdata.GrunnlagsdataRepository;
  * <li>{@link #medlemsdata() medlemsdata}</li>
  * </ul>
  * <br>
- * Medlemsdata blir kun lest frå fila medlemsdata.csv.gz i tenestas innkatalog. Alle andre filer av type csv.gz forventast å
- * tilhøyre {@link #referansedata() referansedata}-kategorien og blir forventa å inneholde {@link Tidsperiode tidsperioder} av
- * forskjelliger typer.
+ * Medlemsdata kan lesast frå fila medlemsdata.csv.gz i tenestas innkatalog. Det er støtte for at medlemsdata.csv.gz er
+ * partisjonert på fleire filer så lenge dei startar med medlemsdata. Når ein jobbar med partisjonerte medlemsdata vil ein
+ * kunne gruppere desse ved å leggje dei i ein eigjen katalog med namnet medlemsdata i tenestas innkatalog.
+ * Alle andre filer av type csv.gz forventast å tilhøyre {@link #referansedata() referansedata}-kategorien og blir
+ * forventa å inneholde {@link Tidsperiode tidsperioder} av forskjelliger typer.
  */
 public class CSVInput implements GrunnlagsdataRepository {
     private static final int DO_NOT_STRIP_TRAILING_SEPARATORS = -1;
@@ -55,8 +58,8 @@ public class CSVInput implements GrunnlagsdataRepository {
     private final Path directory;
 
     /**
-     * Konstruerer ei ny teneste som forventar å finne referanse- og medlemsdata i csv.gz-filer
-     * lagra direkte under den angitte katalogen.
+     * Konstruerer ei ny teneste som forventar å finne referanse- og medlemsdata i csv.gz-filer lagra direkte under den
+     * angitte katalogen.
      *
      * @param innkatalog innkatalogen tenesta skal lese csv.gz-filer frå
      * @throws NullPointerException dersom <code>innkatalog</code> er <code>null</code>
@@ -66,8 +69,8 @@ public class CSVInput implements GrunnlagsdataRepository {
     }
 
     /**
-     * Legger til ein <code>oversetter</code> som blir forsøkt brukt ved konvertering
-     * av linjer frå referansedata-filer til tidsperioder.
+     * Legger til ein <code>oversetter</code> som blir forsøkt brukt ved konvertering av linjer frå referansedata-filer
+     * til tidsperioder.
      *
      * @param oversetter ein oversetter som tenesta skal kunne benytte seg av
      * @return <code>this</code>
@@ -79,8 +82,8 @@ public class CSVInput implements GrunnlagsdataRepository {
     }
 
     /**
-     * Legger til eit sett med <code>oversettere</code> som blir forsøkt brukt ved konvertering
-     * av linjer frå referansedata-filer til tidsperioder.
+     * Legger til eit sett med <code>oversettere</code> som blir forsøkt brukt ved konvertering av linjer frå
+     * referansedata-filer til tidsperioder.
      *
      * @param oversettere ein samling oversettere som tenesta skal kunne benytte seg av
      * @return <code>this</code>
@@ -109,11 +112,10 @@ public class CSVInput implements GrunnlagsdataRepository {
     }
 
     /**
-     * Returnerer stien til alle komprimerte CSV-filer som inneheld referansedata som ikkje er
-     * medlemsspesifikke.
+     * Returnerer stien til alle komprimerte CSV-filer som inneheld referansedata som ikkje er medlemsspesifikke.
      * <br>
-     * Referansedatafiler blir plukka basert på at dei har filending <code>csv.gz</code> og ikkje
-     * har filnavn medlemsdata.csv.gz.
+     * Referansedatafiler blir plukka basert på at dei har filending <code>csv.gz</code> og ikkje har filnavn
+     * medlemsdata.csv.gz.
      * <br>
      *
      * @return ein straum med stien til alle referansedatafiler generert av faktura-grunnlagsdata-batch
@@ -130,17 +132,25 @@ public class CSVInput implements GrunnlagsdataRepository {
     }
 
     private Stream<Path> medlemsdataFiler() {
-        return Arrays.stream(
-                        requireNonNull(
-                                directory
-                                        .toFile()
-                                        .listFiles(),
-                                format("Inputmappe %s finnes ikke", directory)
-                        )
+        return Stream.concat(
+                        Arrays.stream(requireNonNull(directory.toFile().listFiles(), format("Inputmappe %s finnes ikke", directory))),
+                        medlemsdataFilerFraMedlemsdatamappe().stream()
                 )
                 .filter(CSVInput::erMedlemsdataFil)
                 .map(File::toPath)
                 .peek(DuplisertCSVFilException::sjekkForDuplikat);
+    }
+
+    private List<File> medlemsdataFilerFraMedlemsdatamappe() {
+        if (Files.exists(directory.resolve("medlemsdata"))) {
+            try (Stream<Path> paths = Files.walk(directory.resolve("medlemsdata"))) {
+                return paths.map(Path::toFile).toList();
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+        } else {
+            return emptyList();
+        }
     }
 
     private static boolean erMedlemsdataFil(final File fil) {

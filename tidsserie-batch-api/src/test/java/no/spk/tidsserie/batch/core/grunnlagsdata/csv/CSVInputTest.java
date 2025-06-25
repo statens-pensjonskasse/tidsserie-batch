@@ -172,8 +172,42 @@ public class CSVInputTest {
                 .isInstanceOf(DuplisertCSVFilException.class);
     }
 
+    @Test
+    void skal_støtte_partisjonerte_medlemsdatafiler() throws IOException {
+        assertDeletable(medlemsdata).isTrue();
+
+        write(newTemporaryFile("medlemsdata1-e9c7.csv"), of(DUMMYDATA));
+        write(newTemporaryFile("medlemsdata2-a40c.csv"), of(DUMMYDATA));
+        softly.assertThat(
+                        fixture.medlemsdata()
+                )
+                .as("medlemsdata frå medlemsdata*.csv")
+                .hasSize(2);
+    }
+
+    @Test
+    void skal_støtte_partisjonerte_medlemsdatafiler_i_dedikert_medlemsdatamappe() throws IOException {
+        assertDeletable(medlemsdata).isTrue();
+
+        write(newTemporaryFileForMedlemsdata("medlemsdata1-e9c7.csv"), of(DUMMYDATA));
+        write(newTemporaryFileForMedlemsdata("medlemsdata2-a40c.csv"), of(DUMMYDATA));
+        softly.assertThat(
+                        fixture.medlemsdata()
+                )
+                .as("partisjonerte medlemsdata*.csv filer lest fra medlemsdata-mappen")
+                .hasSize(2);
+    }
+
     private File newTemporaryFile(final String filename) throws IOException {
         final File file = new File(baseDir, filename);
+        assertThat(file.createNewFile()).as("was " + file + " successfully created?").isTrue();
+        return file;
+    }
+
+    private File newTemporaryFileForMedlemsdata(final String filename) throws IOException {
+        final File medlemsdatamappe = new File(baseDir, "medlemsdata");
+        medlemsdatamappe.mkdir();
+        final File file = new File(medlemsdatamappe, filename);
         assertThat(file.createNewFile()).as("was " + file + " successfully created?").isTrue();
         return file;
     }
