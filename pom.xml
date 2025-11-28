@@ -30,11 +30,11 @@
         <tidsserie.version>${project.version}</tidsserie.version>
 
         <slf4j.version>2.0.17</slf4j.version>
-        <ch.qos.logback.version>1.5.18</ch.qos.logback.version>
+        <ch.qos.logback.version>1.5.21</ch.qos.logback.version>
         <logstash.version>8.1</logstash.version>
-        <junit-5.version>5.13.1</junit-5.version>
+        <junit-5.version>5.14.1</junit-5.version>
         <mockito.version>5.15.2</mockito.version>
-        <cucumber.version>7.23.0</cucumber.version>
+        <cucumber.version>7.32.0</cucumber.version>
     </properties>
 
     <dependencyManagement>
@@ -49,17 +49,17 @@
             <dependency>
                 <groupId>no.spk.tidsserie</groupId>
                 <artifactId>tidsperiode-underlag-lib</artifactId>
-                <version>3.0.9</version>
+                <version>3.0.15</version>
             </dependency>
             <dependency>
                 <groupId>no.spk.tidsserie</groupId>
                 <artifactId>bootstrap-lib</artifactId>
-                <version>4.0.14</version>
+                <version>4.0.16</version>
             </dependency>
             <dependency>
                 <groupId>no.spk.tidsserie</groupId>
                 <artifactId>tjenesteregister-lib</artifactId>
-                <version>3.0.11</version>
+                <version>3.0.13</version>
             </dependency>
             <dependency>
                 <groupId>ch.qos.logback</groupId>
@@ -89,7 +89,7 @@
             <dependency>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
-                <version>3.27.3</version>
+                <version>3.27.6</version>
             </dependency>
             <dependency>
                 <groupId>org.junit</groupId>
@@ -101,12 +101,12 @@
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
-                <version>5.18.0</version>
+                <version>5.20.0</version>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-junit-jupiter</artifactId>
-                <version>5.18.0</version>
+                <version>5.20.0</version>
             </dependency>
             <dependency>
                 <groupId>io.cucumber</groupId>
@@ -121,7 +121,7 @@
             <dependency>
                 <groupId>net.java.dev.jna</groupId>
                 <artifactId>jna</artifactId>
-                <version>5.17.0</version>
+                <version>5.18.1</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -202,7 +202,7 @@
                 <plugin>
                     <groupId>com.github.siom79.japicmp</groupId>
                     <artifactId>japicmp-maven-plugin</artifactId>
-                    <version>0.23.1</version>
+                    <version>0.25.0</version>
                     <dependencies>
                         <dependency>
                             <groupId>javax.xml.bind</groupId>
@@ -212,12 +212,12 @@
                         <dependency>
                             <groupId>com.sun.xml.bind</groupId>
                             <artifactId>jaxb-core</artifactId>
-                            <version>4.0.5</version>
+                            <version>4.0.6</version>
                         </dependency>
                         <dependency>
                             <groupId>com.sun.xml.bind</groupId>
                             <artifactId>jaxb-impl</artifactId>
-                            <version>4.0.5</version>
+                            <version>4.0.6</version>
                         </dependency>
                     </dependencies>
                 </plugin>
