@@ -5,7 +5,6 @@
 
     <groupId>no.spk.tidsserie</groupId>
     <artifactId>tidsserie-batch</artifactId>
-
     <version>4.1.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
@@ -37,13 +36,6 @@
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>no.spk.tidsserie</groupId>
-                <artifactId>tidsserie-batch-bom</artifactId>
-                <version>${project.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
             <dependency>
                 <groupId>no.spk.tidsserie</groupId>
                 <artifactId>tidsperiode-underlag-lib</artifactId>

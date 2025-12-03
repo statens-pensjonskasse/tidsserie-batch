@@ -15,29 +15,34 @@
     <dependencies>
         <dependency>
             <groupId>no.spk.tidsserie</groupId>
-            <artifactId>tidsperiode-underlag-lib</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>no.spk.tidsserie</groupId>
             <artifactId>tidsserie-batch-api</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>no.spk.tidsserie</groupId>
             <artifactId>tidsserie-batch-app</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>no.spk.tidsserie</groupId>
             <artifactId>tidsserie-batch-arguments</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>no.spk.tidsserie</groupId>
             <artifactId>tidsserie-batch-main</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>no.spk.tidsserie</groupId>
             <artifactId>tidsserie-batch-plugins-grunnlagsdatavalidator</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>no.spk.tidsserie</groupId>
+            <artifactId>tidsperiode-underlag-lib</artifactId>
+        </dependency>
         <dependency>
             <groupId>no.spk.tidsserie</groupId>
             <artifactId>tjenesteregister-lib</artifactId>

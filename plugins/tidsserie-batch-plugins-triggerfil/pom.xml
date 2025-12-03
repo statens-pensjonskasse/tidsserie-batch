@@ -12,6 +12,7 @@
         <dependency>
             <groupId>no.spk.tidsserie</groupId>
             <artifactId>tidsserie-batch-api</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>no.spk.tidsserie</groupId>

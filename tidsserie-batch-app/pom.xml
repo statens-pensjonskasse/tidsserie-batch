@@ -14,36 +14,43 @@
         <dependency>
             <groupId>no.spk.tidsserie</groupId>
             <artifactId>tidsserie-batch-arguments</artifactId>
+            <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>no.spk.tidsserie</groupId>
             <artifactId>tidsserie-batch-main</artifactId>
+            <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>no.spk.tidsserie</groupId>
             <artifactId>tidsserie-batch-plugins-disruptor</artifactId>
+            <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>no.spk.tidsserie</groupId>
             <artifactId>tidsserie-batch-plugins-grunnlagsdatavalidator</artifactId>
+            <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>no.spk.tidsserie</groupId>
             <artifactId>tidsserie-batch-plugins-parallelliserte-medlemsdata</artifactId>
+            <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>no.spk.tidsserie</groupId>
             <artifactId>tidsserie-batch-plugins-metadatawriter</artifactId>
+            <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>no.spk.tidsserie</groupId>
             <artifactId>tidsserie-batch-plugins-triggerfil</artifactId>
+            <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>
     </dependencies>
