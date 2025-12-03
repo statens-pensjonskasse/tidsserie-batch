@@ -5,7 +5,7 @@
 
     <groupId>no.spk.tidsserie</groupId>
     <artifactId>tidsserie-batch</artifactId>
-    <version>4.1.1-SNAPSHOT</version>
+    <version>4.1.1</version>
     <packaging>pom</packaging>
 
     <modules>
