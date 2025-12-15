@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 jobs:
   build:
-    uses: statens-pensjonskasse/public-actions-library/.github/workflows/build-library-maven.yaml@5e99092aba0cdf672ad97da57edef2d20173ed1d #v0.1.4
+    uses: statens-pensjonskasse/public-actions-library/.github/workflows/build-library-maven.yaml@5778b6c1a494ce82a7ff1ba43e947515c83e38de # v0.2.0
     permissions:
       contents: write
       packages: write
