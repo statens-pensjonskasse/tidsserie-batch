@@ -23,10 +23,10 @@
         <maven.compiler.release>${java.version}</maven.compiler.release>
         <tidsserie.version>${project.version}</tidsserie.version>
 
-        <slf4j.version>2.0.17</slf4j.version>
+        <slf4j.version>2.0.18</slf4j.version>
         <ch.qos.logback.version>1.5.32</ch.qos.logback.version>
         <logstash.version>9.0</logstash.version>
-        <junit.version>6.0.3</junit.version>
+        <junit.version>6.1.0</junit.version>
         <mockito.version>5.15.2</mockito.version>
         <cucumber.version>7.34.3</cucumber.version>
         <maven-dependency-plugin.version>3.10.0</maven-dependency-plugin.version>
@@ -192,7 +192,7 @@
                 <plugin>
                     <groupId>com.github.siom79.japicmp</groupId>
                     <artifactId>japicmp-maven-plugin</artifactId>
-                    <version>0.25.7</version>
+                    <version>0.26.0</version>
                     <dependencies>
                         <dependency>
                             <groupId>javax.xml.bind</groupId>
@@ -260,7 +260,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
-                    <version>3.6.2</version>
+                    <version>3.6.3</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
