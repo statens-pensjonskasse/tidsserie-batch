@@ -24,14 +24,14 @@
         <tidsserie.version>${project.version}</tidsserie.version>
 
         <slf4j.version>2.0.18</slf4j.version>
-        <ch.qos.logback.version>1.5.32</ch.qos.logback.version>
+        <ch.qos.logback.version>1.5.33</ch.qos.logback.version>
         <logstash.version>9.0</logstash.version>
         <junit.version>6.1.0</junit.version>
         <mockito.version>5.15.2</mockito.version>
         <cucumber.version>7.34.3</cucumber.version>
-        <maven-dependency-plugin.version>3.10.0</maven-dependency-plugin.version>
+        <maven-dependency-plugin.version>3.11.0</maven-dependency-plugin.version>
         <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
-        <maven-failsafe-plugin.version>3.5.5</maven-failsafe-plugin.version>
+        <maven-failsafe-plugin.version>3.5.6</maven-failsafe-plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -192,7 +192,7 @@
                 <plugin>
                     <groupId>com.github.siom79.japicmp</groupId>
                     <artifactId>japicmp-maven-plugin</artifactId>
-                    <version>0.26.0</version>
+                    <version>0.26.1</version>
                     <dependencies>
                         <dependency>
                             <groupId>javax.xml.bind</groupId>
@@ -202,12 +202,12 @@
                         <dependency>
                             <groupId>com.sun.xml.bind</groupId>
                             <artifactId>jaxb-core</artifactId>
-                            <version>4.0.8</version>
+                            <version>4.0.9</version>
                         </dependency>
                         <dependency>
                             <groupId>com.sun.xml.bind</groupId>
                             <artifactId>jaxb-impl</artifactId>
-                            <version>4.0.8</version>
+                            <version>4.0.9</version>
                         </dependency>
                     </dependencies>
                 </plugin>
@@ -236,12 +236,12 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.5.5</version>
+                    <version>3.5.6</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>3.5.5</version>
+                    <version>3.5.6</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
